@@ -1,0 +1,144 @@
+body{
+    margin: 0%;
+    font-family: 'Poppins';
+    width: 1366px;
+    height: 641px;
+    display: flex;
+    align-items: center;
+}
+.main-wrap{
+    width: 100%;
+    height: 85%;  
+}
+.main-con{
+    height: 100%;
+
+}
+.img-sec{
+    background-color: lightgray;
+    display: flex;
+    justify-content: end;
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px; 
+}
+.img-sec img{
+    align-self: center;   
+    object-fit: cover;
+    height: 90%;
+    width: 83%; 
+    border-radius: 15px;
+    margin: 0px 15px ;
+}
+.form-sec{ 
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    gap: 10px;
+}
+.form-sec .title{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+}
+.form-sec h1{
+    margin-top: 10px;
+    padding: 25px;
+    font-size: 40px;
+    font-weight: 500; 
+}
+.form-sec h1 span{
+    color: palegreen;
+}
+.form-sec .title img{
+    width: 45px;
+    height: 45px; 
+}
+.form-sec .form-con{  
+    width: 100%;
+    height: 300px;
+    text-align: center;
+    font-size: 22px;
+}
+.form-sec form .forgot-pass{ 
+    font-size: 18px;
+    text-decoration: none;
+    color: black;
+    margin-top: -10px;
+    margin-left: -160px;
+}
+
+.form-sec form input{
+    text-align: center;
+    border: none;
+    border-bottom: 2px solid black;
+    margin: 10px;
+    font-size: 18px;
+    height: 25px;
+    width: 300px;
+}
+
+.form-sec form input:focus{
+    outline: none;
+}
+
+.form-sec .psw-container { 
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 350px;
+}
+.form-sec form img{
+    height: 22px;
+}
+.bx-show, .bx-hide{
+    position: absolute;
+    top: 60%;
+    right: 9%;
+    cursor: pointer;
+}
+.form-sec .input-psw input{
+    width: 100%;
+    margin: 5px;
+    font-size: 18px;
+    height: 25px;
+    outline: 0; 
+}
+.form-sec form button {
+    width: 300px;
+    height: 35px;
+    font-size: 18px;
+    border-radius: 25px;
+    text-decoration:none ; 
+    color:black;
+}
+.form-sec form button:focus {
+    font-weight: bold;
+    background-color: rgba(152, 251, 152, 0.671);
+} 
+
+.btn-container a{
+    width: 100px;
+    height: 35px;
+    font-size: 18px;
+    border-radius: 25px;
+    text-decoration:none ; 
+    color:black;
+
+}
+.btn-container a:focus,
+.btn-container a:hover{
+    text-decoration: underline;
+}
+.error-con{
+    color: red; 
+    font-size: 19px;
+    height: 20px;
+}
+.btn-container{ 
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;
+    gap: 3px;
+} 
