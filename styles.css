@@ -56,7 +56,7 @@ body{
     height: 45px; 
 }
 .form-sec .form-con{  
-    width: 100%;
+    width: 90%;
     height: 300px;
     text-align: center;
     font-size: 22px;
@@ -78,11 +78,33 @@ body{
     height: 25px;
     width: 300px;
 }
-
+.form-sec form input[type="number"]{
+    border: 2px solid rgba(0, 0, 0, 0.562);
+    border-radius: 5px; 
+    font-size: 18px;
+    height: 50px;
+    width: 42px;
+    text-decoration: none;
+}
+.form-sec form input[type="number"]:focus{
+    background-color: rgba(233, 233, 233, 0.705);
+    border:2px solid black;
+}
+.input-con input::-webkit-inner-spin-button,
+.input-con input::-webkit-outer-spin-button{
+    display: none;
+}
 .form-sec form input:focus{
     outline: none;
 }
-
+.form-sec form .input-con{ 
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+}
 .form-sec .psw-container { 
     position: relative;
     left: 50%;
@@ -105,7 +127,7 @@ body{
     height: 25px;
     outline: 0; 
 }
-.form-sec form button {
+.form-sec form .button {
     width: 300px;
     height: 35px;
     font-size: 18px;
@@ -113,6 +135,18 @@ body{
     text-decoration:none ; 
     color:black;
 }
+.vrf-btn{ 
+    width: 200px;
+    height: auto;
+    padding: 10px;
+    margin: 3px;
+    font-size: 18px;
+    border-radius: 5px; 
+    background-color: palegreen;
+    border: none;
+    color:black; 
+}
+
 .form-sec form button:focus {
     font-weight: bold;
     background-color: rgba(152, 251, 152, 0.671);

@@ -49,7 +49,7 @@
                     </div>
 
                     <a href="./forgot-password/forgot_password.php" class="forgot-pass">Forgot Password?</a><br/><br/>
-                    <button name="login" type="submit" >Login</button>
+                    <button class="button" name="login" type="submit" >Login</button>
                     
                     </form>
                 </div>

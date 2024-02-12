@@ -43,7 +43,7 @@
                     }
                 }else{
                      
-                    $error = " Invalid Credentials! Please Try Again";
+                    $error = "Invalid Username or Password! Please Try Again";
                     header("Location: index.php?error=" . urlencode($error));
                     exit();  
                 }

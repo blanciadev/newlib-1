@@ -34,11 +34,19 @@
                     ?>
                 </div>
                 <div class="form-con">
-                    <form method="POST">   
-                    <input type="hidden" name="email" value="<?php echo $_GET['email'];?>">
-                    <br/><br/>  
+                    <p>A verification code has been sent to your email address.</p>
+                    <form method="POST">    
+                    <div class="input-con">
+                        <input type="number" maxlength="1">
+                        <input type="number" disabled maxlength="1">
+                        <input type="number" disabled maxlength="1">
+                        <input type="number" disabled maxlength="1">
+                        <input type="number" disabled maxlength="1">
+                        <input type="number" disabled maxlength="1">
+                    </div>
+                    <br/> 
                     <div class="btn-container row">
-                        <button name="sendCode"  type="submit" >Send Code</button> 
+                        <button class="vrf-btn active" name="sendCode"  type="submit" >Verify</button> 
                         <a href="../index.php"  >Cancel</a>
                         
                     </div>
