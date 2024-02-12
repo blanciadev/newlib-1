@@ -34,9 +34,9 @@
                     ?>
                 </div>
                 <div class="form-con">
-                    <form action="auth.php" method="POST">  
-                    <label for="uname">Email Address</label> <br/>
-                    <input type="text" name="User_ID" id="User_ID" required>
+                    <form action="./email_verify.php" method="POST">  
+                    <label >use</label> <br/>
+                    <input type="email" name="email" id="Email" required>
                     <br/><br/>  
                     <div class="btn-container row">
                         <button name="sendCode"  type="submit" >Send Code</button> 
