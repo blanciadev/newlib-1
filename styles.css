@@ -145,6 +145,7 @@ body{
     background-color: palegreen;
     border: none;
     color:black; 
+    transition: all 0.50s ease;
 }
 
 .form-sec form button:focus {
