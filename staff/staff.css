@@ -23,5 +23,13 @@ h2{
 li.nav-item.active {
     background-color: #abffab;
     border: 0.5px solid #4eef4e;
+    font-weight: bold;
     border-radius: 10px;
+}
+.nav-link{ 
+    font-size: 15pt;
+}
+.nav-link > i{
+    margin-right: 10px;
+
 }
