@@ -1,0 +1,27 @@
+body{ 
+    height: 98vh;
+    width: 98vw;
+    background-color: #e0e0e0;
+    font-family: "Poppins";
+}
+.bg-body-tertiary{ 
+    width: 300px;
+    height: 97%;
+    margin: 12px;
+    border-radius: 10px; 
+} 
+.bg-body-tertiary >a{  
+    flex-wrap:wrap;
+    justify-content: center;
+    width: 250px;
+}
+h2{ 
+    font-size: 20pt;
+    font-weight: 700;
+    margin: 0%;
+}
+li.nav-item.active {
+    background-color: #abffab;
+    border: 0.5px solid #4eef4e;
+    border-radius: 10px;
+}

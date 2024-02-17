@@ -9,13 +9,13 @@
     $error = " ";  
      
     
-    $conn =  mysqli_connect("localhost","root","","library"); //database connection
+    $conn =  mysqli_connect("localhost","root","","db_library"); //database connection
     
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }  else {
 
-        $stmt = $conn->prepare("select * from employee where User_ID = ?");// lookup data from employees
+        $stmt = $conn->prepare("select * from tbl_employee where User_ID = ?");// lookup data from employees
         $stmt-> bind_param("i", $User_ID);
         $stmt-> execute();
         $stmt_result = $stmt->get_result();
@@ -54,7 +54,7 @@
                     $error = " Invalid Account! Please Try Again";
                     header("Location: index.php?error=" . urlencode($error));
                     exit();  
-                }
+                } 
     } 
     }else{
         if(isset($_SESSION["login"]) == false){
