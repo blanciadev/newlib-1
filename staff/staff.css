@@ -7,12 +7,11 @@ body{
     align-items: center;
     justify-content: center;
     flex-wrap: wrap;
-    flex-direction: row; 
+    flex-direction: column;
 }
 .bg-body-tertiary{ 
-    width: 300px;
-    height: 97%;
-    margin: 12px;
+    width: 22%;
+    height: 95%; 
     border-radius: 10px; 
     box-shadow:  5px 5px 10px #bababa,
     -5px -5px 10px #dfdfdf;
@@ -43,12 +42,11 @@ li.nav-item.active {
     margin-right: 10px; 
 }
 .active{
-    --bs-dropdown-link-active-bg: #48ff57;
-    color: black;
+    --bs-dropdown-link-active-bg: #48ff57; 
 }
 .board{  
-    width: 77%;
-    height: 97%;
+    width: 75%;
+    height: 95%;
     border-radius: 10px;
     background: #ffffffd4;
     box-shadow:  5px 5px 10px #bababa,
