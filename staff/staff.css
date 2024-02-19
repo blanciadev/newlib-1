@@ -3,6 +3,10 @@ body{
     width: 98vw;
     background-color: #e0e0e0;
     font-family: "Poppins";
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-direction: row;
 }
 .bg-body-tertiary{ 
     width: 300px;
@@ -37,4 +41,9 @@ li.nav-item.active {
 .nav-link > i{
     margin-right: 10px;
 
+}
+.board{ 
+    width: 900px;
+    height: 600px;
+    background: white;
 }

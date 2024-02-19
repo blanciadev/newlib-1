@@ -45,7 +45,7 @@ include '../auth.php';
         </div>
     </div>
 
-    <div class="container"><!--board container-->
+    <div class="board container"><!--board container-->
 
 
     </div>
