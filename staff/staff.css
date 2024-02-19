@@ -31,6 +31,9 @@ li.nav-item.active {
 .nav-link{ 
     font-size: 13pt;
 }
+.dropdown > a{ 
+    justify-content: space-around;
+}
 .nav-link > i{
     margin-right: 10px;
 

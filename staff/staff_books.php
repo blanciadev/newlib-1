@@ -1,3 +1,7 @@
+<?php
+include '../auth.php';
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -31,7 +35,7 @@
         <div class="dropdown"><!--dropdown container-->
         <a href="#" class="d-flex align-items-center link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
             <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-            <strong>mdo</strong>
+            <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong>
         </a>
         <ul class="dropdown-menu text-small shadow"> 
             <li><a class="dropdown-item" href="#">Settings</a></li> 
