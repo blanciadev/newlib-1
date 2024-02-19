@@ -42,8 +42,9 @@ li.nav-item.active {
     margin-right: 10px;
 
 }
-.board{ 
-    width: 900px;
-    height: 600px;
-    background: white;
+.board{  
+    width: 77%;
+    height: 97%;
+    border-radius: 10px;
+    background: #ffffffd4;
 }
