@@ -39,8 +39,8 @@ include '../auth.php';
             <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong>
         </a>
         <ul class="dropdown-menu text-small shadow"> 
-            <li><a class="dropdown-item" href="#">Settings</a></li> 
-            <li><a class="dropdown-item" href="#">Log out</a></li>
+            <li class=" active"><a class="dropdown-item" href="./staff_settings.php">Settings</a></li> 
+            <li><a class="dropdown-item" href="../logout.php">Log out</a></li>
         </ul>
         </div>
     </div>

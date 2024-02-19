@@ -1,12 +1,13 @@
 body{ 
-    height: 98vh;
-    width: 98vw;
+    height: 100vh;
+    width: 100vw;
     background-color: #e0e0e0;
     font-family: "Poppins";
     display: flex;
     align-items: center;
+    justify-content: center;
     flex-wrap: wrap;
-    flex-direction: row;
+    flex-direction: row; 
 }
 .bg-body-tertiary{ 
     width: 300px;
@@ -14,7 +15,7 @@ body{
     margin: 12px;
     border-radius: 10px; 
     box-shadow:  5px 5px 10px #bababa,
-    -5px -5px 10px #ffffff;
+    -5px -5px 10px #dfdfdf;
 } 
 .bg-body-tertiary >a{  
     flex-wrap:wrap;
@@ -39,12 +40,17 @@ li.nav-item.active {
     justify-content: space-around;
 }
 .nav-link > i{
-    margin-right: 10px;
-
+    margin-right: 10px; 
+}
+.active{
+    --bs-dropdown-link-active-bg: #48ff57;
+    color: black;
 }
 .board{  
     width: 77%;
     height: 97%;
     border-radius: 10px;
     background: #ffffffd4;
+    box-shadow:  5px 5px 10px #bababa,
+    -5px -5px 10px #dfdfdf;
 }
