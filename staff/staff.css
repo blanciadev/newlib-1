@@ -1,11 +1,11 @@
 body{ 
     height: 100vh;
     width: 100vw;
-    background-color: #e0e0e0;
+    background-color: #AFCCB5;
     font-family: "Poppins";
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-evenly;
     flex-wrap: wrap;
     flex-direction: column;
 }
@@ -39,13 +39,20 @@ li.nav-item.active {
     margin-right: 10px; 
 }
 .active{
-    --bs-dropdown-link-active-bg: #48ff57; 
+    --bs-dropdown-link-active-bg: #2FF05C; 
 }
 .board{  
-    width: 75%;
+    width: 74%;
     height: 95%;
     border-radius: 10px;
     background: #ffffffd4;
     box-shadow:  5px 5px 10px #bababa,
     -5px -5px 10px #dfdfdf;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+.overview{  
+    grid-area: 1 1 2 2;
+    display: flex;
 }

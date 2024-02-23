@@ -2,7 +2,7 @@
   
     session_start();
 
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $User_ID = $_POST["User_ID"];
     $Password = $_POST["Password"];

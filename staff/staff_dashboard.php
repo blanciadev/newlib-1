@@ -18,7 +18,7 @@ include '../auth.php';
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
 <body>
-    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" style="width: 280px;"><!--sidenav container-->
+    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
@@ -36,14 +36,17 @@ include '../auth.php';
             <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
             <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
             <hr>
-            <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
+            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
         
         
     </div>
 
     <div class="board container"><!--board container-->
+        <div class="overview">
+            
+        </div>
 
 
     </div>
