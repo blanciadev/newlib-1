@@ -1,6 +1,9 @@
 <?php
 include '../auth.php';
 
+if(!isset($_SESSION["staff_name"])) {
+    header("location: ../auth.php");
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,7 +26,7 @@ include '../auth.php';
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container--> 
         <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-            <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
+            <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
             <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong> 
         </div>
         <hr>
@@ -42,6 +45,77 @@ include '../auth.php';
     </div>
 
     <div class="board container"><!--board container-->
+    <div class="bookcon">
+                    <div class="b-icon"><i class='bx bxs-book'></i></div>
+                    <form action="" method="get">
+                    <div class="searchbox">
+                        <input type="text" name="search" placeholder="Search" value="<?php if(isset($_GET['search'])){
+                            echo $_GET['search'];
+                        } ?>">
+                        <button type="submit"><i class='bx bx-search'></i></button>
+                    </div>
+                    </form>
+                    <div class="booktable">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Accession Code</th>
+                                    <th>Book Title</th>
+                                    <th>Author</th>
+                                    <th>Publisher</th>
+                                    <th>Section</th>
+                                    <th>Shelf Number</th>
+                                    <th>Edition</th>
+                                    <th>Year Published</th>
+                                    <th>ISBN</th>
+                                    <th>Available</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $sql = "SELECT * FROM books";
+
+                                if (isset($_GET['search'])) {
+                                    $filtervalue = $_GET['search'];
+                                    $sql = "SELECT * FROM books WHERE CONCAT(Accession_Code, Book_Title, Authors_ID, Publisher_ID, Section_Code, Shelf_Number, Year_Published, ISBN) LIKE '%$filtervalue%'";
+                                     
+                                } 
+ 
+                                $result = $conn->query($sql); 
+
+                                if(mysqli_num_rows($result) == 0){
+                                    echo "<tr>
+                                            <td colspan='10' style='text-align: center;'>No Matches Found</td>
+                                          </tr> 
+                                    ";
+
+                                }
+                                
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<tr>
+                                                    <td>" . $row["Accession_Code"] . "</td>
+                                                    <td>" . $row["Book_Title"] . "</td>
+                                                    <td>" . $row["Authors_ID"] . "</td>
+                                                    <td>" . $row["Publisher_ID"] . "</td>
+                                                    <td>" . $row["Section_Code"] . "</td>
+                                                    <td>" . $row["Shelf_Number"] . "</td>
+                                                    <td>" . $row["Edition"] . "</td>
+                                                    <td>" . $row["Year_Published"] . "</td>
+                                                    <td>" . $row["ISBN"] . "</td> 
+                                                    <td>" . $row["Quantity"] . "</td>
+                                                </tr>";
+                                }
+
+                               
+                                ?>
+
+                            </tbody>
+                        </table>
+                    </div> 
+                    <div class="reqBooks">
+                        <a href="./request_book.php" class="req-btn">Request Book</a> 
+                    </div>
+                </div>
 
 
     </div>

@@ -1,5 +1,4 @@
-<?php
-  
+<?php 
     session_start();
 
  if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -15,7 +14,7 @@
         die("Connection failed: " . $conn->connect_error);
     }  else {
 
-        $stmt = $conn->prepare("select * from tbl_employee where User_ID = ?");// lookup data from employees
+        $stmt = $conn->prepare("select * from  employee where User_ID = ?");// lookup data from employees
         $stmt-> bind_param("i", $User_ID);
         $stmt-> execute();
         $stmt_result = $stmt->get_result();

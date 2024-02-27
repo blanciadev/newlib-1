@@ -1,8 +1,10 @@
-<?php
-include '../auth.php';
+<?php 
+@include "../auth.php";  
 
+if(!isset($_SESSION["staff_name"])) {
+    header("location: ../auth.php");
+}
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,10 +25,6 @@ include '../auth.php';
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container-->
-        <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-            <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-            <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong> 
-        </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item active"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
@@ -42,12 +40,77 @@ include '../auth.php';
         
         
     </div>
-
-    <div class="board container"><!--board container-->
-        <div class="overview">
+    <div class="board container"><!--board container--> 
+        <div class="header">
+            <div class="text">
+                <div class="title">
+                    <h2>Dashboard</h2>
+                </div>
+                <div class="datetime">
+                    <p id = "currentDate"></p>
+                    <p id = "currentTime"></p>
+                </div>
+            </div>
             
-        </div>
+            <div class="user-header mr-3 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
+                <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
+                <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong> 
+            </div>
 
+        </div>
+        <div class="content">
+            <div class="overview">
+                <h3>Overview</h3> 
+                <div class="ovw-con">
+                    <div class="totalbooks">  
+                        <?php
+
+                                $totalBooks = "Select * from books";
+                                $totalBooks_run = mysqli_query($conn, $totalBooks); 
+                                if($totalBooks_count = mysqli_num_rows($totalBooks_run))
+                                {
+                                    echo "<h4>"  .$totalBooks_count." </h4>";
+                                }
+                                else
+                                {
+                                    echo "<h4>0</h4>";
+                                }
+                            ?>
+                        <h4>Total Books</h4>
+                    </div>
+                    <div class="line"></div>
+                    <div class="totalvisits">
+                        <?php
+                                $totalVisits = "Select * from visitors_log";
+                                $totalVisits_run = mysqli_query($conn, $totalVisits); 
+                                $currenDate = date("YYYY-mm-dd");
+                                if($totalVisits_count = mysqli_num_rows($totalVisits_run)) {
+                                    echo "<h4>"  .$totalVisits_count." </h4>";
+                                } else {
+                                    echo "<h4>0</h4>";
+                                }
+                            ?>
+                        <h4>Total Visits</h4>
+                    </div>
+                </div> 
+            </div>
+            
+            <div class="duebooks">
+                <h3>Due Today</h3>
+                <div class="duebooks-con"></div>
+            </div>
+            <div class="stats">
+                <h3>Statistics</h3>
+                <div class="stats-con"></div>
+            </div>
+            <div class="newbooks">
+                <h3>What's New?</h3>
+                <div class="newbooks-con"></div>
+            </div>
+
+                
+        </div>
+        
 
     </div>
         
