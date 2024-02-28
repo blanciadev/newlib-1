@@ -40,40 +40,49 @@ include '../auth.php';
         </ul>
          
     </div>
+    
     <div class="board container"><!--board container-->
-    <h2>Book Information</h2>
+    <h2>Request List</h2>
+    <!-- Search functionality  -->
+    <div class="container mt-3">
+    <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+</div>
+
     <table class="table table-striped">
+        
         <thead>
             <tr>
-                <th>Accession Code</th>
+                <th>Request_Id</th>
+                <th>Employee Id</th>
                 <th>Book Title</th>
-                <th>Authors ID</th>
-                <th>Publisher ID</th>
-                <th>Section Code</th>
-                <th>Shelf Number</th>
+                <th>Author</th>
+                <th>Publisher</th>
                 <th>Edition</th>
                 <th>Year Published</th>
-                <th>ISBN</th>
-                <th>Bibliography</th>
                 <th>Quantity</th>
-                <th>Price</th>
                 <th>Status</th>
             </tr>
         </thead>
+        
+
+<div class="container mt-3">
+<button class="btn btn-primary" id="requestButton">Request List</button>
+
+</div>
         <tbody>
             <?php
-                $conn =  mysqli_connect("localhost","root","root","db_library", 3307); 
+                $conn = mysqli_connect("localhost", "root", "root", "db_library", 3307); 
                 if ($conn->connect_error) {
                     die("Connection failed: " . $conn->connect_error);
                 }
 
                 // SQL query
-                $sql = "SELECT Accession_Code, Book_Title, Authors_ID, Publisher_ID, Section_Code, Shelf_Number, tb_Edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status FROM books";
+                $sql = "SELECT Request_ID, User_ID, Book_Title, Author, Publisher, Edition, Year_Published, Quantity, tb_status FROM request_books";
                 $result = $conn->query($sql);
 
                 // Output data of each row
                 while($row = $result->fetch_assoc()) {
-                    echo "<tr><td>".$row["Accession_Code"]."</td><td>".$row["Book_Title"]."</td><td>".$row["Authors_ID"]."</td><td>".$row["Publisher_ID"]."</td><td>".$row["Section_Code"]."</td><td>".$row["Shelf_Number"]."</td><td>".$row["tb_Edition"]."</td><td>".$row["Year_Published"]."</td><td>".$row["ISBN"]."</td><td>".$row["Bibliography"]."</td><td>".$row["Quantity"]."</td><td>".$row["Price"]."</td><td>".$row["tb_status"]."</td></tr>";
+                    echo "<tr><td>".$row["Request_ID"]."</td><td>".$row["User_ID"]."</td><td>".$row["Book_Title"]."</td><td>".$row["Author"]."</td><td>".$row["Publisher"]."</td><td>".$row["Edition"]."</td><td>".$row["Year_Published"]."</td><td>".$row["Quantity"]."</td><td>".$row["tb_status"]."</td></tr>";
                 }
                 echo "</table>";
 
@@ -87,11 +96,6 @@ include '../auth.php';
 
 
 
-
-<div class="container mt-3">
-<button class="btn btn-primary" id="requestButton">Request List</button>
-
-</div>
 
 <script>
     document.getElementById("requestButton").addEventListener("click", function() {
