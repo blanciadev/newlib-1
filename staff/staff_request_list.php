@@ -66,7 +66,7 @@ include '../auth.php';
         
 
 <div class="container mt-3">
-<button class="btn btn-primary" id="requestButton">Request List</button>
+<button class="btn btn-primary" id="requestButton">Request</button>
 
 </div>
         <tbody>
@@ -77,12 +77,12 @@ include '../auth.php';
                 }
 
                 // SQL query
-                $sql = "SELECT Request_ID, User_ID, Book_Title, Author, Publisher, Edition, Year_Published, Quantity, tb_status FROM request_books";
+                $sql = "SELECT Request_ID, User_ID, Book_Title, Author, Publisher, tb_edition, Year_Published, Quantity, tb_status FROM request_books";
                 $result = $conn->query($sql);
 
                 // Output data of each row
                 while($row = $result->fetch_assoc()) {
-                    echo "<tr><td>".$row["Request_ID"]."</td><td>".$row["User_ID"]."</td><td>".$row["Book_Title"]."</td><td>".$row["Author"]."</td><td>".$row["Publisher"]."</td><td>".$row["Edition"]."</td><td>".$row["Year_Published"]."</td><td>".$row["Quantity"]."</td><td>".$row["tb_status"]."</td></tr>";
+                    echo "<tr><td>".$row["Request_ID"]."</td><td>".$row["User_ID"]."</td><td>".$row["Book_Title"]."</td><td>".$row["Author"]."</td><td>".$row["Publisher"]."</td><td>".$row["tb_edition"]."</td><td>".$row["Year_Published"]."</td><td>".$row["Quantity"]."</td><td>".$row["tb_status"]."</td></tr>";
                 }
                 echo "</table>";
 

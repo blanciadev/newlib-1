@@ -23,23 +23,29 @@
             if($stmt_result->num_rows == 1) { // 2 usertypes
                 $row = $stmt_result->fetch_assoc();
                 if($row["User_ID"] == $User_ID && $row["Password"] == $Password){ 
-                    
+                    $_SESSION["User_ID"] = $User_ID;
                     if($row["Role"] == "Admin"){ 
+                        $_SESSION["User_ID"] = $User_ID;
                         $fname = $row["First_Name"];
                         $lname = $row["Last_Name"];
+                        $_SESSION["User_ID"] = $User_ID;
                         $_SESSION["admin_name"] = $fname ." " .$lname; 
+                       
                         $_SESSION["role"] = $row["Role"];
-                        setcookie('user', $User_ID, time()+60*60*24*120);
+                       // setcookie('user', $User_ID, time()+60*60*24*120);
                         header('location:admin/admin_dashboard.php');
                         
                     }elseif($row["Role"] == "Staff"){ 
                         $fname = $row["First_Name"];
                         $lname = $row["Last_Name"];
+                      
                         $_SESSION["login"] = true;
+                        $_SESSION["User_ID"] = $User_ID;
                         $_SESSION["staff_name"] = $fname ." " .$lname; 
                         $_SESSION["role"] = $row["Role"]; 
-                        setcookie('user', $User_ID, time()+60*60*24*120);
-                        header('location:staff/staff_dashboard.php'); 
+                  //      setcookie('user', $User_ID, time()+60*60*24*120);
+                        header('location: staff/staff_dashboard.php?User_ID=' . $_SESSION['User_ID']);
+
                     }
                 }else{
                      
@@ -49,10 +55,11 @@
                 }
                   
                 
-            }else{
-                     
+            }
+            else{
+                    
                     $error = " Invalid Account! Please Try Again";
-                    header("Location: index.php?error=" . urlencode($error));
+                    header("Location: index.php?error=" );
                     exit();  
                 } 
     } 
