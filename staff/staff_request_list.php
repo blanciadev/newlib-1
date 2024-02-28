@@ -95,11 +95,32 @@ include '../auth.php';
 
 
 
+<script>
+    // JavaScript code for search functionality
+    document.getElementById("searchInput").addEventListener("input", function() {
+        let searchValue = this.value.toLowerCase();
+        let rows = document.querySelectorAll("tbody tr");
+        rows.forEach(row => {
+            let cells = row.querySelectorAll("td");
+            let found = false;
+            cells.forEach(cell => {
+                if (cell.textContent.toLowerCase().includes(searchValue)) {
+                    found = true;
+                }
+            });
+            if (found) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+</script>
 
 
 <script>
     document.getElementById("requestButton").addEventListener("click", function() {
-        window.location.href = "staff_request_list.php";
+        window.location.href = "staff_request_form.php";
     });
 </script>
 
