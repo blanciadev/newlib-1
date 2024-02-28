@@ -1,7 +1,34 @@
 <?php
-include '../auth.php';
 
+session_start();
+
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Database connection
+    $conn = mysqli_connect("localhost", "root", "root", "db_library", 3307); 
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Check if the 'borrowId' is set in the POST data
+    if (isset($_POST['borrowId'])) {
+        $borrowId = $_POST['borrowId'];
+        
+        // Update the status in the database
+        $updateSql = "UPDATE borrowdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = '$borrowId'";
+        if ($conn->query($updateSql) === TRUE) {
+            echo "<script>alert('Status updated successfully');</script>";
+        } else {
+            echo "<script>alert('Error updating status: " . $conn->error . "');</script>";
+        }
+    }
+
+    // Close connection
+    $conn->close();
+}
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,6 +44,7 @@ include '../auth.php';
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
 <body>
+
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
@@ -40,35 +68,35 @@ include '../auth.php';
         </ul>
     </div>
 
-    
+    <form method="POST" action="staff_borrow.php">
     <table class="table table-striped">
-        
-        <thead>
-            <tr>
-                <th>Borrow Id</th>
-                <th>Visitors Id</th>
-                <th>Accession Code</th>
-                <th>Book Title</th>
-                <th>Quantity</th>
-                <th>Date</th>
-                <th>Due Date</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-                $conn = mysqli_connect("localhost", "root", "root", "db_library", 3307); 
-                if ($conn->connect_error) {
-                    die("Connection failed: " . $conn->connect_error);
-                }
+    <thead>
+        <tr>
+            <th>Borrow Id</th>
+            <th>Visitors Id</th>
+            <th>Accession Code</th>
+            <th>Book Title</th>
+            <th>Quantity</th>
+            <th>Date</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th></th> 
+        </tr>
+    </thead>
+    <tbody>
+    <div id="statusMessage"></div>
+    <?php
+    // Database connection and SQL query
+    $conn = mysqli_connect("localhost", "root", "root", "db_library", 3307); 
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
 
-              // SQL query to fetch data from borrowdetails and borrow tables
-$sql = "SELECT borrowdetails.*, borrow.User_ID, borrow.Date_Borrowed, borrow.Due_Date, borrow.tb_status AS Borrow_tb_status
-        FROM borrowdetails
-        INNER JOIN borrow ON borrowdetails.Borrow_ID = borrow.Borrow_ID";
+    $sql = "SELECT borrowdetails.*, borrow.User_ID, borrow.Date_Borrowed, borrow.Due_Date, borrow.tb_status AS Borrow_tb_status
+            FROM borrowdetails
+            INNER JOIN borrow ON borrowdetails.Borrow_ID = borrow.Borrow_ID";
 
-                $result = $conn->query($sql);
-
+    $result = $conn->query($sql);
                 // Output data of each row
                 while($row = $result->fetch_assoc()) {
                     echo "<tr>";
@@ -80,15 +108,37 @@ $sql = "SELECT borrowdetails.*, borrow.User_ID, borrow.Date_Borrowed, borrow.Due
                     echo "<td>".$row["Date_Borrowed"]."</td>";
                     echo "<td>".$row["Due_Date"]."</td>";
                     echo "<td>".$row["tb_status"]."</td>";
+                                    
+                    echo "<td>";
+                    echo "<form class='update-form' method='POST'>"; // Add method='POST' to the form
+                    echo "<input type='hidden' name='borrowId' value='".$row["BorrowDetails_ID"]."'>";
+                
+                    // Conditionally render the button based on the status
+                    if ($row["tb_status"] === 'Borrowed') {
+                        echo "<button type='submit' class='btn btn-primary btn-sm update-btn'>Returned</button>";
+                    } else {
+                        echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
+                    }
+                
+                    echo "<div class='update-message'></div>";
+                    echo "</form>";
+                    echo "</td>";
+                                    
                     echo "</tr>";
                 }
+                
 
-                // Close connection
-                $conn->close();
-            ?>
-        </tbody>
-    </table>
+
+    // Close connection
+    $conn->close();
+?>
+
+    </tbody>
+</table>
+
 </div>
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
