@@ -23,7 +23,7 @@ include '../auth.php';
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container--> 
         <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-            <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
+            <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
             <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong> 
         </div>
         <hr>
@@ -40,12 +40,57 @@ include '../auth.php';
         </ul>
          
     </div>
-
     <div class="board container"><!--board container-->
+    <h2>Book Information</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Accession Code</th>
+                <th>Book Title</th>
+                <th>Authors ID</th>
+                <th>Publisher ID</th>
+                <th>Section Code</th>
+                <th>Shelf Number</th>
+                <th>Edition</th>
+                <th>Year Published</th>
+                <th>ISBN</th>
+                <th>Bibliography</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+                $conn =  mysqli_connect("localhost","root","root","db_library", 3307); 
+                if ($conn->connect_error) {
+                    die("Connection failed: " . $conn->connect_error);
+                }
+
+                // SQL query
+                $sql = "SELECT Accession_Code, Book_Title, Authors_ID, Publisher_ID, Section_Code, Shelf_Number, tb_Edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status FROM books";
+                $result = $conn->query($sql);
+
+                // Output data of each row
+                while($row = $result->fetch_assoc()) {
+                    echo "<tr><td>".$row["Accession_Code"]."</td><td>".$row["Book_Title"]."</td><td>".$row["Authors_ID"]."</td><td>".$row["Publisher_ID"]."</td><td>".$row["Section_Code"]."</td><td>".$row["Shelf_Number"]."</td><td>".$row["tb_Edition"]."</td><td>".$row["Year_Published"]."</td><td>".$row["ISBN"]."</td><td>".$row["Bibliography"]."</td><td>".$row["Quantity"]."</td><td>".$row["Price"]."</td><td>".$row["tb_status"]."</td></tr>";
+                }
+                echo "</table>";
+
+                // Close connection
+                $conn->close();
+            ?>
+        </tbody>
+    </table>
+</div>
 
 
-    </div>
-        
+
+
+
+
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
