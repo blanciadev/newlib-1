@@ -40,11 +40,55 @@ include '../auth.php';
         </ul>
     </div>
 
-    <div class="board container"><!--board container-->
-
-
-    </div>
+    
+    <table class="table table-striped">
         
+        <thead>
+            <tr>
+                <th>Borrow Id</th>
+                <th>Visitors Id</th>
+                <th>Accession Code</th>
+                <th>Book Title</th>
+                <th>Quantity</th>
+                <th>Date</th>
+                <th>Due Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+                $conn = mysqli_connect("localhost", "root", "root", "db_library", 3307); 
+                if ($conn->connect_error) {
+                    die("Connection failed: " . $conn->connect_error);
+                }
+
+              // SQL query to fetch data from borrowdetails and borrow tables
+$sql = "SELECT borrowdetails.*, borrow.User_ID, borrow.Date_Borrowed, borrow.Due_Date, borrow.tb_status AS Borrow_tb_status
+        FROM borrowdetails
+        INNER JOIN borrow ON borrowdetails.Borrow_ID = borrow.Borrow_ID";
+
+                $result = $conn->query($sql);
+
+                // Output data of each row
+                while($row = $result->fetch_assoc()) {
+                    echo "<tr>";
+                    echo "<td>".$row["BorrowDetails_ID"]."</td>";
+                    echo "<td>".$row["User_ID"]."</td>";
+                    echo "<td>".$row["Accession_Code"]."</td>";
+                    echo "<td>".$row["Book_Title"]."</td>";
+                    echo "<td>".$row["Quantity"]."</td>";
+                    echo "<td>".$row["Date_Borrowed"]."</td>";
+                    echo "<td>".$row["Due_Date"]."</td>";
+                    echo "<td>".$row["tb_status"]."</td>";
+                    echo "</tr>";
+                }
+
+                // Close connection
+                $conn->close();
+            ?>
+        </tbody>
+    </table>
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
