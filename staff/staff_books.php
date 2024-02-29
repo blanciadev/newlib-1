@@ -62,13 +62,13 @@ include '../auth.php';
         </thead>
         <tbody>
             <?php
-                $conn =  mysqli_connect("localhost","root","root","db_library", 3307); 
+                $conn =  mysqli_connect("localhost","root","root","db_library_2", 3307); 
                 if ($conn->connect_error) {
                     die("Connection failed: " . $conn->connect_error);
                 }
 
                 // SQL query
-                $sql = "SELECT Accession_Code, Book_Title, Authors_ID, Publisher_ID, Section_Code, Shelf_Number, tb_Edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status FROM books";
+                $sql = "SELECT Accession_Code, Book_Title, Authors_ID, Publisher_ID, Section_Code, Shelf_Number, tb_Edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status FROM tbl_books";
                 $result = $conn->query($sql);
 
                 // Output data of each row

@@ -27,9 +27,9 @@ $_SESSION['User_ID'];
         $errorMessage = "Please fill in all fields.";
     } else {
         // Insert data into the database
-        $conn =  mysqli_connect("localhost","root","root","db_library", 3307); //database connection
+        $conn =  mysqli_connect("localhost","root","root","db_library_2", 3307); //database connection
         // Assuming you have a database connection named $conn
-        $query = "INSERT INTO request_books (User_ID, Book_Title, Author, Publisher, tb_Edition, Year_Published ,Quantity, tb_status) 
+        $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Author, Publisher, tb_edition, Year_Published ,Quantity, tb_status) 
         VALUES ('$userID', '$bookTitle', '$author', '$publisher', '$edition','$year','$quantity', '$status')";
 
         $result = mysqli_query($conn, $query);

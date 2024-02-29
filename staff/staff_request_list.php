@@ -71,13 +71,13 @@ include '../auth.php';
 </div>
         <tbody>
             <?php
-                $conn = mysqli_connect("localhost", "root", "root", "db_library", 3307); 
+                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
                 if ($conn->connect_error) {
                     die("Connection failed: " . $conn->connect_error);
                 }
 
                 // SQL query
-                $sql = "SELECT Request_ID, User_ID, Book_Title, Author, Publisher, tb_edition, Year_Published, Quantity, tb_status FROM request_books";
+                $sql = "SELECT Request_ID, User_ID, Book_Title, Author, Publisher, tb_edition, Year_Published, Quantity, tb_status FROM tbl_requestbooks";
                 $result = $conn->query($sql);
 
                 // Output data of each row

@@ -5,7 +5,7 @@ session_start();
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Database connection
-    $conn = mysqli_connect("localhost", "root", "root", "db_library", 3307); 
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
@@ -15,7 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $borrowId = $_POST['borrowId'];
         
         // Update the status in the database
-        $updateSql = "UPDATE borrowdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = '$borrowId'";
+        $updateSql = "UPDATE tbl_borrowdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = '$borrowId'";
         if ($conn->query($updateSql) === TRUE) {
             echo "<script>alert('Status updated successfully');</script>";
         } else {
@@ -90,21 +90,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <?php
     // Database connection and SQL query
-    $conn = mysqli_connect("localhost", "root", "root", "db_library", 3307); 
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    $sql = "SELECT borrowdetails.*, borrow.User_ID, borrow.Date_Borrowed, borrow.Due_Date, borrow.tb_status AS Borrow_tb_status
-            FROM borrowdetails
-            INNER JOIN borrow ON borrowdetails.Borrow_ID = borrow.Borrow_ID";
+    $sql = "SELECT 
+    bd.BorrowDetails_ID, 
+    b.User_ID, 
+    b.Accession_Code, 
+    bk.Book_Title, 
+    bd.Quantity, 
+    b.Date_Borrowed, 
+    b.Due_Date, 
+    b.tb_status,
+    br.Borrower_ID
+FROM 
+    tbl_borrowdetails bd
+INNER JOIN 
+    tbl_borrow b ON bd.Borrower_ID = b.Borrow_ID
+INNER JOIN 
+    tbl_books bk ON b.Accession_Code = bk.Accession_Code
+INNER JOIN
+    tbl_borrower br ON b.Borrower_ID = br.Borrower_ID;
+";
+
 
     $result = $conn->query($sql);
                 // Output data of each row
                 while($row = $result->fetch_assoc()) {
                     echo "<tr>";
                     echo "<td>".$row["BorrowDetails_ID"]."</td>";
-                    echo "<td>".$row["User_ID"]."</td>";
+                    echo "<td>".$row["Borrower_ID"]."</td>";
                     echo "<td>".$row["Accession_Code"]."</td>";
                     echo "<td>".$row["Book_Title"]."</td>";
                     echo "<td>".$row["Quantity"]."</td>";

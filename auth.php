@@ -8,8 +8,8 @@
     $Password = $_POST["Password"];
     $error = " ";  
      
-    
-    $conn =  mysqli_connect("localhost","root","root","db_library", 3307); //database connection
+    // CHANGE THE PORT IF NEEDED
+    $conn =  mysqli_connect("localhost","root","root","db_library_2", 3307); //database connection
     
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
@@ -71,4 +71,3 @@
     }
    
 ?> 
- 

@@ -1,18 +1,18 @@
 <?php
-
 session_start();
-// Check if Accession Code is provided via GET or POST
+
 if(isset($_REQUEST['accession_code'])) {
     // Sanitize input to prevent SQL injection
-    
-    $conn =  mysqli_connect("localhost","root","root","db_library", 3307); //database connection
-    
+    $conn =  mysqli_connect("localhost","root","root","db_library_2", 3307); //database connection
     $accession_code = mysqli_real_escape_string($conn, $_REQUEST['accession_code']);
     
+    // Store the accession code in a session variable
+    $_SESSION['accession_code'] = $accession_code;
+    
     // Query to retrieve book details based on Accession Code
-    $sql = "SELECT books.*, authors.Authors_Name 
-            FROM books 
-            INNER JOIN authors ON books.Authors_ID = authors.Authors_ID 
+    $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
+            FROM tbl_books 
+            INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
             WHERE Accession_Code = '$accession_code'";
     
     $result = $conn->query($sql);
@@ -20,13 +20,12 @@ if(isset($_REQUEST['accession_code'])) {
     if ($result) {
         if ($result->num_rows > 0) {
             // Display book details
-       
             echo "<div class='books-container'>";
-           
+            // Display book details code here
             echo "</div>";
         } else {
             // Book not found
-            echo "No book found with the provided Accession Code";
+         
         }
     } else {
         // SQL query error
@@ -36,7 +35,7 @@ if(isset($_REQUEST['accession_code'])) {
     $conn->close();
 } else {
     // Accession Code is not provided
-    echo "Accession Code is required";
+   
 }
 ?>
 
@@ -104,10 +103,21 @@ if(isset($_REQUEST['accession_code'])) {
             echo "<p>No book found with the provided Accession Code</p>";
         }
         ?>
-
+      <button type="button" class="btn btn-primary" id="book_borrow">Get Book</button>
 
     </div>
     </div>
+
+    <script>
+    document.getElementById("book_borrow").addEventListener("click", function() {
+        window.location.href = "staff_book_borrow_process.php";
+    });
+</script>
+
+
+
+
+
     <script>
         // Get the input field and form
         const inputField = document.getElementById('accession_code');
