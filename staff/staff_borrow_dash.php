@@ -85,6 +85,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </thead>
     <tbody>
     <div id="statusMessage"></div>
+    <button type="button" class="btn btn-primary" id="book_borrow">Book Borrow</button>
+
+
     <?php
     // Database connection and SQL query
     $conn = mysqli_connect("localhost", "root", "root", "db_library", 3307); 
@@ -129,15 +132,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
 
 
-    // Close connection
-    $conn->close();
-?>
+                    // Close connection
+                    $conn->close();
+                ?>
 
     </tbody>
 </table>
 
 </div>
 
+<script>
+    document.getElementById("book_borrow").addEventListener("click", function() {
+        window.location.href = "staff_book_borrow_find.php";
+    });
+</script>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
