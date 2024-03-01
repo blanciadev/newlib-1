@@ -2,6 +2,9 @@
 
 session_start();
 
+
+$borrowDetailsId = $_GET['borrowId'];
+
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Database connection
@@ -10,18 +13,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Connection failed: " . $conn->connect_error);
     }
 
+            
+        // Check if Borrower_ID is set in session
+        if (isset($_SESSION['borrowerId'])) {
+            $borrowerId = $_SESSION['borrowerId'];
+            // Use the Borrower_ID as needed
+        } else {
+            // Handle the case where Borrower_ID is not set in session
+        }
 
-    if (isset($_GET['borrowId'])) {
-        $borrowDetailsId = $_GET['borrowId'];
-        $_SESSION['borrowerId'] = $_GET["Borrower_ID"];
-        // Use the BorrowDetails_ID as needed
-        // For example, echo it to verify it's retrieved correctly
-        echo "BorrowDetails_ID: " . $borrowDetailsId;
-    } else {
-        echo "BorrowDetails_ID is not set in the URL";
-    }
+        // Check if BorrowDetails_ID is set in the URL
+        if (isset($_GET['borrowId'])) {
+            $borrowDetailsId = $_GET['borrowId'];
+            // Use the BorrowDetails_ID as needed
+        } else {
+            // Handle the case where BorrowDetails_ID is not set in the URL
+        }
 
 
+        
 
     // Check if the 'borrowId' is set in the POST data
     // if (isset($_POST['borrowId'])) {
@@ -39,6 +49,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Close connection
     $conn->close();
 }
+
+
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$sql = "SELECT 
+tbl_borrow.Borrow_ID,
+tbl_borrow.Borrower_ID,
+tbl_borrow.Accession_Code,
+tbl_books.Book_Title,
+tbl_borrowdetails.Quantity,
+tbl_borrow.Date_Borrowed,
+tbl_borrow.Due_Date
+FROM 
+tbl_borrowdetails
+INNER JOIN 
+tbl_borrow ON tbl_borrowdetails.Borrower_ID = tbl_borrow.Borrow_ID
+INNER JOIN 
+tbl_books ON tbl_borrow.Accession_Code = tbl_books.Accession_Code
+WHERE 
+tbl_borrow.Borrow_ID = '$borrowDetailsId' AND
+tbl_borrowdetails.BorrowDetails_ID = '$borrowDetailsId'";
+
 ?>
 
 
@@ -82,52 +117,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 
     <form method="POST" action="staff_borrow.php">
-    <table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Borrow Id</th>
-            <th>Visitors Id</th>
-            <th>Accession Code</th>
-            <th>Book Title</th>
-            <th>Quantity</th>
-            <th>Date</th>
-            <th>Due Date</th>
-            <th>Status</th>
-            <th></th> 
-        </tr>
-    </thead>
-    <tbody>
-    <div id="statusMessage"></div>
-    <button type="button" class="btn btn-primary" id="book_borrow">Book Borrow</button>
+   
+
 
 
     <?php
     // Database connection and SQL query
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    $sql = "SELECT 
-    bd.BorrowDetails_ID, 
-    b.User_ID, 
-    b.Accession_Code, 
-    bk.Book_Title, 
-    bd.Quantity, 
-    b.Date_Borrowed, 
-    b.Due_Date, 
-    b.tb_status,
-    br.Borrower_ID
-FROM 
-    tbl_borrowdetails bd
-INNER JOIN 
-    tbl_borrow b ON bd.Borrower_ID = b.Borrow_ID
-INNER JOIN 
-    tbl_books bk ON b.Accession_Code = bk.Accession_Code
-INNER JOIN
-    tbl_borrower br ON b.Borrower_ID = br.Borrower_ID;
-";
-
+   
 
     $result = $conn->query($sql);
                 // Output data of each row
@@ -143,18 +139,18 @@ INNER JOIN
                     echo "<td>".$row["tb_status"]."</td>";
                                     
                    echo "<td>";
-echo "<form class='update-form' method='GET' action='staff_borrow_details.php'>"; 
-echo "<input type='hidden' name='borrowId' id='borrowId' value='".$row["BorrowDetails_ID"]."'>";
-// Conditionally render the button based on the status
-echo "<input type='hidden' name='borrowerId' value='".$row["Borrower_ID"]."'>";
-if ($row["tb_status"] === 'Borrowed') {
-    echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='redirectToBorrowDetails(" . $row["BorrowDetails_ID"] . ")'>Returned</button>";
-} else {
-    echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
-}
-echo "<div class='update-message'></div>";
-echo "</form>";
-echo "</td>";
+                    echo "<form class='update-form' method='GET' action='staff_borrow_details.php'>"; 
+                    echo "<input type='hidden' name='borrowId' id='borrowId' value='".$row["BorrowDetails_ID"]."'>";
+                    // Conditionally render the button based on the status
+                    echo "<input type='hidden' name='borrowerId' value='".$row["Borrower_ID"]."'>";
+                    if ($row["tb_status"] === 'Borrowed') {
+                        echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='redirectToBorrowDetails(" . $row["BorrowDetails_ID"] . ")'>Returned</button>";
+                    } else {
+                        echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
+                    }
+                    echo "<div class='update-message'></div>";
+                    echo "</form>";
+                    echo "</td>";
 
                                     
                     echo "</tr>";
@@ -163,26 +159,22 @@ echo "</td>";
                     // Close connection
                     $conn->close();
                 ?>
-           
 
+
+
+
+    <tbody>
+    <div id="statusMessage"></div>
+    <button type="button" class="btn btn-primary" id="book_borrow">Book Borrow</button>
+
+
+           
     </tbody>
 </table>
 
 </div>
 
-<script>
-    function redirectToBorrowDetails(borrowId) {
-        window.location.href = "staff_borrow_details.php?borrowId=" + borrowId;
-    }
-</script>
 
-
-
-<script>
-    document.getElementById("book_borrow").addEventListener("click", function() {
-        window.location.href = "staff_book_borrow_find.php";
-    });
-</script>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
