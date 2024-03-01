@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+$result = null; // Initialize $result variable
+$_SESSION['accession_code'] = null;
+
 if(isset($_REQUEST['accession_code'])) {
     // Sanitize input to prevent SQL injection
     $conn =  mysqli_connect("localhost","root","root","db_library_2", 3307); //database connection
@@ -35,7 +38,11 @@ if(isset($_REQUEST['accession_code'])) {
     $conn->close();
 } else {
     // Accession Code is not provided
-   
+     // Check if the form has been submitted
+     if(isset($_REQUEST['accession_code'])) {
+        // Accession Code is not provided
+        echo "<div class='books-container'><p>No book found with the provided Accession Code</p></div>";
+    }
 }
 ?>
 
@@ -83,7 +90,14 @@ if(isset($_REQUEST['accession_code'])) {
     <h1>Search Book by Accession Code</h1>
     <form action="staff_book_borrow_find.php" method="GET">
         <label for="accession_code">Accession Code:</label>
-        <input type="text" id="accession_code" name="accession_code" placeholder="Enter Accession Code" autofocus>
+        <?php
+    echo '<input type="text" id="accession_code" name="accession_code" placeholder="Enter Accession Code" required';
+    if(isset($_SESSION['accession_code']) && !empty($_SESSION['accession_code'])) {
+        echo ' value="' . htmlspecialchars($_SESSION['accession_code']) . '"';
+    }
+    echo '>';
+?>
+
     </form>
 
     <?php
@@ -100,7 +114,7 @@ if(isset($_REQUEST['accession_code'])) {
             echo "</div>";
         } else {
             // Book not found or error occurred
-            echo "<p>No book found with the provided Accession Code</p>";
+           
         }
         ?>
       <button type="button" class="btn btn-primary" id="book_borrow">Get Book</button>
@@ -109,30 +123,32 @@ if(isset($_REQUEST['accession_code'])) {
     </div>
 
     <script>
+    // Get the input field and form
+    const inputField = document.getElementById('accession_code');
+    const form = document.getElementById('searchForm');
+
+    // Add event listener to input field for keyup event
+    inputField.addEventListener('keyup', function(event) {
+        // If Enter key is pressed (key code 13) and the input field is not empty, submit the form
+        if (event.keyCode === 13 && inputField.value.trim() !== "") {
+            event.preventDefault(); // Prevent the default form submission behavior
+            form.submit();
+        }
+    });
+
+    // Add event listener to book_borrow button
     document.getElementById("book_borrow").addEventListener("click", function() {
-        window.location.href = "staff_book_borrow_process.php";
+        // Check if the accession code input field is not empty before redirecting
+        if (inputField.value.trim() !== "") {
+            window.location.href = "staff_book_borrow_process.php";
+        } else {
+            // If the accession code input field is empty, display an alert or handle it accordingly
+            alert("Accession code is required.");
+        }
     });
 </script>
 
 
-
-
-
-    <script>
-        // Get the input field and form
-        const inputField = document.getElementById('accession_code');
-        const form = document.getElementById('searchForm');
-
-        // Add event listener to input field for keyup event
-        inputField.addEventListener('keyup', function(event) {
-            // Prevent the default form submission behavior
-            event.preventDefault();
-            // If Enter key is pressed (key code 13), submit the form
-            if (event.keyCode === 13) {
-                form.submit();
-            }
-        });
-    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 

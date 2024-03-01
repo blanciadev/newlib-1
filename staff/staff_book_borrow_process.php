@@ -1,5 +1,6 @@
 <?php
 session_start();
+$conn = mysqli_connect("localhost","root","root","db_library_2", 3307); //database connection
 
 // Check if the accession code session variable is set
 if(isset($_SESSION['accession_code'])) {
@@ -7,8 +8,7 @@ if(isset($_SESSION['accession_code'])) {
     // Accession code is available, you can use it
     $accession_code = $_SESSION['accession_code'];
 
-    $conn = mysqli_connect("localhost","root","root","db_library_2", 3307); //database connection
-    
+   
     // Query to retrieve book details based on Accession Code
     $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
     FROM tbl_books
