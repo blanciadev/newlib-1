@@ -2,44 +2,46 @@
 
 session_start();
 
-// Check if the form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+// Initialize a flag to track the validity of the Borrower ID
+$isBorrowerIdValid = false;
+$errorMessage = "";
+
+// Check if the form is submitted and Borrower ID is provided
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     // Database connection
     $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
 
+    // Retrieve Borrower_ID from the form
+    $borrower_id = $_POST['borrower_id'];
 
-    if (isset($_GET['borrowId'])) {
-        $borrowDetailsId = $_GET['borrowId'];
-        $_SESSION['borrowerId'] = $_GET["Borrower_ID"];
-        // Use the BorrowDetails_ID as needed
-        // For example, echo it to verify it's retrieved correctly
-        echo "BorrowDetails_ID: " . $borrowDetailsId;
+    // Validate Borrower_ID against tbl_borrower table
+    $sql_validate_borrower = "SELECT * FROM tbl_borrower WHERE Borrower_ID = '$borrower_id'";
+    $result_validate_borrower = $conn->query($sql_validate_borrower);
+
+    if ($result_validate_borrower->num_rows > 0) {
+        // Borrower_ID is valid
+        $isBorrowerIdValid = true;
     } else {
-        echo "BorrowDetails_ID is not set in the URL";
+        // Borrower_ID is invalid
+        $errorMessage = "Invalid Borrower ID.";
     }
-
-
-
-    // Check if the 'borrowId' is set in the POST data
-    // if (isset($_POST['borrowId'])) {
-    //     $borrowId = $_POST['borrowId'];
-        
-    //     // Update the status in the database
-    //     $updateSql = "UPDATE tbl_borrowdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = '$borrowId'";
-    //     if ($conn->query($updateSql) === TRUE) {
-    //         echo "<script>alert('Status updated successfully');</script>";
-    //     } else {
-    //         echo "<script>alert('Error updating status: " . $conn->error . "');</script>";
-    //     }
-    // }
 
     // Close connection
     $conn->close();
 }
+
+// If Borrower ID is valid, redirect to the next page
+if ($isBorrowerIdValid) {
+    header("Location: staff_borrow_details.php?borrower_id=$borrower_id");
+    exit(); // Make sure to exit after redirecting
+}
+
 ?>
+
+
 
 
 <!DOCTYPE html>
@@ -81,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </ul>
     </div>
 
-    <form method="POST" action="staff_borrow.php">
+    <form method="POST" action="">
     <table class="table table-striped">
     <thead>
         <tr>
@@ -98,7 +100,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </thead>
     <tbody>
     <div id="statusMessage"></div>
-    <button type="button" class="btn btn-primary" id="book_borrow">Book Borrow</button>
+
+    <div class="mb-3">
+        <label for="borrowerIdInput" class="form-label">Borrower ID</label>
+        <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="book_borrow" <?php if (empty($_POST['borrower_id'])) echo "disabled"; ?>>
+    Book Borrow
+</button>
+<?php if (!empty($errorMessage)): ?>
+    <div class="alert alert-danger" role="alert">
+        <?php echo $errorMessage; ?>
+    </div>
+<?php endif; ?>
+
+
+
 
 
     <?php
@@ -109,24 +127,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     $sql = "SELECT 
-    bd.BorrowDetails_ID, 
-    b.User_ID, 
-    b.Accession_Code, 
-    bk.Book_Title, 
-    bd.Quantity, 
-    b.Date_Borrowed, 
-    b.Due_Date, 
-    b.tb_status,
-    br.Borrower_ID
-FROM 
-    tbl_borrowdetails bd
-INNER JOIN 
-    tbl_borrow b ON bd.Borrower_ID = b.Borrow_ID
-INNER JOIN 
-    tbl_books bk ON b.Accession_Code = bk.Accession_Code
-INNER JOIN
-    tbl_borrower br ON b.Borrower_ID = br.Borrower_ID;
-";
+    bd.BorrowDetails_ID, b.User_ID, b.Accession_Code,  bk.Book_Title, bd.Quantity, 
+    b.Date_Borrowed, b.Due_Date, b.tb_status,br.Borrower_ID
+            FROM 
+                tbl_borrowdetails bd
+            INNER JOIN 
+                tbl_borrow b ON bd.Borrower_ID = b.Borrow_ID
+            INNER JOIN 
+                tbl_books bk ON b.Accession_Code = bk.Accession_Code
+            INNER JOIN
+                tbl_borrower br ON b.Borrower_ID = br.Borrower_ID;
+            ";
 
 
     $result = $conn->query($sql);
@@ -176,13 +187,28 @@ echo "</td>";
     }
 </script>
 
-
-
 <script>
-    document.getElementById("book_borrow").addEventListener("click", function() {
-        window.location.href = "staff_book_borrow_find.php";
+    // Wait for the DOM content to be fully loaded
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get the input field for the Borrower ID
+        var borrowerIdInput = document.getElementById("borrowerIdInput");
+        // Get the button
+        var bookBorrowButton = document.getElementById("book_borrow");
+
+        // Add an input event listener to the Borrower ID input field
+        borrowerIdInput.addEventListener("input", function() {
+            // Enable the button if there is input in the Borrower ID field
+            if (borrowerIdInput.value.trim() !== "") {
+                bookBorrowButton.removeAttribute("disabled");
+            } else {
+                // Otherwise, disable the button
+                bookBorrowButton.setAttribute("disabled", "disabled");
+            }
+        });
     });
 </script>
+
+
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>

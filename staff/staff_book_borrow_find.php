@@ -26,6 +26,24 @@ if(isset($_REQUEST['accession_code'])) {
             echo "<div class='books-container'>";
             // Display book details code here
             echo "</div>";
+
+            
+            // If the user clicked the "Get Book" button, perform SQL insertion
+            if(isset($_POST['book_borrow'])) {
+                // Get other necessary data for insertion
+                $borrowerId = $_SESSION['borrowerId']; 
+                
+                // Perform the SQL insertion
+                $insertSql = "INSERT INTO your_table_name (borrower_id, accession_code) VALUES ('$borrowerId', '$accession_code')";
+                if ($conn->query($insertSql) === TRUE) {
+                    echo "<div class='alert alert-success'>Book borrowed successfully.</div>";
+                } else {
+                    echo "<div class='alert alert-danger'>Error borrowing book: " . $conn->error . "</div>";
+                }
+            }
+
+
+
         } else {
             // Book not found
          
@@ -106,6 +124,7 @@ if(isset($_REQUEST['accession_code'])) {
             echo "<div class='books-container'>";
             while ($book_details = $result->fetch_assoc()) {
                 echo "<div class='book'>";
+                echo "<p><strong>Borrower ID:</strong> " . $borrower_id . "</p>";
                 echo "<p><strong>Title:</strong> " . $book_details['Book_Title'] . "</p>";
                 echo "<p><strong>Author:</strong> " . $book_details['Authors_Name'] . "</p>";
                 echo "<p><strong>Status:</strong> " . $book_details['tb_status'] . "</p>";
@@ -117,7 +136,7 @@ if(isset($_REQUEST['accession_code'])) {
            
         }
         ?>
-      <button type="button" class="btn btn-primary" id="book_borrow">Get Book</button>
+      <button type="submit" class="btn btn-primary" id="book_borrow">Get Book</button>
 
     </div>
     </div>

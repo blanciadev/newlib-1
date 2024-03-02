@@ -1,79 +1,47 @@
 <?php
-
 session_start();
 
-
-$borrowDetailsId = $_GET['borrowId'];
-
-// Check if the form is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+// Check if the form is submitted and Borrower ID is provided
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_GET['borrowId'])) {
     // Database connection
     $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
+    
+    // Retrieve Borrower ID from the form
+    $borrowerId = $_GET['borrowId'];
 
-            
-        // Check if Borrower_ID is set in session
-        if (isset($_SESSION['borrowerId'])) {
-            $borrowerId = $_SESSION['borrowerId'];
-            // Use the Borrower_ID as needed
-        } else {
-            // Handle the case where Borrower_ID is not set in session
-        }
+    // Your SQL query using $borrowerId goes here
+    $sql = "SELECT 
+        tbl_borrowdetails.BorrowDetails_ID,
+        tbl_borrow.Borrow_ID,
+        tbl_borrow.Borrower_ID,
+        tbl_borrow.Accession_Code,
+        tbl_books.Book_Title,
+        tbl_borrowdetails.Quantity,
+        tbl_borrow.Date_Borrowed,
+        tbl_borrow.Due_Date,
+        tbl_borrowdetails.tb_status
+    FROM 
+        tbl_borrow
+    JOIN
+        tbl_borrowdetails ON tbl_borrow.Borrow_ID = tbl_borrowdetails.Borrower_ID
+    JOIN
+        tbl_books ON tbl_borrow.Accession_Code = tbl_books.Accession_Code
+    WHERE 
+        tbl_borrowdetails.BorrowDetails_ID = '$borrowerId'";
 
-        // Check if BorrowDetails_ID is set in the URL
-        if (isset($_GET['borrowId'])) {
-            $borrowDetailsId = $_GET['borrowId'];
-            // Use the BorrowDetails_ID as needed
-        } else {
-            // Handle the case where BorrowDetails_ID is not set in the URL
-        }
-
-
-        
-
-    // Check if the 'borrowId' is set in the POST data
-    // if (isset($_POST['borrowId'])) {
-    //     $borrowId = $_POST['borrowId'];
-        
-    //     // Update the status in the database
-    //     $updateSql = "UPDATE tbl_borrowdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = '$borrowId'";
-    //     if ($conn->query($updateSql) === TRUE) {
-    //         echo "<script>alert('Status updated successfully');</script>";
-    //     } else {
-    //         echo "<script>alert('Error updating status: " . $conn->error . "');</script>";
-    //     }
-    // }
+    // Execute the SQL query
+    $result = $conn->query($sql);
 
     // Close connection
     $conn->close();
+} else {
+    // Handle the case where Borrower ID is not provided
+    echo "Error: Borrower_ID is not provided";
+    // You can also redirect the user to the previous page here
 }
-
-
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-$sql = "SELECT 
-tbl_borrow.Borrow_ID,
-tbl_borrow.Borrower_ID,
-tbl_borrow.Accession_Code,
-tbl_books.Book_Title,
-tbl_borrowdetails.Quantity,
-tbl_borrow.Date_Borrowed,
-tbl_borrow.Due_Date
-FROM 
-tbl_borrowdetails
-INNER JOIN 
-tbl_borrow ON tbl_borrowdetails.Borrower_ID = tbl_borrow.Borrow_ID
-INNER JOIN 
-tbl_books ON tbl_borrow.Accession_Code = tbl_books.Accession_Code
-WHERE 
-tbl_borrow.Borrow_ID = '$borrowDetailsId' AND
-tbl_borrowdetails.BorrowDetails_ID = '$borrowDetailsId'";
-
 ?>
 
 
@@ -118,54 +86,30 @@ tbl_borrowdetails.BorrowDetails_ID = '$borrowDetailsId'";
 
     <form method="POST" action="staff_borrow.php">
    
-
-
-
     <?php
-    // Database connection and SQL query
-   
-
-    $result = $conn->query($sql);
-                // Output data of each row
-                while($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>".$row["BorrowDetails_ID"]."</td>";
-                    echo "<td>".$row["Borrower_ID"]."</td>";
-                    echo "<td>".$row["Accession_Code"]."</td>";
-                    echo "<td>".$row["Book_Title"]."</td>";
-                    echo "<td>".$row["Quantity"]."</td>";
-                    echo "<td>".$row["Date_Borrowed"]."</td>";
-                    echo "<td>".$row["Due_Date"]."</td>";
-                    echo "<td>".$row["tb_status"]."</td>";
-                                    
-                   echo "<td>";
-                    echo "<form class='update-form' method='GET' action='staff_borrow_details.php'>"; 
-                    echo "<input type='hidden' name='borrowId' id='borrowId' value='".$row["BorrowDetails_ID"]."'>";
-                    // Conditionally render the button based on the status
-                    echo "<input type='hidden' name='borrowerId' value='".$row["Borrower_ID"]."'>";
-                    if ($row["tb_status"] === 'Borrowed') {
-                        echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='redirectToBorrowDetails(" . $row["BorrowDetails_ID"] . ")'>Returned</button>";
-                    } else {
-                        echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
-                    }
-                    echo "<div class='update-message'></div>";
-                    echo "</form>";
-                    echo "</td>";
-
-                                    
-                    echo "</tr>";
-                }
-                
-                    // Close connection
-                    $conn->close();
-                ?>
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
+            while ($row = $result->fetch_assoc()) {
+                echo "<p><strong>Borrow ID:</strong> " . $row["BorrowDetails_ID"] . "</p>";
+                echo "<p><strong>Borrow ID:</strong> " . $borrowerId . "</p>";
+                echo "<p><strong>Visitor Id:</strong> " . $row["Borrower_ID"] . "</p>";
+                echo "<p><strong>Accession Code:</strong> " . $row["Accession_Code"] . "</p>";
+                echo "<p><strong>Book Title:</strong> " . $row["Book_Title"] . "</p>";
+                echo "<p><strong>Quantity:</strong> " . $row["Quantity"] . "</p>";
+                echo "<p><strong>Date Borrowed:</strong> " . $row["Date_Borrowed"] . "</p>";
+                echo "<p><strong>Due Date:</strong> " . $row["Due_Date"] . "</p>";
+                echo "<p><strong>Title:</strong> " . $row["tb_status"] . "</p>";
+            }
+        } else {
+            echo "<p>Error: Borrower ID not provided.</p>";
+        }
+        ?>
 
 
 
 
     <tbody>
     <div id="statusMessage"></div>
-    <button type="button" class="btn btn-primary" id="book_borrow">Book Borrow</button>
+    <button type="button" class="btn btn-primary" id="book_borrow">Calculate</button>
 
 
            

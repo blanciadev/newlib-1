@@ -68,12 +68,48 @@ include '../auth.php';
                 }
 
                 // SQL query
-                $sql = "SELECT Accession_Code, Book_Title, Authors_ID, Publisher_ID, Section_Code, Shelf_Number, tb_Edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status FROM tbl_books";
-                $result = $conn->query($sql);
+                $sql = "SELECT
+                tbl_books.Accession_Code, 
+                tbl_books.Book_Title, 
+                tbl_books.Authors_ID, 
+                tbl_books.Publisher_ID, 
+                tbl_books.Section_Code, 
+                tbl_books.Shelf_Number, 
+                tbl_books.tb_edition, 
+                tbl_books.Year_Published, 
+                tbl_books.ISBN, 
+                tbl_books.Bibliography, 
+                tbl_books.Quantity, 
+                tbl_books.tb_status, 
+                tbl_books.Price, 
+                tbl_section.Section_uid, 
+                tbl_section.Section_Name, 
+                tbl_section.Section_Code
+            FROM
+                tbl_books
+                INNER JOIN
+                tbl_section
+                ON 
+                    tbl_books.Section_Code = tbl_section.Section_uid";
+    
+    $result = $conn->query($sql);
+    
 
                 // Output data of each row
                 while($row = $result->fetch_assoc()) {
-                    echo "<tr><td>".$row["Accession_Code"]."</td><td>".$row["Book_Title"]."</td><td>".$row["Authors_ID"]."</td><td>".$row["Publisher_ID"]."</td><td>".$row["Section_Code"]."</td><td>".$row["Shelf_Number"]."</td><td>".$row["tb_Edition"]."</td><td>".$row["Year_Published"]."</td><td>".$row["ISBN"]."</td><td>".$row["Bibliography"]."</td><td>".$row["Quantity"]."</td><td>".$row["Price"]."</td><td>".$row["tb_status"]."</td></tr>";
+                    echo "<tr><td>".$row["Accession_Code"]."</td>
+                    <td>".$row["Book_Title"]."</td>
+                    <td>".$row["Authors_ID"]."</td>
+                    <td>".$row["Publisher_ID"]."</td>
+                    <td>".$row["Section_Code"]."</td>
+                    <td>".$row["Shelf_Number"]."</td>
+                    <td>".$row["tb_edition"]."</td>
+                    <td>".$row["Year_Published"]."</td>
+                    <td>".$row["ISBN"]."</td>
+                    <td>".$row["Bibliography"]."</td>
+                    <td>".$row["Quantity"]."</td>
+                    <td>".$row["Price"]."</td>
+                    <td>".$row["tb_status"]."</td></tr>";
                 }
                 echo "</table>";
 
