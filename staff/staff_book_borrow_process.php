@@ -1,20 +1,32 @@
 
 <?php
+
 session_start();
 
-// Check if the accession code session variable is set
-if(isset($_SESSION['accession_code'])) {
-    $user_id = $_SESSION['User_ID'] ;
-    // Accession code is available, you can use it
-    $accession_code = $_SESSION['accession_code'];
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
 
-    $conn = mysqli_connect("localhost","root","root","db_library_2", 3307); //database connection
-    
-    // Query to retrieve book details based on Accession Code
+// Check if the borrower_id session variable is set
+if(isset($_SESSION['borrower_id'])) {
+    // Retrieve the borrower_id from the session
+    $borrower_id = $_SESSION['borrower_id'];
+
+    // Now you can use $borrower_id in your code as needed
+    echo "Borrower ID: " . $borrower_id;
+} else {
+    // Handle the case where the session variable is not set
+    echo "Borrower ID not found in session.";
+}
+
+// Check if the accession code session variable is set
+if(isset($_SESSION['Accession_Code'])) {
+    $user_id = $_SESSION['User_ID'] ;
+    $accession_code = $_SESSION['Accession_Code'];
+   
+    // Retrieve book details from the database
     $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
-    FROM tbl_books
-    INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
-    WHERE tbl_books.Accession_Code = '$accession_code'";
+            FROM tbl_books
+            INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
+            WHERE tbl_books.Accession_Code = '$accession_code'";
 
     $result = $conn->query($sql);
 
@@ -22,46 +34,68 @@ if(isset($_SESSION['accession_code'])) {
     $currentDate = date('Y-m-d');
     // Calculate due date as 3 days later
     $dueDate = date('Y-m-d', strtotime('+3 days', strtotime($currentDate)));
-   
 
 } else {
     // Accession code is not available in the session, handle accordingly
+    echo "Accession code is not available";
 }
- // Check if the submit button is clicked
- if(isset($_POST['submit'])) {
+
+// Check if the submit button is clicked
+if(isset($_POST['submit'])) {
     $quantity = $_POST['quantity'];
-    
 
-    // Prepare the SQL INSERT statement for tbl_borrow
-    $sql_borrow = "
-    INSERT INTO tbl_borrow (User_ID, Borrower_ID, Accession_Code, Date_Borrowed, Due_Date, tb_status) 
-    VALUES ('$user_id', 1, '$accession_code', '$currentDate', '$dueDate', 'Borrowing')";
+    // Check if the selected quantity is greater than zero
+    if($quantity > 0) {
+        // Retrieve the available quantity of the book
+        $sql_get_quantity = "SELECT Quantity FROM tbl_books WHERE Accession_Code = '$accession_code'";
+        $result_get_quantity = $conn->query($sql_get_quantity);
 
-    
-    // Execute the INSERT statement for tbl_borrow
-    if ($conn->query($sql_borrow) === TRUE) {
-        $borrow_id = $conn->insert_id; // Get the Borrow_ID of the inserted record
-        
-        // Prepare the SQL INSERT statement for tbl_borrowdetails
-        $sql_borrowdetails = "
-        INSERT INTO tbl_borrowdetails (Borrower_ID, Accession_Code, Quantity, tb_status) 
-        VALUES (1, '$accession_code', '$quantity', 'Borrowing')
-    ";
-    
-        
-        // Execute the INSERT statement for tbl_borrowdetails
-        if ($conn->query($sql_borrowdetails) === TRUE) {
-            $successMessage = "Request submitted successfully.";
-            header("Location: staff_borrow_dash.php");
-            exit();
+        if ($result_get_quantity->num_rows > 0) {
+            $row = $result_get_quantity->fetch_assoc();
+            $available_quantity = $row["Quantity"];
+
+            // Check if the requested quantity is available
+            if ($quantity <= $available_quantity) {
+                // Calculate the remaining quantity after borrowing
+                $remaining_quantity = $available_quantity - $quantity;
+
+                // Update the quantity in the database
+                $sql_update_quantity = "UPDATE tbl_books SET Quantity = '$remaining_quantity' WHERE Accession_Code = '$accession_code'";
+                if ($conn->query($sql_update_quantity) === TRUE) {
+                    // Quantity updated successfully
+                   // echo "Quantity updated successfully.";
+                    
+                    // Proceed with the borrowing process
+                    // Prepare and execute the INSERT statements for tbl_borrow and tbl_borrowdetails
+                    $sql_borrow = "INSERT INTO tbl_borrow (User_ID, Borrower_ID, Accession_Code, Date_Borrowed, Due_Date, tb_status) 
+                                   VALUES ('$user_id', '$borrower_id', '$accession_code', '$currentDate', '$dueDate', '$Status')";
+                    $sql_borrowdetails = "INSERT INTO tbl_borrowdetails (Borrower_ID, Accession_Code, Quantity, tb_status) 
+                                          VALUES ('$borrower_id', '$accession_code', '$quantity', '$Status')";
+                    
+                    if ($conn->query($sql_borrow) === TRUE && $conn->query($sql_borrowdetails) === TRUE) {
+                        // Redirect user or display success message as per your requirement
+                        $successMessage = "Request submitted successfully.";
+                        header("Location: staff_borrow_dash.php");
+                    } else {
+                        echo "Error: " . $sql_borrow . "<br>" . $conn->error;
+                    }
+                } else {
+                    echo "Error updating quantity: " . $conn->error;
+                }
+            } else {
+                echo "Insufficient books. Requested quantity exceeds available quantity.";
+            }
         } else {
-            echo "Error: " . $sql_borrowdetails . "<br>" . $conn->error;
+            echo "Error retrieving available quantity.";
         }
     } else {
-        echo "Error: " . $sql_borrow . "<br>" . $conn->error;
+        echo "Invalid quantity. Please select at least one book to borrow.";
     }
 }
+
 $conn->close();
+?>
+
 
 
 ?>
@@ -108,19 +142,18 @@ $conn->close();
     <div class='books-container'>
    
     <h1>Search Book by Accession Code</h1>
-   
-<form id="insertForm" action="" method="post">
+
+    <form method="POST" action="">
 
     <?php
-  
-
+ 
         if ($result && $result->num_rows > 0) {
             echo "<h2>Books Found</h2>";
             echo "<div class='books-container'>";
             // Fetch each row from the result set
             while ($row = $result->fetch_assoc()) {
                 echo "<div class='book'>";
-                echo "<p>" . $_SESSION['User_ID'] . "</p>";
+                echo "<p>Borrower ID : " .  $borrower_id . "</p>"; 
                 echo "<p><strong>Accession Code:</strong> " . $accession_code . "</p>";
                 echo "<p><strong>Title:</strong> " . $row['Book_Title'] . "</p>";
                 echo "<p><strong>Author:</strong> " . $row['Authors_Name'] . "</p>";

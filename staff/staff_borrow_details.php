@@ -1,48 +1,55 @@
 <?php
 session_start();
 
-// Check if the form is submitted and Borrower ID is provided
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_GET['borrowId'])) {
+$borrowerId = $_GET['borrower_id'];
+
+
+// Check if the Borrower ID is provided in the URL
+if (isset($borrowerId)) {
+    echo $borrowerId;
     // Database connection
     $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
     
-    // Retrieve Borrower ID from the form
-    $borrowerId = $_GET['borrowId'];
-
+    // Retrieve Borrower ID from the URL
+   
     // Your SQL query using $borrowerId goes here
     $sql = "SELECT 
-        tbl_borrowdetails.BorrowDetails_ID,
-        tbl_borrow.Borrow_ID,
-        tbl_borrow.Borrower_ID,
-        tbl_borrow.Accession_Code,
-        tbl_books.Book_Title,
-        tbl_borrowdetails.Quantity,
-        tbl_borrow.Date_Borrowed,
-        tbl_borrow.Due_Date,
-        tbl_borrowdetails.tb_status
-    FROM 
-        tbl_borrow
-    JOIN
-        tbl_borrowdetails ON tbl_borrow.Borrow_ID = tbl_borrowdetails.Borrower_ID
-    JOIN
-        tbl_books ON tbl_borrow.Accession_Code = tbl_books.Accession_Code
-    WHERE 
-        tbl_borrowdetails.BorrowDetails_ID = '$borrowerId'";
+    tbl_borrowdetails.BorrowDetails_ID,
+    tbl_borrow.Borrow_ID,
+    tbl_borrow.Borrower_ID,
+    tbl_borrow.Accession_Code,
+    tbl_books.Book_Title,
+    tbl_borrowdetails.Quantity,
+    tbl_borrow.Date_Borrowed,
+    tbl_borrow.Due_Date,
+    tbl_borrowdetails.tb_status
+FROM 
+    tbl_borrow
+JOIN
+    tbl_borrowdetails ON tbl_borrow.Borrow_ID = tbl_borrowdetails.Borrower_ID
+JOIN
+    tbl_books ON tbl_borrow.Accession_Code = tbl_books.Accession_Code
+WHERE 
+    tbl_borrowdetails.BorrowDetails_ID = '$borrowerId'";
 
+
+    
     // Execute the SQL query
     $result = $conn->query($sql);
 
     // Close connection
     $conn->close();
 } else {
-    // Handle the case where Borrower ID is not provided
-    echo "Error: Borrower_ID is not provided";
+    // Handle the case where Borrower ID is not provided in the URL
+    // echo "Error: Borrower_ID is not provided in the URL";
     // You can also redirect the user to the previous page here
+    echo $_GET['borrower_id'];
 }
 ?>
+
 
 
 <!DOCTYPE html>
@@ -84,12 +91,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_GET['borrowId'])) {
         </ul>
     </div>
 
-    <form method="POST" action="staff_borrow.php">
-   
+    <form method="POST" action="staff_book_borrow_process.php?borrowerId=<?php echo $borrowerId; ?>">
+
+
     <?php
-        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
-            while ($row = $result->fetch_assoc()) {
-                echo "<p><strong>Borrow ID:</strong> " . $row["BorrowDetails_ID"] . "</p>";
+     
+          
+                if ($result->num_rows > 0) {
+                    
                 echo "<p><strong>Borrow ID:</strong> " . $borrowerId . "</p>";
                 echo "<p><strong>Visitor Id:</strong> " . $row["Borrower_ID"] . "</p>";
                 echo "<p><strong>Accession Code:</strong> " . $row["Accession_Code"] . "</p>";
@@ -98,10 +107,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_GET['borrowId'])) {
                 echo "<p><strong>Date Borrowed:</strong> " . $row["Date_Borrowed"] . "</p>";
                 echo "<p><strong>Due Date:</strong> " . $row["Due_Date"] . "</p>";
                 echo "<p><strong>Title:</strong> " . $row["tb_status"] . "</p>";
-            }
-        } else {
-            echo "<p>Error: Borrower ID not provided.</p>";
-        }
+                $accession_code = $row["Accession_Code"];
+                $_SESSION['Accession_Code'] = $accession_code;
+                echo "SQL Query: " . $sql;
+                }
+                
+            
+      
         ?>
 
 
@@ -109,7 +121,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_GET['borrowId'])) {
 
     <tbody>
     <div id="statusMessage"></div>
-    <button type="button" class="btn btn-primary" id="book_borrow">Calculate</button>
+
+    <button type="button" class="btn btn-primary" id="book_borrow">Get Book</button>
 
 
            
@@ -119,6 +132,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_GET['borrowId'])) {
 </div>
 
 
+
+<script>
+    // Get the button element
+var button = document.getElementById("book_borrow");
+
+// Add click event listener to the button
+button.addEventListener("click", function() {
+    // Retrieve the accession code from the session
+    var accession_code = "<?php echo $_SESSION['Accession_Code']; ?>";
+   
+    // Construct the URL with the accession code as a query parameter
+    var url = "staff_book_borrow_process.php?Code=" + accession_code + "&borrower_id=<?php echo $borrowerId; ?>";
+    
+    // Redirect to the constructed URL
+    window.location.href = url;
+});
+
+</script>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>

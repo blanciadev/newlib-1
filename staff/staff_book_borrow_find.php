@@ -4,7 +4,22 @@ session_start();
 $result = null; // Initialize $result variable
 $_SESSION['accession_code'] = null;
 
+
+// Check if the borrower_id session variable is set
+if(isset($_SESSION['borrower_id'])) {
+    // Retrieve the borrower_id from the session
+    $borrower_id = $_SESSION['borrower_id'];
+
+    // Now you can use $borrower_id in your code as needed
+    echo "Borrower ID: " . $borrower_id;
+} else {
+    // Handle the case where the session variable is not set
+    echo "Borrower ID not found in session.";
+}
+
+
 if(isset($_REQUEST['accession_code'])) {
+   
     // Sanitize input to prevent SQL injection
     $conn =  mysqli_connect("localhost","root","root","db_library_2", 3307); //database connection
     $accession_code = mysqli_real_escape_string($conn, $_REQUEST['accession_code']);
@@ -20,38 +35,7 @@ if(isset($_REQUEST['accession_code'])) {
     
     $result = $conn->query($sql);
 
-    if ($result) {
-        if ($result->num_rows > 0) {
-            // Display book details
-            echo "<div class='books-container'>";
-            // Display book details code here
-            echo "</div>";
-
-            
-            // If the user clicked the "Get Book" button, perform SQL insertion
-            if(isset($_POST['book_borrow'])) {
-                // Get other necessary data for insertion
-                $borrowerId = $_SESSION['borrowerId']; 
-                
-                // Perform the SQL insertion
-                $insertSql = "INSERT INTO your_table_name (borrower_id, accession_code) VALUES ('$borrowerId', '$accession_code')";
-                if ($conn->query($insertSql) === TRUE) {
-                    echo "<div class='alert alert-success'>Book borrowed successfully.</div>";
-                } else {
-                    echo "<div class='alert alert-danger'>Error borrowing book: " . $conn->error . "</div>";
-                }
-            }
-
-
-
-        } else {
-            // Book not found
-         
-        }
-    } else {
-        // SQL query error
-        echo "Error: " . $conn->error;
-    }
+  
     // Close the database connection
     $conn->close();
 } else {

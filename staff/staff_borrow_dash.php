@@ -24,6 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     if ($result_validate_borrower->num_rows > 0) {
         // Borrower_ID is valid
         $isBorrowerIdValid = true;
+        $_SESSION['borrower_id'] = $borrower_id;
     } else {
         // Borrower_ID is invalid
         $errorMessage = "Invalid Borrower ID.";
@@ -35,7 +36,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 
 // If Borrower ID is valid, redirect to the next page
 if ($isBorrowerIdValid) {
-    header("Location: staff_borrow_details.php?borrower_id=$borrower_id");
+    $borrower_id = $_POST['borrower_id'];
+    header("Location: staff_book_borrow_find.php?borrower_id=$borrower_id");
     exit(); // Make sure to exit after redirecting
 }
 
@@ -183,12 +185,12 @@ echo "</td>";
 
 <script>
     function redirectToBorrowDetails(borrowId) {
-        window.location.href = "staff_borrow_details.php?borrowId=" + borrowId;
+        window.location.href = "staff_borrow_find.php?borrowId=" + borrowId;
     }
 </script>
 
 <script>
-    // Wait for the DOM content to be fully loaded
+    
     document.addEventListener("DOMContentLoaded", function() {
         // Get the input field for the Borrower ID
         var borrowerIdInput = document.getElementById("borrowerIdInput");
