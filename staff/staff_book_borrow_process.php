@@ -9,7 +9,7 @@ $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
 if(isset($_SESSION['borrower_id'])) {
     // Retrieve the borrower_id from the session
     $borrower_id = $_SESSION['borrower_id'];
-
+    $User_ID = $_SESSION["User_ID"];
     // Now you can use $borrower_id in your code as needed
     echo "Borrower ID: " . $borrower_id;
 } else {
@@ -69,8 +69,30 @@ if(isset($_POST['submit'])) {
                     // Prepare and execute the INSERT statements for tbl_borrow and tbl_borrowdetails
                     $sql_borrow = "INSERT INTO tbl_borrow (User_ID, Borrower_ID, Accession_Code, Date_Borrowed, Due_Date, tb_status) 
                                    VALUES ('$user_id', '$borrower_id', '$accession_code', '$currentDate', '$dueDate', '$Status')";
+                    
+
                     $sql_borrowdetails = "INSERT INTO tbl_borrowdetails (Borrower_ID, Accession_Code, Quantity, tb_status) 
                                           VALUES ('$borrower_id', '$accession_code', '$quantity', '$Status')";
+
+                  
+                    // Prepare and execute the INSERT statements for tbl_returned and tbl_returningdetails
+                    $sql_returned = "INSERT INTO tbl_returned (User_ID, Borrower_ID, Date_Returned, tb_status) 
+                    VALUES ('$user_id', '$borrower_id', NULL, 'Pending')";
+                    if (!$conn->query($sql_returned)) {
+                    echo "Error inserting into tbl_returned: " . $conn->error;
+                    exit; // Stop execution if an error occurs while inserting into tbl_returned
+                    }
+
+                    $sql_returningdetails = "INSERT INTO tbl_returningdetails (BorrowDetails_ID, tb_status)
+                            VALUES ('$borrower_id', 'Borrowed')";
+                    if (!$conn->query($sql_returningdetails)) {
+                    echo "Error inserting into tbl_returningdetails: " . $conn->error;
+                    exit; // Stop execution if an error occurs while inserting into tbl_returningdetails
+                    }
+
+
+                    
+
                     
                     if ($conn->query($sql_borrow) === TRUE && $conn->query($sql_borrowdetails) === TRUE) {
                         // Redirect user or display success message as per your requirement
