@@ -2,7 +2,7 @@
 session_start();
 
 $result = null; // Initialize $result variable
-$_SESSION['accession_code'] = null;
+$_SESSION['Accession_Code'] = null;
 
 
 // Check if the borrower_id session variable is set
@@ -18,20 +18,20 @@ if(isset($_SESSION['borrower_id'])) {
 }
 
 
-if(isset($_REQUEST['accession_code'])) {
+if(isset($_REQUEST['Accession_Code'])) {
    
     // Sanitize input to prevent SQL injection
     $conn =  mysqli_connect("localhost","root","root","db_library_2", 3307); //database connection
-    $accession_code = mysqli_real_escape_string($conn, $_REQUEST['accession_code']);
+    $Accession_Code = mysqli_real_escape_string($conn, $_REQUEST['Accession_Code']);
     
     // Store the accession code in a session variable
-    $_SESSION['accession_code'] = $accession_code;
+    $_SESSION['Accession_Code'] = $Accession_Code;
     
     // Query to retrieve book details based on Accession Code
     $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
             FROM tbl_books 
             INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
-            WHERE Accession_Code = '$accession_code'";
+            WHERE Accession_Code = '$Accession_Code'";
     
     $result = $conn->query($sql);
 
@@ -41,7 +41,7 @@ if(isset($_REQUEST['accession_code'])) {
 } else {
     // Accession Code is not provided
      // Check if the form has been submitted
-     if(isset($_REQUEST['accession_code'])) {
+     if(isset($_REQUEST['Accession_Code'])) {
         // Accession Code is not provided
         echo "<div class='books-container'><p>No book found with the provided Accession Code</p></div>";
     }
@@ -91,11 +91,11 @@ if(isset($_REQUEST['accession_code'])) {
     <div class='books-container'>
     <h1>Search Book by Accession Code</h1>
     <form action="staff_book_borrow_find.php" method="GET">
-        <label for="accession_code">Accession Code:</label>
+        <label for="Accession_Code">Accession Code:</label>
         <?php
-    echo '<input type="text" id="accession_code" name="accession_code" placeholder="Enter Accession Code" required';
-    if(isset($_SESSION['accession_code']) && !empty($_SESSION['accession_code'])) {
-        echo ' value="' . htmlspecialchars($_SESSION['accession_code']) . '"';
+    echo '<input type="text" id="Accession_Code" name="Accession_Code" placeholder="Enter Accession Code" required';
+    if(isset($_SESSION['Accession_Code']) && !empty($_SESSION['Accession_Code'])) {
+        echo ' value="' . htmlspecialchars($_SESSION['Accession_Code']) . '"';
     }
     echo '>';
 ?>
@@ -127,7 +127,7 @@ if(isset($_REQUEST['accession_code'])) {
 
     <script>
     // Get the input field and form
-    const inputField = document.getElementById('accession_code');
+    const inputField = document.getElementById('Accession_Code');
     const form = document.getElementById('searchForm');
 
     // Add event listener to input field for keyup event
