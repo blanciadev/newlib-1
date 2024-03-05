@@ -175,7 +175,7 @@ if ($isBorrowerIdValid) {
                 // Conditionally render the button based on the status
                 echo "<input type='hidden' name='borrowerId' value='".$row["Borrower_ID"]."'>";
 
-                if ($row["tb_status"] === 'Borrowing') {
+                if ($row["tb_status"] === 'Pending') {
                     echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='redirectToBorrowDetails(" . $row["BorrowDetails_ID"] . ")'>UPDATE</button>";
                 } else {
                     echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
