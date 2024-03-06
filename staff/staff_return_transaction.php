@@ -1,8 +1,5 @@
 <?php
-
 session_start();
-
-
 
 
 
@@ -12,38 +9,32 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Initialize the search query
-$searchInput = "";
-$searchQuery = "";
-
-// Check if a search query is provided
-if(isset($_GET['searchInput'])) {
-    // Sanitize the input to prevent SQL injection
-    $searchInput = $_GET['searchInput'];
- //   $_SESSION['BorrowerDetails_ID'];
+// Check if the borrowId parameter is set in the URL
+if(isset($_GET['borrowId'])) {
+    // Set the session variable after sanitizing it
+    $_SESSION['BorrowDetails_ID'] = filter_var($_GET['borrowId'], FILTER_SANITIZE_STRING);
+    // Optionally, you can redirect back to the same page or perform any other action
+    header("Location: staff_return_transaction.php");
+    exit();
 }
 
+// Initialize $bd_Id to an empty string
+$bd_Id = $_SESSION['BorrowDetails_ID'];
 
-// Prepare the SQL statement with a placeholder for the search input
-$sql = "SELECT
-bd.BorrowDetails_ID, 
-b.User_ID, 
-b.Accession_Code, 
-bk.Book_Title, 
-bd.Quantity, 
-b.Date_Borrowed, 
-b.Due_Date, 
-br.Borrower_ID, 
-bd.tb_status
-FROM
-tbl_borrowdetails AS bd
-INNER JOIN
-tbl_borrow AS b ON bd.Borrower_ID = b.Borrow_ID
-INNER JOIN
-tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-INNER JOIN
-tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID
-         WHERE   bd.Borrower_ID ='$searchInput' ";
+
+        // Prepare the SQL statement with a placeholder for the search input
+        $sql = "SELECT bd.BorrowDetails_ID, b.User_ID, 
+        b.Accession_Code, bk.Book_Title, bd.Quantity, b.Date_Borrowed, 
+        b.Due_Date, br.Borrower_ID, bd.tb_status
+        FROM
+        tbl_borrowdetails AS bd
+        INNER JOIN
+        tbl_borrow AS b ON bd.Borrower_ID = b.Borrow_ID
+        INNER JOIN
+        tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+        INNER JOIN
+        tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID
+                WHERE   bd.BorrowDetails_ID ='$bd_Id'";
 
 
 
@@ -55,6 +46,72 @@ $stmt->execute();
 
 // Get the result
 $result = $stmt->get_result();
+
+// Function to calculate fine based on due date
+function calculateFine($dueDate, $dateBorrowed) {
+    // Get current timestamp
+    $currentTimestamp = time();
+
+    // Calculate number of days since borrowed
+    $daysSinceBorrowed = floor(($currentTimestamp - strtotime($dateBorrowed)) / (60 * 60 * 24));
+    
+    // Subtract 3 days to account for the rental time valid only
+    $daysOverdue = max(0, $daysSinceBorrowed - 3); // Ensure it's non-negative
+
+    // Initialize fine
+    $fine = 0;
+
+    echo "Due Date: " . $dueDate . "<br>";
+    echo "Days Overdue: " . $daysOverdue . "<br>";
+    echo "Days Since Borrowed: " . $daysSinceBorrowed . "<br>";
+
+    if ($daysOverdue > 0) {
+        // Add default penalty fine of 30 pesos
+        $fine += 30;
+      //  echo "Added default penalty fine of 30 pesos<br>";
+        
+        // Add per-day fine of 15 pesos for each subsequent day of overdue
+        $fine += ($daysOverdue - 1) * 15;
+      //  echo "Added per-day fine of 15 pesos for each subsequent day of overdue<br>";
+    } else {
+        echo "No overdue fine<br>";
+    }
+
+    // echo "Total Fine: " . $fine . "<br>";
+
+    return $fine;
+}
+
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Database connection
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Get the BorrowDetails_ID from the session
+    $bd_Id = $_SESSION['BorrowDetails_ID'];
+
+    // Update the database with the payment status or any other necessary updates
+  //  $sql = "UPDATE tbl_borrowdetails SET payment_status = 'Paid' WHERE BorrowDetails_ID = ?";
+   // $stmt = $conn->prepare($sql);
+   // $stmt->bind_param("i", $bd_Id);
+    
+    // if ($stmt->execute()) {
+    //     // Payment updated successfully
+    //     echo "Payment processed successfully!";
+    // } else {
+    //     // Error occurred while updating payment status
+    //     echo "Error processing payment: " . $conn->error;
+    // }
+        echo "Reachable";
+    // Close the database connection
+    $conn->close();
+}
+
+
+
 ?>
 
 
@@ -64,7 +121,7 @@ $result = $stmt->get_result();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Return List</title>
+    <title>VillaReadHub - Return List Process</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -102,66 +159,60 @@ $result = $stmt->get_result();
     </div>
 
     <div class="board container"><!--board container-->
-    <h2>Request List</h2>
+    <h2>Request List Proccess</h2>
     
   
-    <div class="container mt-2">
-    <input type="text" id="searchInput" class="form-control me-2" placeholder="Search...">
-</div>
 
 <!-- Container for displaying search results with a fixed height and scrollable content -->
 <div class="container mt-3" style="max-height: 400px; overflow-y: auto;">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Borrow ID</th>
-                <th>Borrower ID</th>
-                <th>Accession Code</th>
-                <th>Book Title</th>
-                <th>Quantity</th>
-                <th>Date Borrowed</th>
-                <th>Due Date</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody id="searchResults">
+   
             <?php
-            if ($result) {
+           if ($result->num_rows > 0) {
                 // Output data of each row
                 while($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>".$row["BorrowDetails_ID"]."</td>";
-                    echo "<td>".$row["Borrower_ID"]."</td>";
-                    echo "<td>".$row["Accession_Code"]."</td>";
-                    echo "<td>".$row["Book_Title"]."</td>";
-                    echo "<td>".$row["Quantity"]."</td>";
-                    echo "<td>".$row["Date_Borrowed"]."</td>";
-                    echo "<td>".$row["Due_Date"]."</td>";
-                    echo "<td>".$row["tb_status"]."</td>";
-                    echo "<td>";
-                    echo "<form class='update-form' method='GET' action='staff_borrow_details.php'>"; 
-                    echo "<input type='hidden' name='borrowId' id='borrowId' value='".$row["BorrowDetails_ID"]."'>";
+                  
+                    echo "<p>Borrower Details ID : " .$row["BorrowDetails_ID"]."</p>"; 
+                    echo "<p>Borrower ID : " .$row["Borrower_ID"]."</p>"; 
+                    echo "<p>Accession Code : " .$row["Accession_Code"]."</p>"; 
+                    echo "<p>Book Title : " .$row["Book_Title"]."</p>"; 
+                    echo "<p>Quantity : " .$row["Quantity"]."</p>"; 
 
-                    // Conditionally render the button based on the status
-                    echo "<input type='hidden' name='borrowerId' value='".$row["Borrower_ID"]."'>";
+                    echo "<p><strong>Date Borrowed : </strong>" . $row["Date_Borrowed"] . "</p>"; 
+                    echo "<p><strong>Due Date : </strong>" . $row["Due_Date"] . "</p>"; 
+                    
+                    echo "<p>Status : " .$row["tb_status"]."</p>"; 
 
-                    if ($row["tb_status"] === 'Pending') {
-                        echo "<button type='button' class='btn btn-primary btn-sm update-btn' data-borrow-id='".$row["BorrowDetails_ID"]."' onclick='updateAndSetSession(" . $row["BorrowDetails_ID"] . ")'>UPDATE</button>";
-                    } else {
-                        echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
-                    }
+                        // Calculate fine
+                    
 
-                    echo "<div class='update-message'></div>";
-                    echo "</form>";
-                    echo "</td>";
-                    echo "</tr>";
+                        echo "Due Date from Database: " . $row["Due_Date"] . "<br>";
+                        echo "Date Borrowed from Database: " . $row["Date_Borrowed"] . "<br><br>";
+                
+                                    
+                //     echo $dueDate = $row["Due_Date"]; 
+                //    echo  $dateBorrowed = $row["Date_Borrowed"];
+                    
+                //     echo  $fine = calculateFine($dueDate, $dateBorrowed);
+
+                $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"]);
+                   
+
+                echo "Fine: " . $fine . "<br>";
+
+              
                 }
             } else {
                 echo "No records found for the provided Borrower ID.";
             }
             ?>
-        </tbody>
-    </table>
+
+            <form class='update-form' method='POST' action=''>
+                <input type='hidden' name='borrowId' id='borrowId' value='<?php echo $row["BorrowDetails_ID"]; ?>'>
+                <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+            </form>
+
+
+        
 </div>
 <script>
     function updateAndSetSession(borrowId) {
