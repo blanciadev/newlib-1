@@ -1,5 +1,13 @@
 <?php
-include '../auth.php';
+
+
+
+
+session_start();
+
+
+
+
 
 ?>
 <!DOCTYPE html>
@@ -42,6 +50,58 @@ include '../auth.php';
 
     <div class="board container"><!--board container-->
 
+        <?php
+        
+        
+
+// Database connection
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+// Fetch log records from the database
+$query = "SELECT * FROM tbl_borrower"; 
+$result = mysqli_query($conn, $query);
+
+// Check if there are any records
+if(mysqli_num_rows($result) > 0) {
+    echo '<table class="table">';
+    echo '<thead>';
+    echo '<tr>';
+    echo '<th scope="col">Visitors Id "</th>';
+    echo '<th scope="col">First Name</th>';
+    echo '<th scope="col">Middle Name</th>';
+    echo '<th scope="col">Last Name</th>';
+    echo '<th scope="col">Contact Number</th>';
+    echo '<th scope="col">Email</th>';
+    echo '<th scope="col">Affiliation</th>';
+    echo '</tr>';
+    echo '</thead>';
+    echo '<tbody>';
+
+    // Loop through each row in the result set
+    while($row = mysqli_fetch_assoc($result)) {
+        echo '<tr>';
+        echo '<td>' . $row['Borrower_ID'] . '</td>'; 
+        echo '<td>' . $row['First_Name'] . '</td>'; 
+        echo '<td>' . $row['Middle_Name'] . '</td>'; 
+        echo '<td>' . $row['Last_Name'] . '</td>'; 
+        echo '<td>' . $row['Contact_Number'] . '</td>'; 
+        echo '<td>' . $row['Email'] . '</td>'; 
+        echo '<td>' . $row['affiliation'] . '</td>'; 
+        echo '</tr>';
+    }
+
+    echo '</tbody>';
+    echo '</table>';
+} else {
+    echo 'No log records found.';
+}
+
+
+// Close the database connection
+mysqli_close($conn);
+        ?>
 
     </div>
         
