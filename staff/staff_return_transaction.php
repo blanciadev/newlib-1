@@ -78,12 +78,13 @@ function calculateFine($dueDate, $dateBorrowed) {
     }
 
     // echo "Total Fine: " . $fine . "<br>";
-
+    $_SESSION['fine'] = $fine;
     return $fine;
 }
 
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $fine = $_SESSION['fine'];
     // Database connection
     $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
     if ($conn->connect_error) {
@@ -92,23 +93,101 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Get the BorrowDetails_ID from the session
     $bd_Id = $_SESSION['BorrowDetails_ID'];
+    $currentDate = date("Y-m-d");
 
-    // Update the database with the payment status or any other necessary updates
-  //  $sql = "UPDATE tbl_borrowdetails SET payment_status = 'Paid' WHERE BorrowDetails_ID = ?";
-   // $stmt = $conn->prepare($sql);
-   // $stmt->bind_param("i", $bd_Id);
+    // Update tbl_borrowdetails status
+    $sql1 = "UPDATE tbl_borrowdetails SET tb_status = 'Paid' WHERE BorrowDetails_ID = ?";
+    $stmt1 = $conn->prepare($sql1);
+    if (!$stmt1) {
+        die("Error in preparing statement 1: " . $conn->error);
+    }
+    $stmt1->bind_param("i", $bd_Id);
     
-    // if ($stmt->execute()) {
-    //     // Payment updated successfully
-    //     echo "Payment processed successfully!";
-    // } else {
-    //     // Error occurred while updating payment status
-    //     echo "Error processing payment: " . $conn->error;
-    // }
-        echo "Reachable";
-    // Close the database connection
-    $conn->close();
+    // Update tbl_borrow status
+    $sql2 = "UPDATE tbl_borrow SET tb_status = 'Paid' WHERE Borrow_ID = (
+                SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ?
+            )";
+    $stmt2 = $conn->prepare($sql2);
+    if (!$stmt2) {
+        die("Error in preparing statement 2: " . $conn->error);
+    }
+    $stmt2->bind_param("i", $bd_Id);
+    
+    // Update tbl_returningdetails status
+    $sql3 = "UPDATE tbl_returningdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = ?";
+    $stmt3 = $conn->prepare($sql3);
+    if (!$stmt3) {
+        die("Error in preparing statement 3: " . $conn->error);
+    }
+    $stmt3->bind_param("i", $bd_Id);
+    
+     // Update tbl_returned with current date and status
+     $sql4 = "UPDATE tbl_returned SET Date_Returned = ?, tb_status = 'Resolved' WHERE Borrow_ID IN (
+        SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ? LIMIT 1)
+    )";
+    
+        $stmt4 = $conn->prepare($sql4);
+        if (!$stmt4) {
+        die("Error in preparing statement 4: " . $conn->error);
+        }
+
+        $stmt4->bind_param("si", $currentDate, $bd_Id);
+
+            // Get Borrower_ID from session
+            $borrowerId = $_SESSION['borrower_id'];
+
+            // Get current date and time
+            $currentDateTime = date("Y-m-d H:i:s");
+
+            // Prepare SQL statement to insert fine information
+            $sql5 = "INSERT INTO tbl_fines (Borrower_ID, ReturnDetails_ID, Amount, Payment_Status, Date_Created, Payment_Date) 
+                    VALUES (?, ?, ?,  ?, ?, ?)";
+            $stmt5 = $conn->prepare($sql5);
+            if (!$stmt5) {
+                die("Error in preparing statement 5: " . $conn->error);
+            }
+
+            // Bind parameters and execute statement
+            $stmt5->bind_param("iiisss", $borrowerId, $bd_Id, $fine, $paymentStatus, $currentDate, $currentDateTime);
+          
+            $paymentStatus = "Paid"; // Assuming Payment_Status is always "Resolved"
+
+                // Execute the queries
+      // Execute the queries
+$status1 = $stmt1->execute();
+$status2 = $stmt2->execute();
+$status3 = $stmt3->execute();
+$status4 = $stmt4->execute();
+$status5 = $stmt5->execute();
+
+// Check each query execution status
+if ($status1 && $status2 && $status3 && $status4 && $status5) {
+    // All queries executed successfully
+    echo "Status updated successfully!";
+} else {
+    // Error occurred while executing queries
+    echo "Error updating status:";
+    if (!$status1) {
+        echo " Error in statement 1: " . $stmt1->error;
+    }
+    if (!$status2) {
+        echo " Error in statement 2: " . $stmt2->error;
+    }
+    if (!$status3) {
+        echo " Error in statement 3: " . $stmt3->error;
+    }
+    if (!$status4) {
+        echo " Error in statement 4: " . $stmt4->error;
+    }
+    if (!$status5) {
+        echo " Error in statement 5: " . $stmt5->error;
+    }
 }
+
+
+            // Close the database connection
+            $conn->close();
+        }
 
 
 

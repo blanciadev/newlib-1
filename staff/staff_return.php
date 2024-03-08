@@ -26,24 +26,31 @@ if(isset($_GET['searchInput'])) {
 
 // Prepare the SQL statement with a placeholder for the search input
 $sql = "SELECT
-bd.BorrowDetails_ID, 
 b.User_ID, 
 b.Accession_Code, 
 bk.Book_Title, 
 bd.Quantity, 
 b.Date_Borrowed, 
 b.Due_Date, 
-br.Borrower_ID, 
-bd.tb_status
+bd.tb_status, 
+bd.Borrower_ID, 
+bd.BorrowDetails_ID
 FROM
 tbl_borrowdetails AS bd
 INNER JOIN
-tbl_borrow AS b ON bd.Borrower_ID = b.Borrow_ID
+tbl_borrow AS b
+ON 
+    bd.Borrower_ID = b.Borrow_ID
 INNER JOIN
-tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+tbl_books AS bk
+ON 
+    b.Accession_Code = bk.Accession_Code
 INNER JOIN
-tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID
-         WHERE   bd.Borrower_ID ='$searchInput' ";
+tbl_borrower AS br
+ON 
+    b.Borrower_ID = br.Borrower_ID
+WHERE
+bd.Borrower_ID ='$searchInput' ";
 
 
 

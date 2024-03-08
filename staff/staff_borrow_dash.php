@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 
     // Retrieve Borrower_ID from the form
     $borrower_id = $_POST['borrower_id'];
-
+    
     // Validate Borrower_ID against tbl_borrower table
     $sql_validate_borrower = "SELECT * FROM tbl_borrower WHERE Borrower_ID = '$borrower_id'";
     $result_validate_borrower = $conn->query($sql_validate_borrower);
@@ -137,8 +137,10 @@ if ($isBorrowerIdValid) {
 	b.Date_Borrowed, 
 	b.Due_Date, 
 	br.Borrower_ID, 
-	bd.tb_status
-    FROM
+	bd.tb_status, 
+	b.Borrower_ID, 
+	bd.Borrower_ID
+FROM
 	tbl_borrowdetails AS bd
 	INNER JOIN
 	tbl_borrow AS b
@@ -175,11 +177,11 @@ if ($isBorrowerIdValid) {
                 // Conditionally render the button based on the status
                 echo "<input type='hidden' name='borrowerId' value='".$row["Borrower_ID"]."'>";
 
-                if ($row["tb_status"] === 'Pending') {
-                    echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='redirectToBorrowDetails(" . $row["BorrowDetails_ID"] . ")'>UPDATE</button>";
-                } else {
-                    echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
-                }
+                // if ($row["tb_status"] === 'Pending') {
+                //     echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='redirectToBorrowDetails(" . $row["BorrowDetails_ID"] . ")'>UPDATE</button>";
+                // } else {
+                //     echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
+                // }
                 
                 echo "<div class='update-message'></div>";
                 echo "</form>";
