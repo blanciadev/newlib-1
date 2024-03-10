@@ -46,9 +46,8 @@ $stmt->execute();
 
 // Get the result
 $result = $stmt->get_result();
-
-// Function to calculate fine based on due date
-function calculateFine($dueDate, $dateBorrowed) {
+// Function to calculate fine based on due date and book status
+function calculateFine($dueDate, $dateBorrowed, $bookStatus) {
     // Get current timestamp
     $currentTimestamp = time();
 
@@ -77,10 +76,20 @@ function calculateFine($dueDate, $dateBorrowed) {
         echo "No overdue fine<br>";
     }
 
+    // Apply additional penalties based on book status
+    if ($bookStatus == "LOST") {
+        $fine += 50;
+    } elseif ($bookStatus == "PARTIALLY DAMAGE") {
+        $fine += 20;
+    } elseif ($bookStatus == "GOOD CONDITION") {
+        // No additional fine for books in good condition
+    }
+
     // echo "Total Fine: " . $fine . "<br>";
     $_SESSION['fine'] = $fine;
     return $fine;
 }
+
 
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -243,56 +252,53 @@ if ($status1 && $status2 && $status3 && $status4 && $status5) {
   
 
 <!-- Container for displaying search results with a fixed height and scrollable content -->
-<div class="container mt-3" style="max-height: 400px; overflow-y: auto;">
+<div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
    
-            <?php
-           if ($result->num_rows > 0) {
-                // Output data of each row
-                while($row = $result->fetch_assoc()) {
-                  
-                    echo "<p>Borrower Details ID : " .$row["BorrowDetails_ID"]."</p>"; 
-                    echo "<p>Borrower ID : " .$row["Borrower_ID"]."</p>"; 
-                    echo "<p>Accession Code : " .$row["Accession_Code"]."</p>"; 
-                    echo "<p>Book Title : " .$row["Book_Title"]."</p>"; 
-                    echo "<p>Quantity : " .$row["Quantity"]."</p>"; 
+    <?php
+    
+    if ($result->num_rows > 0) {
+        // Output data of each row
+        while($row = $result->fetch_assoc()) {
+            echo "<p>Borrower Details ID : " .$row["BorrowDetails_ID"]."</p>"; 
+            echo "<p>Borrower ID : " .$row["Borrower_ID"]."</p>"; 
+            echo "<p>Accession Code : " .$row["Accession_Code"]."</p>"; 
+            echo "<p>Book Title : " .$row["Book_Title"]."</p>"; 
+            echo "<p>Quantity : " .$row["Quantity"]."</p>"; 
 
-                    echo "<p><strong>Date Borrowed : </strong>" . $row["Date_Borrowed"] . "</p>"; 
-                    echo "<p><strong>Due Date : </strong>" . $row["Due_Date"] . "</p>"; 
+            echo "<p><strong>Date Borrowed : </strong>" . $row["Date_Borrowed"] . "</p>"; 
+            echo "<p><strong>Due Date : </strong>" . $row["Due_Date"] . "</p>"; 
                     
-                    echo "<p>Status : " .$row["tb_status"]."</p>"; 
-
-                        // Calculate fine
-                    
-
-                        echo "Due Date from Database: " . $row["Due_Date"] . "<br>";
-                        echo "Date Borrowed from Database: " . $row["Date_Borrowed"] . "<br><br>";
+            echo "<p>Status : " .$row["tb_status"]."</p>"; 
+            echo "Due Date from Database: " . $row["Due_Date"] . "<br>";
+            echo "Date Borrowed from Database: " . $row["Date_Borrowed"] . "<br><br>";
                 
-                                    
-                //     echo $dueDate = $row["Due_Date"]; 
-                //    echo  $dateBorrowed = $row["Date_Borrowed"];
-                    
-                //     echo  $fine = calculateFine($dueDate, $dateBorrowed);
+            $bookStatus = "LOST";
 
-                $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"]);
-                   
+            $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"], $bookStatus);
+            echo "Fine: " . $fine . "<br>";
 
-                echo "Fine: " . $fine . "<br>";
-
-              
-                }
-            } else {
-                echo "No records found for the provided Borrower ID.";
-            }
-            ?>
-
-            <form class='update-form' method='POST' action=''>
-                <input type='hidden' name='borrowId' id='borrowId' value='<?php echo $row["BorrowDetails_ID"]; ?>'>
-                <button type="submit" class="btn btn-primary">Proceed to Payment</button>
-            </form>
-
-
+            // Radio buttons for selecting book status
+            echo "<form class='update-form' method='POST' action=''>";
+            echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["BorrowDetails_ID"] . "'>";
+            echo "<label for='bookStatus'>Book Status:</label><br>";
+            echo "<input type='radio' id='damage' name='bookStatus' value='DAMAGE'>";
+            echo "<label for='damage'>Damage</label><br>";
+            echo "<input type='radio' id='partialDamage' name='bookStatus' value='PARTIALLY DAMAGE'>";
+            echo "<label for='partialDamage'>Partially Damage</label><br>";
+            echo "<input type='radio' id='goodCondition' name='bookStatus' value='GOOD CONDITION'>";
+            echo "<label for='goodCondition'>Good Condition</label><br>";
+            echo "<input type='radio' id='lost' name='bookStatus' value='LOST'>";
+            echo "<label for='lost'>Lost</label><br>";
+            echo "<button type='submit' class='btn btn-primary'>Proceed to Payment</button>";
+            echo "</form>";
+        }
+    } else {
+        echo "No records found for the provided Borrower ID.";
+    }
+    ?>
         
 </div>
+
 <script>
     function updateAndSetSession(borrowId) {
         // Redirect to staff_return_transaction.php with the borrowId parameter
