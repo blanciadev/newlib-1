@@ -93,20 +93,30 @@ if ($result->num_rows > 0) {
             </thead>
             <tbody>";
 
-    // Output data of each row
-    while ($row = $result->fetch_assoc()) {
-        echo "<tr>
-                <td>".$row["Book_Title"]."</td>
-                <td>".$row["Authors_ID"]."</td>
-                <td>".$row["Publisher_ID"]."</td>
-                <td>".$row["tb_edition"]."</td>
-                <td>".$row["Year_Published"]."</td>
-                <td>".$row["Quantity"]."</td>
-                <td>".$row["price"]."</td>
-                <td>".$row["tb_status"]."</td>
-                <td><a href='process_data_book.php?id=".$row["Request_ID"]."'>Process</a></td>
-            </tr>";
+   // Output data of each row
+while ($row = $result->fetch_assoc()) {
+    echo "<tr>
+            <td>".$row["Book_Title"]."</td>
+            <td>".$row["Authors_ID"]."</td>
+            <td>".$row["Publisher_ID"]."</td>
+            <td>".$row["tb_edition"]."</td>
+            <td>".$row["Year_Published"]."</td>
+            <td>".$row["Quantity"]."</td>
+            <td>".$row["price"]."</td>
+            <td>".$row["tb_status"]."</td>
+            <td>";
+    
+    // Check if status is "Approved" to disable the button
+    if ($row["tb_status"] === "Approved") {
+        echo "<button type='button' class='btn btn-secondary' disabled>Process</button>";
+    } else {
+        echo "<a href='process_data_book.php?id=".$row["Request_ID"]."' class='btn btn-primary'>Process</a>";
     }
+    
+    echo "</td>
+        </tr>";
+}
+
     echo "</tbody></table>";
 } else {
     echo "No requested books found.";

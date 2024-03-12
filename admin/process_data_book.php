@@ -23,11 +23,34 @@ if(isset($_GET['id'])) {
 }
 
 if(isset($_POST['submit'])) {
+    $requestID = $_GET['id'];
     $authorsName = $_POST['Authors_ID'];
+    
+    echo "<br>Authors ID: " . $authorsName."<br>";
+
+    $authorsID = substr(uniqid('A_', true), -6);
+    $pubID = substr(uniqid('P_', true), -6);
+
+    $bookTitle = $_POST['Book_Title'];
     $pubname = $_POST['Publisher_ID'];
-    echo "Authors ID: " . $authorsId;
-    $authorsID = substr(uniqid(), 0, 6);
-    $pubID =  substr(uniqid(), 0, 6);
+    $edition = $_POST['tb_edition'];
+    $yr = $_POST['Year_Published'];
+    $qty = $_POST['Quantity'];
+    $price = $_POST['price'];
+    $stat = $_POST['tb_status'];
+    $bibliography ="NA";
+    $isbn = 1; // Assuming ISBN is always 1
+    $sectionCode = $_POST["section"]; 
+    $shelfNumber = $_POST["shelf"];
+
+    echo "<br>".$bookTitle;
+    echo "<br>".$pubname;
+    echo "<br>".$edition;
+    echo "<br>".$yr;
+    echo "<br>".$qty;
+    echo "<br>".$price;
+    echo "<br>".$stat;
+
     // Prepare the SQL statement to insert data into tbl_authors
     $sql = "INSERT INTO tbl_authors (Authors_ID, Authors_Name, Nationality) 
     VALUES ('$authorsID', '$authorsName ', 'N/A' )";
@@ -35,7 +58,10 @@ if(isset($_POST['submit'])) {
     $pubsql = "INSERT INTO tbl_publisher (Publisher_ID, Publisher_Name, Address) 
     VALUES ('$pubID', '$pubname', 'NA')";
 
-    $book = "INSERT INTO ";
+    $booksql = "INSERT INTO tbl_books (Book_Title, Authors_ID, Publisher_ID, Section_Code, Shelf_Number, tb_edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status) 
+    VALUES ('$bookTitle', '$authorsID', '$pubID', '$sectionCode', '$shelfNumber', '$edition', '$yr', '$isbn', '$bibliography', '$qty', '$price', 'Available')";
+
+    $update = "UPDATE ";
 
 // Execute the SQL statement
 if ($conn->query($sql) === TRUE) {
@@ -44,9 +70,38 @@ if ($conn->query($sql) === TRUE) {
     echo "New record created successfully. The Author's ID is: " . $lastInsertedID;
 } else {
     // If an error occurred during insertion
-    echo "Error: " . $sql . "<br>" . $conn->error;
+    echo "<br>Error: " . $sql . "<br>" . $conn->error;
 }
 
+// Execute the SQL statement
+if ($conn->query($pubsql) === TRUE) {
+    // If the insertion is successful
+    $lastInsertedID = $conn->insert_id; // Get the auto-generated Authors_ID
+    echo "New record created successfully. The Author's ID is: " . $lastInsertedID;
+} else {
+    // If an error occurred during insertion
+    echo "<br>Error: " . $pubsql . "<br>" . $conn->error;
+}
+
+
+// Execute the SQL statement
+if ($conn->query($booksql) === TRUE) {
+    // If the insertion is successful
+    $lastInsertedID = $conn->insert_id; // Get the auto-generated Authors_ID
+    echo "New record created successfully. The Author's ID is: " . $lastInsertedID;
+} else {
+    // If an error occurred during insertion
+    echo "<br>Error: " . $booksql . "<br>" . $conn->error;
+}
+
+// Update tb_status based on Request_ID
+$sql = "UPDATE tbl_requestbooks SET tb_status = 'Approved' WHERE Request_ID = '$requestID'";
+
+if ($conn->query($sql) === TRUE) {
+    echo "Record updated successfully";
+} else {
+    echo "Error updating record: " . $conn->error;
+}
 
 
 }
@@ -116,8 +171,20 @@ while ($row = $result->fetch_assoc()) {
     echo "<p><strong>Price:</strong> " . $row["price"] . "</p>";
     echo "<p><strong>Status:</strong> " . $row["tb_status"] . "</p>";
 
-    echo "<input type='Visible' name='sec_I' value='" . $row["Authors_ID"] . "'>";
-  
+    echo "<input type='Visible' id='Authors_ID' name='Authors_ID' value='" . $row["Authors_ID"] . "'>";
+    echo "<input type='Visible' name='Book_Title' value='" . $row["Book_Title"] . "'>";
+    echo "<input type='Visible' name='Publisher_ID' value='" . $row["Publisher_ID"] . "'>";
+    echo "<input type='Visible' name='tb_edition' value='" . $row["tb_edition"] . "'>";
+    echo "<input type='Visible' name='Year_Published' value='" . $row["Year_Published"] . "'>";
+    echo "<input type='Visible' name='Quantity' value='" . $row["Quantity"] . "'>";
+    echo "<input type='Visible' name='price' value='" . $row["price"] . "'>";
+    echo "<input type='Visible' name='tb_status' value='" . $row["tb_status"] . "'>";
+
+    echo "<br><label for='section'>section:</label>";
+    echo "<input type='number' id='section' name='section' min='1' max='5' required>";
+
+    echo "<br><label for='shelf'>Shelf Number:</label>";
+    echo "<input type='number' id='shelf' name='shelf' min='1' max='5' required>";
 }
 
     
