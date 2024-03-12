@@ -39,9 +39,27 @@
         
     </div>
     <div class="board container"><!--board container--> 
-        
+            
+    <form id="bookForm" method="POST">
+            <button type="submit" class="btn btn-primary" id="borrow" name="action" value="borrow">Book Borrow</button>
+            <button type="submit" class="btn btn-primary" id="return" name="action" value="return">Book Return</button>
+        </form>
     </div>
+</div>
         
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+    <script>
+        document.getElementById('bookForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const action = event.submitter.value;
+            if (action === 'borrow') {
+                window.location.href = 'admin_book_borrow_dash.php';
+            } else if (action === 'return') {
+                window.location.href = 'admin_book_return.php';
+            }
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
