@@ -18,9 +18,13 @@
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container-->
+        <div class="user-header mr-3 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
+                <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
+                <p>(ADMIN)</p>
+            </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
-            <li class="nav-item active"> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
+            <li class="nav-item"> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
             <li class="nav-item"> <a href="./admin_transactions.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transactions</a> </li>
             <li class="nav-item"> <a href="./admin_staff.php" class="nav-link link-body-emphasis"><i class='bx bxs-user'></i>Manage Staff</a> </li>
@@ -28,60 +32,14 @@
             <li class="nav-item"> <a href="./admin_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
             <li class="nav-item"> <a href="./admin_backup-restore.php" class="nav-link link-body-emphasis"><i class='bx bxs-cloud'></i>Backup & Restore</a> </li>
             <hr>
-            <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
+            <li class="nav-item active"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
             <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
         
         
     </div>
     <div class="board container"><!--board container--> 
-        <div class="header">
-            <div class="text">
-                <div class="title">
-                    <h2>Dashboard</h2>
-                </div>
-                <div class="datetime">
-                    <p id = "currentDate"></p>
-                    <p id = "currentTime"></p>
-                </div>
-            </div>
-            
-            <div class="user-header mr-3 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-                <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
-                <p>(ADMIN)</p>
-            </div>
-
-        </div>
-        <div class="content">
-            <div class="overview">
-                <h3>Overview</h3> 
-                <div class="ovw-con">
-                    <div class="totalbooks">  
-                        <p>N of books</p>
-                        <h4>Total Books</h4>
-                    </div>
-                    <div class="line"></div>
-                    <div class="totalvisits">
-                        <p>N of visitors</p>
-                        <h4>Total Visits</h4>
-                    </div>
-                </div> 
-            </div>
-            
-            <div class="request-books">
-                <h3>Pending Request</h3>
-                <div class="request-books-con"></div>
-            </div>
-            <div class="stats">
-                <h3>Statistics</h3>
-                <div class="stats-con"></div>
-            </div>
-            
-
-                
-        </div>
         
-
     </div>
         
 

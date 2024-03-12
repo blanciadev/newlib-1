@@ -1,3 +1,19 @@
+<?php
+
+// Database connection
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+    // SQL query to retrieve available books
+    $sql = "SELECT tbl_requestbooks.* FROM tbl_requestbooks";
+
+    $result = $conn->query($sql);
+
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,10 +34,14 @@
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container-->
+        <div class="user-header mr-3 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
+                <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
+                <p>(ADMIN)</p>
+            </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
-            <li class="nav-item active"> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
-            <li class="nav-item"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
+            <li class="nav-item"> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
+            <li class="nav-item active"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
             <li class="nav-item"> <a href="./admin_transactions.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transactions</a> </li>
             <li class="nav-item"> <a href="./admin_staff.php" class="nav-link link-body-emphasis"><i class='bx bxs-user'></i>Manage Staff</a> </li>
             <li class="nav-item"> <a href="./admin_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
@@ -34,55 +54,94 @@
         
         
     </div>
-    <div class="board container"><!--board container--> 
-        <div class="header">
-            <div class="text">
-                <div class="title">
-                    <h2>Dashboard</h2>
-                </div>
-                <div class="datetime">
-                    <p id = "currentDate"></p>
-                    <p id = "currentTime"></p>
-                </div>
-            </div>
-            
-            <div class="user-header mr-3 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-                <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
-                <p>(ADMIN)</p>
-            </div>
-
-        </div>
-        <div class="content">
-            <div class="overview">
-                <h3>Overview</h3> 
-                <div class="ovw-con">
-                    <div class="totalbooks">  
-                        <p>N of books</p>
-                        <h4>Total Books</h4>
-                    </div>
-                    <div class="line"></div>
-                    <div class="totalvisits">
-                        <p>N of visitors</p>
-                        <h4>Total Visits</h4>
-                    </div>
-                </div> 
-            </div>
-            
-            <div class="request-books">
-                <h3>Pending Request</h3>
-                <div class="request-books-con"></div>
-            </div>
-            <div class="stats">
-                <h3>Statistics</h3>
-                <div class="stats-con"></div>
-            </div>
-            
-
-                
-        </div>
+    
+    <div class="board container">
         
 
-    </div>
+    <h2>Book Information</h2>
+   
+    <div>
+    <select id="statusFilter">
+        <option value="Available" selected>Available</option>
+        <option value="Archived">Archived</option>
+        <option value="Request">Request</option>
+    </select>
+
+</div>
+
+<table class="table table-striped">
+
+    <tbody id="bookList"> 
+
+    <?php
+// Output data
+if ($result->num_rows > 0) {
+    // Display the table header
+    echo "<table class='table table-striped'>
+            <thead>
+                <tr>
+                    <th>Book Title</th>
+                    <th>Authors ID</th>
+                    <th>Publisher ID</th>
+                    <th>Edition</th>
+                    <th>Year Published</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>";
+
+    // Output data of each row
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>
+                <td>".$row["Book_Title"]."</td>
+                <td>".$row["Authors_ID"]."</td>
+                <td>".$row["Publisher_ID"]."</td>
+                <td>".$row["tb_edition"]."</td>
+                <td>".$row["Year_Published"]."</td>
+                <td>".$row["Quantity"]."</td>
+                <td>".$row["price"]."</td>
+                <td>".$row["tb_status"]."</td>
+                <td><a href='process_data_book.php?id=".$row["Request_ID"]."'>Process</a></td>
+            </tr>";
+    }
+    echo "</tbody></table>";
+} else {
+    echo "No requested books found.";
+}
+// Close the database connection
+$conn->close();
+?>
+
+        </tbody>
+    </table>
+</div>
+
+<script>
+   document.getElementById('statusFilter').addEventListener('change', function() {
+    var status = this.value;
+    console.log('Selected status:', status);
+
+    var url;
+    if (status === 'Request') {
+        url = 'admin_book_request.php';
+    } else if (status === 'Archived') {
+        url = 'admin_book_archived.php';
+    } else {
+        url = 'admin_book.php';
+    }
+    console.log('URL:', url);
+
+    // Navigate to the selected URL
+    window.location.href = url;
+});
+
+
+</script>
+
+
         
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>

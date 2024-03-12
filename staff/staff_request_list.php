@@ -76,15 +76,44 @@ include '../auth.php';
                     die("Connection failed: " . $conn->connect_error);
                 }
 
-                // SQL query
-                $sql = "SELECT Request_ID, User_ID, Book_Title, Author, Publisher, tb_edition, Year_Published, Quantity, tb_status FROM tbl_requestbooks";
-                $result = $conn->query($sql);
+               // SQL query
+$sql = "SELECT Request_ID, User_ID, Book_Title, Authors_ID, Publisher_ID, price, tb_edition, Year_Published, Quantity, tb_status FROM tbl_requestbooks";
+$result = $conn->query($sql);
 
-                // Output data of each row
-                while($row = $result->fetch_assoc()) {
-                    echo "<tr><td>".$row["Request_ID"]."</td><td>".$row["User_ID"]."</td><td>".$row["Book_Title"]."</td><td>".$row["Author"]."</td><td>".$row["Publisher"]."</td><td>".$row["tb_edition"]."</td><td>".$row["Year_Published"]."</td><td>".$row["Quantity"]."</td><td>".$row["tb_status"]."</td></tr>";
-                }
-                echo "</table>";
+// Output data of each row
+if ($result->num_rows > 0) {
+    echo "<table><tr>
+            <th>Request ID</th>
+            <th>User ID</th>
+            <th>Book Title</th>
+            <th>Authors ID</th>
+            <th>Publisher ID</th>
+            <th>Price</th>
+            <th>Edition</th>
+            <th>Year Published</th>
+            <th>Quantity</th>
+            <th>Status</th>
+        </tr>";
+    // Output data of each row
+    while($row = $result->fetch_assoc()) {
+        echo "<tr>
+                <td>".$row["Request_ID"]."</td>
+                <td>".$row["User_ID"]."</td>
+                <td>".$row["Book_Title"]."</td>
+                <td>".$row["Authors_ID"]."</td>
+                <td>".$row["Publisher_ID"]."</td>
+                <td>".$row["price"]."</td>
+                <td>".$row["tb_edition"]."</td>
+                <td>".$row["Year_Published"]."</td>
+                <td>".$row["Quantity"]."</td>
+                <td>".$row["tb_status"]."</td>
+            </tr>";
+    }
+    echo "</table>";
+} else {
+    echo "0 results";
+}
+
 
                 // Close connection
                 $conn->close();

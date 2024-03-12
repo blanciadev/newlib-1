@@ -19,7 +19,7 @@ $_SESSION['User_ID'];
     $year = $_POST['year'];
     $quantity = $_POST['quantity'];
     $status = $_POST['status'];
-
+    $price = $_POST['price'];
     
     
     // Validate form data (you may need more robust validation)
@@ -124,7 +124,10 @@ $_SESSION['User_ID'];
                     <option value="Fourth Edition">Fourth Edition</option>
                 </select>
             </div>
-
+            <div class="mb-3">
+                <label for="year" class="form-label">Price</label>
+                <input type="text" class="form-control" id="price" name="price" required>
+            </div>
             <div class="mb-3">
                 <label for="quantity" class="form-label">Quantity</label>
                 <input type="number" class="form-control" id="quantity" name="quantity" required>
