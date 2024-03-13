@@ -10,12 +10,12 @@ if ($conn->connect_error) {
 }
 
 // Check if the borrowId parameter is set in the URL
-if(isset($_GET['borrowId'])) {
+if(isset($_GET['borrowIdadmin'])) {
     // Set the session variable after sanitizing it
-    $_SESSION['BorrowDetails_ID'] = filter_var($_GET['borrowId'], FILTER_SANITIZE_STRING);
+    $_SESSION['BorrowDetails_ID'] = filter_var($_GET['borrowIdadmin'], FILTER_SANITIZE_STRING);
     // Optionally, you can redirect back to the same page or perform any other action
-    header("Location: staff_return_transaction.php");
-    exit();
+  //  header("Location: admin_book_return.php");
+    
 }
 
 // Initialize $bd_Id to an empty string
@@ -151,6 +151,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Prepare SQL statement to insert fine information
             $sql5 = "INSERT INTO tbl_fines (Borrower_ID, ReturnDetails_ID, Amount, Payment_Status, Date_Created, Payment_Date) 
                     VALUES (?, ?, ?,  ?, ?, ?)";
+            
             $stmt5 = $conn->prepare($sql5);
             if (!$stmt5) {
                 die("Error in preparing statement 5: " . $conn->error);
@@ -161,7 +162,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           
             $paymentStatus = "Paid"; // Assuming Payment_Status is always "Resolved"
 
-                // Execute the queries
+            
+            
+            $accessionCode = $_SESSION['Accession_Code'];
+            $qtyb = $_SESSION['qty'];
+            $sqlUpdateQuantity = "UPDATE tbl_books SET Quantity = Quantity + ? WHERE Accession_Code = ?";
+    $stmtUpdateQuantity = $conn->prepare($sqlUpdateQuantity);
+
+    if ($stmtUpdateQuantity) {
+        // Bind parameters
+        $stmtUpdateQuantity->bind_param("is", $qtyb, $accessionCode);
+
+        // Execute the statement
+        if ($stmtUpdateQuantity->execute()) {
+            echo "Quantity updated successfully.";
+        } else {
+            echo "Error updating quantity: " . $stmtUpdateQuantity->error;
+        }
+
+        // Close the statement
+        $stmtUpdateQuantity->close();
+    } else {
+        echo "Error in preparing the statement: " . $conn->error;
+    }
+
+
+
       // Execute the queries
 $status1 = $stmt1->execute();
 $status2 = $stmt2->execute();
@@ -261,9 +287,10 @@ if ($status1 && $status2 && $status3 && $status4 && $status5) {
             echo "<p>Borrower Details ID : " .$row["BorrowDetails_ID"]."</p>"; 
             echo "<p>Borrower ID : " .$row["Borrower_ID"]."</p>"; 
             echo "<p>Accession Code : " .$row["Accession_Code"]."</p>"; 
+            $_SESSION['Accession_Code'] = $row["Accession_Code"];
             echo "<p>Book Title : " .$row["Book_Title"]."</p>"; 
             echo "<p>Quantity : " .$row["Quantity"]."</p>"; 
-
+            $_SESSION['qty'] = $row["Quantity"];
             echo "<p><strong>Date Borrowed : </strong>" . $row["Date_Borrowed"] . "</p>"; 
             echo "<p><strong>Due Date : </strong>" . $row["Due_Date"] . "</p>"; 
                     
@@ -271,6 +298,8 @@ if ($status1 && $status2 && $status3 && $status4 && $status5) {
             echo "Due Date from Database: " . $row["Due_Date"] . "<br>";
             echo "Date Borrowed from Database: " . $row["Date_Borrowed"] . "<br><br>";
                 
+            echo "<input type='hidden' name='Accession_Code' value='".$row["Accession_Code"]."'>";
+
             $bookStatus = "LOST";
 
             $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"], $bookStatus);
@@ -278,7 +307,7 @@ if ($status1 && $status2 && $status3 && $status4 && $status5) {
 
             // Radio buttons for selecting book status
             echo "<form class='update-form' method='POST' action=''>";
-            echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["BorrowDetails_ID"] . "'>";
+            echo "<input type='hidden' name='borrowIdadmin' id='borrowIdadmin' value='" . $row["BorrowDetails_ID"] . "'>";
             echo "<label for='bookStatus'>Book Status:</label><br>";
             echo "<input type='radio' id='damage' name='bookStatus' value='DAMAGE'>";
             echo "<label for='damage'>Damage</label><br>";
@@ -299,9 +328,9 @@ if ($status1 && $status2 && $status3 && $status4 && $status5) {
 </div>
 
 <script>
-    function updateAndSetSession(borrowId) {
+    function updateAndSetSession(borrowIdadmin) {
         // Redirect to staff_return_transaction.php with the borrowId parameter
-        window.location.href = "staff_return_transaction.php?borrowId=" + borrowId;
+        window.location.href = "staff_return_transaction.php?borrowIdadmin=" + borrowIdadmin;
     }
 </script>
 

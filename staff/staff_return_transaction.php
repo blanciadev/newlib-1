@@ -161,7 +161,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           
             $paymentStatus = "Paid"; // Assuming Payment_Status is always "Resolved"
 
-                // Execute the queries
+                
+
+            $accessionCode = $_SESSION['Accession_Code'];
+            $qtyb = $_SESSION['qty'];
+            $sqlUpdateQuantity = "UPDATE tbl_books SET Quantity = Quantity + ? WHERE Accession_Code = ?";
+    $stmtUpdateQuantity = $conn->prepare($sqlUpdateQuantity);
+
+    if ($stmtUpdateQuantity) {
+        // Bind parameters
+        $stmtUpdateQuantity->bind_param("is", $qtyb, $accessionCode);
+
+        // Execute the statement
+        if ($stmtUpdateQuantity->execute()) {
+            echo "Quantity updated successfully.";
+        } else {
+            echo "Error updating quantity: " . $stmtUpdateQuantity->error;
+        }
+
+        // Close the statement
+        $stmtUpdateQuantity->close();
+    } else {
+        echo "Error in preparing the statement: " . $conn->error;
+    }
+
+
+
       // Execute the queries
 $status1 = $stmt1->execute();
 $status2 = $stmt2->execute();
@@ -262,9 +287,11 @@ if ($status1 && $status2 && $status3 && $status4 && $status5) {
             echo "<p>Borrower Details ID : " .$row["BorrowDetails_ID"]."</p>"; 
             echo "<p>Borrower ID : " .$row["Borrower_ID"]."</p>"; 
             echo "<p>Accession Code : " .$row["Accession_Code"]."</p>"; 
+            $_SESSION['Accession_Code'] = $row["Accession_Code"];
+            
             echo "<p>Book Title : " .$row["Book_Title"]."</p>"; 
             echo "<p>Quantity : " .$row["Quantity"]."</p>"; 
-
+            $_SESSION['qty'] = $row["Quantity"];
             echo "<p><strong>Date Borrowed : </strong>" . $row["Date_Borrowed"] . "</p>"; 
             echo "<p><strong>Due Date : </strong>" . $row["Due_Date"] . "</p>"; 
                     

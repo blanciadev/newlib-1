@@ -62,6 +62,7 @@ $stmt->execute();
 
 // Get the result
 $result = $stmt->get_result();
+
 ?>
 
 

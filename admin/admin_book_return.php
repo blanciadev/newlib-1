@@ -2,10 +2,6 @@
 
 session_start();
 
-
-
-
-
 // Database connection
 $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
 if ($conn->connect_error) {
@@ -53,15 +49,14 @@ WHERE
 bd.Borrower_ID ='$searchInput' ";
 
 
-
 // Prepare the statement
 $stmt = $conn->prepare($sql);
-
 // Execute the statement
 $stmt->execute();
-
 // Get the result
 $result = $stmt->get_result();
+
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -143,9 +138,10 @@ $result = $stmt->get_result();
                     echo "<td>".$row["Due_Date"]."</td>";
                     echo "<td>".$row["tb_status"]."</td>";
                     echo "<td>";
-                    echo "<form class='update-form' method='GET' action='staff_borrow_details.php'>"; 
-                    echo "<input type='hidden' name='borrowId' id='borrowId' value='".$row["BorrowDetails_ID"]."'>";
 
+                    echo "<form class='update-form' method='GET' action='admin_book_return_transaction.php'>"; 
+                    echo "<input type='hidden' name='borrowIdadmin' id='borrowIdadmin' value='".$row["BorrowDetails_ID"]."'>";
+                    echo "</form>";
                     // Conditionally render the button based on the status
                     echo "<input type='hidden' name='borrowerId' value='".$row["Borrower_ID"]."'>";
 
@@ -156,7 +152,7 @@ $result = $stmt->get_result();
                     }
 
                     echo "<div class='update-message'></div>";
-                    echo "</form>";
+                    
                     echo "</td>";
                     echo "</tr>";
                 }
@@ -168,9 +164,9 @@ $result = $stmt->get_result();
     </table>
 </div>
 <script>
-    function updateAndSetSession(borrowId) {
-        // Redirect to staff_return_transaction.php with the borrowId parameter
-        window.location.href = "admin_book_return_transaction.php?borrowId=" + borrowId;
+    
+    function updateAndSetSession(borrowIdadmin) {
+        window.location.href = "admin_book_return_transaction.php?borrowIdadmin=" + borrowIdadmin;
     }
 </script>
 
