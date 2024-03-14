@@ -22,27 +22,27 @@
 
             if($stmt_result->num_rows == 1) { // 2 usertypes
                 $row = $stmt_result->fetch_assoc();
-                if($row["User_ID"] == $User_ID && $row["Password"] == $Password){ 
+                if($row["User_ID"] == $User_ID && $row["tb_password"] == $Password){ 
                     $_SESSION["User_ID"] = $User_ID;
-                    if($row["Role"] == "Admin"){ 
+                    if($row["tb_role"] == "Admin"){ 
                         $_SESSION["User_ID"] = $User_ID;
                         $fname = $row["First_Name"];
                         $lname = $row["Last_Name"];
                         $_SESSION["User_ID"] = $User_ID;
                         $_SESSION["admin_name"] = $fname ." " .$lname; 
                        
-                        $_SESSION["role"] = $row["Role"];
+                        $_SESSION["role"] = $row["tb_role"];
                        // setcookie('user', $User_ID, time()+60*60*24*120);
                         header('location:admin/admin_dashboard.php');
                         
-                    }elseif($row["Role"] == "Staff"){ 
+                    }elseif($row["tb_role"] == "Staff"){ 
                         $fname = $row["First_Name"];
                         $lname = $row["Last_Name"];
                       
                         $_SESSION["login"] = true;
                         $_SESSION["User_ID"] = $User_ID;
                         $_SESSION["staff_name"] = $fname ." " .$lname; 
-                        $_SESSION["role"] = $row["Role"]; 
+                        $_SESSION["role"] = $row["tb_role"]; 
                   //      setcookie('user', $User_ID, time()+60*60*24*120);
                         header('location: staff/staff_dashboard.php?User_ID=' . $_SESSION['User_ID']);
 
