@@ -43,6 +43,7 @@ session_start();
         
         
     </div>
+    
     <div class="board container"><!--board container--> 
     <?php
         
