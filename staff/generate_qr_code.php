@@ -1,34 +1,59 @@
 <?php
-
+session_start();
 require "../vendor/autoload.php";
 
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 
-// Check if the form was submitted with data
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["text"])) {
+// Retrieve session data
+$first_name = $_SESSION['first_name'];
+$middle_name = $_SESSION['middle_name'];
+$last_name = $_SESSION['last_name'];
+$contact_number = $_SESSION['contact_number'];
+$email = $_SESSION['email'];
+$affiliation = $_SESSION['affiliation'];
 
-$text = $_POST["text"];
-$qr_code = QrCode::create($text)->setSize(200) 
+// CHANGE THE PORT IF NEEDED
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // Change the database credentials as needed
 
-   ->setSize(200) // Set the size of the QR code (adjust as needed)
-   ->setMargin(0); // Set margin to 0 for no margin
-
-
-
-
-
- 
-$writer = new PngWriter;
-$result = $writer->write($qr_code);
-header("Content-Type: ". $result->getMimeType());
-echo $result->getString();
-
+// Check if the connection was successful
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
 }
 
+// Your insert query
+$insertQuery = "INSERT INTO tbl_borrower (First_Name, Middle_Name, Last_Name, Contact_Number, Email, Affiliation) 
+                VALUES ('$first_name', '$middle_name', '$last_name', '$contact_number', '$email', '$affiliation')";
 
+// Perform the insert operation
+if ($conn->query($insertQuery)) {
+    // Get the last inserted ID
+    $lastInsertedID = mysqli_insert_id($conn);
 
+    // Store the last inserted ID in session
+    $_SESSION['lastInsertedID'] = $lastInsertedID;
+
+    // Create QR Code with the last inserted ID
+    $text = $lastInsertedID;
+    $qr_code = QrCode::create($text); // Set margin to 0 for no margin
+
+    $writer = new PngWriter;
+    $result = $writer->write($qr_code);
+
+    // Output the QR code image
+    header("Content-Type: " . $result->getMimeType());
+    echo $result->getString();
+    
+    exit(); // Ensure script execution stops after outputting QR code
+} else {
+    // Handle the case where the insert query fails
+    echo "Error: " . mysqli_error($conn);
+}
+
+// Close the database connection
+mysqli_close($conn);
 ?>
+
 
 
 <!DOCTYPE html>
@@ -67,12 +92,37 @@ echo $result->getString();
             <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
             <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
-    </div> -->
+    </div> 
 
     <div class="board container"><!--board container-->
- 
-<div id="qrCodeContainer"></div>
+    
+        <div id="qrCodeContainer" class="text-center mt-5"></div> <!-- Container for QR Code -->
+    </div>
 
+
+    <script>
+        // This script generates and displays the QR Code within the specified container
+        document.addEventListener("DOMContentLoaded", function() {
+            let qrCodeContainer = document.getElementById("qrCodeContainer");
+
+            // Retrieve the last inserted ID from the session
+            let lastInsertedID = "<?php echo isset($_SESSION['lastInsertedID']) ? $_SESSION['lastInsertedID'] : ''; ?>";
+
+            if (lastInsertedID !== '') {
+                // Generate QR Code
+                let qrCode = new QRCode(qrCodeContainer, {
+                    text: lastInsertedID,
+                    width: 200,
+                    height: 200,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } else {
+                qrCodeContainer.innerHTML = "QR Code not available";
+            }
+        });
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 

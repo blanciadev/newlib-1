@@ -1,5 +1,30 @@
 <?php
-include '../auth.php';
+
+session_start();
+
+// Check if the form was submitted with data
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Assuming you have a database connection established already
+    // You need to modify the following code based on your database schema and connection method
+    $first_name = $_POST['first_name'];
+    $middle_name = $_POST['middle_name'];
+    $last_name = $_POST['last_name'];
+    $contact_number = $_POST['contact_number'];
+    $email = $_POST['email'];
+    $affiliation = $_POST['affiliation'];
+
+    // Store form data in session variables
+    $_SESSION['first_name'] = $first_name;
+    $_SESSION['middle_name'] = $middle_name;
+    $_SESSION['last_name'] = $last_name;
+    $_SESSION['contact_number'] = $contact_number;
+    $_SESSION['email'] = $email;
+    $_SESSION['affiliation'] = $affiliation;
+
+    // Redirect to another page or perform other actions
+    header("Location: generate_qr_code.php");
+    exit();
+}
 ?>
 
 
@@ -42,14 +67,28 @@ include '../auth.php';
     </div>
 
     <div class="board container"><!--board container-->
+    
+<!-- index.php -->
+<form method="POST" action="">
+    <label for="first_name">Enter First Name:</label><br>
+    <input type="text" id="first_name" name="first_name"><br><br>
+    
+    <label for="middle_name">Enter Middle Name:</label><br>
+    <input type="text" id="middle_name" name="middle_name"><br><br>
+    
+    <label for="last_name">Enter Last Name:</label><br>
+    <input type="text" id="last_name" name="last_name"><br><br>
 
-   
+    <label for="contact_number">Contact Number:</label><br>
+    <input type="text" id="contact_number" name="contact_number"><br><br>
+    
+    <label for="email">Email:</label><br>
+    <input type="text" id="email" name="email"><br><br>
 
-    <form method="POST" action="generate_qr_code.php"> 
-  <label for="text">Enter Text or URL:</label><br>
-  <input type="text" id="text" name="text"><br><br>
+    <label for="affiliation">Affiliation:</label><br>
+    <input type="text" id="affiliation" name="affiliation"><br><br>
 
-  <button >Generate</button>
+    <button type="submit">Generate QR Code</button>
 </form>
 
 </div>
