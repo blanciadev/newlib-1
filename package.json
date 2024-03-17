@@ -1,0 +1,19 @@
+{
+  "name": "newlib",
+  "version": "1.0.0",
+  "description": "extension=gd - enable this in php.ini in xampp",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@zxing/library": "^0.20.0",
+    "html5-qrcode": "^2.3.8",
+    "instascan": "^1.0.0",
+    "qrcode": "^1.5.3",
+    "quagga": "^0.6.16"
+  }
+}

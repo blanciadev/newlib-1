@@ -52,6 +52,9 @@ if ($isBorrowerIdValid) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VillaReadHub - Borrow</title>
+    <script src="../node_modules/html5-qrcode/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -85,6 +88,26 @@ if ($isBorrowerIdValid) {
         </ul>
     </div>
 
+    <style>
+    main {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #reader {
+        width: 600px;
+    }
+    #result {
+        text-align: center;
+        font-size: 1.5rem;
+    }
+</style>
+
+<main>
+    <div id="reader"></div>
+    <div id="result"></div>
+</main>
+
     <form method="POST" action="">
     <table class="table table-striped">
     <thead>
@@ -103,14 +126,19 @@ if ($isBorrowerIdValid) {
     <tbody>
     <div id="statusMessage"></div>
 
-    <div class="mb-3">
-        <label for="borrowerIdInput" class="form-label">Borrower ID</label>
-        <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
-    </div>
+    <form id="borrowForm" action="staff_borrow.dash.php" method="post"> 
+<div class="mb-3">
+    <label for="borrowerIdInput" class="form-label">Borrower ID</label>
+    <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
+</div>
 
-    <button type="submit" class="btn btn-primary" id="book_borrow" <?php if (empty($_POST['borrower_id'])) echo "disabled"; ?>>
+<button type="submit" class="btn btn-primary" id="book_borrow" disabled>
     Book Borrow
 </button>
+
+</form>
+
+
 <?php if (!empty($errorMessage)): ?>
     <div class="alert alert-danger" role="alert">
         <?php echo $errorMessage; ?>
@@ -128,33 +156,13 @@ if ($isBorrowerIdValid) {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    $sql = "SELECT
-	bd.BorrowDetails_ID, 
-	b.User_ID, 
-	b.Accession_Code, 
-	bk.Book_Title, 
-	bd.Quantity, 
-	b.Date_Borrowed, 
-	b.Due_Date, 
-	br.Borrower_ID, 
-	bd.tb_status, 
-	b.Borrower_ID, 
-	bd.Borrower_ID
-FROM
-	tbl_borrowdetails AS bd
-	INNER JOIN
-	tbl_borrow AS b
-	ON 
-		bd.Borrower_ID = b.Borrow_ID
-	INNER JOIN
-	tbl_books AS bk
-	ON 
-		b.Accession_Code = bk.Accession_Code
-	INNER JOIN
-	tbl_borrower AS br
-	ON 
-		b.Borrower_ID = br.Borrower_ID;
-            ";
+    $sql = "SELECT bd.BorrowDetails_ID, b.User_ID, b.Accession_Code, bk.Book_Title, bd.Quantity, 
+    b.Date_Borrowed, b.Due_Date, br.Borrower_ID, bd.tb_status, b.Borrower_ID, bd.Borrower_ID
+    FROM	tbl_borrowdetails AS bd	INNER JOIN tbl_borrow AS b
+	ON 	bd.Borrower_ID = b.Borrow_ID INNER JOIN tbl_books AS bk
+	ON 	b.Accession_Code = bk.Accession_Code
+	INNER JOIN	tbl_borrower AS br
+	ON 	b.Borrower_ID = br.Borrower_ID;";
 
 
     $result = $conn->query($sql);
@@ -201,6 +209,47 @@ FROM
 
 </div>
 
+
+
+
+
+<script>
+
+    const scanner = new Html5QrcodeScanner('reader', { 
+        // Scanner will be initialized in DOM inside element with id of 'reader'
+        qrbox: {
+            width: 250,
+            height: 250,
+        },  // Sets dimensions of scanning box (set relative to reader element width)
+        fps: 20, // Frames per second to attempt a scan
+    });
+
+
+    scanner.render(success, error);
+    // Starts scanner
+
+    function success(result) {
+    // Set the scanned result as the value of the input field
+    document.getElementById('borrowerIdInput').value = result;
+
+    // Clear the scanning instance
+    scanner.clear();
+
+    // Remove the reader element from the DOM since it's no longer needed
+    document.getElementById('reader').remove();
+}
+
+
+    function error(err) {
+        console.error(err);
+        // Prints any errors to the console
+    }
+
+</script>
+
+
+
+
 <script>
     function redirectToBorrowDetails(borrowId) {
         window.location.href = "staff_borrow_find.php?borrowId=" + borrowId;
@@ -208,28 +257,41 @@ FROM
 </script>
 
 <script>
-    
     document.addEventListener("DOMContentLoaded", function() {
-        // Get the input field for the Borrower ID
-        var borrowerIdInput = document.getElementById("borrowerIdInput");
-        // Get the button
-        var bookBorrowButton = document.getElementById("book_borrow");
+    console.log("DOMContentLoaded event fired.");
 
-        // Add an input event listener to the Borrower ID input field
-        borrowerIdInput.addEventListener("input", function() {
-            // Enable the button if there is input in the Borrower ID field
-            if (borrowerIdInput.value.trim() !== "") {
-                bookBorrowButton.removeAttribute("disabled");
-            } else {
-                // Otherwise, disable the button
-                bookBorrowButton.setAttribute("disabled", "disabled");
-            }
-        });
+    var borrowForm = document.getElementById("borrowForm");
+    var borrowerIdInput = document.getElementById("borrowerIdInput");
+    var bookBorrowButton = document.getElementById("book_borrow");
+
+    // Add an input event listener to the Borrower ID input field
+    borrowerIdInput.addEventListener("input", function() {
+        console.log("Input event triggered.");
+        // Enable the button if there is input in the Borrower ID field
+        if (borrowerIdInput.value.trim() !== "") {
+            console.log("Enabling button.");
+            bookBorrowButton.removeAttribute("disabled");
+        } else {
+            console.log("Disabling button.");
+            // Otherwise, disable the button
+            bookBorrowButton.setAttribute("disabled", "disabled");
+        }
     });
+
+    // Automatically submit the form when a value is present in the Borrower ID field
+    borrowerIdInput.addEventListener("change", function() {
+        console.log("Change event triggered.");
+        if (borrowerIdInput.value.trim() !== "") {
+            console.log("Submitting form.");
+            borrowForm.submit();
+        }
+    });
+});
+
 </script>
 
 
-
+<!-- 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
@@ -266,6 +328,6 @@ FROM
      
 
 
-    </script>
+    </script> -->
 </body>
 </html>
