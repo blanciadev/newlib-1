@@ -148,7 +148,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt4->bind_param("si", $currentDate, $bd_Id);
 
             // Get Borrower_ID from session
-            $borrowerId = $_SESSION['borrower_id'];
+            $borrowerId = $_SESSION['BorrowDetails_ID'];
 
             // Get current date and time
             $currentDateTime = date("Y-m-d H:i:s");

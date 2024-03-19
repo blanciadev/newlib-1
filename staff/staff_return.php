@@ -20,7 +20,8 @@ $searchQuery = "";
 if(isset($_GET['searchInput'])) {
     // Sanitize the input to prevent SQL injection
     $searchInput = $_GET['searchInput'];
- //   $_SESSION['BorrowerDetails_ID'];
+
+    $_SESSION['searchInput'];
 }
 
 

@@ -53,37 +53,92 @@
 
         </div>
         <div class="content">
-            <div class="overview">
-                <h3>Overview</h3> 
-                <div class="ovw-con">
-                    <div class="totalbooks">  
-                        <p>N of books</p>
-                        <h4>Total Books</h4>
-                    </div>
-                    <div class="line"></div>
-                    <div class="totalvisits">
-                        <p>N of visitors</p>
-                        <h4>Total Visits</h4>
-                    </div>
-                </div> 
-            </div>
-            
-            <div class="request-books">
-                <h3>Pending Request</h3>
-                <div class="request-books-con"></div>
-            </div>
-            <div class="stats">
-                <h3>Statistics</h3>
-                <div class="stats-con"></div>
-            </div>
-            
+    <div class="overview">
+        <h3>Overview</h3>
+        <div class="ovw-con">
+            <?php
+            // Database connection
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 
-                
+            // Query to get total books count
+            $totalBooksQuery = "SELECT COUNT(*) AS totalBooks FROM tbl_books";
+            $totalBooksResult = mysqli_query($conn, $totalBooksQuery);
+            $totalBooksCount = mysqli_fetch_assoc($totalBooksResult)['totalBooks'];
+
+            // Display total books count
+            echo "<h4>{$totalBooksCount}</h4>";
+            echo "<h4>Total Books</h4>";
+            ?>
+            <div class="line"></div>
+            <?php
+            // Query to get total visits count
+            $totalVisitsQuery = "SELECT COUNT(*) AS totalVisits FROM tbl_log";
+            $totalVisitsResult = mysqli_query($conn, $totalVisitsQuery);
+            $totalVisitsCount = mysqli_fetch_assoc($totalVisitsResult)['totalVisits'];
+
+            // Display total visits count
+            echo "<h4>{$totalVisitsCount}</h4>";
+            echo "<h4>Total Visits</h4>";
+            ?>
         </div>
-        
-
     </div>
-        
+
+    <div class="request-books">
+        <h3>Pending Request</h3>
+        <div class="request-books-con">
+        <?php
+// Database connection
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+
+
+// Check connection
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+// Query to fetch data from tbl_requestbooks
+$requestBooksQuery = "SELECT * FROM tbl_requestbooks";
+$requestBooksResult = mysqli_query($conn, $requestBooksQuery);
+
+if (!$requestBooksResult) {
+    echo "Error fetching request books: " . mysqli_error($conn);
+} else {
+    // Check if there are any rows returned
+    if (mysqli_num_rows($requestBooksResult) > 0) {
+        // Display table header
+      
+       
+       // Fetch and display each row
+while ($row = mysqli_fetch_assoc($requestBooksResult)) {
+    echo '<div>';
+    echo '<h4><strong>' . $row['Book_Title'] . '</strong></h4>';
+    echo '<p><strong>Authors ID:</strong> ' . $row['Authors_ID'] . '</p>';
+    echo '<p><strong>Publisher ID:</strong> ' . $row['Publisher_ID'] . '</p>';
+    echo '<p><strong>Year Published:</strong> ' . $row['Year_Published'] . '</p>';
+    echo '<p><strong>Quantity:</strong> ' . $row['Quantity'] . '</p>';
+    echo '</div>';
+}
+
+
+    } else {
+        echo "No request books found.";
+    }
+}
+
+// Close connection
+mysqli_close($conn);
+?>
+
+
+        </div>
+    </div>
+
+    <div class="stats">
+        <h3>Statistics</h3>
+        <div class="stats-con"></div>
+    </div>
+</div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 

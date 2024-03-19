@@ -29,7 +29,7 @@ $_SESSION['User_ID'];
         // Insert data into the database
         $conn =  mysqli_connect("localhost","root","root","db_library_2", 3308); //database connection
         // Assuming you have a database connection named $conn
-        $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Author, Publisher, tb_edition, Year_Published ,Quantity, tb_status) 
+        $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Authors_ID, Publisher_ID, tb_edition, Year_Published ,Quantity, tb_status) 
         VALUES ('$userID', '$bookTitle', '$author', '$publisher', '$edition','$year','$quantity', '$status')";
 
         $result = mysqli_query($conn, $query);

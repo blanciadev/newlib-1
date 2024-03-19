@@ -53,10 +53,7 @@ if(!isset($_SESSION["staff_name"])) {
                 </div>
             </div>
             
-            <div class="user-header mr-3 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-                <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
-                 <!-- <strong><span><?php echo $_SESSION["First_Name"] ."<br/>"; echo $_SESSION["Role"]; ?></span> </strong>  -->
-            </div>
+          
 
         </div>
         <div class="content">
@@ -64,8 +61,11 @@ if(!isset($_SESSION["staff_name"])) {
                 <h3>Overview</h3> 
                 <div class="ovw-con">
                     <div class="totalbooks">  
-                        <!-- <?php
-                                $totalBooks = "Select * from books";
+                        <?php
+            // CHANGE THE PORT IF NEEDED
+            $conn =  mysqli_connect("localhost","root","root","db_library_2", 3308); //database connection
+    
+                                $totalBooks = "Select * from tbl_books";
                                 $totalBooks_run = mysqli_query($conn, $totalBooks); 
                                 if($totalBooks_count = mysqli_num_rows($totalBooks_run))
                                 {
@@ -75,21 +75,22 @@ if(!isset($_SESSION["staff_name"])) {
                                 {
                                     echo "<h4>0</h4>";
                                 }
-                            ?> -->
+                            ?> 
                         <h4>Total Books</h4>
                     </div>
                     <div class="line"></div>
                     <div class="totalvisits">
-                        <!-- <?php
-                                $totalVisits = "Select * from visitors_log";
+                         <?php
+                                $totalVisits = "Select * from tbl_log";
                                 $totalVisits_run = mysqli_query($conn, $totalVisits); 
                                 $currenDate = date("YYYY-mm-dd");
+                                
                                 if($totalVisits_count = mysqli_num_rows($totalVisits_run)) {
                                     echo "<h4>"  .$totalVisits_count." </h4>";
                                 } else {
                                     echo "<h4>0</h4>";
                                 }
-                            ?> -->
+                            ?>
                         <h4>Total Visits</h4>
                     </div>
                 </div> 
@@ -97,7 +98,64 @@ if(!isset($_SESSION["staff_name"])) {
             
             <div class="duebooks">
                 <h3>Due Today</h3>
-                <div class="duebooks-con"></div>
+                
+                <div class="duebooks-con">
+
+                <?php
+                             
+$totalVisits = "SELECT
+bd.BorrowDetails_ID, 
+b.User_ID, 
+b.Accession_Code, 
+bk.Book_Title, 
+bd.Quantity, 
+b.Date_Borrowed, 
+b.Due_Date, 
+br.Borrower_ID, 
+bd.tb_status, 
+br.First_Name, 
+br.Last_Name
+FROM
+tbl_borrowdetails AS bd
+INNER JOIN
+tbl_borrow AS b
+ON 
+    bd.Borrower_ID = b.Borrower_ID
+INNER JOIN
+tbl_books AS bk
+ON 
+    b.Accession_Code = bk.Accession_Code
+INNER JOIN
+tbl_borrower AS br
+ON 
+    bd.Borrower_ID = br.Borrower_ID
+WHERE
+b.Due_Date = CURDATE();
+";
+
+$totalVisits_run = mysqli_query($conn, $totalVisits);
+
+if ($totalVisits_run) {
+$totalVisits_count = mysqli_num_rows($totalVisits_run);
+// Display each visit's details
+echo '<div style="overflow-x: auto;">'; // Container for scrollable effect
+echo '<table>';
+while ($row = mysqli_fetch_assoc($totalVisits_run)) {
+    
+    echo '<tr><td></td><td><strong>' . $row['Book_Title'] . '</strong></td></tr>';
+    echo '<tr><td><strong></strong></td><td>' . $row['First_Name']. ' ' . $row['Last_Name'] . '</td></tr>';
+    
+}
+
+echo '</table>';
+echo '</div>'; // Close the container
+
+
+} else {
+echo "<h4>No Due date today</h4>";
+}
+                            ?>
+                </div>
             </div>
             <div class="stats">
                 <h3>Statistics</h3>

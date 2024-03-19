@@ -35,12 +35,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $currentPassword = $row['tb_password'];
 
         // Verify if the old password matches the current password
-        if (password_verify($oldPassword, $currentPassword)) {
+        if ($oldPassword == $currentPassword) {
             // Check if the new password matches the confirm password
             if ($newPassword === $confirmPassword) {
                 // Update the password in the database
-                $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
-                $updateQuery = "UPDATE tbl_employee SET tb_password = '$hashedPassword' WHERE User_ID = $userID";
+               
+                $updateQuery = "UPDATE tbl_employee SET tb_password = '$newPassword' WHERE User_ID = $userID";
 
                 if (mysqli_query($conn, $updateQuery)) {
                     echo '<script>alert("Password updated successfully!");</script>';
