@@ -23,18 +23,23 @@ $bd_Id = $_SESSION['BorrowDetails_ID'];
 
 
         // Prepare the SQL statement with a placeholder for the search input
-        $sql = "SELECT bd.BorrowDetails_ID, b.User_ID, 
-        b.Accession_Code, bk.Book_Title, bd.Quantity, b.Date_Borrowed, 
-        b.Due_Date, br.Borrower_ID, bd.tb_status
-        FROM
-        tbl_borrowdetails AS bd
-        INNER JOIN
-        tbl_borrow AS b ON bd.Borrower_ID = b.Borrow_ID
-        INNER JOIN
-        tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-        INNER JOIN
-        tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID
-                WHERE   bd.BorrowDetails_ID ='$bd_Id'";
+        $sql = "SELECT
+    bd.BorrowDetails_ID,
+    b.User_ID,
+    b.Accession_Code,
+    bk.Book_Title,
+    bd.Quantity,
+    b.Date_Borrowed,
+    b.Due_Date,
+    br.Borrower_ID,
+    bd.tb_status
+FROM
+    tbl_borrowdetails AS bd
+    INNER JOIN tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+    INNER JOIN tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+    INNER JOIN tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
+WHERE
+    b.Borrow_ID =  $bd_Id";
 
 
 

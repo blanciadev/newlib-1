@@ -92,6 +92,9 @@ mysqli_close($conn);
 
     <div class="board container"><!--board container-->
     <div id="qrcode-container"></div>
+   
+    </div>
+    <div class="board container"><!--board container-->
     <?php
 
 
@@ -103,8 +106,7 @@ echo "Contact Number: " . $contact_number . "<br>";
 echo "Email: " . $email . "<br>";
 echo "Affiliation: " . $affiliation . "<br>";
 ?>
-    </div>
-
+</div>
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         console.log("Document loaded"); // Log that the document has loaded
