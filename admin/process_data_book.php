@@ -6,7 +6,7 @@ if(isset($_GET['id'])) {
 
         
         // Database connection
-        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
@@ -191,7 +191,7 @@ while ($row = $result->fetch_assoc()) {
            
 ?>
 <button type="submit" class="btn btn-primary" id="submit" name="submit">Procure Book</button>
-<button class="btn btn-primary" id="cancelButton">Reject</button>
+<a href="admin_books.php" class="btn btn-primary">Cancel</a>
 </form>
 
 </div>

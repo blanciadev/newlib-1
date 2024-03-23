@@ -163,7 +163,37 @@ echo "<h4>No Due date today</h4>";
             </div>
             <div class="newbooks">
                 <h3>What's New?</h3>
-                <div class="newbooks-con"></div>
+                <div class="newbooks-con">
+                    <?php
+                    
+// Calculate the date 3 days ago from today
+$threeDaysAgo = date('Y-m-d H:i:s', strtotime('-3 days'));
+
+// SQL query to fetch books inserted in the last 3 days or current along with author's name
+$sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
+        FROM tbl_books 
+        INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
+        WHERE tbl_books.date_inserted >= '$threeDaysAgo'";
+
+$result = mysqli_query($conn, $sql);
+
+if ($result) {
+    $totalBooksCount = mysqli_num_rows($result);
+   
+
+    // Display the books or process further as needed
+    while ($row = mysqli_fetch_assoc($result)) {
+        // Display book details or perform actions
+        echo  $row['Book_Title'] . "<br>";
+        echo  $row['Authors_Name'] . "<br>";
+        echo  $row['date_inserted'] . "<br>";
+        echo "<hr>";
+    }
+} else {
+    echo "Error fetching books: " . mysqli_error($conn);
+}
+                    ?>
+                </div>
             </div>
 
                 

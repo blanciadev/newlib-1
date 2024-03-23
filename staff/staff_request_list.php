@@ -47,7 +47,7 @@ include '../auth.php';
     <div class="container mt-3">
     <input type="text" id="searchInput" class="form-control" placeholder="Search...">
 </div>
-
+    
     <table class="table table-striped">
         
         <thead>

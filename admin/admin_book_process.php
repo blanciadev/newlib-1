@@ -3,7 +3,7 @@
 
 session_start();
 
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
 
 // Check if the borrower_id session variable is set
 if(isset($_SESSION['borrower_id'])) {

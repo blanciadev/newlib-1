@@ -9,7 +9,7 @@ $errorMessage = "";
 // Check if the form is submitted and Borrower ID is provided
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     // Database connection
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
@@ -125,7 +125,7 @@ if ($isBorrowerIdValid) {
 
     <?php
     // Database connection and SQL query
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }

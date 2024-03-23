@@ -1,16 +1,13 @@
 <?php
 
 // Database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
-   
-    
 // SQL query to retrieve requested books
-$sql = "SELECT Archive_ID, User_ID, Accession_Code, Book_Title, Quantity, Date FROM tbl_requestbooks";
+$sql = "SELECT * FROM tbl_archive";
 
 
     $result = $conn->query($sql);

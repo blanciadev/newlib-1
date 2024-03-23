@@ -197,10 +197,12 @@ $conn->close();
     ?>
 
 <button type="submit" class="btn btn-primary" id="submit" name="submit">Submit</button>
-<button class="btn btn-primary" id="cancelButton">Cancel</button>
+<a href="staff_return.php" class="btn btn-primary">Cancel</a>
+
 </form>
 
 </div>
+
 <div class="container">
         <?php if (!empty($successMessage)): ?>
             <div class="alert alert-success" role="alert">
@@ -216,6 +218,11 @@ $conn->close();
     </div>
     
 
+    <script>
+document.getElementById("cancelButton").addEventListener("click", function() {
+    window.location.href = "staff_return.php";
+});
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
 <script> 
     let date = new Date().toLocaleDateString('en-US', {  

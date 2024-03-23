@@ -40,8 +40,9 @@ include '../auth.php';
         </ul>
          
     </div>
-    <div class="board container"><!--board container-->
+    
     <h2>Book Information</h2>
+    <div class="container">
     <table class="table table-striped">
         <thead>
             <tr>
@@ -118,9 +119,8 @@ include '../auth.php';
             ?>
         </tbody>
     </table>
-</div>
-
-
+  
+    </div>
 
 
 

@@ -4,7 +4,7 @@ session_start();
 
 
 // Database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -95,7 +95,7 @@ function calculateFine($dueDate, $dateBorrowed, $bookStatus) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fine = $_SESSION['fine'];
     // Database connection
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
