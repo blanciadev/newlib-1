@@ -66,6 +66,7 @@ class ComposerStaticInit2de82f7989b7317091bfb2630b1bfc5b
             'Phan\\' => 5,
             'ParagonIE\\ConstantTime\\' => 23,
             'PHPStan\\PhpDocParser\\' => 21,
+            'PHPMailer\\PHPMailer\\' => 20,
             'PDepend\\' => 8,
         ),
         'M' => 
@@ -204,6 +205,10 @@ class ComposerStaticInit2de82f7989b7317091bfb2630b1bfc5b
         'PHPStan\\PhpDocParser\\' => 
         array (
             0 => __DIR__ . '/..' . '/phpstan/phpdoc-parser/src',
+        ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
         'PDepend\\' => 
         array (

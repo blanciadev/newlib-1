@@ -43,7 +43,8 @@
 		"php": "^8.2",
 		"ext-mbstring": "*",
 		"chillerlan/php-settings-container": "^3.1",
-		"endroid/qr-code": "^5.0"
+		"endroid/qr-code": "^5.0",
+		"phpmailer/phpmailer": "^6.9"
 	},
 	"require-dev": {
 		"chillerlan/php-authenticator": "^5.1",

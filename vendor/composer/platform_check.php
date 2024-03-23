@@ -9,6 +9,8 @@ if (!(PHP_VERSION_ID >= 80200)) {
 }
 
 $missingExtensions = array();
+extension_loaded('filter') || $missingExtensions[] = 'filter';
+extension_loaded('hash') || $missingExtensions[] = 'hash';
 extension_loaded('iconv') || $missingExtensions[] = 'iconv';
 extension_loaded('json') || $missingExtensions[] = 'json';
 
