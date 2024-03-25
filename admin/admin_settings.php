@@ -22,7 +22,7 @@ if (!$result) {
 
 // Handle form submission for password update
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $oldPassword = $_POST['oldPassword'];
+ 
     $newPassword = $_POST['newPassword'];
     $confirmPassword = $_POST['confirmPassword'];
 
@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $currentPassword = $row['tb_password'];
 
         // Verify if the old password matches the current password
-        if ($oldPassword == $currentPassword) {
+       
             // Check if the new password matches the confirm password
             if ($newPassword === $confirmPassword) {
                 // Update the password in the database
@@ -50,13 +50,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else {
                 echo '<script>alert("New password and confirm password do not match!");</script>';
             }
-        } else {
-            echo '<script>alert("Incorrect old password!");</script>';
-        }
+        } 
     } else {
         echo "Error retrieving password: " . mysqli_error($conn);
     }
-}
+
 ?>
 
 <!DOCTYPE html>
@@ -139,10 +137,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     
     <!-- Password Change Section -->
-    <div class="mb-3">
-        <label for="oldPassword" class="form-label">Old Password</label>
-        <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>
-    </div>
+  
     <div class="mb-3">
         <label for="newPassword" class="form-label">New Password</label>
         <input type="password" class="form-control" id="newPassword" name="newPassword" required>
