@@ -65,6 +65,10 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VillaReadHub - Dashboard</title>
+
+    <script src="../node_modules/html5-qrcode/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -103,6 +107,28 @@ $conn->close();
             
     <h2>Request List</h2>
     
+    <div class="board container"><!--board container-->
+    
+    <style>
+    main {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #reader {
+        width: 600px;
+    }
+    #result {
+        text-align: center;
+        font-size: 1.5rem;
+    }
+</style>
+
+<main>
+    <div id="reader"></div>
+    <div id="result"></div>
+</main>
+
   
     <div class="container mt-2">
     <input type="text" id="searchInput" class="form-control me-2" placeholder="Search...">
@@ -170,6 +196,41 @@ $conn->close();
     }
 </script>
 
+
+
+<script>
+
+    const scanner = new Html5QrcodeScanner('reader', { 
+        // Scanner will be initialized in DOM inside element with id of 'reader'
+        qrbox: {
+            width: 250,
+            height: 250,
+        },  // Sets dimensions of scanning box (set relative to reader element width)
+        fps: 20, // Frames per second to attempt a scan
+    });
+
+
+    scanner.render(success, error);
+    // Starts scanner
+
+    function success(result) {
+    // Set the scanned result as the value of the input field
+    document.getElementById('searchInput').value = result;
+
+    // Clear the scanning instance
+    scanner.clear();
+
+    // Remove the reader element from the DOM since it's no longer needed
+    document.getElementById('reader').remove();
+}
+
+
+    function error(err) {
+        console.error(err);
+        // Prints any errors to the console
+    }
+
+</script>
 
 
 

@@ -92,8 +92,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <li class="nav-item"> <a href="./staff_borrow_dash.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>
             <li class="nav-item"> <a href="./staff_return.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Return</a> </li>
             <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
-            <li class="nav-item"> <a href="./staff_registerUser.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
-            <hr>
+            <li class="nav-item"> <a href="./staff_registerUser.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Register Visitor</a> </li>
+            <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li> <hr>
             <li class="nav-item active"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
             <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
@@ -103,35 +103,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <form id="userProfileForm" action="" method="post">
     <!-- Display user data -->
-    <div class="mb-3">
+    <div class="col-md-4">
         <label for="userID" class="form-label">User ID</label>
         <input type="text" class="form-control" id="userID" name="userID" value="<?php echo $userData['User_ID']; ?>" readonly>
     </div>
-    <div class="mb-3">
+    <div class="col-md-4">
         <label for="firstName" class="form-label">First Name</label>
         <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $userData['First_Name']; ?>" required>
     </div>
-    <div class="mb-3">
+    <div class="col-md-4">>
         <label for="middleName" class="form-label">Middle Name</label>
         <input type="text" class="form-control" id="middleName" name="middleName" value="<?php echo $userData['Middle_Name']; ?>">
     </div>
-    <div class="mb-3">
+    <div class="col-md-4">>
         <label for="lastName" class="form-label">Last Name</label>
         <input type="text" class="form-control" id="lastName" name="lastName" value="<?php echo $userData['Last_Name']; ?>" required>
     </div>
-    <div class="mb-3">
+    <div class="col-md-4">>
         <label for="role" class="form-label">Role</label>
         <input type="text" class="form-control" id="role" name="role" value="<?php echo $userData['tb_role']; ?>" readonly>
     </div>
-    <div class="mb-3">
+    <div class="col-md-4">
         <label for="contactNumber" class="form-label">Contact Number</label>
         <input type="tel" class="form-control" id="contactNumber" name="contactNumber" value="<?php echo $userData['Contact_Number']; ?>" required>
     </div>
-    <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
+    <div class="col-md-4">     <label for="email" class="form-label">Email</label>
         <input type="email" class="form-control" id="email" name="email" value="<?php echo $userData['E_mail']; ?>" required>
     </div>
-    <div class="mb-3">
+    <div class="col-md-4">
         <label for="address" class="form-label">Address</label>
         <input type="text" class="form-control" id="address" name="address" value="<?php echo $userData['tb_address']; ?>" required>
     </div>
@@ -139,15 +138,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     
     <!-- Password Change Section -->
-    <div class="mb-3">
+    <div class="col-md-4">
         <label for="oldPassword" class="form-label">Old Password</label>
         <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>
     </div>
-    <div class="mb-3">
+    <div class="col-md-4">
         <label for="newPassword" class="form-label">New Password</label>
         <input type="password" class="form-control" id="newPassword" name="newPassword" required>
     </div>
-    <div class="mb-3">
+    <div class="col-md-4">
         <label for="confirmPassword" class="form-label">Confirm Password</label>
         <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
     </div>
