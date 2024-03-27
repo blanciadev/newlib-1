@@ -1,19 +1,19 @@
-
 <?php
 
 session_start();
 
-
-
-
-
 ?>
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Log Record</title>
+    <title>VillaReadHub - Books</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,114 +27,34 @@ session_start();
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
-        </a><!--header container-->
+        </a><!--header container--> 
         <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
             <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
-            <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong> 
+            <strong><span><?php echo $_SESSION["User_ID"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong> 
         </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
-            <li class="nav-item"> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
-            <li class="nav-item"> <a href="./staff_transaction_dash.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>
-           <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
-            <li class="nav-item active"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
+            <li class="nav-item "> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
+            <li class="nav-item active"> <a href="./staff_transaction_dash.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>
+            <li class="nav-item"> <a href="./staff_return.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Return</a> </li>
+            <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
+            <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>    
             <hr>
             <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
             <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
+         
     </div>
-
+    
     <div class="board container"><!--board container-->
-
-        <?php
-        
-        
-
-// Database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-// Fetch log records from the database
-$query = "SELECT
-bd.BorrowDetails_ID, 
-b.User_ID, 
-b.Accession_Code, 
-bk.Book_Title, 
-bd.Quantity, 
-b.Date_Borrowed, 
-b.Due_Date, 
-br.Borrower_ID, 
-bd.tb_status, 
-tbl_fines.Amount, 
-br.*
-FROM
-tbl_borrowdetails AS bd
-INNER JOIN
-tbl_borrow AS b
-ON 
-    bd.Borrower_ID = b.Borrower_ID
-INNER JOIN
-tbl_books AS bk
-ON 
-    b.Accession_Code = bk.Accession_Code
-INNER JOIN
-tbl_borrower AS br
-ON 
-    bd.Borrower_ID = br.Borrower_ID
-INNER JOIN
-tbl_fines
-ON 
-    bd.BorrowDetails_ID = tbl_fines.Borrower_ID;
-"; 
-$result = mysqli_query($conn, $query);
-
-// Check if there are any records
-if(mysqli_num_rows($result) > 0) {
-    echo '<table class="table">';
-    echo '<thead>';
-    echo '<tr>';
-    echo '<th scope="col">Visitors Id "</th>';
-    echo '<th scope="col">Borrower Id "</th>';
-    echo '<th scope="col">First Name</th>';
-    echo '<th scope="col">Middle Name</th>';
-    echo '<th scope="col">Last Name</th>';
-    echo '<th scope="col">Contact Number</th>';
+    <h2>Transaction Page</h2>
    
-    echo '<th scope="col">Fines</th>';
-   
-    echo '</tr>';
-    echo '</thead>';
-    echo '<tbody>';
-
-    // Loop through each row in the result set
-    while($row = mysqli_fetch_assoc($result)) {
-        echo '<tr>';
-        echo '<td>' . $row['Borrower_ID'] . '</td>'; 
-        echo '<td>' . $row['First_Name'] . '</td>'; 
-        echo '<td>' . $row['Middle_Name'] . '</td>'; 
-        echo '<td>' . $row['Last_Name'] . '</td>'; 
-        echo '<td>' . $row['Contact_Number'] . '</td>'; 
-      
-        echo '<td>' . $row['affiliation'] . '</td>'; 
-        echo '<td>' . $row['Amount'] . '</td>'; 
-        echo '</tr>';
-    }
-
-    echo '</tbody>';
-    echo '</table>';
-} else {
-    echo 'No log records found.';
-}
-
-
-// Close the database connection
-mysqli_close($conn);
-        ?>
-
+        <!-- Button as a link to registerUser.php -->
+    <a href="staff_borrow_dash.php" class="btn btn-primary">Borrow Book</a>
+    <!-- Button as a link to registerUser.php -->
+    <a href="staff_return.php" class="btn btn-primary">Return Book</a>
     </div>
-        
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
@@ -144,7 +64,7 @@ mysqli_close($conn);
             year:  'numeric' ,  
             weekday: 'long', 
         });   
-        document.getElementById("currentDate").innerText = date; 
+    //    document.getElementById("currentDate").innerText = date; 
 
         setInterval( () => {
             let time = new Date().toLocaleTimeString('en-US',{ 
@@ -153,7 +73,7 @@ mysqli_close($conn);
             second: 'numeric',
             hour12: 'true',
         })  
-        document.getElementById("currentTime").innerText = time; 
+    //    document.getElementById("currentTime").innerText = time; 
 
         }, 1000)
         
@@ -166,7 +86,6 @@ mysqli_close($conn);
                 
                 
             })
-            
         })
      
 
