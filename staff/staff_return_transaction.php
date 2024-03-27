@@ -23,23 +23,26 @@ $bd_Id = $_SESSION['BorrowDetails_ID'];
 
 
         // Prepare the SQL statement with a placeholder for the search input
-        $sql = "SELECT
-    bd.BorrowDetails_ID,
-    b.User_ID,
-    b.Accession_Code,
-    bk.Book_Title,
-    bd.Quantity,
-    b.Date_Borrowed,
-    b.Due_Date,
-    br.Borrower_ID,
-    bd.tb_status
-FROM
-    tbl_borrowdetails AS bd
-    INNER JOIN tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
-    INNER JOIN tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-    INNER JOIN tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
-WHERE
-    b.Borrow_ID =  $bd_Id";
+        $sql = "SELECT DISTINCT
+        b.User_ID, 
+        b.Accession_Code, 
+        bk.Book_Title, 
+        bd.Quantity, 
+        b.Date_Borrowed, 
+        b.Due_Date, 
+        bd.tb_status, 
+        bd.Borrower_ID, 
+        bd.BorrowDetails_ID
+    FROM
+        tbl_borrowdetails AS bd
+    INNER JOIN
+        tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+    INNER JOIN
+        tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+    INNER JOIN
+        tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID AND bd.Borrower_ID = br.Borrower_ID
+    WHERE
+        bd.BorrowDetails_ID = $bd_Id";
 
 
 
@@ -171,7 +174,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $accessionCode = $_SESSION['Accession_Code'];
             $qtyb = $_SESSION['qty'];
             $sqlUpdateQuantity = "UPDATE tbl_books SET Quantity = Quantity + ? WHERE Accession_Code = ?";
-    $stmtUpdateQuantity = $conn->prepare($sqlUpdateQuantity);
+             $stmtUpdateQuantity = $conn->prepare($sqlUpdateQuantity);
 
     if ($stmtUpdateQuantity) {
         // Bind parameters
@@ -179,7 +182,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Execute the statement
         if ($stmtUpdateQuantity->execute()) {
-            echo "Quantity updated successfully.";
+         
         } else {
             echo "Error updating quantity: " . $stmtUpdateQuantity->error;
         }
@@ -202,7 +205,8 @@ $status5 = $stmt5->execute();
 // Check each query execution status
 if ($status1 && $status2 && $status3 && $status4 && $status5) {
     // All queries executed successfully
-    echo "Status updated successfully!";
+    echo '<script>alert("Record Updated successfully."); window.location.href = "print_return.php";</script>';
+    exit();
 } else {
     // Error occurred while executing queries
     echo "Error updating status:";

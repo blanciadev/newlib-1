@@ -21,12 +21,12 @@ if(isset($_GET['searchInput'])) {
     // Sanitize the input to prevent SQL injection
     $searchInput = $_GET['searchInput'];
 
-    $_SESSION['searchInput'];
+    //$_SESSION['searchInput'];
 }
 
 
 // Prepare the SQL statement with a placeholder for the search input
-$sql = "SELECT
+$sql = "SELECT DISTINCT
 b.User_ID, 
 b.Accession_Code, 
 bk.Book_Title, 
@@ -39,20 +39,13 @@ bd.BorrowDetails_ID
 FROM
 tbl_borrowdetails AS bd
 INNER JOIN
-tbl_borrow AS b
-ON 
-    bd.Borrower_ID = b.Borrower_ID
+tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
 INNER JOIN
-tbl_books AS bk
-ON 
-    b.Accession_Code = bk.Accession_Code
+tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
 INNER JOIN
-tbl_borrower AS br
-ON 
-    b.Borrower_ID = br.Borrower_ID AND
-    bd.Borrower_ID = br.Borrower_ID
+tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID AND bd.Borrower_ID = br.Borrower_ID
 WHERE
-bd.Borrower_ID ='$searchInput' ";
+bd.Borrower_ID = '$searchInput' ";
 
 
 
@@ -139,6 +132,9 @@ $result = $stmt->get_result();
     <input type="text" id="searchInput" class="form-control me-2" placeholder="Search...">
 </div>
 
+<form class='update-form' method='GET' action='staff_borrow_details.php'>
+    <input type='hidden' name='borrowerId' value='<?php echo $borrower_id; ?>'>
+   
 <!-- Container for displaying search results with a fixed height and scrollable content -->
 <div class="container mt-3" style="max-height: 400px; overflow-y: auto;">
     <table class="table table-striped">
@@ -155,46 +151,40 @@ $result = $stmt->get_result();
             </tr>
         </thead>
         <tbody id="searchResults">
-            <?php
-            if ($result) {
-                // Output data of each row
-                while($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>".$row["BorrowDetails_ID"]."</td>";
-                    echo "<td>".$row["Borrower_ID"]."</td>";
-                    echo "<td>".$row["Accession_Code"]."</td>";
-                    echo "<td>".$row["Book_Title"]."</td>";
-                    echo "<td>".$row["Quantity"]."</td>";
-                    echo "<td>".$row["Date_Borrowed"]."</td>";
-                    echo "<td>".$row["Due_Date"]."</td>";
-                    echo "<td>".$row["tb_status"]."</td>";
-                    echo "<td>";
-                    echo "<form class='update-form' method='GET' action='staff_borrow_details.php'>"; 
-                    echo "<input type='hidden' name='borrowId' id='borrowId' value='".$row["BorrowDetails_ID"]."'>";
-
-                    // Conditionally render the button based on the status
-                    echo "<input type='hidden' name='borrowerId' value='".$row["Borrower_ID"]."'>";
-
-                    if ($row["tb_status"] === 'Pending') {
-                        echo "<button type='button' class='btn btn-primary btn-sm update-btn' data-borrow-id='".$row["BorrowDetails_ID"]."' onclick='updateAndSetSession(" . $row["BorrowDetails_ID"] . ")'>UPDATE</button>";
-                        echo "<input type='hidden' name='borrowId' id='borrowId' value='".$row["BorrowDetails_ID"]."'>";
-
-                    } else {
-                        echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
-                    }
-
-                    echo "<div class='update-message'></div>";
-                    echo "</form>";
-                    echo "</td>";
-                    echo "</tr>";
-                }
+        <?php
+    if ($result->num_rows > 0) {
+        // Output data of each row
+        while($row = $result->fetch_assoc()) {
+            echo "<tr>";
+            echo "<td>".$row["BorrowDetails_ID"]."</td>";
+            echo "<td>".$row["Borrower_ID"]."</td>";
+            echo "<td>".$row["Accession_Code"]."</td>";
+            echo "<td>".$row["Book_Title"]."</td>";
+            echo "<td>".$row["Quantity"]."</td>";
+            echo "<td>".$row["Date_Borrowed"]."</td>";
+            echo "<td>".$row["Due_Date"]."</td>";
+            echo "<td>".$row["tb_status"]."</td>";
+            echo "<td>";
+            
+            // Conditionally render the button based on the status
+            if ($row["tb_status"] === 'Pending') {
+                echo "<button type='button' class='btn btn-primary btn-sm update-btn' data-borrow-id='".$row["BorrowDetails_ID"]."' onclick='updateAndSetSession(" . $row["BorrowDetails_ID"] . ")'>UPDATE</button>";
             } else {
-                echo "No records found for the provided Borrower ID.";
+                echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
             }
-            ?>
+            
+            echo "</td>";
+            echo "</tr>";
+        }
+    } else {
+        echo "<tr><td colspan='9'>No records found for the provided Borrower ID.</td></tr>";
+    }
+?>
+
         </tbody>
     </table>
 </div>
+</form>
 <script>
     function updateAndSetSession(borrowId) {
         // Redirect to staff_return_transaction.php with the borrowId parameter

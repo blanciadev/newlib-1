@@ -21,7 +21,7 @@ if(isset($_GET['searchInput'])) {
 
 
 // Prepare the SQL statement with a placeholder for the search input
-$sql = "SELECT
+$sql = "SELECT DISTINCT
 b.User_ID, 
 b.Accession_Code, 
 bk.Book_Title, 
@@ -34,19 +34,13 @@ bd.BorrowDetails_ID
 FROM
 tbl_borrowdetails AS bd
 INNER JOIN
-tbl_borrow AS b
-ON 
-    bd.Borrower_ID = b.Borrow_ID
+tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
 INNER JOIN
-tbl_books AS bk
-ON 
-    b.Accession_Code = bk.Accession_Code
+tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
 INNER JOIN
-tbl_borrower AS br
-ON 
-    b.Borrower_ID = br.Borrower_ID
+tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID AND bd.Borrower_ID = br.Borrower_ID
 WHERE
-bd.Borrower_ID ='$searchInput' ";
+bd.Borrower_ID = '$searchInput' ";
 
 
 // Prepare the statement

@@ -63,9 +63,7 @@ if(isset($_POST['submit'])) {
                 $sql_update_quantity = "UPDATE tbl_books SET Quantity = '$remaining_quantity' WHERE Accession_Code = '$accession_code'";
                 if ($conn->query($sql_update_quantity) === TRUE) {
                     // Quantity updated successfully
-                   // echo "Quantity updated successfully.";
-                    
-                    // Proceed with the borrowing process
+                 
                     // Prepare and execute the INSERT statements for tbl_borrow and tbl_borrowdetails
                     $sql_borrow = "INSERT INTO tbl_borrow (User_ID, Borrower_ID, Accession_Code, Date_Borrowed, Due_Date, tb_status) 
                                    VALUES ('$user_id', '$borrower_id', '$accession_code', '$currentDate', '$dueDate', '$Status')";
@@ -74,7 +72,6 @@ if(isset($_POST['submit'])) {
                     $sql_borrowdetails = "INSERT INTO tbl_borrowdetails (Borrower_ID, Accession_Code, Quantity, tb_status) 
                                           VALUES ('$borrower_id', '$accession_code', '$quantity', '$Status')";
 
-                  
                     // Prepare and execute the INSERT statements for tbl_returned and tbl_returningdetails
                     $sql_returned = "INSERT INTO tbl_returned (User_ID, Borrower_ID, Date_Returned, tb_status) 
                     VALUES ('$user_id', '$borrower_id', NULL, 'Pending')";
@@ -91,9 +88,7 @@ if(isset($_POST['submit'])) {
                     }
 
 
-                    
-
-                    
+                
                     if ($conn->query($sql_borrow) === TRUE && $conn->query($sql_borrowdetails) === TRUE) {
                         // Redirect user or display success message as per your requirement
                         $successMessage = "Request submitted successfully.";

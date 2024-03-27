@@ -155,31 +155,25 @@ if ($isBorrowerIdValid) {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    $sql = "SELECT
-	bd.BorrowDetails_ID, 
-	b.User_ID, 
-	bk.Book_Title, 
-	bd.Quantity, 
-	b.Date_Borrowed, 
-	b.Due_Date, 
-	bd.tb_status, 
-	bd.Borrower_ID, 
-	b.Accession_Code
+    $sql = "SELECT DISTINCT
+    bd.BorrowDetails_ID, 
+    b.User_ID, 
+    bk.Book_Title, 
+    bd.Quantity, 
+    b.Date_Borrowed, 
+    b.Due_Date, 
+    bd.tb_status, 
+    bd.Borrower_ID, 
+    b.Accession_Code
 FROM
-	tbl_borrowdetails AS bd
-	INNER JOIN
-	tbl_borrow AS b
-	ON 
-		bd.Borrower_ID = b.Borrower_ID
-	INNER JOIN
-	tbl_books AS bk
-	ON 
-		b.Accession_Code = bk.Accession_Code
-	INNER JOIN
-	tbl_borrower AS br
-	ON 
-		b.Borrower_ID = br.Borrower_ID AND
-		bd.Borrower_ID = br.Borrower_ID;";
+    tbl_borrowdetails AS bd
+INNER JOIN
+    tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+INNER JOIN
+    tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+INNER JOIN
+    tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID AND bd.Borrower_ID = br.Borrower_ID;
+";
 
 
     $result = $conn->query($sql);
