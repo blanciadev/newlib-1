@@ -19,7 +19,7 @@ if(isset($_GET['borrowId'])) {
 }
 
 // Initialize $bd_Id to an empty string
-$bd_Id = $_SESSION['BorrowDetails_ID'];
+    $bd_Id = $_SESSION['BorrowDetails_ID'];
 
 
         // Prepare the SQL statement with a placeholder for the search input
@@ -58,7 +58,7 @@ $result = $stmt->get_result();
 function calculateFine($dueDate, $dateBorrowed, $bookStatus) {
     // Get current timestamp
     $currentTimestamp = time();
-
+  
     // Calculate number of days since borrowed
     $daysSinceBorrowed = floor(($currentTimestamp - strtotime($dateBorrowed)) / (60 * 60 * 24));
     
@@ -67,33 +67,29 @@ function calculateFine($dueDate, $dateBorrowed, $bookStatus) {
 
     // Initialize fine
     $fine = 0;
-
+    define('RETURNED_ON_TIME', 0);
     echo "Due Date: " . $dueDate . "<br>";
     echo "Days Overdue: " . $daysOverdue . "<br>";
     echo "Days Since Borrowed: " . $daysSinceBorrowed . "<br>";
 
-    if ($daysOverdue > 0) {
+    // Calculate the fine based on overdue status and book status
+switch (true) {
+    case $daysOverdue > 0:
         // Add default penalty fine of 30 pesos
         $fine += 30;
-      //  echo "Added default penalty fine of 30 pesos<br>";
-        
         // Add per-day fine of 15 pesos for each subsequent day of overdue
         $fine += ($daysOverdue - 1) * 15;
-      //  echo "Added per-day fine of 15 pesos for each subsequent day of overdue<br>";
-    } else {
-        echo "No overdue fine<br>";
-    }
+        break;
+    default:
+        // No additional fine for books in GOOD CONDITION or if none of the expected statuses are selected
+        break;
+}
 
-    // Apply additional penalties based on book status
-    if ($bookStatus == "LOST") {
-        $fine += 50;
-    } elseif ($bookStatus == "PARTIALLY DAMAGE") {
-        $fine += 20;
-    } elseif ($bookStatus == "GOOD CONDITION") {
-        // No additional fine for books in good condition
-    }
-
-    // echo "Total Fine: " . $fine . "<br>";
+    
+    // Output the total fine after all calculations
+    echo "Total Fine: " . $fine . "<br>";
+    
+    // Store the fine in session or database, if needed
     $_SESSION['fine'] = $fine;
     return $fine;
 }
@@ -101,7 +97,12 @@ function calculateFine($dueDate, $dateBorrowed, $bookStatus) {
 
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    $bookStatus = $_POST['bookStatus'];
     $fine = $_SESSION['fine'];
+   
+
+
     // Database connection
     $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
     if ($conn->connect_error) {
@@ -168,8 +169,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt5->bind_param("iiisss", $borrowerId, $bd_Id, $fine, $paymentStatus, $currentDate, $currentDateTime);
           
             $paymentStatus = "Paid"; // Assuming Payment_Status is always "Resolved"
-
-                
 
             $accessionCode = $_SESSION['Accession_Code'];
             $qtyb = $_SESSION['qty'];
@@ -253,7 +252,7 @@ if ($status1 && $status2 && $status3 && $status4 && $status5) {
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
 <body>
-    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
+    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" id="navMenu"><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
@@ -286,51 +285,85 @@ if ($status1 && $status2 && $status3 && $status4 && $status5) {
 <!-- Container for displaying search results with a fixed height and scrollable content -->
 <div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
    
-    <?php
-    
-    if ($result->num_rows > 0) {
-        // Output data of each row
-        while($row = $result->fetch_assoc()) {
-            echo "<p>Borrower Details ID : " .$row["BorrowDetails_ID"]."</p>"; 
-            echo "<p>Borrower ID : " .$row["Borrower_ID"]."</p>"; 
-            echo "<p>Accession Code : " .$row["Accession_Code"]."</p>"; 
-            $_SESSION['Accession_Code'] = $row["Accession_Code"];
-            
-            echo "<p>Book Title : " .$row["Book_Title"]."</p>"; 
-            echo "<p>Quantity : " .$row["Quantity"]."</p>"; 
-            $_SESSION['qty'] = $row["Quantity"];
-            echo "<p><strong>Date Borrowed : </strong>" . $row["Date_Borrowed"] . "</p>"; 
-            echo "<p><strong>Due Date : </strong>" . $row["Due_Date"] . "</p>"; 
-                    
-            echo "<p>Status : " .$row["tb_status"]."</p>"; 
-            echo "Due Date from Database: " . $row["Due_Date"] . "<br>";
-            echo "Date Borrowed from Database: " . $row["Date_Borrowed"] . "<br><br>";
-                
-            $bookStatus = "LOST";
+<?php
+if ($result->num_rows > 0) {
+    // Output data of each row
+    while($row = $result->fetch_assoc()) {
+        $_SESSION['Accession_Code'] = $row["Accession_Code"];
+        $_SESSION['Book_Title'] = $row["Book_Title"];
+        $_SESSION['Quantity'] = $row["Quantity"];
+        $_SESSION['BorrowDetails_ID'] = $row["BorrowDetails_ID"];
+        $_SESSION['Date_Borrowed'] = $row["Date_Borrowed"];
+        $_SESSION['Due_Date'] = $row["Due_Date"];
+        $_SESSION['status'] = $row["tb_status"];
 
-            $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"], $bookStatus);
-            echo "Fine: " . $fine . "<br>";
+        echo "<div class='container'>";
+        echo "<div class='row'>";
+        echo "<div class='col'>";
+        echo "<p>Accession Code: " . $row["Accession_Code"] . "</p>";
+        $_SESSION['Accession_Code'] = $row["Accession_Code"];
 
-            // Radio buttons for selecting book status
-            echo "<form class='update-form' method='POST' action=''>";
-            echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["BorrowDetails_ID"] . "'>";
-            echo "<label for='bookStatus'>Book Status:</label><br>";
-            echo "<input type='radio' id='damage' name='bookStatus' value='DAMAGE'>";
-            echo "<label for='damage'>Damage</label><br>";
-            echo "<input type='radio' id='partialDamage' name='bookStatus' value='PARTIALLY DAMAGE'>";
-            echo "<label for='partialDamage'>Partially Damage</label><br>";
-            echo "<input type='radio' id='goodCondition' name='bookStatus' value='GOOD CONDITION'>";
-            echo "<label for='goodCondition'>Good Condition</label><br>";
-            echo "<input type='radio' id='lost' name='bookStatus' value='LOST'>";
-            echo "<label for='lost'>Lost</label><br>";
-            echo "<button type='submit' class='btn btn-primary'>Proceed to Payment</button>";
-            echo "</form>";
-        }
-    } else {
-        echo "No records found for the provided Borrower ID.";
-    }
-    ?>
+        echo "<p>Book Title: " . $row["Book_Title"] . "</p>";
+        echo "<p>Quantity: " . $row["Quantity"] . "</p>";
+        $_SESSION['qty'] = $row["Quantity"];
+
         
+        $bookStatus = "LOST";
+        $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"], $bookStatus);
+        echo "Fine: " . $fine . "<br>";
+        $_SESSION['fine'] = $fine;
+
+        // Radio buttons for selecting book status
+         echo "<form class='update-form' method='POST' action=''>";
+        // echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["BorrowDetails_ID"] . "'>";
+        // echo "<div class='form-group'>";
+        // echo "<label for='bookStatus'>Book Status:</label>";
+        // echo "<div class='form-check'>";
+        // echo "<input type='radio' id='damage' name='bookStatus' value='DAMAGE' class='form-check-input'>";
+        // echo "<label for='damage' class='form-check-label'>Damage</label><br>";
+        // echo "</div>";
+        // echo "<div class='form-check'>";
+        // echo "<input type='radio' id='partialDamage' name='bookStatus' value='PARTIALLY DAMAGE' class='form-check-input'>";
+        // echo "<label for='partialDamage' class='form-check-label'>Partially Damage</label><br>";
+        // echo "</div>";
+        // echo "<div class='form-check'>";
+        // echo "<input type='radio' id='goodCondition' name='bookStatus' value='GOOD CONDITION' class='form-check-input'>";
+        // echo "<label for='goodCondition' class='form-check-label'>Good Condition</label><br>";
+        // echo "</div>";
+        // echo "<div class='form-check'>";
+        // echo "<input type='radio' id='lost' name='bookStatus' value='LOST' class='form-check-input'>";
+        // echo "<label for='lost' class='form-check-label'>Lost</label><br>";
+        // echo "</div>";
+        // echo "</div>";
+         echo "<button type='submit' class='btn btn-primary'>Proceed to Payment</button>";
+        // echo "</form>";
+        // echo "</div>";
+        // echo "</div>";
+        // echo "</div>";
+    }
+} else {
+    echo "No records found for the provided Borrower ID.";
+}
+?>
+
+<!-- Button to trigger the print dialog and hide the navigation menu -->
+<button onclick="printAndToggleMenu()">Print Receipt</button>
+
+<script>
+function printAndToggleMenu() {
+    // Get the navigation menu element
+    var navMenu = document.getElementById('navMenu');
+
+    // Hide the navigation menu
+    navMenu.style.display = 'none';
+
+    // Trigger the print dialog
+    window.print();
+}
+</script>
+
+
+
 </div>
 
 <script>

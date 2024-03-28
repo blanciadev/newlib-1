@@ -91,8 +91,8 @@ if(isset($_POST['submit'])) {
                 
                     if ($conn->query($sql_borrow) === TRUE && $conn->query($sql_borrowdetails) === TRUE) {
                         // Redirect user or display success message as per your requirement
-                        $successMessage = "Request submitted successfully.";
-                        header("Location: staff_borrow_dash.php");
+                        echo '<script>alert("Record Updated successfully."); window.location.href = "print_borrow.php";</script>';
+ 
                     } else {
                         echo "Error: " . $sql_borrow . "<br>" . $conn->error;
                     }
@@ -168,6 +168,17 @@ $conn->close();
             echo "<div class='books-container'>";
             // Fetch each row from the result set
             while ($row = $result->fetch_assoc()) {
+
+
+                // Store each book's data in session variables
+                $_SESSION['borrower_id'] = $borrower_id;
+                $_SESSION['accession_code'] = $accession_code;
+                $_SESSION['title'] = $row['Book_Title'];
+                $_SESSION['author'] = $row['Authors_Name'];
+                $_SESSION['availability'] = $row['Quantity'];
+                $_SESSION['due_date'] = $dueDate;
+
+
                 echo "<div class='book'>";
                 echo "<p>Borrower ID : " .  $borrower_id . "</p>"; 
                 echo "<p><strong>Accession Code:</strong> " . $accession_code . "</p>";
