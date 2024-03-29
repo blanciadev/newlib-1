@@ -51,7 +51,7 @@ mysqli_close($conn);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Fines</title>
+    <title>VillaReadHub - Register User</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -91,22 +91,32 @@ mysqli_close($conn);
     </div> 
 
     <div class="board container"><!--board container-->
-    <div id="qrcode-container"></div>
-   
+    <div class="col-md-6 mt-4">
+            <div class="card">
+  
+    <div class="row">
+                    <!-- QR Code Container -->
+                    <div class="d-flex justify-content-center" id="qrcode-container"></div>
+                <div class="card-body">
+                    <!-- Session Data -->
+                    <?php
+                    // Display session data
+                    echo "<p class='card-text'>First Name: " . $first_name . "</p>";
+                    echo "<p class='card-text'>Middle Name: " . $middle_name . "</p>";
+                    echo "<p class='card-text'>Last Name: " . $last_name . "</p>";
+                    echo "<p class='card-text'>Contact Number: " . $contact_number . "</p>";
+                    echo "<p class='card-text'>Email: " . $email . "</p>";
+                    echo "<p class='card-text'>Affiliation: " . $affiliation . "</p>";
+                    ?>
+                </div>
+           
+        </div>
     </div>
-    <div class="board container"><!--board container-->
-    <?php
-
-
-// Display the session data using echo
-echo "First Name: " . $first_name . "<br>";
-echo "Middle Name: " . $middle_name . "<br>";
-echo "Last Name: " . $last_name . "<br>";
-echo "Contact Number: " . $contact_number . "<br>";
-echo "Email: " . $email . "<br>";
-echo "Affiliation: " . $affiliation . "<br>";
-?>
 </div>
+
+
+</div>
+
     <script>
     document.addEventListener("DOMContentLoaded", function() {
         console.log("Document loaded"); // Log that the document has loaded
@@ -117,8 +127,14 @@ echo "Affiliation: " . $affiliation . "<br>";
 
         if (lastInsertedID !== '') {
             console.log("Generating QR Code for ID:", lastInsertedID); // Log that QR code generation is starting
-            // Generate QR Code using QRCode.js
-            new QRCode(qrCodeContainer, lastInsertedID);
+            // Set options for QRCode.js
+            let qrOptions = {
+                text: lastInsertedID,
+                width: 200, // Custom width in pixels
+                height: 200, // Custom height in pixels
+            };
+            // Generate QR Code using QRCode.js with custom options
+            new QRCode(qrCodeContainer, qrOptions);
         } else {
             console.log("No ID available for QR Code"); // Log that no ID is available for QR code generation
             qrCodeContainer.innerHTML = "QR Code not available";
