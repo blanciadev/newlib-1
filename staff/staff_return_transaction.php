@@ -1,8 +1,6 @@
 <?php
 session_start();
 
-
-
 // Database connection
 $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
 if ($conn->connect_error) {
@@ -20,7 +18,6 @@ if(isset($_GET['borrowId'])) {
 
 // Initialize $bd_Id to an empty string
     $bd_Id = $_SESSION['BorrowDetails_ID'];
-
 
         // Prepare the SQL statement with a placeholder for the search input
         $sql = "SELECT DISTINCT
@@ -97,11 +94,36 @@ switch (true) {
 
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+ 
+$fine = $_SESSION['fine'];
+$Reason = $_POST['paymentStatus']; // Get the selected payment status
 
-    $bookStatus = $_POST['bookStatus'];
-    $fine = $_SESSION['fine'];
-   
-
+switch ($Reason) {
+    case 'DAMAGE':
+        $value = 1000;
+        $fine += $value;
+        $_SESSION['fine'] = $fine;  // Update fine directly in the session
+        break;
+    case 'PARTIALLY DAMAGE':
+        $value = 500;
+        $fine += $value;
+        $_SESSION['fine'] = $fine;
+        break;
+    case 'GOOD CONDITION':
+        $value = 30;
+        $fine += $value;
+        $_SESSION['fine'] = $fine;
+        break;
+    case 'LOST':
+        $value = 2000;
+        $fine += $value;
+        $_SESSION['fine'] = $fine;
+        break;
+    default:
+        // Handle the case where the payment status is not recognized
+        echo "Invalid payment status selected.";
+        break;
+}
 
     // Database connection
     $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
@@ -157,23 +179,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Get current date and time
             $currentDateTime = date("Y-m-d H:i:s");
 
-            // Prepare SQL statement to insert fine information
-            $sql5 = "INSERT INTO tbl_fines (Borrower_ID, ReturnDetails_ID, Amount, Payment_Status, Date_Created, Payment_Date) 
-                    VALUES (?, ?, ?,  ?, ?, ?)";
+          // Prepare SQL statement to insert fine information
+            $sql5 = "INSERT INTO tbl_fines (Borrower_ID, ReturnDetails_ID, Amount, Reason, Payment_Status, Date_Created, Payment_Date) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)";
             $stmt5 = $conn->prepare($sql5);
             if (!$stmt5) {
-                die("Error in preparing statement 5: " . $conn->error);
+            die("Error in preparing statement 5: " . $conn->error);
             }
 
             // Bind parameters and execute statement
-            $stmt5->bind_param("iiisss", $borrowerId, $bd_Id, $fine, $paymentStatus, $currentDate, $currentDateTime);
-          
-            $paymentStatus = "Paid"; // Assuming Payment_Status is always "Resolved"
+            $stmt5->bind_param("iiissss", $borrowerId, $bd_Id, $fine, $Reason, $paymentStatus, $currentDate, $currentDateTime);
+
+            // Set the payment status
+            $paymentStatus = "Paid";
 
             $accessionCode = $_SESSION['Accession_Code'];
             $qtyb = $_SESSION['qty'];
             $sqlUpdateQuantity = "UPDATE tbl_books SET Quantity = Quantity + ? WHERE Accession_Code = ?";
-             $stmtUpdateQuantity = $conn->prepare($sqlUpdateQuantity);
+            $stmtUpdateQuantity = $conn->prepare($sqlUpdateQuantity);
 
     if ($stmtUpdateQuantity) {
         // Bind parameters
@@ -314,32 +337,29 @@ if ($result->num_rows > 0) {
         $_SESSION['fine'] = $fine;
 
         // Radio buttons for selecting book status
-         echo "<form class='update-form' method='POST' action=''>";
-        // echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["BorrowDetails_ID"] . "'>";
-        // echo "<div class='form-group'>";
-        // echo "<label for='bookStatus'>Book Status:</label>";
-        // echo "<div class='form-check'>";
-        // echo "<input type='radio' id='damage' name='bookStatus' value='DAMAGE' class='form-check-input'>";
-        // echo "<label for='damage' class='form-check-label'>Damage</label><br>";
-        // echo "</div>";
-        // echo "<div class='form-check'>";
-        // echo "<input type='radio' id='partialDamage' name='bookStatus' value='PARTIALLY DAMAGE' class='form-check-input'>";
-        // echo "<label for='partialDamage' class='form-check-label'>Partially Damage</label><br>";
-        // echo "</div>";
-        // echo "<div class='form-check'>";
-        // echo "<input type='radio' id='goodCondition' name='bookStatus' value='GOOD CONDITION' class='form-check-input'>";
-        // echo "<label for='goodCondition' class='form-check-label'>Good Condition</label><br>";
-        // echo "</div>";
-        // echo "<div class='form-check'>";
-        // echo "<input type='radio' id='lost' name='bookStatus' value='LOST' class='form-check-input'>";
-        // echo "<label for='lost' class='form-check-label'>Lost</label><br>";
-        // echo "</div>";
-        // echo "</div>";
-         echo "<button type='submit' class='btn btn-primary'>Proceed to Payment</button>";
-        // echo "</form>";
-        // echo "</div>";
-        // echo "</div>";
-        // echo "</div>";
+        echo '<form class="update-form" method="POST" action="">';
+      
+        echo '<div class="form-group">';
+        echo '<label for="paymentStatus">Book Status:</label><br>';
+        echo '<div class="form-check">';
+        echo '<input type="radio" id="damage" name="paymentStatus" value="DAMAGE" class="form-check-input">';
+        echo '<label for="damage" class="form-check-label">Damage</label><br>';
+        echo '</div>';
+        echo '<div class="form-check">';
+        echo '<input type="radio" id="partialDamage" name="paymentStatus" value="PARTIALLY DAMAGE" class="form-check-input">';
+        echo '<label for="partialDamage" class="form-check-label">Partially Damage</label><br>';
+        echo '</div>';
+        echo '<div class="form-check">';
+        echo '<input type="radio" id="goodCondition" name="paymentStatus" value="GOOD CONDITION" class="form-check-input">';
+        echo '<label for="goodCondition" class="form-check-label">Good Condition</label><br>';
+        echo '</div>';
+        echo '<div class="form-check">';
+        echo '<input type="radio" id="lost" name="paymentStatus" value="LOST" class="form-check-input">';
+        echo '<label for="lost" class="form-check-label">Lost</label><br>';
+        echo '</div>';
+        echo '</div>';
+        echo '<button type="submit" class="btn btn-primary">Proceed to Payment</button>';
+        echo '</form>';
     }
 } else {
     echo "No records found for the provided Borrower ID.";

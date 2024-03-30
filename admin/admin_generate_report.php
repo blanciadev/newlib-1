@@ -57,130 +57,143 @@
             <h3>Overview</h3>
             <div class="ovw-con">
             <?php
-// Database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            // Database connection
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 
-// Check connection
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
+            // Check connection
+            if (!$conn) {
+                die("Connection failed: " . mysqli_connect_error());
+            }
 
-// Query to count books borrowed per month
-$countBooksQuery = "SELECT MONTH(Date_Borrowed) AS Month, COUNT(*) AS BooksBorrowed 
-                    FROM tbl_borrow 
-                    GROUP BY MONTH(Date_Borrowed)";
-$countBooksResult = mysqli_query($conn, $countBooksQuery);
-
-// Display the data in a table
-echo '<table class="table">';
-echo '<tr><th>Books Borrowed</th><th>Month</th><th>Books Borrowed</th><th>Visitors</th></tr>';
-
-if (!$countBooksResult) {
-    echo "<tr><td colspan='3'>Error fetching data: " . mysqli_error($conn) . "</td></tr>";
-} else {
-    // Fetch and display each row as a table row
-    while ($row = mysqli_fetch_assoc($countBooksResult)) {
-        // Query to count unique Borrower_ID for each month
-        $month = $row['Month'];
-        $uniqueVisitorsQuery = "SELECT COUNT(DISTINCT Borrower_ID) AS UniqueVisitors 
+            // Query to count books borrowed per month
+            $countBooksQuery = "SELECT MONTH(Date_Borrowed) AS Month, COUNT(*) AS BooksBorrowed 
                                 FROM tbl_borrow 
-                                WHERE MONTH(Date_Borrowed) = $month";
-        $uniqueVisitorsResult = mysqli_query($conn, $uniqueVisitorsQuery);
-        $uniqueVisitorsCount = ($uniqueVisitorsResult) ? mysqli_fetch_assoc($uniqueVisitorsResult)['UniqueVisitors'] : 0;
+                                GROUP BY MONTH(Date_Borrowed)";
+            $countBooksResult = mysqli_query($conn, $countBooksQuery);
 
-        echo '<tr>';
-        echo '<td>';
-        echo '<td>' . date("F", mktime(0, 0, 0, $row['Month'], 1)) . '</td>'; // Display month name
-        echo '<td>' . $row['BooksBorrowed'] . '</td>';
-        echo '<td>' . $uniqueVisitorsCount . '</td>'; // Display unique visitors count for each row
-        echo '</td>';
-    }
-}
+            // Display the data in a table
+            echo '<table class="table">';
+            echo '<tr><th>Books Borrowed</th><th>Month</th><th>Books Borrowed</th><th>Visitors</th></tr>';
 
-// Close connection
-mysqli_close($conn);
-?>
+            if (!$countBooksResult) {
+                echo "<tr><td colspan='3'>Error fetching data: " . mysqli_error($conn) . "</td></tr>";
+            } else {
+                // Fetch and display each row as a table row
+                while ($row = mysqli_fetch_assoc($countBooksResult)) {
+                    // Query to count unique Borrower_ID for each month
+                    $month = $row['Month'];
+                    $uniqueVisitorsQuery = "SELECT COUNT(DISTINCT Borrower_ID) AS UniqueVisitors 
+                                            FROM tbl_borrow 
+                                            WHERE MONTH(Date_Borrowed) = $month";
+                    $uniqueVisitorsResult = mysqli_query($conn, $uniqueVisitorsQuery);
+                    $uniqueVisitorsCount = ($uniqueVisitorsResult) ? mysqli_fetch_assoc($uniqueVisitorsResult)['UniqueVisitors'] : 0;
 
-<?php
-// Database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                    echo '<tr>';
+                    echo '<td>';
+                    echo '<td>' . date("F", mktime(0, 0, 0, $row['Month'], 1)) . '</td>'; // Display month name
+                    echo '<td>' . $row['BooksBorrowed'] . '</td>';
+                    echo '<td>' . $uniqueVisitorsCount . '</td>'; // Display unique visitors count for each row
+                    echo '</td>';
+                }
+            }
 
-// Check connection
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
+            // Close connection
+            mysqli_close($conn);
+            ?>
 
-// Query to count unique Borrower_ID and Date & Time per month from tbl_log
-$countLogsQuery = "SELECT MONTH(`Date&Time`) AS Month, 
-                        COUNT(DISTINCT Borrower_ID) AS UniqueBorrowers, 
-                        COUNT(*) AS TotalLogs 
-                    FROM tbl_log 
-                    GROUP BY MONTH(`Date&Time`)";
+            <?php
+            // Database connection
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 
-$countLogsResult = mysqli_query($conn, $countLogsQuery);
+            // Check connection
+            if (!$conn) {
+                die("Connection failed: " . mysqli_connect_error());
+            }
 
-// Display the data in a table
+            // Query to count unique Borrower_ID and Date & Time per month from tbl_log
+            $countLogsQuery = "SELECT MONTH(`Date&Time`) AS Month, 
+                                    COUNT(DISTINCT Borrower_ID) AS UniqueBorrowers, 
+                                    COUNT(*) AS TotalLogs 
+                                FROM tbl_log 
+                                GROUP BY MONTH(`Date&Time`)";
 
-echo '<tr><th>LOGS</th><th>Month</th><th>Unique Borrowers</th><th>Total Logs</th></tr>';
+            $countLogsResult = mysqli_query($conn, $countLogsQuery);
 
-if (!$countLogsResult) {
-    echo "<tr><td colspan='3'>Error fetching data: " . mysqli_error($conn) . "</td></tr>";
-} else {
-    // Fetch and display each row as a table row
-    while ($row = mysqli_fetch_assoc($countLogsResult)) {
-        echo '<tr>';
-        echo '<td>';
-        echo '<td>' . date("F", mktime(0, 0, 0, $row['Month'], 1)) . '</td>'; // Display month name
-        echo '<td>' . $row['UniqueBorrowers'] . '</td>';
-        echo '<td>' . $row['TotalLogs'] . '</td>';
-        echo '</td>';
-    }
-}
+            // Display the data in a table
+
+            echo '<tr><th>LOGS</th><th>Month</th><th>Unique Borrowers</th><th>Total Logs</th></tr>';
+
+            if (!$countLogsResult) {
+                echo "<tr><td colspan='3'>Error fetching data: " . mysqli_error($conn) . "</td></tr>";
+            } else {
+                // Fetch and display each row as a table row
+                while ($row = mysqli_fetch_assoc($countLogsResult)) {
+                    echo '<tr>';
+                    echo '<td>';
+                    echo '<td>' . date("F", mktime(0, 0, 0, $row['Month'], 1)) . '</td>'; // Display month name
+                    echo '<td>' . $row['UniqueBorrowers'] . '</td>';
+                    echo '<td>' . $row['TotalLogs'] . '</td>';
+                    echo '</td>';
+                }
+            }
 
 
-// Close connection
-mysqli_close($conn);
-?>
-<?php
-// Database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            // Close connection
+            mysqli_close($conn);
 
-// Check connection
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
-$totalFinesQuery = "SELECT MONTH(Date_Created) AS Month, 
-                        SUM(Amount) AS TotalAmount,
-                        COUNT(DISTINCT Borrower_ID) AS UniqueBorrowers 
-                    FROM tbl_fines 
-                    WHERE Payment_Date IS NOT NULL 
-                    GROUP BY MONTH(Date_Created)";
 
-$totalFinesResult = mysqli_query($conn, $totalFinesQuery);
+            ?>
+         <?php
+        // Database connection
+        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 
-// Display the data in a table
+        // Check connection
+        if (!$conn) {
+            die("Connection failed: " . mysqli_connect_error());
+        }
 
-echo '<tr><th>Fines</th><th>Month</th><th>Total Amount of Fines</th><th>Borrower</th></tr>';
+        // Define the reasons for fines
+        $reasons = ["DAMAGE", "PARTIALLY DAMAGE", "GOOD CONDITION", "LOST"];
 
-if (!$totalFinesResult) {
-    echo "<tr><td colspan='2'>Error fetching data: " . mysqli_error($conn) . "</td></tr>";
-} else {
-    // Fetch and display each row as a table row
-    while ($row = mysqli_fetch_assoc($totalFinesResult)) {
-        echo '<tr>';
-        echo '<td>';
-        echo '<td>' . date("F", mktime(0, 0, 0, $row['Month'], 1)) . '</td>'; // Display month name
-        echo '<td>' . $row['TotalAmount'] . '</td>';
-        echo '<td>' . $row['UniqueBorrowers'] . '</td>';
-        echo '</td>';
-    }
-}
+        // Display the data in a table
+       
+        echo '<tr><th>Fines</th><th>Month</th><th>Total Amount of Fines</th><th>Unique Borrowers</th></tr>';
 
-echo '</table>';
+        foreach ($reasons as $reason) {
+            $totalFinesQuery = "SELECT MONTH(Date_Created) AS Month, 
+                                        SUM(Amount) AS TotalAmount,
+                                        COUNT(DISTINCT Borrower_ID) AS UniqueBorrowers 
+                                    FROM tbl_fines 
+                                    WHERE Payment_Date IS NOT NULL 
+                                    AND Reason = ? 
+                                    GROUP BY MONTH(Date_Created)";
+            
+            $stmt = $conn->prepare($totalFinesQuery);
+            $stmt->bind_param("s", $reason);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-// Close connection
-mysqli_close($conn);
-?>
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    echo '<tr>';
+                    echo '<td>' . $reason . '</td>';
+                    echo '<td>' . date("F", mktime(0, 0, 0, $row['Month'], 1)) . '</td>'; // Display month name
+                    echo '<td>' . $row['TotalAmount'] . '</td>';
+                    echo '<td>' . $row['UniqueBorrowers'] . '</td>';
+                    echo '</tr>';
+                }
+            } else {
+                echo "<tr><td colspan='4'>No data found for reason: $reason</td></tr>";
+            }
+        }
+
+        echo '</table>';
+
+        // Close statement and connection
+        $stmt->close();
+        mysqli_close($conn);
+        ?>
+
 
 
 
