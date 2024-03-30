@@ -14,7 +14,7 @@ $email = $_SESSION['email'];
 $affiliation = $_SESSION['affiliation'];
 
 // CHANGE THE PORT IF NEEDED
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // Change the database credentials as needed
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
 
 // Check if the connection was successful
 if (!$conn) {
