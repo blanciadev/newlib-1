@@ -26,7 +26,7 @@
             <li class="nav-item"> <a href="./admin_staff.php" class="nav-link link-body-emphasis"><i class='bx bxs-user'></i>Manage Staff</a> </li>
             <li class="nav-item"> <a href="./admin_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
             <li class="nav-item"> <a href="./admin_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
-            <li class="nav-item"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-cloud'></i>Generate Report</a> </li>
+            <li class="nav-item"> <a href="./admin_backup-restore.php" class="nav-link link-body-emphasis"><i class='bx bxs-cloud'></i>Generate Report</a> </li>
             <hr>
             <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
             <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
@@ -105,25 +105,22 @@ if (!$requestBooksResult) {
 } else {
     // Check if there are any rows returned
     if (mysqli_num_rows($requestBooksResult) > 0) {
-        // Display table header
-      
-       
-       // Fetch and display each row
-while ($row = mysqli_fetch_assoc($requestBooksResult)) {
-    echo '<div>';
-    echo '<h4><strong>' . $row['Book_Title'] . '</strong></h4>';
-    echo '<p><strong>Authors ID:</strong> ' . $row['Authors_ID'] . '</p>';
-    echo '<p><strong>Publisher ID:</strong> ' . $row['Publisher_ID'] . '</p>';
-    echo '<p><strong>Year Published:</strong> ' . $row['Year_Published'] . '</p>';
-    echo '<p><strong>Quantity:</strong> ' . $row['Quantity'] . '</p>';
-    echo '</div>';
-}
-
-
-    } else {
-        echo "No request books found.";
+            // Fetch and display each row
+            while ($row = mysqli_fetch_assoc($requestBooksResult)) {
+                echo '<div class="book-details">';
+                echo '<h4><strong>' . $row['Book_Title'] . '</strong></h4><br>';
+                echo '<p><strong>Authors ID:</strong> ' . $row['Authors_ID'] . '</p>';
+                echo '<p><strong>Publisher ID:</strong> ' . $row['Publisher_ID'] . '</p>';
+                echo '<p><strong>Year Published:</strong> ' . $row['Year_Published'] . '</p>';
+                echo '<p><strong>Quantity:</strong> ' . $row['Quantity'] . '</p>';
+                echo '<hr>';
+                echo '</div>';
+            }
+        } else {
+            echo "No request books found.";
+        }
     }
-}
+
 
 // Close connection
 mysqli_close($conn);

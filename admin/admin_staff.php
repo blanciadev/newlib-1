@@ -8,7 +8,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if the "FIRE" button is clicked
 if(isset($_GET['delete_id'])) {
     $deleteId = $_GET['delete_id'];
     // Construct the SQL query to delete the record
@@ -16,12 +15,14 @@ if(isset($_GET['delete_id'])) {
     
     if (mysqli_query($conn, $deleteSql)) {
         // Deletion successful, redirect to the same page to refresh the data
-        header("Location: admin_staff.php");
-        exit();
+        echo '<script>alert("Record deleted successfully.");</script>';
+        echo '<script>window.location.href = "admin_staff.php";</script>';
+        exit(); // Ensure to exit after header redirection
     } else {
         echo "Error deleting record: " . mysqli_error($conn);
     }
 }
+
 
 
 
@@ -122,57 +123,54 @@ if(isset($_POST['submit'])) {
 
     <div class="board container"><!--board container-->
 
-        <?php
-        // Check if the query executed successfully
-      
-                    
-        // Database connection
-        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-        
-        // Query to fetch data from your database
-        $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address FROM tbl_employee";
-        $result = mysqli_query($conn, $sql);
+<?php
+// Check if the query executed successfully
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
-        if ($result) {
-            echo '<table class="table table-bordered">';
-            echo '<thead><tr><th>User ID</th><th>First Name</th><th>Middle Name</th><th>Last Name</th><th>Role</th><th>Contact Number</th><th>Email</th><th>Address</th><th>Action</th></tr></thead>';
-            echo '<tbody>';
-        
-            while ($row = mysqli_fetch_assoc($result)) {
-                echo '<tr>';
-                echo '<td>' . $row['User_ID'] . '</td>';
-                echo '<td>' . $row['First_Name'] . '</td>';
-                echo '<td>' . $row['Middle_Name'] . '</td>';
-                echo '<td>' . $row['Last_Name'] . '</td>';
-                echo '<td>' . $row['tb_role'] . '</td>';
-                echo '<td>' . $row['Contact_Number'] . '</td>';
-                echo '<td>' . $row['E_mail'] . '</td>';
-                echo '<td>' . $row['tb_address'] . '</td>';
-        
-                // Add a button for rows where Role is 'Staff'
-                echo "<form class='delete-form' method='GET' action='admin_staff.php'>";
-                if ($row['tb_role'] === 'Staff') {
-                    echo "<form class='delete-form' method='GET' action='admin_staff.php'>";
-                    echo "<input type='hidden' name='delete_id' id='delete_id_" . $row["User_ID"] . "' value='" . $row["User_ID"] . "'>";
-                    echo "<td><button type='submit' class='btn btn-danger btn-sm delete-btn' onclick='return confirmDelete(" . $row["User_ID"] . ")'>DELETE</button></td>";
-                    echo "</form>";
-                } else {
-                    echo '<td></td>'; // Empty cell for other roles
-                }
-                
-               
-                
-              
-                echo '</tr>';
-            }
-            echo '</tbody>';
-            echo '</table>';
+// Query to fetch data from your database
+$sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address FROM tbl_employee";
+$result = mysqli_query($conn, $sql);
+
+if ($result) {
+    echo '<table class="table table-bordered">';
+    echo '<thead><tr><th>User ID</th><th>First Name</th><th>Middle Name</th><th>Last Name</th><th>Role</th><th>Contact Number</th><th>Email</th><th>Address</th><th>Action</th></tr></thead>';
+    echo '<tbody>';
+
+    while ($row = mysqli_fetch_assoc($result)) {
+        echo '<tr>';
+        echo '<td>' . $row['User_ID'] . '</td>';
+        echo '<td>' . $row['First_Name'] . '</td>';
+        echo '<td>' . $row['Middle_Name'] . '</td>';
+        echo '<td>' . $row['Last_Name'] . '</td>';
+        echo '<td>' . $row['tb_role'] . '</td>';
+        echo '<td>' . $row['Contact_Number'] . '</td>';
+        echo '<td>' . $row['E_mail'] . '</td>';
+        echo '<td>' . $row['tb_address'] . '</td>';
+
+        // Add a button for rows where Role is 'Staff'
+        if ($row['tb_role'] === 'Staff') {
+            echo "<td><form class='delete-form' method='GET' action='admin_staff.php'>";
+            echo "<input type='hidden' name='delete_id' value='" . $row['User_ID'] . "'>";
+            echo "<button type='submit' class='btn btn-danger btn-sm delete-btn' onclick='return confirmDelete(" . $row['User_ID'] . ")'>DELETE</button>";
+            echo "</form></td>";
+        } else {
+            echo '<td></td>'; // Empty cell for other roles
         }
-        
-        ?>
+        echo '</tr>';
+    }
+    echo '</tbody>';
+    echo '</table>';
+}
+
+// Close the database connection
+mysqli_close($conn);
+?>
+
+</div>
+
 
         <form id="addEmployeeForm" method="POST" action="">
             <!-- Hidden container for adding a new employee -->
@@ -225,13 +223,7 @@ if(isset($_POST['submit'])) {
         
    
 <script>
-function confirmDelete(userId) {
-    console.log("Delete button clicked for User ID: " + userId);
-    var deleteId = document.getElementById('delete_id_' + userId).value;
-    if (confirm("Are you sure you want to delete this record?")) {
-        window.location.href = "admin_staff.php?delete_id=" + deleteId;
-    }
-}
+
 
 
 

@@ -11,15 +11,7 @@ $availability = $_SESSION['availability'];
 $due_date = $_SESSION['due_date'];
 // Access more data as needed
 
-// Display the book data
-// echo "<h2>Book Details</h2>";
-// echo "<p>Borrower ID: $borrower_id</p>";
-// echo "<p>Accession Code: $accession_code</p>";
-// echo "<p>Title: $title</p>";
-// echo "<p>Author: $author</p>";
-// echo "<p>Availability: $availability</p>";
-// echo "<p>Due Date: $due_date</p>";
-// Display more details as needed
+
 ?>
 
 

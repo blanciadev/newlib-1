@@ -44,6 +44,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 if (mysqli_query($conn, $updateQuery)) {
                     echo '<script>alert("Password updated successfully!");</script>';
+                    echo '<script>window.location.href = "admin_dashboard.php";</script>';
+    
                 } else {
                     echo "Error updating password: " . mysqli_error($conn);
                 }

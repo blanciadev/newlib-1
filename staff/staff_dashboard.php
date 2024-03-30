@@ -94,66 +94,55 @@ if (!isset($_SESSION["staff_name"])) {
                 </div>
             </div>
 
-            <div class="duebooks">
-                <h3>Due Today</h3>
+            <div class="duebooks" style="max-height: 400px; overflow-y: auto; padding-top: 20px;">
+    <h3>Due Today</h3>
+    <div class="duebooks-con">
+        <?php
+        $totalVisits = "SELECT
+                            bd.BorrowDetails_ID, 
+                            b.User_ID, 
+                            b.Accession_Code, 
+                            bk.Book_Title, 
+                            bd.Quantity, 
+                            b.Date_Borrowed, 
+                            b.Due_Date, 
+                            br.Borrower_ID, 
+                            bd.tb_status, 
+                            br.First_Name, 
+                            br.Last_Name
+                        FROM
+                            tbl_borrowdetails AS bd
+                        INNER JOIN
+                            tbl_borrow AS b
+                        ON 
+                            bd.Borrower_ID = b.Borrower_ID
+                        INNER JOIN
+                            tbl_books AS bk
+                        ON 
+                            b.Accession_Code = bk.Accession_Code
+                        INNER JOIN
+                            tbl_borrower AS br
+                        ON 
+                            bd.Borrower_ID = br.Borrower_ID
+                        WHERE
+                            b.Due_Date = CURDATE();";
 
-                <div class="duebooks-con">
+        $totalVisits_run = mysqli_query($conn, $totalVisits);
 
-                    <?php
+        if ($totalVisits_run && mysqli_num_rows($totalVisits_run) > 0) {
+            echo '<table class="table">';
+            while ($row = mysqli_fetch_assoc($totalVisits_run)) {
+                echo '<tr><td></td><td><strong>' . $row['Book_Title'] . '</strong></td></tr>';
+                echo '<tr><td><strong></strong></td><td>' . $row['First_Name'] . ' ' . $row['Last_Name'] . '</td></tr>';
+            }
+            echo '</table>';
+        } else {
+            echo "<p>No books due today.</p>";
+        }
+        ?>
+    </div>
+</div>
 
-                    $totalVisits = "SELECT
-                    bd.BorrowDetails_ID, 
-                    b.User_ID, 
-                    b.Accession_Code, 
-                    bk.Book_Title, 
-                    bd.Quantity, 
-                    b.Date_Borrowed, 
-                    b.Due_Date, 
-                    br.Borrower_ID, 
-                    bd.tb_status, 
-                    br.First_Name, 
-                    br.Last_Name
-                    FROM
-                    tbl_borrowdetails AS bd
-                    INNER JOIN
-                    tbl_borrow AS b
-                    ON 
-                        bd.Borrower_ID = b.Borrower_ID
-                    INNER JOIN
-                    tbl_books AS bk
-                    ON 
-                        b.Accession_Code = bk.Accession_Code
-                    INNER JOIN
-                    tbl_borrower AS br
-                    ON 
-                        bd.Borrower_ID = br.Borrower_ID
-                    WHERE
-                    b.Due_Date = CURDATE();
-                    ";
-
-                    $totalVisits_run = mysqli_query($conn, $totalVisits);
-
-                    if ($totalVisits_run) {
-                        $totalVisits_count = mysqli_num_rows($totalVisits_run);
-                        // Display each visit's details
-                        echo '<div style="overflow-x: auto;">'; // Container for scrollable effect
-                        echo '<table>';
-                        while ($row = mysqli_fetch_assoc($totalVisits_run)) {
-
-                            echo '<tr><td></td><td><strong>' . $row['Book_Title'] . '</strong></td></tr>';
-                            echo '<tr><td><strong></strong></td><td>' . $row['First_Name'] . ' ' . $row['Last_Name'] . '</td></tr>';
-                        }
-
-                        echo '</table>';
-                        echo '</div>'; // Close the container
-
-
-                    } else {
-                        echo "<h4>No Due date today</h4>";
-                    }
-                    ?>
-                </div>
-            </div>
             <div class="stats">
                 <h3>Statistics</h3>
                 <div class="stats-con"></div>

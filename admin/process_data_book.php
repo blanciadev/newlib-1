@@ -67,7 +67,7 @@ if(isset($_POST['submit'])) {
 if ($conn->query($sql) === TRUE) {
     // If the insertion is successful
     $lastInsertedID = $conn->insert_id; // Get the auto-generated Authors_ID
-    echo "New record created successfully. The Author's ID is: " . $lastInsertedID;
+ //   echo "New record created successfully. The Author's ID is: " . $lastInsertedID;
 } else {
     // If an error occurred during insertion
     echo "<br>Error: " . $sql . "<br>" . $conn->error;
@@ -77,7 +77,7 @@ if ($conn->query($sql) === TRUE) {
 if ($conn->query($pubsql) === TRUE) {
     // If the insertion is successful
     $lastInsertedID = $conn->insert_id; // Get the auto-generated Authors_ID
-    echo "New record created successfully. The Author's ID is: " . $lastInsertedID;
+  //  echo "New record created successfully. The Author's ID is: " . $lastInsertedID;
 } else {
     // If an error occurred during insertion
     echo "<br>Error: " . $pubsql . "<br>" . $conn->error;
@@ -88,7 +88,7 @@ if ($conn->query($pubsql) === TRUE) {
 if ($conn->query($booksql) === TRUE) {
     // If the insertion is successful
     $lastInsertedID = $conn->insert_id; // Get the auto-generated Authors_ID
-    echo "New record created successfully. The Author's ID is: " . $lastInsertedID;
+  //  echo "New record created successfully. The Author's ID is: " . $lastInsertedID;
 } else {
     // If an error occurred during insertion
     echo "<br>Error: " . $booksql . "<br>" . $conn->error;
@@ -98,7 +98,9 @@ if ($conn->query($booksql) === TRUE) {
 $sql = "UPDATE tbl_requestbooks SET tb_status = 'Approved' WHERE Request_ID = '$requestID'";
 
 if ($conn->query($sql) === TRUE) {
-    echo "Record updated successfully";
+    echo '<script>alert("Record Updated Successfully!");</script>';
+    echo '<script>window.location.href = "admin_books.php";</script>';
+
 } else {
     echo "Error updating record: " . $conn->error;
 }

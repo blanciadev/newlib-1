@@ -10,7 +10,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 // Fetch log records from the database
-$query = "SELECT
+$query = "SELECT DISTINCT
 bd.BorrowDetails_ID, 
 b.User_ID, 
 b.Accession_Code, 
@@ -25,21 +25,14 @@ br.*
 FROM
 tbl_borrowdetails AS bd
 INNER JOIN
-tbl_borrow AS b
-ON 
-    bd.Borrower_ID = b.Borrower_ID
+tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
 INNER JOIN
-tbl_books AS bk
-ON 
-    b.Accession_Code = bk.Accession_Code
+tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
 INNER JOIN
-tbl_borrower AS br
-ON 
-    bd.Borrower_ID = br.Borrower_ID
+tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
 INNER JOIN
-tbl_fines
-ON 
-    bd.BorrowDetails_ID = tbl_fines.Borrower_ID;
+tbl_fines ON bd.BorrowDetails_ID = tbl_fines.Borrower_ID;
+
 "; 
 $result = mysqli_query($conn, $query);
 
