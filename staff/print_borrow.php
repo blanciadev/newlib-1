@@ -63,9 +63,7 @@ $due_date = $_SESSION['due_date'];
         <div class="info-item">
             <span class="info-label">Due Date:</span> <?php echo isset($_SESSION['due_date']) ? $_SESSION['due_date'] : ''; ?>
         </div>
-        <div class="info-item">
-            <span class="info-label">Fine:</span> <?php echo isset($_SESSION['fine']) ? $_SESSION['fine'] : ''; ?>
-        </div>
+       
         <div class="info-item">
             <span class="info-label">Status:</span> <?php echo isset($_SESSION['status']) ? $_SESSION['status'] : ''; ?>
         </div>

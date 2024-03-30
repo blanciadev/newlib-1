@@ -1,8 +1,7 @@
 <?php
+session_start(); // Start or resume the session
 
-session_start();
-
-// Initialize a flag to track the validity of the Borrower ID
+// Initialize variables
 $isBorrowerIdValid = false;
 $errorMessage = "";
 
@@ -14,20 +13,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
         die("Connection failed: " . $conn->connect_error);
     }
 
-    // Retrieve Borrower_ID from the form
-    $borrower_id = $_POST['borrower_id'];
+    // Retrieve Borrower_ID from the form and sanitize it
+    $borrower_id = mysqli_real_escape_string($conn, $_POST['borrower_id']);
     
-    // Validate Borrower_ID against tbl_borrower table
-    $sql_validate_borrower = "SELECT * FROM tbl_borrower WHERE Borrower_ID = '$borrower_id'";
-    $result_validate_borrower = $conn->query($sql_validate_borrower);
-
-    if ($result_validate_borrower->num_rows > 0) {
-        // Borrower_ID is valid
-        $isBorrowerIdValid = true;
-        $_SESSION['borrower_id'] = $borrower_id;
+    // Check if Borrower_ID starts with '0'
+    if (substr($borrower_id, 0, 1) === '0') {
+        // Borrower_ID starts with '0', flag as error
+        $errorMessage = "Borrower ID cannot start with '0'.";
     } else {
-        // Borrower_ID is invalid
-        $errorMessage = "Invalid Borrower ID.";
+        // Validate Borrower_ID against tbl_borrower table
+        $sql_validate_borrower = "SELECT * FROM tbl_borrower WHERE Borrower_ID = '$borrower_id'";
+        $result_validate_borrower = $conn->query($sql_validate_borrower);
+
+        if ($result_validate_borrower->num_rows > 0) {
+            // Borrower_ID is valid
+            $isBorrowerIdValid = true;
+            $_SESSION['borrower_id'] = $borrower_id;
+        } else {
+            // Borrower_ID is invalid
+            $errorMessage = "Invalid Borrower ID.";
+        }
     }
 
     // Close connection
@@ -36,14 +41,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 
 // If Borrower ID is valid, redirect to the next page
 if ($isBorrowerIdValid) {
-    $borrower_id = $_POST['borrower_id'];
+    $borrower_id = $_SESSION['borrower_id']; // Retrieve from session
     header("Location: staff_book_borrow_find.php?borrower_id=$borrower_id");
     exit(); // Make sure to exit after redirecting
 }
-
 ?>
-
-
 
 
 <!DOCTYPE html>
@@ -72,7 +74,7 @@ if ($isBorrowerIdValid) {
         </a><!--header container-->
         <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
             <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
-            <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong> 
+            <!-- <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong>  -->
         </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
