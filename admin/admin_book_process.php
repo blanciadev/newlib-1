@@ -68,10 +68,8 @@ if(isset($_POST['submit'])) {
                 // Update the quantity in the database
                 $sql_update_quantity = "UPDATE tbl_books SET Quantity = '$remaining_quantity' WHERE Accession_Code = '$accession_code'";
                 if ($conn->query($sql_update_quantity) === TRUE) {
-                    // Quantity updated successfully
-                   // echo "Quantity updated successfully.";
-                    
-                    // Proceed with the borrowing process
+                
+                 
                     // Prepare and execute the INSERT statements for tbl_borrow and tbl_borrowdetails
                     $sql_borrow = "INSERT INTO tbl_borrow (User_ID, Borrower_ID, Accession_Code, Date_Borrowed, Due_Date, tb_status) 
                                    VALUES ('$user_id', '$borrower_id', '$accession_code', '$currentDate', '$dueDate', '$Status')";

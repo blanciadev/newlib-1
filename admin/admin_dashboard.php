@@ -124,9 +124,8 @@ $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
-
-// Query to fetch data from tbl_requestbooks
-$requestBooksQuery = "SELECT * FROM tbl_requestbooks";
+// Query to fetch data from tbl_requestbooks where status is 'Pending'
+$requestBooksQuery = "SELECT * FROM tbl_requestbooks WHERE tb_status = 'Pending'";
 $requestBooksResult = mysqli_query($conn, $requestBooksQuery);
 
 if (!$requestBooksResult) {
@@ -134,21 +133,22 @@ if (!$requestBooksResult) {
 } else {
     // Check if there are any rows returned
     if (mysqli_num_rows($requestBooksResult) > 0) {
-            // Fetch and display each row
-            while ($row = mysqli_fetch_assoc($requestBooksResult)) {
-                echo '<div class="book-details">';
-                echo '<h4><strong>' . $row['Book_Title'] . '</strong></h4><br>';
-                echo '<p><strong>Authors ID:</strong> ' . $row['Authors_ID'] . '</p>';
-                echo '<p><strong>Publisher ID:</strong> ' . $row['Publisher_ID'] . '</p>';
-                echo '<p><strong>Year Published:</strong> ' . $row['Year_Published'] . '</p>';
-                echo '<p><strong>Quantity:</strong> ' . $row['Quantity'] . '</p>';
-                echo '<hr>';
-                echo '</div>';
-            }
-        } else {
-            echo "No request books found.";
+        // Fetch and display each row
+        while ($row = mysqli_fetch_assoc($requestBooksResult)) {
+            echo '<div class="book-details">';
+            echo '<h4><strong>' . $row['Book_Title'] . '</strong></h4><br>';
+            echo '<p><strong>Authors ID:</strong> ' . $row['Authors_ID'] . '</p>';
+            echo '<p><strong>Publisher ID:</strong> ' . $row['Publisher_ID'] . '</p>';
+            echo '<p><strong>Year Published:</strong> ' . $row['Year_Published'] . '</p>';
+            echo '<p><strong>Quantity:</strong> ' . $row['Quantity'] . '</p>';
+            echo '<hr>';
+            echo '</div>';
         }
+    } else {
+        echo "No pending request books found.";
     }
+}
+
 
 
 // Close connection
