@@ -1,6 +1,12 @@
 <?php
 // Start the session
 session_start();
+// Check if the User_ID session variable is not set or empty
+if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
+    // Redirect to index.php
+    header("Location: ../index.php");
+    exit(); // Ensure script execution stops after redirection
+}
 
 // Access the stored session data
 $accessionCode = $_SESSION['Accession_Code'];
@@ -12,21 +18,6 @@ $due = $_SESSION['Due_Date'];
 $fine =  $_SESSION['fine'];
 $stat = $_SESSION['stat'];
 
-
-// Now you can use these variables as needed in this file
-// echo "Accession Code: " . $accessionCode . "<br>";
-// echo "Book Title: " . $bookTitle . "<br>";
-// echo "Quantity: " . $quantity . "<br>";
-// echo "Borrow Details ID: " . $borrowDetailsId . "<br>";
-// echo "Date Borrowed: ". $date . "<br>";
-// echo "Due Date: " . $due. "<br>";
-// echo "Fine: " . $fine. "<br>";
-// echo "Status: " . $stat. "<br>";
-// Remember to clear or unset these session variables when they are no longer needed
-// unset($_SESSION['Accession_Code']);
-// unset($_SESSION['Book_Title']);
-// unset($_SESSION['Quantity']);
-// unset($_SESSION['BorrowDetails_ID']);
 ?>
 <!DOCTYPE html>
 <html lang="en">

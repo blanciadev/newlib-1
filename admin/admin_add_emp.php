@@ -1,4 +1,11 @@
 <?php
+// Check if the User_ID session variable is not set or empty
+if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
+    // Redirect to index.php
+    header("Location: ../index.php");
+    exit(); // Ensure script execution stops after redirection
+}
+
 // Check if data is received through query parameters
 if (isset($_GET['firstName']) && isset($_GET['lastName']) && isset($_GET['role']) &&
     isset($_GET['contactNumber']) && isset($_GET['email']) && isset($_GET['address'])) {

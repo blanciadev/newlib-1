@@ -1,6 +1,12 @@
 <?php
 
 session_start();
+// Check if the User_ID session variable is not set or empty
+if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
+    // Redirect to index.php
+    header("Location: ../index.php");
+    exit(); // Ensure script execution stops after redirection
+}
 
 // Check if the form was submitted with data
 if ($_SERVER["REQUEST_METHOD"] == "POST") {

@@ -6,7 +6,12 @@ session_start();
 $isBorrowerIdValid = false;
 $errorMessage = "";
 
-
+// Check if the User_ID session variable is not set or empty
+if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
+    // Redirect to index.php
+    header("Location: ../index.php");
+    exit(); // Ensure script execution stops after redirection
+}
 
 // Check if the form is submitted and Borrower ID is provided
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
