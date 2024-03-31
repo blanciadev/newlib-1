@@ -7,7 +7,7 @@ $borrower_id = $_SESSION['borrower_id'];
 $accession_code = $_SESSION['accession_code'];
 $title = $_SESSION['title'];
 $author = $_SESSION['author'];
-$availability = $_SESSION['availability'];
+$availability = $_SESSION['quantity'];
 $due_date = $_SESSION['due_date'];
 // Access more data as needed
 
@@ -55,18 +55,15 @@ $due_date = $_SESSION['due_date'];
             <span class="info-label">Quantity:</span> <?php echo isset($_SESSION['quantity']) ? $_SESSION['quantity'] : ''; ?>
         </div>
         <div class="info-item">
-            <span class="info-label">Borrow Details ID:</span> <?php echo isset($_SESSION['borrow_details_id']) ? $_SESSION['borrow_details_id'] : ''; ?>
+            <span class="info-label">Borrow Details ID:</span> <?php echo isset($_SESSION['borrower_id']) ? $_SESSION['borrower_id'] : ''; ?>
         </div>
         <div class="info-item">
-            <span class="info-label">Date Borrowed:</span> <?php echo isset($_SESSION['date_borrowed']) ? $_SESSION['date_borrowed'] : ''; ?>
+        <span class="info-label">Date Borrowed:</span> <?php echo date('Y-m-d'); ?>
         </div>
         <div class="info-item">
             <span class="info-label">Due Date:</span> <?php echo isset($_SESSION['due_date']) ? $_SESSION['due_date'] : ''; ?>
         </div>
        
-        <div class="info-item">
-            <span class="info-label">Status:</span> <?php echo isset($_SESSION['status']) ? $_SESSION['status'] : ''; ?>
-        </div>
     </div>
 </body>
 </html>

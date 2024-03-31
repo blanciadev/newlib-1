@@ -192,7 +192,7 @@ switch ($Reason) {
 
             // Set the payment status
             $paymentStatus = "Paid";
-
+            $_SESSION['stat'] =  $paymentStatus;
             $accessionCode = $_SESSION['Accession_Code'];
             $qtyb = $_SESSION['qty'];
             $sqlUpdateQuantity = "UPDATE tbl_books SET Quantity = Quantity + ? WHERE Accession_Code = ?";

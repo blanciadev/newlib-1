@@ -60,8 +60,6 @@ $result = $stmt->get_result();
 
 ?>
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -79,35 +77,6 @@ $result = $stmt->get_result();
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./staff.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
-</head>
-<body>
-    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
-        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-            <h2>Villa<span>Read</span>Hub</h2> 
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
-        </a><!--header container--> 
-        <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-            <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
-           
-            <!-- <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong>  -->
-       
-        </div>
-        <hr>
-        <div>
-        <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
-            <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
-            <li class="nav-item "> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
-            <li class="nav-item"> <a href="./staff_transaction_dash.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>
-             <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
-             <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>  <hr>
-            <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
-        </ul>
-        </div>
-    </div>
-
-    <div class="board container"><!--board container-->
-    <h2>Request List</h2>
     <style>
     main {
         display: flex;
@@ -122,69 +91,104 @@ $result = $stmt->get_result();
         font-size: 1.5rem;
     }
 </style>
+</head>
+<body>
+    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary"><!--sidenav container-->
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+            <h2>Villa<span>Read</span>Hub</h2> 
+            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
+        </a><!--header container--> 
+        <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
+            <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
+           
+            <!-- <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong>  -->
+       
+        </div>
+        <hr>
+        <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
+            <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
+            <li class="nav-item "> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
+            <li class="nav-item"> <a href="./staff_transaction_dash.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>
+             <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
+             <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>  <hr>
+            <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
+            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
+        </ul> 
+    </div>
+    <div class="container">
+        <h2 class="mt-3">Request List</h2>
+        
+        <!-- QR Code Reader Container -->
+        <main>
+            <div id="reader">QR Code Scanner</div>
+            <div id="result"></div>
+        </main>
 
-<main>
-    <div id="reader"></div>
-    <div id="result"></div>
-</main>
-  
-    <div class="container mt-2">
-    <input type="text" id="searchInput" class="form-control me-2" placeholder="Search...">
-</div>
+        <!-- Search Input -->
+        <div class="search-container">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+        </div>
 
-<form class='update-form' method='GET' action='staff_borrow_details.php'>
-    <input type='hidden' name='borrowerId' value='<?php echo $borrower_id; ?>'>
-   
-<!-- Container for displaying search results with a fixed height and scrollable content -->
-<div class="container mt-3" style="max-height: 400px; overflow-y: auto;">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Borrow ID</th>
-                <th>Borrower ID</th>
-                <th>Accession Code</th>
-                <th>Book Title</th>
-                <th>Quantity</th>
-                <th>Date Borrowed</th>
-                <th>Due Date</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody id="searchResults">
-        <?php
-    if ($result->num_rows > 0) {
-        // Output data of each row
-        while($row = $result->fetch_assoc()) {
-            echo "<tr>";
-            echo "<td>".$row["BorrowDetails_ID"]."</td>";
-            echo "<td>".$row["Borrower_ID"]."</td>";
-            echo "<td>".$row["Accession_Code"]."</td>";
-            echo "<td>".$row["Book_Title"]."</td>";
-            echo "<td>".$row["Quantity"]."</td>";
-            echo "<td>".$row["Date_Borrowed"]."</td>";
-            echo "<td>".$row["Due_Date"]."</td>";
-            echo "<td>".$row["tb_status"]."</td>";
-            echo "<td>";
-            
-            // Conditionally render the button based on the status
-            if ($row["tb_status"] === 'Pending') {
-                echo "<button type='button' class='btn btn-primary btn-sm update-btn' data-borrow-id='".$row["BorrowDetails_ID"]."' onclick='updateAndSetSession(" . $row["BorrowDetails_ID"] . ")'>UPDATE</button>";
-            } else {
-                echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
-            }
-            
-            echo "</td>";
-            echo "</tr>";
-        }
-    } else {
-        echo "<tr><td colspan='9'>No records found for the provided Borrower ID.</td></tr>";
-    }
-?>
+        <!-- Form for updating request details -->
+        <form class="update-form" method="GET" action="staff_borrow_details.php">
+            <div class="container mt-2">
+                <input type="hidden" name="borrowerId" value="<?php echo $borrower_id; ?>">
+            </div>
 
-        </tbody>
-    </table>
-</div>
-</form>
+            <!-- Container for displaying search results with a fixed height and scrollable content -->
+            <div class="container mt-3 table-container">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Borrow ID</th>
+                            <th>Borrower ID</th>
+                            <th>Accession Code</th>
+                            <th>Book Title</th>
+                            <th>Quantity</th>
+                            <th>Date Borrowed</th>
+                            <th>Due Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="searchResults">
+                        <?php
+                        if ($result->num_rows > 0) {
+                            // Output data of each row
+                            while($row = $result->fetch_assoc()) {
+                                echo "<tr>";
+                                echo "<td>".$row["BorrowDetails_ID"]."</td>";
+                                echo "<td>".$row["Borrower_ID"]."</td>";
+                                echo "<td>".$row["Accession_Code"]."</td>";
+                                echo "<td>".$row["Book_Title"]."</td>";
+                                echo "<td>".$row["Quantity"]."</td>";
+                                echo "<td>".$row["Date_Borrowed"]."</td>";
+                                echo "<td>".$row["Due_Date"]."</td>";
+                                echo "<td>".$row["tb_status"]."</td>";
+                                echo "<td>";
+                                
+                                // Conditionally render the button based on the status
+                                if ($row["tb_status"] === 'Pending') {
+                                    echo "<button type='button' class='btn btn-primary btn-sm update-btn' data-borrow-id='".$row["BorrowDetails_ID"]."' onclick='updateAndSetSession(" . $row["BorrowDetails_ID"] . ")'>UPDATE</button>";
+                                } else {
+                                    echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
+                                }
+                                
+                                echo "</td>";
+                                echo "</tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='9'>No records found for the provided Borrower ID.</td></tr>";
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+        </form>
+    </div>
+
+
+
 <script>
     function updateAndSetSession(borrowId) {
         // Redirect to staff_return_transaction.php with the borrowId parameter

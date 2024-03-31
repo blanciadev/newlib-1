@@ -10,7 +10,9 @@ $borrowDetailsId = $_SESSION['BorrowDetails_ID'];
 $date = $_SESSION['Date_Borrowed'];
 $due = $_SESSION['Due_Date'];
 $fine =  $_SESSION['fine'];
-$stat = $_SESSION['status'];
+$stat = $_SESSION['stat'];
+
+
 // Now you can use these variables as needed in this file
 // echo "Accession Code: " . $accessionCode . "<br>";
 // echo "Book Title: " . $bookTitle . "<br>";

@@ -4,22 +4,19 @@ session_start();
 $result = null; // Initialize $result variable
 $_SESSION['Accession_Code'] = null;
 
-
 // Check if the borrower_id session variable is set
 if(isset($_SESSION['borrower_id'])) {
     // Retrieve the borrower_id from the session
     $borrower_id = $_SESSION['borrower_id'];
 
     // Now you can use $borrower_id in your code as needed
-    echo "Borrower ID: " . $borrower_id;
+    // echo "Borrower ID: " . $borrower_id;
 } else {
     // Handle the case where the session variable is not set
     echo "Borrower ID not found in session.";
 }
 
-
 if(isset($_REQUEST['Accession_Code'])) {
-   
     // Sanitize input to prevent SQL injection
     $conn =  mysqli_connect("localhost","root","root","db_library_2", 3308); //database connection
     $Accession_Code = mysqli_real_escape_string($conn, $_REQUEST['Accession_Code']);
@@ -35,16 +32,18 @@ if(isset($_REQUEST['Accession_Code'])) {
     
     $result = $conn->query($sql);
 
+    // Check if the result set is empty (Accession_Code is invalid)
+    if ($result->num_rows === 0) {
+        // Display an alert message
+        echo '<script>alert("Invalid Accession Code. No book found.");</script>';
+    }
   
     // Close the database connection
     $conn->close();
 } else {
     // Accession Code is not provided
-     // Check if the form has been submitted
-     if(isset($_REQUEST['Accession_Code'])) {
-        // Accession Code is not provided
-        echo "<div class='books-container'><p>No book found with the provided Accession Code</p></div>";
-    }
+    echo '<script>alert("Accession Code is required.");</script>';
+    exit(); // Exit to prevent further execution if Accession_Code is not provided
 }
 ?>
 
@@ -100,7 +99,7 @@ if(isset($_REQUEST['Accession_Code'])) {
 ?>
 
     </form>
-
+<br>
     <?php
         if ($result && $result->num_rows > 0) {
             echo "<h2>Books Found</h2>";

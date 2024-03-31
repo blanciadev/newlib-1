@@ -11,10 +11,10 @@ if(isset($_SESSION['borrower_id'])) {
     $borrower_id = $_SESSION['borrower_id'];
     $User_ID = $_SESSION["User_ID"];
     // Now you can use $borrower_id in your code as needed
-    echo "Borrower ID: " . $borrower_id;
+   // echo "Borrower ID: " . $borrower_id;
 } else {
     // Handle the case where the session variable is not set
-    echo "Borrower ID not found in session.";
+    echo '<script>alert("Borrower ID unavailable"); window.location.href = "staff_borrow_dash.php";</script>';
 }
 
 // Check if the accession code session variable is set
@@ -58,7 +58,7 @@ if(isset($_POST['submit'])) {
             if ($quantity <= $available_quantity) {
                 // Calculate the remaining quantity after borrowing
                 $remaining_quantity = $available_quantity - $quantity;
-
+                $_SESSION['quantity'] = $quantity;
                 // Update the quantity in the database
                 $sql_update_quantity = "UPDATE tbl_books SET Quantity = '$remaining_quantity' WHERE Accession_Code = '$accession_code'";
                 if ($conn->query($sql_update_quantity) === TRUE) {
@@ -100,7 +100,7 @@ if(isset($_POST['submit'])) {
                     echo "Error updating quantity: " . $conn->error;
                 }
             } else {
-                echo "Insufficient books. Requested quantity exceeds available quantity.";
+                echo '<script>alert("Insufficient books. Requested quantity exceeds available quantity.");</script>';
             }
         } else {
             echo "Error retrieving available quantity.";

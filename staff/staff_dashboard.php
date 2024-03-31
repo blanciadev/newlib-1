@@ -63,16 +63,38 @@ if (!isset($_SESSION["staff_name"])) {
                 <div class="ovw-con">
                     <div class="totalbooks">
                         <?php
-                        // CHANGE THE PORT IF NEEDED
-                        $conn =  mysqli_connect("localhost", "root", "root", "db_library_2", 3308); //database connection
+                       // CHANGE THE PORT IF NEEDED
+                        $conn =  mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
 
-                        $totalBooks = "Select * from tbl_books";
-                        $totalBooks_run = mysqli_query($conn, $totalBooks);
-                        if ($totalBooks_count = mysqli_num_rows($totalBooks_run)) {
-                            echo "<h4>"  . $totalBooks_count . " </h4>";
+                        // Query to get total books count
+                        $totalBooksQuery = "SELECT COUNT(*) AS total_books FROM tbl_books";
+                        $totalBooksResult = mysqli_query($conn, $totalBooksQuery);
+                        if ($totalBooksResult) {
+                            $totalBooksData = mysqli_fetch_assoc($totalBooksResult);
+                            $totalBooksCount = $totalBooksData['total_books'];
+                        
                         } else {
-                            echo "<h4>0</h4>";
+                            $totalBooksCount = 0;
                         }
+
+                        // Query to get book titles and quantities
+                        $booksQuery = "SELECT Book_Title, Quantity FROM tbl_books";
+                        $booksResult = mysqli_query($conn, $booksQuery);
+                        // Display book titles and quantities in a table
+                        if ($booksResult && mysqli_num_rows($booksResult) > 0) {
+                            while ($row = mysqli_fetch_assoc($booksResult)) {
+                               
+                                echo "<td><strong>Book Title : </strong>" . $row['Book_Title'] . "</td><br>";
+                                echo "<td><strong>Quantity : </strong> " . $row['Quantity'] . "</td>";
+                                echo "<hr>";
+                                echo "</tr>";
+                                echo "<h4>"  . $totalBooksCount . " </h4>";
+                                
+                            }
+                        } else {
+                            echo "<tr><td colspan='2'>No books found</td></tr>";
+                        }
+
                         ?>
                         <h4>Total Books</h4>
                     </div>
