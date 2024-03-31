@@ -25,7 +25,7 @@ $_SESSION['User_ID'];
     $year = $_POST['year'];
     $quantity = $_POST['quantity'];
     $status = $_POST['status'];
-    $price = $_POST['price'];
+    $price = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
     
     
     // Validate form data (you may need more robust validation)
@@ -35,8 +35,8 @@ $_SESSION['User_ID'];
         // Insert data into the database
         $conn =  mysqli_connect("localhost","root","root","db_library_2", 3308); //database connection
         // Assuming you have a database connection named $conn
-        $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Authors_ID, Publisher_ID, tb_edition, Year_Published ,Quantity, tb_status) 
-        VALUES ('$userID', '$bookTitle', '$author', '$publisher', '$edition','$year','$quantity', '$status')";
+        $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Authors_ID, Publisher_ID, price, tb_edition, Year_Published ,Quantity, tb_status) 
+        VALUES ('$userID', '$bookTitle', '$author', '$publisher','$price', '$edition','$year','$quantity', '$status')";
 
         $result = mysqli_query($conn, $query);
 

@@ -66,30 +66,49 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <div class="overview">
         <h3>Overview</h3>
         <div class="ovw-con">
-            <?php
-            // Database connection
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+        <?php
+                    // CHANGE THE PORT IF NEEDED
+                    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
 
-            // Query to get total books count
-            $totalBooksQuery = "SELECT COUNT(*) AS totalBooks FROM tbl_books";
-            $totalBooksResult = mysqli_query($conn, $totalBooksQuery);
-            $totalBooksCount = mysqli_fetch_assoc($totalBooksResult)['totalBooks'];
+                    // Query to get the total quantity of all books
+                    $totalQuantityQuery = "SELECT SUM(Quantity) AS total_quantity FROM tbl_books";
+                    $totalQuantityResult = mysqli_query($conn, $totalQuantityQuery);
 
-            // Display total books count
-            echo "<h4>{$totalBooksCount}</h4>";
-            echo "<h4>Total Books</h4>";
-            ?>
+                    // Check if the query was successful and fetch the total quantity
+                    if ($totalQuantityResult && mysqli_num_rows($totalQuantityResult) > 0) {
+                        $totalQuantityData = mysqli_fetch_assoc($totalQuantityResult);
+                        $totalQuantity = $totalQuantityData['total_quantity'];
+                        
+                        // Display the total quantity of all books
+                        echo "<h4>Total  of Books: " . $totalQuantity . "</h4>";
+                    } else {
+                        echo "No books found";
+                    }
+
+                    ?>
             <div class="line"></div>
-            <?php
-            // Query to get total visits count
-            $totalVisitsQuery = "SELECT COUNT(*) AS totalVisits FROM tbl_log";
-            $totalVisitsResult = mysqli_query($conn, $totalVisitsQuery);
-            $totalVisitsCount = mysqli_fetch_assoc($totalVisitsResult)['totalVisits'];
+           
+           
+           <?php
+// Assuming you have established a database connection named $conn
+$currentDate = date("Y-m-d");
 
-            // Display total visits count
-            echo "<h4>{$totalVisitsCount}</h4>";
-            echo "<h4>Total Visits</h4>";
-            ?>
+// Query to count visits for the current date using the Date&Time column
+$totalVisitsQuery = "SELECT COUNT(*) AS total_visits FROM tbl_log WHERE DATE(`Date&Time`) = '$currentDate'";
+$totalVisitsResult = mysqli_query($conn, $totalVisitsQuery);
+
+// Check if the query was successful and fetch the total visits
+if ($totalVisitsResult && mysqli_num_rows($totalVisitsResult) > 0) {
+    $totalVisitsData = mysqli_fetch_assoc($totalVisitsResult);
+    $totalVisitsCount = $totalVisitsData['total_visits'];
+    
+    // Display the total visits for the current date
+    echo "<h4>Total Visits Today: " . $totalVisitsCount . "</h4>";
+} else {
+    echo "<h4>0</h4>"; // No visits found for the current date
+}
+?>
+
         </div>
     </div>
 

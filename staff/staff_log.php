@@ -23,7 +23,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 
     // Retrieve Borrower_ID from the form
     $borrower_id = $_POST['borrower_id'];
-    
+    if (substr($borrower_id, 0, 1) === '0') {
+        // Borrower_ID starts with '0', flag as error
+        $errorMessage = "Borrower ID cannot start with '0'.";
+    } else {
     // Validate Borrower_ID against tbl_borrower table
     $sql_validate_borrower = "SELECT * FROM tbl_borrower WHERE Borrower_ID = '$borrower_id'";
     $result_validate_borrower = $conn->query($sql_validate_borrower);
@@ -50,6 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
         // Borrower_ID is invalid
         $errorMessage = "Invalid Borrower ID.";
     }
+}
 
     // Close connection
     $conn->close();

@@ -1,4 +1,5 @@
 <?php
+session_start();
 // Check if the User_ID session variable is not set or empty
 if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     // Redirect to index.php
@@ -70,8 +71,8 @@ $sql = "SELECT * FROM tbl_archive";
    
     <div>
     <select id="statusFilter">
-        <option value="Available" selected>Available</option>
-        <option value="Archived">Archived</option>
+        <option value="Available">Available</option>
+        <option value="Archived"selected>Archived</option>
         <option value="Request">Request</option>
     </select>
 
@@ -133,7 +134,7 @@ if ($result->num_rows > 0) {
     } else if (status === 'Archived') {
         url = 'admin_book_archived.php';
     } else {
-        url = 'admin_book.php';
+        url = 'admin_books.php';
     }
     console.log('URL:', url);
 
