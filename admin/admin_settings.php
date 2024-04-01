@@ -61,10 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo '<script>alert("New password and confirm password do not match!");</script>';
             }
         } 
-    } else {
-        echo "Error retrieving password: " . mysqli_error($conn);
-    }
-
+    } 
 ?>
 
 <!DOCTYPE html>
@@ -78,11 +75,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link href="./staff.css" rel="stylesheet">
+    <link href="./admin.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
 <body>
-    < <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
+     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
@@ -112,8 +109,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <form id="userProfileForm" action="" method="post">
     <!-- Display user data -->
     <div class="mb-3">
-        <label for="userID" class="form-label">User ID</label>
-        <input type="text" class="form-control" id="userID" name="userID" value="<?php echo $userData['User_ID']; ?>" readonly>
+     <!-- //   <label for="userID" class="form-label">User ID</label> -->
+        <input type="hidden" id="userID" name="userID" value="<?php echo $userData['User_ID']; ?>">
     </div>
     <div class="mb-3">
         <label for="firstName" class="form-label">First Name</label>

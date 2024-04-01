@@ -57,9 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo '<script>alert("New password and confirm password do not match!");</script>';
             }
         } 
-    } else {
-        echo "Error retrieving password: " . mysqli_error($conn);
-    }
+    } 
 
 ?>
 
@@ -97,7 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
             <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li> <hr>
             <li class="nav-item active"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
 
@@ -106,9 +104,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <form id="userProfileForm" action="" method="post">
     <!-- Display user data -->
     <div class="col-md-4">
-        <label for="userID" class="form-label">User ID</label>
-        <input type="text" class="form-control" id="userID" name="userID" value="<?php echo $userData['User_ID']; ?>" readonly>
+    <input type="hidden" id="userID" name="userID" value="<?php echo $userData['User_ID']; ?>">
     </div>
+
     <div class="col-md-4">
         <label for="firstName" class="form-label">First Name</label>
         <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $userData['First_Name']; ?>" required>
