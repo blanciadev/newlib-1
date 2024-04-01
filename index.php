@@ -22,7 +22,7 @@
             </div>
             <div class="form-sec col-5">
                 <div class="title">
-                    <h1><strong>Villa<span>Read</span>Hub</strong></h1>
+                    <h1><strong>Villaaa<span>Read</span>Hub</strong></h1>
                 <img src="./images/lib-icon.png" alt="lib-icon"/>
                 </div>
 
