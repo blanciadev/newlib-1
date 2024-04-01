@@ -17,30 +17,50 @@ if ($conn->connect_error) {
 $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
     // SQL query to retrieve available books
     $sql = "SELECT
-        tbl_books.Accession_Code, 
-        tbl_books.Book_Title, 
-        tbl_books.Authors_ID, 
-        tbl_books.Publisher_ID, 
-        tbl_books.Section_Code, 
-        tbl_books.Shelf_Number, 
-        tbl_books.tb_edition, 
-        tbl_books.Year_Published, 
-        tbl_books.ISBN, 
-        tbl_books.Bibliography, 
-        tbl_books.Quantity, 
-        tbl_books.tb_status, 
-        tbl_books.Price, 
-        tbl_section.Section_uid, 
-        tbl_section.Section_Name, 
-        tbl_section.Section_Code
-    FROM
-        tbl_books
-    INNER JOIN
-        tbl_section
-    ON 
-        tbl_books.Section_Code = tbl_section.Section_uid";
+	tbl_books.Accession_Code, 
+	tbl_books.Book_Title, 
+	tbl_books.Authors_ID, 
+	tbl_books.Publisher_ID, 
+	tbl_books.Section_Code, 
+	tbl_books.Shelf_Number, 
+	tbl_books.tb_edition, 
+	tbl_books.Year_Published, 
+	tbl_books.ISBN, 
+	tbl_books.Bibliography, 
+	tbl_books.Quantity, 
+	tbl_books.tb_status, 
+	tbl_books.Price, 
+	tbl_section.Section_uid, 
+	tbl_section.Section_Name, 
+	tbl_section.Section_Code, 
+	tbl_authors.Authors_Name, 
+	tbl_publisher.Publisher_Name
+FROM
+	tbl_books
+	INNER JOIN
+	tbl_section
+	ON 
+		tbl_books.Section_Code = tbl_section.Section_uid
+	INNER JOIN
+	tbl_authors
+	ON 
+		tbl_books.Authors_ID = tbl_authors.Authors_ID
+	INNER JOIN
+	tbl_publisher
+	ON 
+		tbl_books.Publisher_ID = tbl_publisher.Publisher_ID
+WHERE
+	tbl_books.tb_status <> 'Archived';
+
+
+";
 
     $result = $conn->query($sql);
+
+
+  
+
+
 
 ?>
 
@@ -106,57 +126,92 @@ $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
     <tbody id="bookList"> 
     <?php
 
-    // Output data
-    if ($result->num_rows > 0) {
-        // Display the table header
-        echo "<table class='table table-striped'>
-                <thead>
-                    <tr>
-                        <th>Accession Code</th>
-                        <th>Book Title</th>
-                        <th>Authors ID</th>
-                        <th>Publisher ID</th>
-                        <th>Section Code</th>
-                        <th>Shelf Number</th>
-                        <th>Edition</th>
-                        <th>Year Published</th>
-                        <th>ISBN</th>
-                        <th>Bibliography</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>";
+  // Output data
+if ($result->num_rows > 0) {
+    // Display the table header
+    echo "<table class='table table-striped'>
+            <thead>
+                <tr>
+                    <th>Accession Code</th>
+                    <th>Book Title</th>
+                    <th>Authors Name</th>
+                    <th>Publisher Name</th>
+                    <th>Section Code</th>
+                    <th>Shelf Number</th>
+                    <th>Edition</th>
+                    <th>Year Published</th>
+                    <th>ISBN</th>
+                    <th>Bibliography</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Status</th>
+                    <th>Action</th> <!-- New column for Archive button -->
+                </tr>
+            </thead>
+            <tbody>";
 
-        // Output data of each row
-        while ($row = $result->fetch_assoc()) {
-            echo "<tr><td>".$row["Accession_Code"]."</td>
-            <td>".$row["Book_Title"]."</td>
-            <td>".$row["Authors_ID"]."</td>
-            <td>".$row["Publisher_ID"]."</td>
-            <td>".$row["Section_Code"]."</td>
-            <td>".$row["Shelf_Number"]."</td>
-            <td>".$row["tb_edition"]."</td>
-            <td>".$row["Year_Published"]."</td>
-            <td>".$row["ISBN"]."</td>
-            <td>".$row["Bibliography"]."</td>
-            <td>".$row["Quantity"]."</td>
-            <td>".$row["Price"]."</td>
-            <td>".$row["tb_status"]."</td></tr>";
-        }
+    // Output data of each row
+    while ($row = $result->fetch_assoc()) {
+        echo "<tr>
+                <td>".$row["Accession_Code"]."</td>
+                <td>".$row["Book_Title"]."</td>
+                <td>".$row["Authors_Name"]."</td>
+                <td>".$row["Publisher_Name"]."</td>
+                <td>".$row["Section_Code"]."</td>
+                <td>".$row["Shelf_Number"]."</td>
+                <td>".$row["tb_edition"]."</td>
+                <td>".$row["Year_Published"]."</td>
+                <td>".$row["ISBN"]."</td>
+                <td>".$row["Bibliography"]."</td>
+                <td>".$row["Quantity"]."</td>
+                <td>".$row["Price"]."</td>
+                <td>".$row["tb_status"]."</td>
+                <td>
+                <form id='archiveForm' method='POST' action='admin_book_archived.php'> 
+                    <input type='hidden' name='accession_code' value='".$row["Accession_Code"]."'> <!-- Hidden input for Accession_Code -->
+                    <input type='hidden' name='book_title' value='".$row["Book_Title"]."'> <!-- Hidden input for Book_Title -->
+                    <input type='hidden' name='qty' value='".$row["Quantity"]."'> 
+                   
+                        <button type='submit' name='archive_btn' class='btn btn-danger archive-btn'>Archive</button>
+                    </form>
+                </td>
+            </tr>";
     }
-
-      
+    
+}
 
 // Close the database connection
 $conn->close();
+
 ?>
 
 
         </tbody>
     </table>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get all archive buttons
+        const archiveButtons = document.querySelectorAll('.archive-btn');
+
+        // Add click event listener to each archive button
+        archiveButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+                // Show the confirmation dialog
+                if (!confirm("Do you want to archive this book?")) {
+                    event.preventDefault(); // Prevent default form submission if not confirmed
+                    return; // Exit function early if not confirmed
+                }
+
+                // If confirmed, allow form submission
+            });
+        });
+    });
+
+</script>
+
+
 
 <script>
    document.getElementById('statusFilter').addEventListener('change', function() {

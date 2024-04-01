@@ -15,9 +15,45 @@ if ($conn->connect_error) {
 
 // SQL query to retrieve requested books
 $sql = "SELECT * FROM tbl_archive";
-
-
     $result = $conn->query($sql);
+
+
+// Check if the form was submitted and the necessary POST data is set
+if (isset($_POST['archive_btn'], $_POST['accession_code'], $_POST['book_title'], $_POST['qty'])) {
+    // Retrieve POST data
+    $accession_code = $_POST['accession_code'];
+    $book_title = $_POST['book_title'];
+    $qty = $_POST['qty'];
+
+        // Database connection
+        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+    
+        // Insert data into tbl_archive with current timestamp
+        $currentTime = date("Y-m-d H:i:s");
+        $sqlInsert = "INSERT INTO tbl_archive (Accession_Code, Book_Title, User_ID, Quantity ,Date)
+                      VALUES ('$accession_code', '$book_title', '{$_SESSION["User_ID"]}','$qty', '$currentTime')";
+        if ($conn->query($sqlInsert) === TRUE) {
+            echo "Data inserted into tbl_archive successfully";
+        } else {
+            echo "Error inserting data into tbl_archive: " . $conn->error;
+        }
+    
+        // Update the status of the book to "Archived" based on Accession_Code
+        $sqlUpdate = "UPDATE tbl_books SET tb_status = 'Archived' WHERE Accession_Code = '$accession_code'";
+        if ($conn->query($sqlUpdate) === TRUE) {
+            echo '<script>alert("Archived Book Successfully!");</script>';
+                
+        } else {
+            echo "Error archiving book: " . $conn->error;
+        }
+    
+        // Close the database connection
+        $conn->close();
+   
+    }
 
 ?>
 
