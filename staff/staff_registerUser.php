@@ -73,32 +73,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </ul>
     </div>
 
-    <div class="board container"><!--board container-->
-    
-<!-- index.php -->
-<form method="POST" action="">
-    <label for="first_name">Enter First Name:</label><br>
-    <input type="text" id="first_name" name="first_name"><br><br>
-    
-    <label for="middle_name">Enter Middle Name:</label><br>
-    <input type="text" id="middle_name" name="middle_name"><br><br>
-    
-    <label for="last_name">Enter Last Name:</label><br>
-    <input type="text" id="last_name" name="last_name"><br><br>
+    <!-- index.php -->
+<div class="container">
+    <form method="POST" action="">
+        <div class="row">
+            <div class="col-md-6">
+                <label for="first_name" class="form-label">Enter First Name:</label>
+                <input type="text" id="first_name" name="first_name" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="middle_name" class="form-label">Enter Middle Name:</label>
+                <input type="text" id="middle_name" name="middle_name" class="form-control" required> 
+            </div>
+     
+            <div class="col-md-6">
+                <label for="last_name" class="form-label">Enter Last Name:</label>
+                <input type="text" id="last_name" name="last_name" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="contact_number" class="form-label">Contact Number:</label>
+                <input type="text" id="contact_number" name="contact_number" class="form-control" required>
+            </div>
+       
 
-    <label for="contact_number">Contact Number:</label><br>
-    <input type="text" id="contact_number" name="contact_number"><br><br>
-    
-    <label for="email">Email:</label><br>
-    <input type="text" id="email" name="email"><br><br>
+     
+            <div class="col-md-6">
+                <label for="email" class="form-label">Email:</label>
+                <input type="text" id="email" name="email" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+                <label for="affiliation" class="form-label">Affiliation:</label>
+                <input type="text" id="affiliation" name="affiliation" class="form-control" required>
+            </div>
+  
 
-    <label for="affiliation">Affiliation:</label><br>
-    <input type="text" id="affiliation" name="affiliation"><br><br>
-
-    <button type="submit">Generate QR Code</button>
-</form>
-
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-primary">Generate QR Code</button>
+            </div>
+        </div>
+    </form>
 </div>
+
         
 
 

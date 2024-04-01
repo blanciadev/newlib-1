@@ -75,47 +75,51 @@ mysqli_close($conn);
 
     <!-- <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" >
         <!-- <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"> -->
-            <h2>Villa<span>Read</span>Hub</h2> 
+            <!-- <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container-->
-        <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-            <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
+        <!-- <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly">user container -->
+            <!-- <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2"> -->
             <!-- <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong>  -->
-        </div>
-        <hr>
-        <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
-            <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
-            <li class="nav-item"> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
-            <li class="nav-item"> <a href="./staff_borrow.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>Borrow</a> </li>
-            <li class="nav-item"> <a href="./staff_return.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Return</a> </li>
-            <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
-            <li class="nav-item active"> <a href="./staff_registerUser.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
-            <hr>
-            <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
-        </ul>
-    </div> 
+        <!-- </div> -->
+        <!-- <hr> -->
+        <!-- <ul class="nav nav-pills flex-column mb-auto">navitem container -->
+            <!-- <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li> -->
+            <!-- <li class="nav-item"> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li> -->
+            <!-- <li class="nav-item"> <a href="./staff_borrow.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>Borrow</a> </li> -->
+            <!-- <li class="nav-item"> <a href="./staff_return.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Return</a> </li> -->
+            <!-- <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li> -->
+            <!-- <li class="nav-item active"> <a href="./staff_registerUser.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li> -->
+            <!-- <hr> -->
+            <!-- <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li> -->
+            <!-- <li class="nav-item"> <a href="logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li> -->
+        <!-- </ul> -->
+    <!-- </div>  --> -->
 
-    <div class="board container"><!--board container-->
+    <div class="board container"><!-- board container -->
     <div class="col-md-6 mt-4">
-            <div class="card">
-  
-    <div class="row">
-                    <!-- QR Code Container -->
-                    <div class="d-flex justify-content-center" id="qrcode-container"></div>
-                <div class="card-body">
-                    <!-- Session Data -->
-                    <?php
-                    // Display session data
-                    echo "<p class='card-text'>First Name: " . $first_name . "</p>";
-                    echo "<p class='card-text'>Middle Name: " . $middle_name . "</p>";
-                    echo "<p class='card-text'>Last Name: " . $last_name . "</p>";
-                    echo "<p class='card-text'>Contact Number: " . $contact_number . "</p>";
-                    echo "<p class='card-text'>Email: " . $email . "</p>";
-                    echo "<p class='card-text'>Affiliation: " . $affiliation . "</p>";
-                    ?>
+        <div class="card">
+            <div class="card-header">
+                Library Card
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12 d-flex justify-content-center" id="qrcode-container">
+                        <!-- QR Code Container -->
+                    </div>
                 </div>
-           
+                <div class="row mt-3">
+                    <div class="col-md-12">
+                      
+                        <p class="card-text"><strong>First Name:</strong> <?php echo $first_name; ?></p>
+                        <p class="card-text"><strong>Middle Name:</strong> <?php echo $middle_name; ?></p>
+                        <p class="card-text"><strong>Last Name:</strong> <?php echo $last_name; ?></p>
+                        <p class="card-text"><strong>Contact Number:</strong> <?php echo $contact_number; ?></p>
+                        <p class="card-text"><strong>Email:</strong> <?php echo $email; ?></p>
+                        <p class="card-text"><strong>Affiliation:</strong> <?php echo $affiliation; ?></p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

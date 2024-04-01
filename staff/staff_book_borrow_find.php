@@ -8,7 +8,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 }
 
 $result = null; // Initialize $result variable
-$_SESSION['Accession_Code'] = null;
+//$_SESSION['Accession_Code'] = null;
 
 // Check if the borrower_id session variable is set
 if(isset($_SESSION['borrower_id'])) {
@@ -22,35 +22,57 @@ if(isset($_SESSION['borrower_id'])) {
     echo "Borrower ID not found in session.";
 }
 
-if(isset($_REQUEST['Accession_Code'])) {
-    // Sanitize input to prevent SQL injection
-    $conn =  mysqli_connect("localhost","root","root","db_library_2", 3308); //database connection
-    $Accession_Code = mysqli_real_escape_string($conn, $_REQUEST['Accession_Code']);
+// Check if Accession_Code is provided
+if(isset($_POST['Accession_Code'])) { 
+    // Check if Accession_Code is empty
+    if(empty($_POST['Accession_Code'])) {
+        echo '<script>alert("Accession Code is required.");</script>';
+        echo '<script>console.log("Accession Code is required.");</script>'; // Log message to console
+        exit(); // Exit to prevent further execution if Accession_Code is not provided
+    }
     
-    // Store the accession code in a session variable
-    $_SESSION['Accession_Code'] = $Accession_Code;
+    // Database connection
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+    if (!$conn) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+    
+    // Sanitize input to prevent SQL injection
+    $Accession_Code = mysqli_real_escape_string($conn, $_POST['Accession_Code']);
     
     // Query to retrieve book details based on Accession Code
-    $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
-            FROM tbl_books 
-            INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
-            WHERE Accession_Code = '$Accession_Code'";
+    $sql = "SELECT * FROM tbl_books WHERE Accession_Code = ?";
     
-    $result = $conn->query($sql);
+    // Using prepared statements to prevent SQL injection
+    $stmt = mysqli_stmt_init($conn);
+    if (!mysqli_stmt_prepare($stmt, $sql)) {
+        echo '<script>alert("SQL Error.");</script>';
+        exit();
+    } else {
+        mysqli_stmt_bind_param($stmt, "s", $Accession_Code);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        
+        // Check if the result set is empty (Accession_Code is invalid)
+        if (mysqli_num_rows($result) === 0) {
+            // Display an alert message
+            echo '<script>alert("Invalid Accession Code. No book found.");</script>';
+        } else {
+            // Accession_Code is valid
+            // Fetch book details
+            $book_details = mysqli_fetch_assoc($result);
+            $_SESSION['Accession_Code'] = $Accession_Code; // Store the Accession_Code in session
+             // Redirect to staff_book_borrow_process.php
+             header("Location: staff_book_borrow_process.php");
+            // Close the database connection
 
-    // Check if the result set is empty (Accession_Code is invalid)
-    if ($result->num_rows === 0) {
-        // Display an alert message
-        echo '<script>alert("Invalid Accession Code. No book found.");</script>';
+            mysqli_stmt_close($stmt);
+            mysqli_close($conn);
+
+            exit(); 
+        }
     }
-  
-    // Close the database connection
-    $conn->close();
-} else {
-    // Accession Code is not provided
-    echo '<script>alert("Accession Code is required.");</script>';
-    exit(); // Exit to prevent further execution if Accession_Code is not provided
-}
+} 
 ?>
 
 
@@ -94,7 +116,9 @@ if(isset($_REQUEST['Accession_Code'])) {
     <div class="board container"><!--board container-->
     <div class='books-container'>
     <h1>Search Book by Accession Code</h1>
-    <form action="staff_book_borrow_find.php" method="GET">
+
+    <form id="dataform" action="" method="POST">
+
         <label for="Accession_Code">Accession Code:</label>
         <?php
     echo '<input type="text" id="Accession_Code" name="Accession_Code" placeholder="Enter Accession Code" required';
@@ -104,7 +128,7 @@ if(isset($_REQUEST['Accession_Code'])) {
     echo '>';
 ?>
 
-    </form>
+    
 <br>
     <?php
         if ($result && $result->num_rows > 0) {
@@ -124,36 +148,36 @@ if(isset($_REQUEST['Accession_Code'])) {
            
         }
         ?>
-      <button type="submit" class="btn btn-primary" id="book_borrow">Get Book</button>
 
+      <button type="submit" class="btn btn-primary" id="book_borrow">Get Book</button>
+      
+      </form>
     </div>
     </div>
 
     <script>
-    // Get the input field and form
-    const inputField = document.getElementById('Accession_Code');
-    const form = document.getElementById('searchForm');
+    // Get the form and button
+    const form = document.getElementById('dataform');
+    const bookBorrowButton = document.getElementById('book_borrow');
 
-    // Add event listener to input field for keyup event
-    inputField.addEventListener('keyup', function(event) {
-        // If Enter key is pressed (key code 13) and the input field is not empty, submit the form
-        if (event.keyCode === 13 && inputField.value.trim() !== "") {
-            event.preventDefault(); // Prevent the default form submission behavior
-            form.submit();
-        }
-    });
-
-    // Add event listener to book_borrow button
-    document.getElementById("book_borrow").addEventListener("click", function() {
-        // Check if the accession code input field is not empty before redirecting
+    // Add event listener to form submit
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent form submission
+        const inputField = document.getElementById('Accession_Code');
+        // Check if the accession code input field is not empty before submitting the form
         if (inputField.value.trim() !== "") {
-            window.location.href = "staff_book_borrow_process.php";
+            // Change button text
+            bookBorrowButton.innerText = 'Get Book';
+            // Submit the form
+            form.submit();
         } else {
             // If the accession code input field is empty, display an alert or handle it accordingly
             alert("Accession code is required.");
         }
     });
 </script>
+
+
 
 
 
