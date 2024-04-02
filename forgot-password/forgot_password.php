@@ -69,17 +69,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["sendCode"])) {
         } catch (Exception $e) {
             echo "Error sending email: {$mail->ErrorInfo}";
         } 
-     //  header("Location: changepass.php");
         exit(); 
     }
-    
-
-
-
-
-
-
-
 
     $email = $_POST["email"];
 // Prepare SQL statement
@@ -99,8 +90,8 @@ if ($stmt->num_rows > 0) {
         echo "<p>Error generating token or updating database.</p>";
     }
 } else {
-    // Email does not exist in the database
-    header("Location: forgot_password.php?error=invalid_email");
+    // If email does not exist in the database
+    header("Location: forgot_password.php?error=Invalid_Email");
     exit();
 }
 
@@ -111,7 +102,6 @@ if ($stmt->num_rows > 0) {
     
     // Close database connection
     $conn->close();
-    // header("Location: changepass.php");
     exit(); // or die(); 
 }
 ?>
@@ -148,6 +138,13 @@ if ($stmt->num_rows > 0) {
                 </div>
 
                 <div class="error-con">
+                <?php
+                    // Check if an error message is passed in the URL
+                    if (isset($_GET['error'])) {
+                        $error = $_GET['error'];
+                        echo "<p class='error-message'>$error</p>";
+                    }
+                    ?>
                
                 </div>
                 <div class="form-con">

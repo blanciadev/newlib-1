@@ -1,7 +1,5 @@
 <?php
 
-
-
 session_start();
 // Check if the User_ID session variable is not set or empty
 if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
@@ -9,8 +7,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     header("Location: ../index.php");
     exit(); // Ensure script execution stops after redirection
 }
-
-
 
 // Check if the form is submitted
 if(isset($_POST['submit'])) {
@@ -49,10 +45,6 @@ $_SESSION['User_ID'];
 }
 ?>
 
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -75,7 +67,7 @@ $_SESSION['User_ID'];
         </a><!--header container--> 
         <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
             <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
-            <strong><span><?php echo $_SESSION["User_ID"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong> 
+            <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong> 
         </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
@@ -91,17 +83,31 @@ $_SESSION['User_ID'];
     </div>
     
     <div class="board container"><!--board container-->
-    <h2>Request List</h2>
-    <!-- Search functionality  -->
+    <div class="header1">
+            <div class="text">
+                <div class="title">
+                    <h2>Request Form</h2>
+                </div>
+            </div>
+    </div>
+    <div class="books container">
+             <!-- Display success or error message -->
+             <div class="container">
+            <?php if (!empty($successMessage)): ?>
+                <div class="alert alert-success" role="alert">
+                    <?php echo $successMessage; ?>
+                </div>
+            <?php endif; ?>
 
-       
-    <div class="board container">
-      
+            <?php if (!empty($errorMessage)): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?php echo $errorMessage; ?>
+                </div>
+            <?php endif; ?>
+        </div>
     <form method="POST" action="staff_request_form.php">
 
-            <!-- hidden input field to Retrieve User ID -->
-            
-            <input type="Visible" name="userID" value="<?php echo $_SESSION['User_ID']; ?>">
+            <input type="hidden" name="userID" value="<?php echo $_SESSION['User_ID']; ?>">
            
             <div class="mb-3">
                 <label for="bookTitle" class="form-label">Book Title</label>
@@ -145,49 +151,17 @@ $_SESSION['User_ID'];
                 </select>
             </div>
             <button type="submit" class="btn btn-primary" name="submit">Submit Request</button>
-
-            
         </form>
+       
+    </div>
+    <a href="./staff_request_list.php"><button class="btn">Back</button></a>
     </div>
 
 
-    <!-- Display success or error message -->
-    <div class="container">
-        <?php if (!empty($successMessage)): ?>
-            <div class="alert alert-success" role="alert">
-                <?php echo $successMessage; ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if (!empty($errorMessage)): ?>
-            <div class="alert alert-danger" role="alert">
-                <?php echo $errorMessage; ?>
-            </div>
-        <?php endif; ?>
-    </div>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
-        let date = new Date().toLocaleDateString('en-US', {  
-            day:   'numeric',
-            month: 'long',
-            year:  'numeric' ,  
-            weekday: 'long', 
-        });   
-    //    document.getElementById("currentDate").innerText = date; 
-
-        setInterval( () => {
-            let time = new Date().toLocaleTimeString('en-US',{ 
-            hour: 'numeric',
-            minute: 'numeric', 
-            second: 'numeric',
-            hour12: 'true',
-        })  
-    //    document.getElementById("currentTime").innerText = time; 
-
-        }, 1000)
-        
-
         let navItems = document.querySelectorAll(".nav-item");  //adding .active class to navitems 
         navItems.forEach(item => {
             item.addEventListener('click', ()=> { 

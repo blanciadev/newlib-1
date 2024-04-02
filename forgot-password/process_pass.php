@@ -82,7 +82,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <img src="../images/lib-icon.png" alt="lib-icon"/>
                 </div>
 
-                <div class="error-con"></div>
+                <div class="error-con">
+                <?php
+                    // Check if an error message is passed in the URL
+                    if (isset($_GET['error'])) {
+                        $error = $_GET['error'];
+                        echo "<p class='error-message'>$error</p>";
+                    }
+                    ?>
+                </div>
                 
                 <div class="form-con">
                 <form id="userProfileForm" action="" method="post">

@@ -41,14 +41,26 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
             <hr>
             <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
          
     </div>
-    
-    <h2>Book Information</h2>
-    <div class="container">
-    <table class="table table-striped">
+    <div class="board container"><!--board container-->
+    <div class="header1">
+            <div class="text">
+                <div class="title">
+                    <h2>Books</h2>
+                </div>
+            </div>
+            <div class="searchbar">
+                <form action="">
+                    <input type="search" id="searchInput"  placeholder="Search..." required>
+                    <i class='bx bx-search' id="search-icon"></i>
+                </form>
+            </div>
+    </div>
+    <div class="books container">
+    <table class="table table-hover table-sm">
         <thead>
             <tr>
                 <th>Accession Code</th>
@@ -98,7 +110,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 ON 
                     tbl_books.Section_Code = tbl_section.Section_uid";
     
-    $result = $conn->query($sql);
+                $result = $conn->query($sql);
     
 
                 // Output data of each row
@@ -124,45 +136,56 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             ?>
         </tbody>
     </table>
-  
     </div>
-
-
-
-<div class="container mt-3">
-<button class="btn btn-primary" id="requestButton">Request List</button>
-
+    
+    <div class="btn-con">
+        <button class="btn" id="requestButton">Request List</button>
+    </div>
 </div>
-
-<script>
-    document.getElementById("requestButton").addEventListener("click", function() {
-        window.location.href = "staff_request_list.php";
-    });
-</script>
-
-
-
+    
+    <!--Logout Modal -->
+    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+            </div>
+            <div class="modal-body">
+                Do you want to log out?
+            </div>
+            <div class="modal-footer d-flex flex-row justify-content-center">
+                <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+            </div>
+            </div>
+        </div>
+    </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
-        let date = new Date().toLocaleDateString('en-US', {  
-            day:   'numeric',
-            month: 'long',
-            year:  'numeric' ,  
-            weekday: 'long', 
-        });   
-        document.getElementById("currentDate").innerText = date; 
+         // JavaScript code for search functionality
+        document.getElementById("searchInput").addEventListener("input", function() {
+            let searchValue = this.value.toLowerCase();
+            let rows = document.querySelectorAll("tbody tr");
+            rows.forEach(row => {
+                let cells = row.querySelectorAll("td");
+                let found = false;
+                cells.forEach(cell => {
+                    if (cell.textContent.toLowerCase().includes(searchValue)) {
+                        found = true;
+                    }
+                });
+                if (found) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
 
-        setInterval( () => {
-            let time = new Date().toLocaleTimeString('en-US',{ 
-            hour: 'numeric',
-            minute: 'numeric', 
-            second: 'numeric',
-            hour12: 'true',
-        })  
-        document.getElementById("currentTime").innerText = time; 
-
-        }, 1000)
-        
+        document.getElementById("requestButton").addEventListener("click", function() {
+        window.location.href = "staff_request_list.php";
+        });
 
         let navItems = document.querySelectorAll(".nav-item");  //adding .active class to navitems 
         navItems.forEach(item => {
