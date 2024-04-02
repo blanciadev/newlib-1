@@ -52,6 +52,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <div class="board container"><!--board container--> 
             
     <form id="bookForm" method="POST">
+        <!-- Fix Button -->
             <button type="submit" class="btn btn-primary" id="borrow" name="action" value="borrow">Book Borrow</button>
             <button type="submit" class="btn btn-primary" id="return" name="action" value="return">Book Return</button>
         </form>
