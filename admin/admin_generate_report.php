@@ -26,41 +26,36 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./admin.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
+
+    <style>
+    /* Style for the print version of the page */
+    @media print {
+        .print-btn-container {
+            display: none; /* Hide the button container when printing */
+        }
+    }
+</style>
+
 </head>
 <body>
-    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
-        <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-            <h2>Villa<span>Read</span>Hub</h2> 
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
-        </a><!--header container-->
-        <div class="user-header mr-3 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-                <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
-                <p>(ADMIN)</p>
-            </div>
-        <hr>
-        <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
-            <li class="nav-item"> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
-            <li class="nav-item"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
-            <li class="nav-item"> <a href="./admin_transactions.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transactions</a> </li>
-            <li class="nav-item"> <a href="./admin_staff.php" class="nav-link link-body-emphasis"><i class='bx bxs-user'></i>Manage Staff</a> </li>
-            <li class="nav-item"> <a href="./admin_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
-            <li class="nav-item"> <a href="./admin_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
-            <li class="nav-item active"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-cloud'></i>Generate Report</a> </li>
-            <hr>
-            <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
-        </ul>
-        
-        
+   
+
+
     </div>
-        
-    </div>
+
+
     <div class="board container"><!--board container--> 
  
-   
+    
     <div class="content">
         <div class="overview">
-            <h3>Overview</h3>
+
+      
+<div class="print-btn-container">
+    <button id="printBtn" class="btn btn-primary">Print Report</button>
+    <a href="admin_dashboard.php" id="dashboardBtn" class="btn btn-primary">Go Back To Dashboard</a>
+</div>
+            <h3>Overview</h3><br>
             <div class="ovw-con">
             <?php
             // Database connection
@@ -213,11 +208,21 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
 
 
+        <script>
+    // Wait for the DOM content to be fully loaded
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get the print button element
+        const printBtn = document.getElementById('printBtn');
+        // Get the dashboard button element
+        const dashboardBtn = document.getElementById('dashboardBtn');
 
-
-
-
-
+        // Add a click event listener to the print button
+        printBtn.addEventListener('click', function () {
+            // Call the print function when the button is clicked
+            window.print();
+        });
+    });
+</script>
   
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
