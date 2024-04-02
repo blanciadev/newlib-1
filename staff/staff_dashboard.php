@@ -165,7 +165,9 @@ if (!isset($_SESSION["staff_name"])) {
 
             <div class="stats">
                 <h3>Statistics</h3>
-                <div class="stats-con"></div>
+                <div class="stats-con">
+                    <canvas id="myChart"></canvas>
+                </div>
             </div>
             <div class="newbooks">
                 <h3>What's New?</h3>
@@ -177,9 +179,9 @@ if (!isset($_SESSION["staff_name"])) {
 
                     // SQL query to fetch books inserted in the last 3 days or current along with author's name
                     $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
-        FROM tbl_books 
-        INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
-        WHERE tbl_books.date_inserted >= '$threeDaysAgo'";
+                    FROM tbl_books 
+                    INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
+                    WHERE tbl_books.date_inserted >= '$threeDaysAgo'";
 
                     $result = mysqli_query($conn, $sql);
 
@@ -226,9 +228,11 @@ if (!isset($_SESSION["staff_name"])) {
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script>
+
         let date = new Date().toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'long',
@@ -254,11 +258,29 @@ if (!isset($_SESSION["staff_name"])) {
             item.addEventListener('click', () => {
                 document.querySelector('.active')?.classList.remove('active');
                 item.classList.add('active');
-
-
             })
-
         })
+    
+    const ctx = document.getElementById('myChart');
+    new Chart(ctx, {//setup chartjs
+        type: 'line',
+        data: {
+        labels: ['month', 'month', 'month', 'month', 'month', 'month', 'month', 'month', 'month', 'month', 'month', 'month', ],
+        datasets: [{
+            label: 'Monthly Visits',
+            data: [12, 19, 3, 5, 2],// connect data from database
+            borderWidth: 1
+        }]
+        },
+        options: {
+        scales: {
+            y: {
+            beginAtZero: true
+            }
+        }
+        }
+    });
+
     </script>
 </body>
 
