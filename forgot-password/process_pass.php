@@ -3,7 +3,6 @@ session_start();
 
 // Handle form submission for password update
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $oldPassword = $_POST['oldPassword'];
     $newPassword = $_POST['newPassword'];
     $confirmPassword = $_POST['confirmPassword'];
 
@@ -28,8 +27,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_result($currentPassword);
         $stmt->fetch();
 
-        // Verify if the old password matches the current password
-        if ($oldPassword == $currentPassword) {
             // Check if the new password matches the confirm password
             if ($newPassword === $confirmPassword) {
                 // Update the password in the database
@@ -46,9 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else {
                 echo '<script>alert("New password and confirm password do not match!");</script>';
             }
-        } else {
-            echo '<script>alert("Incorrect old password!");</script>';
-        }
+            
     } else {
         echo "Error retrieving password: " . $conn->error;
     }
@@ -104,47 +99,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <br/>
                     </div>
                     <!-- Update button -->
-                    <button type="submit" class="btn">Update Password</button>
+                    <button type="submit" class="btn btn-primary">Update Password</button>
                 </form>
                 </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-    <script> 
-        let date = new Date().toLocaleDateString('en-US', {  
-            day:   'numeric',
-            month: 'long',
-            year:  'numeric' ,  
-            weekday: 'long', 
-        });   
-        document.getElementById("currentDate").innerText = date; 
-
-        setInterval( () => {
-            let time = new Date().toLocaleTimeString('en-US',{ 
-            hour: 'numeric',
-            minute: 'numeric', 
-            second: 'numeric',
-            hour12: 'true',
-        })  
-        document.getElementById("currentTime").innerText = time; 
-
-        }, 1000)
-        
-
-        let navItems = document.querySelectorAll(".nav-item");  //adding .active class to navitems 
-        navItems.forEach(item => {
-            item.addEventListener('click', ()=> { 
-                document.querySelector('.active')?.classList.remove('active');
-                item.classList.add('active');
-                
-                
-            })
-            
-        })
-     
-
-
-    </script>
 </body>
 </html>
