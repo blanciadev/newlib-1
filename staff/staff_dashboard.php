@@ -166,7 +166,7 @@ if (!isset($_SESSION["staff_name"])) {
             <div class="stats">
                 <h3>Statistics</h3>
                 <div class="stats-con">
-                    <canvas id="myChart"></canvas>
+                    <canvas id="myChart" width="500"></canvas>
                 </div>
             </div>
             <div class="newbooks">

@@ -28,7 +28,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container--> 
-        <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
+        <div class="user-header d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
             <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
             <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong> 
         </div>

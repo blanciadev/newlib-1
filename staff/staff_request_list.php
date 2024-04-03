@@ -28,7 +28,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container--> 
-        <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
+        <div class="user-header d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
             <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
             <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong> 
         </div>
@@ -40,7 +40,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
             <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>   <hr>
             <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut"  class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
          
     </div>
@@ -48,6 +48,9 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <div class="board container"><!--board container-->
     <div class="header1">
             <div class="text">
+                <div class="back-btn">
+                    <a href="./staff_books.php"><i class='bx bx-arrow-back'></i></a>
+                </div>
                 <div class="title">
                     <h2>Request List</h2>
                 </div>
@@ -122,7 +125,23 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         
     </div>
 
-
+    <!--Logout Modal -->
+    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+            </div>
+            <div class="modal-body">
+                Do you want to log out?
+            </div>
+            <div class="modal-footer d-flex flex-row justify-content-center">
+                <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+            </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // JavaScript code for search functionality
