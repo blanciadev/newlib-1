@@ -1,5 +1,6 @@
 <?php
-include '../auth.php';
+session_start();
+
 // Check if the User_ID session variable is not set or empty
 if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     // Redirect to index.php
@@ -7,6 +8,28 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
+if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
+    $requestID = $_POST['requestID']; // Get the request ID from the form
+
+    // Perform the database update operation
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Update the status to "Canceled" for the specific request ID
+    $updateSql = "UPDATE tbl_requestbooks SET tb_status = 'Cancelled' WHERE Request_ID = $requestID";
+    if ($conn->query($updateSql) === TRUE) {
+        echo "<script>alert('Record updated successfully'); window.location.href = 'staff_request_list.php';</script>";
+    } else {
+        echo "Error updating record: " . $conn->error;
+    }
+    
+    
+
+    $conn->close(); // Close the database connection
+    exit(); // Stop further execution
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -77,44 +100,59 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 <th>Year Published</th>
                 <th>Quantity</th>
                 <th>Status</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            <?php
-                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
-                if ($conn->connect_error) {
-                    die("Connection failed: " . $conn->connect_error);
-                }
+                <?php
+        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
 
-               // SQL query
-                $sql = "SELECT Request_ID, User_ID, Book_Title, Authors_ID, Publisher_ID, price, tb_edition, Year_Published, Quantity, tb_status FROM tbl_requestbooks";
-                $result = $conn->query($sql);
+        // SQL query
+        $sql = "SELECT Request_ID, User_ID, Book_Title, Authors_ID, Publisher_ID, price, tb_edition, Year_Published, Quantity, tb_status FROM tbl_requestbooks";
+        $result = $conn->query($sql);
 
-                // Output data of each row
-                if ($result->num_rows > 0) {
-                    while($row = $result->fetch_assoc()) {
-                        echo "<tr>
-                                <td>".$row["Request_ID"]."</td>
-                                <td>".$row["User_ID"]."</td>
-                                <td>".$row["Book_Title"]."</td>
-                                <td>".$row["Authors_ID"]."</td>
-                                <td>".$row["Publisher_ID"]."</td>
-                                <td>".$row["price"]."</td>
-                                <td>".$row["tb_edition"]."</td>
-                                <td>".$row["Year_Published"]."</td>
-                                <td>".$row["Quantity"]."</td>
-                                <td>".$row["tb_status"]."</td>
-                            </tr>";
-                    }
-                    echo "</table>";
+            while ($row = $result->fetch_assoc()) {
+                echo "<tr>
+                        <td>".$row["Request_ID"]."</td>
+                        <td>".$row["User_ID"]."</td>
+                        <td>".$row["Book_Title"]."</td>
+                        <td>".$row["Authors_ID"]."</td>
+                        <td>".$row["Publisher_ID"]."</td>
+                        <td>".$row["price"]."</td>
+                        <td>".$row["tb_edition"]."</td>
+                        <td>".$row["Year_Published"]."</td>
+                        <td>".$row["Quantity"]."</td>
+                        <td>".$row["tb_status"]."</td>";
+
+                // Check if the user ID matches the session user ID and the status is not "Approved"
+                if ($_SESSION["User_ID"] == $row["User_ID"] && $row["tb_status"] != "Approved") {
+                    if ($row["tb_status"] != "Cancelled") {
+                        echo "<td>
+                            <form id='cancelForm' method='POST' action=''>
+                                <input type=\"hidden\" name=\"cancelButton\" value=\"1\"> <!-- This hidden input indicates the form was submitted -->
+                                <input type='hidden' name='requestID' value='" . $row["Request_ID"] . "'>
+                                <input type='submit' value='Cancel'>
+                            </form>
+                        </td>";
+                    } 
                 } else {
-                    echo "0 results";
+                    echo "<td></td>"; // Empty cell if the condition is not met
                 }
+                
+
+                echo "</tr>";
+            }
+            echo "</table>";
 
 
-                        // Close connection
-                        $conn->close();
-                ?>
+
+        // Close connection
+        $conn->close();
+        ?>
+
             </tbody>
     </table>
     </div>
@@ -142,6 +180,8 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             </div>
         </div>
     </div>
+
+
 
     <script>
         // JavaScript code for search functionality
@@ -172,7 +212,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         });
     </script>
 
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 

@@ -124,11 +124,7 @@ $result = $stmt->get_result();
     <div class="container">
         <h2 class="mt-3">Request List</h2>
         
-        <!-- QR Code Reader Container -->
-        <main>
-            <div id="reader">QR Code Scanner</div>
-            <div id="result"></div>
-        </main>
+       
 
         <!-- Search Input -->
         <div class="search-container">
@@ -201,43 +197,6 @@ $result = $stmt->get_result();
         window.location.href = "staff_return_transaction.php?borrowId=" + borrowId;
     }
 </script>
-
-
-
-<script>
-
-    const scanner = new Html5QrcodeScanner('reader', { 
-        // Scanner will be initialized in DOM inside element with id of 'reader'
-        qrbox: {
-            width: 250,
-            height: 250,
-        },  // Sets dimensions of scanning box (set relative to reader element width)
-        fps: 20, // Frames per second to attempt a scan
-    });
-
-
-    scanner.render(success, error);
-    // Starts scanner
-
-    function success(result) {
-    // Set the scanned result as the value of the input field
-    document.getElementById('searchInput').value = result;
-
-    // Clear the scanning instance
-    scanner.clear();
-
-    // Remove the reader element from the DOM since it's no longer needed
-    document.getElementById('reader').remove();
-}
-
-
-    function error(err) {
-        console.error(err);
-        // Prints any errors to the console
-    }
-
-</script>
-
 
 
 
