@@ -133,12 +133,34 @@ li.nav-item.active {
     font-size: 18pt;
     cursor: pointer;
 }
-.text{
+.header1 > .text{
+    height: 60px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 5px;
+}
+.header > .text{
     height: 60px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
+.text .back-btn{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.849);
+    box-shadow: 5px 5px 10px #bababa, -5px -5px 10px #dfdfdf;
+    padding: 5PX;
+    text-align: center;
+}
+.back-btn > a {
+    color: black;
+    text-decoration: none;
+    
+}
+
 .text > title{
     margin: 2px;
 }
