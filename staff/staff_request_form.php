@@ -85,6 +85,9 @@ $_SESSION['User_ID'];
     <div class="board container"><!--board container-->
     <div class="header1">
             <div class="text">
+                <div class="back-btn">
+                    <a href="./staff_request_list.php"><i class='bx bx-arrow-back'></i></a>
+                </div>
                 <div class="title">
                     <h2>Request Form</h2>
                 </div>
