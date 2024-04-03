@@ -24,16 +24,43 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
 <body>
-    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
+<div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container-->
-        <div class="user-header mr-3 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-                <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
-                <p>(ADMIN)</p>
-            </div>
-        <hr>
+       
+        <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
+        <?php
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection    
+        // Check if the user's image path is available in the session or database
+        $userImagePath = ''; // Initialize the variable
+        if (isset($_SESSION["image_path"]) && !empty($_SESSION["image_path"])) {
+            // If the image path is in the session, use it
+            $userImagePath = $_SESSION["image_path"];
+        } else {
+            // Otherwise, fetch the image path from the database
+            $userID = $_SESSION["User_ID"];
+            $sql = "SELECT image_path FROM tbl_employee WHERE User_ID = $userID";
+            $result = mysqli_query($conn, $sql);
+            if ($result && mysqli_num_rows($result) > 0) {
+                $row = mysqli_fetch_assoc($result);
+                $userImagePath = $row['image_path'];
+                $_SESSION["image_path"] = $userImagePath; // Store in session for future use
+            }
+        }
+
+        // Display the user's image using the retrieved image path
+        if (!empty($userImagePath)) {
+            echo '<img src="' . $userImagePath . '" alt="User Image" width="50" height="50" class="rounded-circle me-2">';
+        } else {
+            // If no image is found, you can display a default image
+            echo '<img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">';
+        }
+        ?>
+        <strong><span><?php echo $_SESSION["admin_name"] . "<br/>" . $_SESSION["role"]; ?></span></strong> 
+    </div>
+    <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item"> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>

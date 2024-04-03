@@ -12,52 +12,69 @@ $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // Da
 // Retrieve User_ID from session
 $userID = $_SESSION["User_ID"];
 
-// Query to retrieve user data excluding password
-$sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address 
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+
+$userID = $_SESSION["User_ID"];
+
+$sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
         FROM tbl_employee 
         WHERE User_ID = $userID";
 
 $result = mysqli_query($conn, $sql);
 
 if (!$result) {
-    // Handle query error
     echo "Error: " . mysqli_error($conn);
 } else {
     $userData = mysqli_fetch_assoc($result);
 }
-
-// Handle form submission for password update
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-   
-    $newPassword = $_POST['newPassword'];
-    $confirmPassword = $_POST['confirmPassword'];
+    if (isset($_POST['newPassword'])) {
+        $newPassword = $_POST['newPassword'];
+        $confirmPassword = $_POST['confirmPassword'];
 
-    // Query to retrieve the current password from the database
-    $passwordQuery = "SELECT tb_password FROM tbl_employee WHERE User_ID = $userID";
-    $passwordResult = mysqli_query($conn, $passwordQuery);
-
-    if ($passwordResult) {
-        $row = mysqli_fetch_assoc($passwordResult);
-        $currentPassword = $row['tb_password'];
-
-        // Verify if the old password matches the current password
-     
-            // Check if the new password matches the confirm password
-            if ($newPassword === $confirmPassword) {
-                // Update the password in the database
-               
-                $updateQuery = "UPDATE tbl_employee SET tb_password = '$newPassword' WHERE User_ID = $userID";
-
-                if (mysqli_query($conn, $updateQuery)) {
-                    echo '<script>alert("Password updated successfully!");</script>';
-                } else {
-                    echo "Error updating password: " . mysqli_error($conn);
-                }
+        if ($newPassword === $confirmPassword) {
+            $updateQuery = "UPDATE tbl_employee SET tb_password = ? WHERE User_ID = ?";
+            $stmt = mysqli_prepare($conn, $updateQuery);
+            mysqli_stmt_bind_param($stmt, "si", $newPassword, $userID);
+            if (mysqli_stmt_execute($stmt)) {
+                echo '<script>alert("Password updated successfully!");</script>';
             } else {
-                echo '<script>alert("New password and confirm password do not match!");</script>';
+                echo "Error updating password: " . mysqli_error($conn);
             }
-        } 
-    } 
+            mysqli_stmt_close($stmt);
+        } else {
+            echo '<script>alert("New password and confirm password do not match!");</script>';
+        }
+    }
+
+if (isset($_POST['uploadImageBtn'])) {
+    if (isset($_FILES['imageFile'])) {
+        $imageFile = $_FILES['imageFile'];
+        if ($imageFile['error'] === UPLOAD_ERR_OK) {
+            $fileName = $imageFile['name'];
+            $fileTmpName = $imageFile['tmp_name'];
+            $fileSize = $imageFile['size'];
+
+            // Validate file type and size here if needed
+
+            $imageData = file_get_contents($fileTmpName);
+
+            $sql = "UPDATE tbl_employee SET image_data = ? WHERE User_ID = ?";
+            $stmt = mysqli_prepare($conn, $sql);
+            mysqli_stmt_bind_param($stmt, "si", $imageData, $userID);
+            if (mysqli_stmt_execute($stmt)) {
+                echo '<script>alert("Image Updated Successfully!");</script>';
+            } else {
+                echo "Error uploading image: " . mysqli_error($conn);
+            }
+            mysqli_stmt_close($stmt);
+        } else {
+            echo "Error uploading file: " . $imageFile['error'];
+        }
+    }
+}
+}
+
 
 ?>
 
@@ -83,9 +100,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container-->
-        <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-            <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
-            <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong> 
+      
+        <!-- Sidenav content -->
+        <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly">
+            <!-- Display user image -->
+            <?php
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            $userID = $_SESSION["User_ID"];
+            $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
+                    FROM tbl_employee 
+                    WHERE User_ID = $userID";
+            $result = mysqli_query($conn, $sql);
+            if (!$result) {
+                echo "Error: " . mysqli_error($conn);
+            } else {
+                $userData = mysqli_fetch_assoc($result);
+            }
+            ?>
+            <?php if (!empty($userData['image_data'])): ?>
+                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
+                <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
+            <?php else: ?>
+                <!-- Change the path to your actual default image -->
+                <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+            <?php endif; ?>
+            <strong><span><?php echo $_SESSION["staff_name"] . "<br/>" . $_SESSION["role"]; ?></span></strong>
         </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
@@ -101,23 +140,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="board container"><!--board container-->
 
-    <form id="userProfileForm" action="" method="post">
+   
     <!-- Display user data -->
-    <div class="col-md-4">
-    <input type="hidden" id="userID" name="userID" value="<?php echo $userData['User_ID']; ?>">
-    </div>
+ 
+    <form id="imageUploadForm" action="" method="post" enctype="multipart/form-data">
+   
+    <input type="file" name="imageFile" id="imageFile">
+    <button type="submit" name="uploadImageBtn">Upload Image</button>
+    </form>
+    
+    <form id="userProfileForm" action="" method="post" enctype="multipart/form-data">
+
 
     <div class="col-md-4">
         <label for="firstName" class="form-label">First Name</label>
-        <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $userData['First_Name']; ?>" required>
+        <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $userData['First_Name']; ?>" readonly>
     </div>
     <div class="col-md-4">>
         <label for="middleName" class="form-label">Middle Name</label>
-        <input type="text" class="form-control" id="middleName" name="middleName" value="<?php echo $userData['Middle_Name']; ?>">
+        <input type="text" class="form-control" id="middleName" name="middleName" value="<?php echo $userData['Middle_Name']; ?>"readonly>
     </div>
     <div class="col-md-4">>
         <label for="lastName" class="form-label">Last Name</label>
-        <input type="text" class="form-control" id="lastName" name="lastName" value="<?php echo $userData['Last_Name']; ?>" required>
+        <input type="text" class="form-control" id="lastName" name="lastName" value="<?php echo $userData['Last_Name']; ?>" readonly>
     </div>
     <div class="col-md-4">>
         <label for="role" class="form-label">Role</label>
