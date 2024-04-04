@@ -12,53 +12,109 @@ $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // Da
 // Retrieve User_ID from session
 $userID = $_SESSION["User_ID"];
 
-// Query to retrieve user data excluding password
-$sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address 
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+
+$userID = $_SESSION["User_ID"];
+
+$sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
         FROM tbl_employee 
         WHERE User_ID = $userID";
 
 $result = mysqli_query($conn, $sql);
 
 if (!$result) {
-    // Handle query error
     echo "Error: " . mysqli_error($conn);
 } else {
     $userData = mysqli_fetch_assoc($result);
 }
 
-// Handle form submission for password update
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-   
-    $newPassword = $_POST['newPassword'];
-    $confirmPassword = $_POST['confirmPassword'];
+    // Check if the connection is still alive, reconnect if needed
+if (!mysqli_ping($conn)) {
+    mysqli_close($conn);
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+}else{
+    if (isset($_POST['uploadImageBtn'])) {
+        $imageFile = $_FILES['imageFile'];
+        // Check if there was an error uploading the file
+        if ($imageFile['error'] === UPLOAD_ERR_OK) {
+            // Validate file type and size
+            $fileType = $imageFile['type'];
+            $fileSize = $imageFile['size'];
 
-    // Query to retrieve the current password from the database
-    $passwordQuery = "SELECT tb_password FROM tbl_employee WHERE User_ID = $userID";
-    $passwordResult = mysqli_query($conn, $passwordQuery);
-
-    if ($passwordResult) {
-        $row = mysqli_fetch_assoc($passwordResult);
-        $currentPassword = $row['tb_password'];
-
-        // Verify if the old password matches the current password
-     
-            // Check if the new password matches the confirm password
-            if ($newPassword === $confirmPassword) {
-                // Update the password in the database
-               
-                $updateQuery = "UPDATE tbl_employee SET tb_password = '$newPassword' WHERE User_ID = $userID";
-
-                if (mysqli_query($conn, $updateQuery)) {
-                    echo '<script>alert("Password updated successfully!");</script>';
-                } else {
-                    echo "Error updating password: " . mysqli_error($conn);
-                }
+            // Restrict file types to PNG and JPEG
+            if ($fileType != 'image/png' && $fileType != 'image/jpeg') {
+                echo '<script>alert("Error: Only PNG and JPEG files are allowed.");</script>';
+            } elseif ($fileSize > 5242880) { // 5MB (in bytes)
+                echo '<script>alert("Error: The file size exceeds the limit (5MB).");</script>';
             } else {
-                echo '<script>alert("New password and confirm password do not match!");</script>';
-            }
-        } 
-    } 
+                // Read the file data
+                $imageData = file_get_contents($imageFile['tmp_name']);
 
+                // Perform database update
+                $sql = "UPDATE tbl_employee SET image_data = ? WHERE User_ID = ?";
+                $stmt = mysqli_prepare($conn, $sql);
+                mysqli_stmt_bind_param($stmt, "si", $imageData, $userID);
+                if (mysqli_stmt_execute($stmt)) {
+                    echo '<script>alert("Image Updated successfully."); window.location.href = "staff_dashboard.php";</script>';
+                } else {
+                    echo '<script>alert("Error updating image data.");</script>';
+                }
+                mysqli_stmt_close($stmt);
+            }
+        } else {
+            echo '<script>alert("Error uploading file: ' . $imageFile['error'] . '");</script>';
+        }
+    } elseif (isset($_POST['firstName'])) {
+        // Profile update logic
+        $firstName = $_POST['firstName'];
+        $middleName = $_POST['middleName'];
+        $lastName = $_POST['lastName'];
+        $role = $_POST['role'];
+        $contactNumber = $_POST['contactNumber'];
+        $email = $_POST['email'];
+        $address = $_POST['address'];
+        $newPassword = $_POST['newPassword'];
+        $confirmPassword = $_POST['confirmPassword'];
+
+        // Check if the new password and confirm password match
+        if ($newPassword === $confirmPassword) {
+            // Check if the old password matches the user's password in the database
+         //   $oldPassword = $_POST['tb_password']; 
+            $sqlCheckPassword = "SELECT tb_password FROM tbl_employee WHERE User_ID = ?";
+            $stmtCheckPassword = mysqli_prepare($conn, $sqlCheckPassword);
+            mysqli_stmt_bind_param($stmtCheckPassword, "i", $userID);
+            mysqli_stmt_execute($stmtCheckPassword);
+            mysqli_stmt_bind_result($stmtCheckPassword, $storedPassword);
+            mysqli_stmt_fetch($stmtCheckPassword);
+            mysqli_stmt_close($stmtCheckPassword);
+
+            if (password_verify($newPassword, $storedPassword)) {
+                // Old password matches, update the user's data in the database
+                $updateQuery = "UPDATE tbl_employee 
+                                SET First_Name = ?, Middle_Name = ?, Last_Name = ?, tb_role = ?, 
+                                    Contact_Number = ?, E_mail = ?, tb_address = ?, tb_password = ? 
+                                WHERE User_ID = ?";
+                $stmt = mysqli_prepare($conn, $updateQuery);
+            
+                mysqli_stmt_bind_param($stmt, "ssssssssi", $firstName, $middleName, $lastName, $role,
+                    $contactNumber, $email, $address, $newPassword, $userID);
+                if (mysqli_stmt_execute($stmt)) {
+                    echo '<script>alert("Profile Updated successfully."); window.location.href = "staff_dashboard.php";</script>';
+                } else {
+                    echo '<script>alert("Error updating profile: ' . mysqli_error($conn) . '");</script>';
+                }
+                mysqli_stmt_close($stmt); // Close the statement
+            } else {
+                echo '<script>alert("Old password does match!");</script>';
+            }
+        } else {
+            echo '<script>alert("New password and confirm password do not match!");</script>';
+        }
+    }
+}
+
+}
 ?>
 
 
@@ -83,9 +139,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container-->
-        <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-            <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
-            <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong> 
+      
+        <!-- Sidenav content -->
+        <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly">
+            <!-- Display user image -->
+            <?php
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            $userID = $_SESSION["User_ID"];
+            $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
+                    FROM tbl_employee 
+                    WHERE User_ID = $userID";
+            $result = mysqli_query($conn, $sql);
+            if (!$result) {
+                echo "Error: " . mysqli_error($conn);
+            } else {
+                $userData = mysqli_fetch_assoc($result);
+            }
+            ?>
+            <?php if (!empty($userData['image_data'])): ?>
+                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
+                <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
+            <?php else: ?>
+                <!-- Change the path to your actual default image -->
+                <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+            <?php endif; ?>
+            <strong><span><?php echo $_SESSION["staff_name"] . "<br/>" . $_SESSION["role"]; ?></span></strong>
         </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
@@ -101,15 +179,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="board container"><!--board container-->
 
-    <form id="userProfileForm" action="" method="post">
+   
     <!-- Display user data -->
-    <div class="col-md-4">
-    <input type="hidden" id="userID" name="userID" value="<?php echo $userData['User_ID']; ?>">
-    </div>
+ 
+    <form id="imageUploadForm" action="" method="post" enctype="multipart/form-data">
+    <input type="file" name="imageFile" id="imageFile">
+    <button type="submit" name="uploadImageBtn">Upload Image</button>
+    </form>
+    
+    <form id="userProfileForm" action="" method="post">
+
 
     <div class="col-md-4">
         <label for="firstName" class="form-label">First Name</label>
-        <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $userData['First_Name']; ?>" required>
+        <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $userData['First_Name']; ?>" >
     </div>
     <div class="col-md-4">>
         <label for="middleName" class="form-label">Middle Name</label>
@@ -117,7 +200,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <div class="col-md-4">>
         <label for="lastName" class="form-label">Last Name</label>
-        <input type="text" class="form-control" id="lastName" name="lastName" value="<?php echo $userData['Last_Name']; ?>" required>
+        <input type="text" class="form-control" id="lastName" name="lastName" value="<?php echo $userData['Last_Name']; ?>" >
     </div>
     <div class="col-md-4">>
         <label for="role" class="form-label">Role</label>
@@ -125,14 +208,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
     <div class="col-md-4">
         <label for="contactNumber" class="form-label">Contact Number</label>
-        <input type="tel" class="form-control" id="contactNumber" name="contactNumber" value="<?php echo $userData['Contact_Number']; ?>" required>
+        <input type="tel" class="form-control" id="contactNumber" name="contactNumber" value="<?php echo $userData['Contact_Number']; ?>" >
     </div>
     <div class="col-md-4">     <label for="email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="email" name="email" value="<?php echo $userData['E_mail']; ?>" required>
+        <input type="email" class="form-control" id="email" name="email" value="<?php echo $userData['E_mail']; ?>" >
     </div>
     <div class="col-md-4">
         <label for="address" class="form-label">Address</label>
-        <input type="text" class="form-control" id="address" name="address" value="<?php echo $userData['tb_address']; ?>" required>
+        <input type="text" class="form-control" id="address" name="address" value="<?php echo $userData['tb_address']; ?>" >
     </div>
 
 
@@ -150,7 +233,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <!-- Update button -->
     <button type="submit" class="btn btn-primary">Update Password</button>
-</form>
+    </form>
 
     </div>
         

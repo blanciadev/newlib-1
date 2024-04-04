@@ -20,23 +20,34 @@ $_SESSION['User_ID'];
     $edition = $_POST['edition'];
     $year = $_POST['year'];
     $quantity = $_POST['quantity'];
-    $status = $_POST['status'];
+    $status = "Pending";
     $price = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
     
     
     // Validate form data (you may need more robust validation)
-    if(empty($bookTitle) || empty($author) || empty($publisher) || empty($quantity) || empty($status)) {
+    if (empty($bookTitle) || empty($author) || empty($publisher) || empty($quantity) || empty($status)) {
         $errorMessage = "Please fill in all fields.";
     } else {
+        // Handle "Other Edition" input
+        if ($edition === "Other") {
+            // Check if the 'otherEdition' input is set and not empty
+            if (isset($_POST['otherEdition']) && !empty($_POST['otherEdition'])) {
+                $edition = $_POST['otherEdition']; // Use the input value for edition
+            } else {
+                $errorMessage = "Please provide a value for Other Edition.";
+            }
+        }
+
         // Insert data into the database
-        $conn =  mysqli_connect("localhost","root","root","db_library_2", 3308); //database connection
+        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); //database connection
+
         // Assuming you have a database connection named $conn
-        $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Authors_ID, Publisher_ID, price, tb_edition, Year_Published ,Quantity, tb_status) 
-        VALUES ('$userID', '$bookTitle', '$author', '$publisher','$price', '$edition','$year','$quantity', '$status')";
+        $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Authors_ID, Publisher_ID, price, tb_edition, Year_Published, Quantity, tb_status) 
+        VALUES ('$userID', '$bookTitle', '$author', '$publisher', '$price', '$edition', '$year', '$quantity', '$status')";
 
         $result = mysqli_query($conn, $query);
 
-        if($result) {
+        if ($result) {
             $successMessage = "Request submitted successfully.";
         } else {
             $errorMessage = "Error: " . mysqli_error($conn);
@@ -65,10 +76,30 @@ $_SESSION['User_ID'];
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container--> 
-        <div class="user-header d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-            <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
-            <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong> 
-        </div>
+        <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
+        <!-- Display user image -->
+        <?php
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            $userID = $_SESSION["User_ID"];
+            $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
+                    FROM tbl_employee 
+                    WHERE User_ID = $userID";
+            $result = mysqli_query($conn, $sql);
+            if (!$result) {
+                echo "Error: " . mysqli_error($conn);
+            } else {
+                $userData = mysqli_fetch_assoc($result);
+            }
+            ?>
+            <?php if (!empty($userData['image_data'])): ?>
+                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
+                <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
+            <?php else: ?>
+                <!-- Change the path to your actual default image -->
+                <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+            <?php endif; ?>
+        <strong><span><?php echo $_SESSION["staff_name"] . "<br/>" . $_SESSION["role"]; ?></span></strong> 
+    </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
@@ -129,14 +160,22 @@ $_SESSION['User_ID'];
                 <input type="text" class="form-control" id="year" name="year" required>
             </div>
             <div class="mb-3">
-                <label for="edition" class="form-label">Edition</label>
-                <select class="form-select" id="edition" name="edition" required>
-                    <option value="First Edition">First Edition</option>
-                    <option value=">Second Edition">Second Edition</option>
-                    <option value="Third Edition">Third Edition</option>
-                    <option value="Fourth Edition">Fourth Edition</option>
-                </select>
-            </div>
+        
+        <label for="edition" class="form-label">Edition</label>
+        <select class="form-select" id="edition" name="edition" onchange="toggleOtherEdition()" required>
+            <option value="First Edition">First Edition</option>
+            <option value="Second Edition">Second Edition</option>
+            <option value="Third Edition">Third Edition</option>
+            <option value="Fourth Edition">Fourth Edition</option>
+            <option value="Other">Other</option>
+        </select>
+   
+    <div id="otherEditionContainer" class="mb-3" style="display: none;">
+        <label for="otherEdition" class="form-label">Other Edition</label>
+        <input type="text" class="form-control" id="otherEdition" name="otherEdition">
+    </div>
+ 
+
             <div class="mb-3">
                 <label for="year" class="form-label">Price</label>
                 <input type="text" class="form-control" id="price" name="price" required>
@@ -145,14 +184,7 @@ $_SESSION['User_ID'];
                 <label for="quantity" class="form-label">Quantity</label>
                 <input type="number" class="form-control" id="quantity" name="quantity" required>
             </div>
-            <div class="mb-3">
-                <label for="status" class="form-label">Status</label>
-                <select class="form-select" id="status" name="status" required>
-                    <option value="Pending">Pending</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Denied">Denied</option>
-                </select>
-            </div>
+         
             <button type="submit" class="btn btn-primary" name="submit">Submit Request</button>
         </form>
        
@@ -162,6 +194,22 @@ $_SESSION['User_ID'];
 
 
     
+<script>
+    function toggleOtherEdition() {
+        const editionSelect = document.getElementById('edition');
+        const otherEditionContainer = document.getElementById('otherEditionContainer');
+        const otherEditionInput = document.getElementById('otherEdition');
+
+        if (editionSelect.value === 'Other') {
+            otherEditionContainer.style.display = 'block'; // Show the input field
+            otherEditionInput.required = true; // Make the input field required
+        } else {
+            otherEditionContainer.style.display = 'none'; // Hide the input field
+            otherEditionInput.required = false; // Make the input field optional
+            otherEditionInput.value = ''; // Clear the input field value
+        }
+    }
+</script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 

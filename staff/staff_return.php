@@ -104,12 +104,30 @@ $result = $stmt->get_result();
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container--> 
-        <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-            <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2">
-           
-            <!-- <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong>  -->
-       
-        </div>
+        <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
+       <!-- Display user image -->
+       <?php
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            $userID = $_SESSION["User_ID"];
+            $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
+                    FROM tbl_employee 
+                    WHERE User_ID = $userID";
+            $result = mysqli_query($conn, $sql);
+            if (!$result) {
+                echo "Error: " . mysqli_error($conn);
+            } else {
+                $userData = mysqli_fetch_assoc($result);
+            }
+            ?>
+            <?php if (!empty($userData['image_data'])): ?>
+                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
+                <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
+            <?php else: ?>
+                <!-- Change the path to your actual default image -->
+                <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+            <?php endif; ?>
+        <strong><span><?php echo $_SESSION["staff_name"] . "<br/>" . $_SESSION["role"]; ?></span></strong> 
+    </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
@@ -124,11 +142,7 @@ $result = $stmt->get_result();
     <div class="container">
         <h2 class="mt-3">Request List</h2>
         
-        <!-- QR Code Reader Container -->
-        <main>
-            <div id="reader">QR Code Scanner</div>
-            <div id="result"></div>
-        </main>
+       
 
         <!-- Search Input -->
         <div class="search-container">
@@ -201,43 +215,6 @@ $result = $stmt->get_result();
         window.location.href = "staff_return_transaction.php?borrowId=" + borrowId;
     }
 </script>
-
-
-
-<script>
-
-    const scanner = new Html5QrcodeScanner('reader', { 
-        // Scanner will be initialized in DOM inside element with id of 'reader'
-        qrbox: {
-            width: 250,
-            height: 250,
-        },  // Sets dimensions of scanning box (set relative to reader element width)
-        fps: 20, // Frames per second to attempt a scan
-    });
-
-
-    scanner.render(success, error);
-    // Starts scanner
-
-    function success(result) {
-    // Set the scanned result as the value of the input field
-    document.getElementById('searchInput').value = result;
-
-    // Clear the scanning instance
-    scanner.clear();
-
-    // Remove the reader element from the DOM since it's no longer needed
-    document.getElementById('reader').remove();
-}
-
-
-    function error(err) {
-        console.error(err);
-        // Prints any errors to the console
-    }
-
-</script>
-
 
 
 
