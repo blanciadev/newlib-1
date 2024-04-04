@@ -33,6 +33,31 @@ if (!$result) {
     $role = $userData['tb_role'];
 }
 
+
+// Fetch data from tbl_log
+$sql = "SELECT DATE_FORMAT(Date_Time, '%Y-%m') AS Month, COUNT(*) AS Visits
+        FROM tbl_log
+        GROUP BY DATE_FORMAT(Date_Time, '%Y-%m')
+        ORDER BY DATE_FORMAT(Date_Time, '%Y-%m') ASC";
+$result = mysqli_query($conn, $sql);
+
+// Initialize arrays to hold the labels and data for the chart
+$labels = [];
+$data = [];
+
+
+// Process the fetched data
+while ($row = mysqli_fetch_assoc($result)) {
+    // Add the month to labels array
+    $labels[] = $row['Month'];
+    
+    // Add the number of visits to data array
+    $data[] = $row['Visits'];
+}
+
+// Convert labels and data arrays to JSON format
+$labelsJSON = json_encode($labels);
+$dataJSON = json_encode($data);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -123,8 +148,8 @@ if (!$result) {
                     <div class="totalvisits">
                     <?php
                     $currentDate = date("Y-m-d");
-                    // Query to count visits for the current date using the Date&Time column
-                    $totalVisitsQuery = "SELECT COUNT(*) AS total_visits FROM tbl_log WHERE DATE(`Date&Time`) = '$currentDate'";
+                    // Query to count visits for the current date using the Date_Time column
+                    $totalVisitsQuery = "SELECT COUNT(*) AS total_visits FROM tbl_log WHERE DATE(`Date_Time`) = '$currentDate'";
                     $totalVisitsResult = mysqli_query($conn, $totalVisitsQuery);
 
                     // Check if the query was successful and fetch the total visits
@@ -291,27 +316,35 @@ if (!$result) {
             })
         })
     
-    const ctx = document.getElementById('myChart');
-    new Chart(ctx, {//setup chartjs
-        type: 'line',
-        data: {
-        labels: ['month', 'month', 'month', 'month', 'month', 'month', 'month', 'month', 'month', 'month', 'month', 'month', ],
-        datasets: [{
-            label: 'Monthly Visits',
-            data: [12, 19, 3, 5, 2],// connect data from database
-            borderWidth: 1
-        }]
-        },
-        options: {
-        scales: {
-            y: {
-            beginAtZero: true
-            }
-        }
-        }
-    });
+       
 
     </script>
+      <script>
+        // Access PHP-generated JSON data
+        const labels = <?php echo $labelsJSON; ?>;
+        const data = <?php echo $dataJSON; ?>;
+
+        const ctx = document.getElementById('myChart');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels, // Use labels (months) from PHP
+                datasets: [{
+                    label: 'Monthly Visits',
+                    data: data, // Use data (visits) from PHP
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
 </body>
 
 </html>

@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 
             
         // SQL query to insert data with auto-increment Log_ID and current timestamp
-        $sql = "INSERT INTO tbl_log (Borrower_ID, `Date&Time`) 
+        $sql = "INSERT INTO tbl_log (Borrower_ID, `Date_Time`) 
         VALUES ($borrower_id, NOW())";
 
         if ($conn->query($sql) === TRUE) {
@@ -201,7 +201,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
                         echo "<tr>";
                         echo "<td>" . $row['Borrower_ID'] . "</td>";
                         echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
-                        echo "<td>" . $row['Date&Time'] . "</td>";
+                        echo "<td>" . $row['Date_Time'] . "</td>";
                         // Add more columns as needed
                         echo "</tr>";
                     }
