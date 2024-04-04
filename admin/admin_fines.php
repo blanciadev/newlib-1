@@ -10,38 +10,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 }
 
 
-// Database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-// Fetch log records from the database
-$query = "SELECT DISTINCT
-bd.BorrowDetails_ID, 
-b.User_ID, 
-b.Accession_Code, 
-bk.Book_Title, 
-bd.Quantity, 
-b.Date_Borrowed, 
-b.Due_Date, 
-br.Borrower_ID, 
-bd.tb_status, 
-tbl_fines.Amount, 
-br.*
-FROM
-tbl_borrowdetails AS bd
-INNER JOIN
-tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
-INNER JOIN
-tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-INNER JOIN
-tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
-INNER JOIN
-tbl_fines ON bd.BorrowDetails_ID = tbl_fines.Borrower_ID;
-
-"; 
-$result = mysqli_query($conn, $query);
-
 ?>
 
 
@@ -131,7 +99,41 @@ $result = mysqli_query($conn, $query);
                 </tr>
             </thead>
             <tbody>
+
                 <?php
+                
+// Database connection
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+// Fetch log records from the database
+$query = "SELECT DISTINCT
+bd.BorrowDetails_ID, 
+b.User_ID, 
+b.Accession_Code, 
+bk.Book_Title, 
+bd.Quantity, 
+b.Date_Borrowed, 
+b.Due_Date, 
+br.Borrower_ID, 
+bd.tb_status, 
+tbl_fines.Amount, 
+br.*
+FROM
+tbl_borrowdetails AS bd
+INNER JOIN
+tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+INNER JOIN
+tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+INNER JOIN
+tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
+INNER JOIN
+tbl_fines ON bd.BorrowDetails_ID = tbl_fines.Borrower_ID;
+
+"; 
+$result = mysqli_query($conn, $query);
+
                 // Loop through each row in the result set
                 while($row = mysqli_fetch_assoc($result)) {
                     echo '<tr>';

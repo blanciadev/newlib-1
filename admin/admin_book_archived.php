@@ -13,10 +13,6 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// SQL query to retrieve requested books
-$sql = "SELECT * FROM tbl_archive";
-    $result = $conn->query($sql);
-
 
 // Check if the form was submitted and the necessary POST data is set
 if (isset($_POST['archive_btn'], $_POST['accession_code'], $_POST['book_title'], $_POST['qty'])) {
@@ -158,6 +154,17 @@ if ($result->num_rows > 0) {
                 </tr>
             </thead>
             <tbody>";
+
+// Database connection
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// SQL query to retrieve requested books
+$sql = "SELECT * FROM tbl_archive";
+    $result = $conn->query($sql);
+
 
     // Output data of each row
     while ($row = $result->fetch_assoc()) {

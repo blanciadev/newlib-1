@@ -9,38 +9,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
-       
-
-// Database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-// Fetch log records from the database
-$query = "SELECT DISTINCT
-bd.BorrowDetails_ID, 
-b.User_ID, 
-b.Accession_Code, 
-bk.Book_Title, 
-bd.Quantity, 
-b.Date_Borrowed, 
-b.Due_Date, 
-br.Borrower_ID, 
-bd.tb_status, 
-tbl_fines.Amount, 
-br.*
-FROM
-tbl_borrowdetails AS bd
-INNER JOIN
-tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
-INNER JOIN
-tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-INNER JOIN
-tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
-INNER JOIN
-tbl_fines ON bd.BorrowDetails_ID = tbl_fines.Borrower_ID;
-"; 
-$result = mysqli_query($conn, $query);
+    
 
 
 ?>
@@ -100,41 +69,67 @@ $result = mysqli_query($conn, $query);
             <li class="nav-item"> <a href="logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-
-    
-<div class="container"><!--board container-->
+    <div class="container"><!--board container-->
 <div class="scrollable-table" style="max-height: 900px; overflow-y:auto;">
     <?php
-    // Your existing PHP code to fetch and display table data
+    // Database connection
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Fetch log records from the database
+    $query = "SELECT DISTINCT
+                bd.BorrowDetails_ID, 
+                b.User_ID, 
+                b.Accession_Code, 
+                bk.Book_Title, 
+                bd.Quantity, 
+                b.Date_Borrowed, 
+                b.Due_Date, 
+                br.Borrower_ID, 
+                bd.tb_status, 
+                tbl_fines.Amount
+            FROM
+                tbl_borrowdetails AS bd
+            INNER JOIN
+                tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+            INNER JOIN
+                tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+            INNER JOIN
+                tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
+            INNER JOIN
+                tbl_fines ON bd.BorrowDetails_ID = tbl_fines.Borrower_ID";
+
+    $result = mysqli_query($conn, $query);
+
     ?>
     <table class="table">
         <thead>
             <tr>
-                <th scope="col">Visitors Id</th>
-                <th scope="col">Borrower Id</th>
-                <th scope="col">First Name</th>
-                <th scope="col">Middle Name</th>
-                <th scope="col">Last Name</th>
-                <th scope="col">Contact Number</th>
-                <th scope="col">Fines</th>
+                <th scope="col">Borrower ID</th>
+                <th scope="col">Accession Code</th>
+                <th scope="col">Book Title</th>
+                <th scope="col">Quantity</th>
                 <th scope="col">Date Borrowed</th>
                 <th scope="col">Due Date</th>
+                <th scope="col">Fine Amount</th>
+                <th scope="col">Status</th>
             </tr>
         </thead>
         <tbody>
             <?php
             // Loop through each row in the result set
-            while($row = mysqli_fetch_assoc($result)) {
+            while ($row = mysqli_fetch_assoc($result)) {
                 echo '<tr>';
                 echo '<td>' . $row['Borrower_ID'] . '</td>'; 
-                echo '<td>' . $row['First_Name'] . '</td>'; 
-                echo '<td>' . $row['Middle_Name'] . '</td>'; 
-                echo '<td>' . $row['Last_Name'] . '</td>'; 
-                echo '<td>' . $row['Contact_Number'] . '</td>'; 
-                echo '<td>' . $row['affiliation'] . '</td>'; 
-                echo '<td>' . $row['Amount'] . '</td>'; 
+                echo '<td>' . $row['Accession_Code'] . '</td>'; 
+                echo '<td>' . $row['Book_Title'] . '</td>'; 
+                echo '<td>' . $row['Quantity'] . '</td>'; 
                 echo '<td>' . $row['Date_Borrowed'] . '</td>'; 
                 echo '<td>' . $row['Due_Date'] . '</td>'; 
+                echo '<td>' . $row['Amount'] . '</td>'; 
+                echo '<td>' . $row['tb_status'] . '</td>'; 
                 echo '</tr>';
             }
             ?>
@@ -142,7 +137,7 @@ $result = mysqli_query($conn, $query);
     </table>
 </div>
 </div>
-        
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
