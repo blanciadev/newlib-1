@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 // Check if the User_ID session variable is not set or empty
 if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     // Redirect to index.php
@@ -8,72 +9,12 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 }
 
 $result = null; // Initialize $result variable
-//$_SESSION['Accession_Code'] = null;
 
-// Check if the borrower_id session variable is set
-if(isset($_SESSION['borrower_id'])) {
-    // Retrieve the borrower_id from the session
-    $borrower_id = $_SESSION['borrower_id'];
+// Check if Accession_Code is provided via POST method
 
-    // Now you can use $borrower_id in your code as needed
-    // echo "Borrower ID: " . $borrower_id;
-} else {
-    // Handle the case where the session variable is not set
-    echo "Borrower ID not found in session.";
-}
 
-// Check if Accession_Code is provided
-if(isset($_POST['Accession_Code'])) { 
-    // Check if Accession_Code is empty
-    if(empty($_POST['Accession_Code'])) {
-        echo '<script>alert("Accession Code is required.");</script>';
-        echo '<script>console.log("Accession Code is required.");</script>'; // Log message to console
-        exit(); // Exit to prevent further execution if Accession_Code is not provided
-    }
-    
-    // Database connection
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
-    }
-    
-    // Sanitize input to prevent SQL injection
-    $Accession_Code = mysqli_real_escape_string($conn, $_POST['Accession_Code']);
-    
-    // Query to retrieve book details based on Accession Code
-    $sql = "SELECT * FROM tbl_books WHERE Accession_Code = ?";
-    
-    // Using prepared statements to prevent SQL injection
-    $stmt = mysqli_stmt_init($conn);
-    if (!mysqli_stmt_prepare($stmt, $sql)) {
-        echo '<script>alert("SQL Error.");</script>';
-        exit();
-    } else {
-        mysqli_stmt_bind_param($stmt, "s", $Accession_Code);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-        
-        // Check if the result set is empty (Accession_Code is invalid)
-        if (mysqli_num_rows($result) === 0) {
-            // Display an alert message
-            echo '<script>alert("Invalid Accession Code. No book found.");</script>';
-        } else {
-            // Accession_Code is valid
-            // Fetch book details
-            $book_details = mysqli_fetch_assoc($result);
-            $_SESSION['Accession_Code'] = $Accession_Code; // Store the Accession_Code in session
-             // Redirect to staff_book_borrow_process.php
-             header("Location: staff_book_borrow_process.php");
-            // Close the database connection
-
-            mysqli_stmt_close($stmt);
-            mysqli_close($conn);
-
-            exit(); 
-        }
-    }
-} 
 ?>
+
 
 
 <!DOCTYPE html>
@@ -139,39 +80,78 @@ if(isset($_POST['Accession_Code'])) {
     <form id="dataform" action="" method="POST">
 
         <label for="Accession_Code">Accession Code:</label>
-        <?php
-    echo '<input type="text" id="Accession_Code" name="Accession_Code" placeholder="Enter Accession Code" required';
-    if(isset($_SESSION['Accession_Code']) && !empty($_SESSION['Accession_Code'])) {
+        <input type="text" id="Accession_Code" name="Accession_Code" placeholder="Enter Accession Code" required
+    <?php
+    // Check if there's a previous value in session, and if so, populate the input field with it
+    if (isset($_SESSION['Accession_Code']) && !empty($_SESSION['Accession_Code'])) {
         echo ' value="' . htmlspecialchars($_SESSION['Accession_Code']) . '"';
     }
-    echo '>';
-?>
+    ?>>
 
-    
-<br>
-    <?php
-        if ($result && $result->num_rows > 0) {
-            echo "<h2>Books Found</h2>";
-            echo "<div class='books-container'>";
-            while ($book_details = $result->fetch_assoc()) {
+      </form>
+     
+<?php
+         
+// Check if Accession_Code is provided via POST method
+if (isset($_POST['Accession_Code'])) { 
+    // Check if Accession_Code is empty
+    if (empty($_POST['Accession_Code'])) {
+        echo '<script>alert("Accession Code is required.");</script>';
+        echo '<script>console.log("Accession Code is required.");</script>'; // Log message to console
+    } else {
+        // Database connection
+        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+        if (!$conn) {
+            die("Connection failed: " . mysqli_connect_error());
+        }
+        
+        // Sanitize input to prevent SQL injection
+        $Accession_Code = mysqli_real_escape_string($conn, $_POST['Accession_Code']);
+        
+        // Query to retrieve book details based on Accession Code
+        $sql = "SELECT * FROM tbl_books WHERE Accession_Code = ?";
+        
+        // Using prepared statements to prevent SQL injection
+        $stmt = mysqli_stmt_init($conn);
+        if (!mysqli_stmt_prepare($stmt, $sql)) {
+            echo '<script>alert("SQL Error.");</script>';
+        } else {
+            mysqli_stmt_bind_param($stmt, "s", $Accession_Code);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            
+            // Check if the result set is empty (Accession_Code is invalid)
+            if (mysqli_num_rows($result) === 0) {
+                // Display an alert message
+                echo '<script>alert("Invalid Accession Code. No book found.");</script>';
+            } else {
+                echo "<h2>Books Found</h2>";
                 echo "<div class='book'>";
-                echo "<p><strong>Borrower ID:</strong> " . $borrower_id . "</p>";
-                echo "<p><strong>Title:</strong> " . $book_details['Book_Title'] . "</p>";
-                echo "<p><strong>Author:</strong> " . $book_details['Authors_Name'] . "</p>";
-                echo "<p><strong>Status:</strong> " . $book_details['tb_status'] . "</p>";
+                while ($book_details = mysqli_fetch_assoc($result)) {
+                    echo "<p><strong>Borrower ID:</strong> " . $_SESSION['borrower_id'] . "</p>";
+                    echo "<p><strong>Title:</strong> " . $book_details['Book_Title'] . "</p>";
+                    echo "<p><strong>Author:</strong> " . $book_details['Authors_ID'] . "</p>";
+                    echo "<p><strong>Status:</strong> " . $book_details['tb_status'] . "</p>";
+                }
                 echo "</div>";
             }
-            echo "</div>";
-        } else {
-            // Book not found or error occurred
-           
+            
+            // Close the database connection
+            mysqli_stmt_close($stmt);
+            mysqli_close($conn);
         }
-        ?>
-
-      <button type="submit" class="btn btn-primary" id="book_borrow">Get Book</button>
-      
+    }
+}
+            ?>
+             <form action="staff_book_borrow_process.php" method="POST">
+      <button type="submit" class="btn btn-primary" id="book_borrow" onclick="submitForm()">Get Book</button>
       </form>
+  
+        </div>
     </div>
+    
+    </div>
+    
     </div>
 
     <script>
@@ -197,7 +177,20 @@ if(isset($_POST['Accession_Code'])) {
 </script>
 
 
-
+    
+<script>
+    // Function to check if Accession_Code is in session and submit the form
+    function submitForm() {
+        // Check if Accession_Code is in session
+        if ('<?php echo isset($_SESSION['Accession_Code']) ? 'true' : 'false'; ?>' === 'true') {
+            // Accession_Code is in session, submit the form
+            document.getElementById('dataform').submit();
+        } else {
+            // Accession_Code is not in session, display an alert or handle it as needed
+            alert('Accession_Code is required.'); // You can customize this alert message
+        }
+    }
+</script>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
