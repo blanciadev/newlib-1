@@ -74,13 +74,13 @@ if (!mysqli_ping($conn)) {
         $contactNumber = $_POST['contactNumber'];
         $email = $_POST['email'];
         $address = $_POST['address'];
+        $oldPassword = $_POST['oldPassword'];
         $newPassword = $_POST['newPassword'];
         $confirmPassword = $_POST['confirmPassword'];
-
+    
         // Check if the new password and confirm password match
         if ($newPassword === $confirmPassword) {
             // Check if the old password matches the user's password in the database
-         //   $oldPassword = $_POST['tb_password']; 
             $sqlCheckPassword = "SELECT tb_password FROM tbl_employee WHERE User_ID = ?";
             $stmtCheckPassword = mysqli_prepare($conn, $sqlCheckPassword);
             mysqli_stmt_bind_param($stmtCheckPassword, "i", $userID);
@@ -88,15 +88,23 @@ if (!mysqli_ping($conn)) {
             mysqli_stmt_bind_result($stmtCheckPassword, $storedPassword);
             mysqli_stmt_fetch($stmtCheckPassword);
             mysqli_stmt_close($stmtCheckPassword);
-
-            if (password_verify($newPassword, $storedPassword)) {
+        
+            // Debugging: Echo or log to check values
+            echo "Old Password: $oldPassword<br>";
+            echo "Stored Password: $storedPassword<br>";
+        
+            // Verify the old password using password_verify function
+            if (($oldPassword == $storedPassword)) {
                 // Old password matches, update the user's data in the database
                 $updateQuery = "UPDATE tbl_employee 
                                 SET First_Name = ?, Middle_Name = ?, Last_Name = ?, tb_role = ?, 
                                     Contact_Number = ?, E_mail = ?, tb_address = ?, tb_password = ? 
                                 WHERE User_ID = ?";
                 $stmt = mysqli_prepare($conn, $updateQuery);
-            
+        
+             
+              
+        
                 mysqli_stmt_bind_param($stmt, "ssssssssi", $firstName, $middleName, $lastName, $role,
                     $contactNumber, $email, $address, $newPassword, $userID);
                 if (mysqli_stmt_execute($stmt)) {
@@ -106,12 +114,14 @@ if (!mysqli_ping($conn)) {
                 }
                 mysqli_stmt_close($stmt); // Close the statement
             } else {
-                echo '<script>alert("Old password does match!");</script>';
+                echo '<script>alert("Old password does not match!");</script>';
             }
         } else {
             echo '<script>alert("New password and confirm password do not match!");</script>';
         }
+        
     }
+    
 }
 
 }
@@ -222,6 +232,10 @@ if (!mysqli_ping($conn)) {
     
     <!-- Password Change Section -->
   
+    <div class="col-md-4">
+    <label for="oldPassword">Old Password:</label>
+    <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>
+    </div>
     <div class="col-md-4">
         <label for="newPassword" class="form-label">New Password</label>
         <input type="password" class="form-control" id="newPassword" name="newPassword" required>
