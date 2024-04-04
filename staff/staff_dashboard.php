@@ -8,10 +8,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
-// if (!isset($_SESSION["staff_name"])) {
-//     header("location: ../auth.php");
-// }
-
 
 $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 
@@ -45,22 +41,20 @@ $result = mysqli_query($conn, $sql);
 $labels = [];
 $data = [];
 
+
 // Process the fetched data
 while ($row = mysqli_fetch_assoc($result)) {
-    // Format the date/time as needed for the chart
-    $formattedDate = date('M d, Y', strtotime($row['Date_Time']));
+    // Add the month to labels array
+    $labels[] = $row['Month'];
     
-    // Add the formatted date to labels array
-    $labels[] = $formattedDate;
-    
-    // Assuming you have some data related to log entries (e.g., number of visits)
-    // For demonstration, let's generate random data
-    $data[] = rand(1, 20); // Generate random data (replace with actual data)
+    // Add the number of visits to data array
+    $data[] = $row['Visits'];
 }
 
 // Convert labels and data arrays to JSON format
 $labelsJSON = json_encode($labels);
 $dataJSON = json_encode($data);
+
 
 ?>
 <!DOCTYPE html>
@@ -323,6 +317,7 @@ $dataJSON = json_encode($data);
        
 
     </script>
+    
       <script>
         // Access PHP-generated JSON data
         const labels = <?php echo $labelsJSON; ?>;

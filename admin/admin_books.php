@@ -8,57 +8,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 }
 
 
-// Database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-    // SQL query to retrieve available books
-    $sql = "SELECT
-	tbl_books.Accession_Code, 
-	tbl_books.Book_Title, 
-	tbl_books.Authors_ID, 
-	tbl_books.Publisher_ID, 
-	tbl_books.Section_Code, 
-	tbl_books.Shelf_Number, 
-	tbl_books.tb_edition, 
-	tbl_books.Year_Published, 
-	tbl_books.ISBN, 
-	tbl_books.Bibliography, 
-	tbl_books.Quantity, 
-	tbl_books.tb_status, 
-	tbl_books.Price, 
-	tbl_section.Section_uid, 
-	tbl_section.Section_Name, 
-	tbl_section.Section_Code, 
-	tbl_authors.Authors_Name, 
-	tbl_publisher.Publisher_Name
-FROM
-	tbl_books
-	INNER JOIN
-	tbl_section
-	ON 
-		tbl_books.Section_Code = tbl_section.Section_uid
-	INNER JOIN
-	tbl_authors
-	ON 
-		tbl_books.Authors_ID = tbl_authors.Authors_ID
-	INNER JOIN
-	tbl_publisher
-	ON 
-		tbl_books.Publisher_ID = tbl_publisher.Publisher_ID
-WHERE
-	tbl_books.tb_status <> 'Archived';
-
-
-";
-
-    $result = $conn->query($sql);
-
-
-  
 
 
 
@@ -149,6 +98,49 @@ WHERE
 
     <tbody id="bookList"> 
     <?php
+
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+    // SQL query to retrieve available books
+    $sql = "SELECT
+	tbl_books.Accession_Code, 
+	tbl_books.Book_Title, 
+	tbl_books.Authors_ID, 
+	tbl_books.Publisher_ID, 
+	tbl_books.Section_Code, 
+	tbl_books.Shelf_Number, 
+	tbl_books.tb_edition, 
+	tbl_books.Year_Published, 
+	tbl_books.ISBN, 
+	tbl_books.Bibliography, 
+	tbl_books.Quantity, 
+	tbl_books.tb_status, 
+	tbl_books.Price, 
+	tbl_section.Section_uid, 
+	tbl_section.Section_Name, 
+	tbl_section.Section_Code, 
+	tbl_authors.Authors_Name, 
+	tbl_publisher.Publisher_Name
+FROM
+	tbl_books
+	INNER JOIN
+	tbl_section
+	ON 
+		tbl_books.Section_Code = tbl_section.Section_uid
+	INNER JOIN
+	tbl_authors
+	ON 
+		tbl_books.Authors_ID = tbl_authors.Authors_ID
+	INNER JOIN
+	tbl_publisher
+	ON 
+		tbl_books.Publisher_ID = tbl_publisher.Publisher_ID
+WHERE
+	tbl_books.tb_status <> 'Archived';
+
+
+";
+
+    $result = $conn->query($sql);
 
   // Output data
 if ($result->num_rows > 0) {

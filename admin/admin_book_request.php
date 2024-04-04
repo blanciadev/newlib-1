@@ -105,6 +105,18 @@ if ($conn->connect_error) {
     <tbody id="bookList"> 
 
     <?php
+    
+// Database connection
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+    // SQL query to retrieve available books
+    $sql = "SELECT tbl_requestbooks.* FROM tbl_requestbooks";
+
+    $result = $conn->query($sql);
+
+    
 // Output data
 if ($result->num_rows > 0) {
     // Display the table header

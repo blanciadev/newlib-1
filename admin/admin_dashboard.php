@@ -7,6 +7,35 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
+
+// Fetch data from tbl_log
+$sql = "SELECT DATE_FORMAT(Date_Time, '%Y-%m') AS Month, COUNT(*) AS Visits
+        FROM tbl_log
+        GROUP BY DATE_FORMAT(Date_Time, '%Y-%m')
+        ORDER BY DATE_FORMAT(Date_Time, '%Y-%m') ASC";
+$result = mysqli_query($conn, $sql);
+
+// Initialize arrays to hold the labels and data for the chart
+$labels = [];
+$data = [];
+
+
+// Process the fetched data
+while ($row = mysqli_fetch_assoc($result)) {
+    // Add the month to labels array
+    $labels[] = $row['Month'];
+    
+    // Add the number of visits to data array
+    $data[] = $row['Visits'];
+}
+
+// Convert labels and data arrays to JSON format
+$labelsJSON = json_encode($labels);
+$dataJSON = json_encode($data);
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -184,12 +213,41 @@ mysqli_close($conn);
     </div>
 
     <div class="stats">
-        <h3>Statistics</h3>
-        <div class="stats-con"></div>
-    </div>
+    <h3>Statistics</h3>
+                <div class="stats-con">
+                    <canvas id="myChart" width="500"></canvas>
+                </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  
+<script>
+        // Access PHP-generated JSON data
+        const labels = <?php echo $labelsJSON; ?>;
+        const data = <?php echo $dataJSON; ?>;
 
+        const ctx = document.getElementById('myChart');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels, // Use labels from PHP
+                datasets: [{
+                    label: 'Monthly Visits',
+                    data: data, // Use data from PHP
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
         let date = new Date().toLocaleDateString('en-US', {  
