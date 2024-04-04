@@ -17,38 +17,46 @@ if ($conn->connect_error) {
 
 // Check if the borrowId parameter is set in the URL
 if(isset($_GET['borrowIdadmin'])) {
-    // Set the session variable after sanitizing it
-    $_SESSION['BorrowDetails_ID'] = filter_var($_GET['borrowIdadmin'], FILTER_SANITIZE_STRING);
-    // Optionally, you can redirect back to the same page or perform any other action
-  //  header("Location: admin_book_return.php");
-    
+    // Sanitize the borrowId parameter
+    $borrowId = filter_var($_GET['borrowIdadmin'], FILTER_SANITIZE_STRING);
+
+    // Set the session variable
+    $_SESSION['BorrowDetails_ID'] = $borrowId;
+
+   
+} else {
+    // Handle the case when borrowId is not provided in the URL
+    // For example, redirect back or show an error message
+    echo "Borrow ID not provided.";
+    exit; // Stop script execution if necessary
 }
+
+
 
 // Initialize $bd_Id to an empty string
 $bd_Id = $_SESSION['BorrowDetails_ID'];
 
-
-        // Prepare the SQL statement with a placeholder for the search input
-        $sql = "SELECT DISTINCT
-        b.User_ID, 
-        b.Accession_Code, 
-        bk.Book_Title, 
-        bd.Quantity, 
-        b.Date_Borrowed, 
-        b.Due_Date, 
-        bd.tb_status, 
-        bd.Borrower_ID, 
-        bd.BorrowDetails_ID
-    FROM
-        tbl_borrowdetails AS bd
-    INNER JOIN
-        tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
-    INNER JOIN
-        tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-    INNER JOIN
-        tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID AND bd.Borrower_ID = br.Borrower_ID
-    WHERE
-        bd.BorrowDetails_ID = '$bd_Id'";
+// Prepare the SQL statement with a placeholder for the search input
+$sql = "SELECT DISTINCT
+b.User_ID, 
+b.Accession_Code, 
+bk.Book_Title, 
+bd.Quantity, 
+b.Date_Borrowed, 
+b.Due_Date, 
+bd.tb_status, 
+bd.Borrower_ID, 
+bd.BorrowDetails_ID
+FROM
+tbl_borrowdetails AS bd
+INNER JOIN
+tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+INNER JOIN
+tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+INNER JOIN
+tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID AND bd.Borrower_ID = br.Borrower_ID
+WHERE
+bd.BorrowDetails_ID = $bd_Id";
 
 
 
@@ -62,147 +70,171 @@ $stmt->execute();
 $result = $stmt->get_result();
 // Function to calculate fine based on due date and book status
 function calculateFine($dueDate, $dateBorrowed, $bookStatus) {
-    // Get current timestamp
-    $currentTimestamp = time();
+// Get current timestamp
+$currentTimestamp = time();
 
-    // Calculate number of days since borrowed
-    $daysSinceBorrowed = floor(($currentTimestamp - strtotime($dateBorrowed)) / (60 * 60 * 24));
-    
-    // Subtract 3 days to account for the rental time valid only
-    $daysOverdue = max(0, $daysSinceBorrowed - 3); // Ensure it's non-negative
+// Calculate number of days since borrowed
+$daysSinceBorrowed = floor(($currentTimestamp - strtotime($dateBorrowed)) / (60 * 60 * 24));
 
-    // Initialize fine
-    $fine = 0;
+// Subtract 3 days to account for the rental time valid only
+$daysOverdue = max(0, $daysSinceBorrowed - 3); // Ensure it's non-negative
 
-    echo "Due Date: " . $dueDate . "<br>";
-    echo "Days Overdue: " . $daysOverdue . "<br>";
-    echo "Days Since Borrowed: " . $daysSinceBorrowed . "<br>";
+// Initialize fine
+$fine = 0;
+define('RETURNED_ON_TIME', 0);
+echo "Due Date: " . $dueDate . "<br>";
+echo "Days Overdue: " . $daysOverdue . "<br>";
+echo "Days Since Borrowed: " . $daysSinceBorrowed . "<br>";
 
-    if ($daysOverdue > 0) {
-        // Add default penalty fine of 30 pesos
-        $fine += 30;
-      //  echo "Added default penalty fine of 30 pesos<br>";
-        
-        // Add per-day fine of 15 pesos for each subsequent day of overdue
-        $fine += ($daysOverdue - 1) * 15;
-      //  echo "Added per-day fine of 15 pesos for each subsequent day of overdue<br>";
-    } else {
-        echo "No overdue fine<br>";
-    }
+// Calculate the fine based on overdue status and book status
+switch (true) {
+case $daysOverdue > 0:
+// Add default penalty fine of 30 pesos
+$fine += 30;
+// Add per-day fine of 15 pesos for each subsequent day of overdue
+$fine += ($daysOverdue - 1) * 15;
+break;
+default:
+// No additional fine for books in GOOD CONDITION or if none of the expected statuses are selected
+break;
+}
 
-    // Apply additional penalties based on book status
-    if ($bookStatus == "LOST") {
-        $fine += 50;
-    } elseif ($bookStatus == "PARTIALLY DAMAGE") {
-        $fine += 20;
-    } elseif ($bookStatus == "GOOD CONDITION") {
-        // No additional fine for books in good condition
-    }
 
-    // echo "Total Fine: " . $fine . "<br>";
-    $_SESSION['fine'] = $fine;
-    return $fine;
+// Output the total fine after all calculations
+echo "Total Fine: " . $fine . "<br>";
+
+// Store the fine in session or database, if needed
+$_SESSION['fine'] = $fine;
+return $fine;
 }
 
 
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $fine = $_SESSION['fine'];
-    // Database connection
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
 
-    // Get the BorrowDetails_ID from the session
-    $bd_Id = $_SESSION['BorrowDetails_ID'];
-    $currentDate = date("Y-m-d");
+$fine = $_SESSION['fine'];
+$Reason = $_POST['paymentStatus']; // Get the selected payment status
 
-    // Update tbl_borrowdetails status
-    $sql1 = "UPDATE tbl_borrowdetails SET tb_status = 'Paid' WHERE BorrowDetails_ID = ?";
-    $stmt1 = $conn->prepare($sql1);
-    if (!$stmt1) {
-        die("Error in preparing statement 1: " . $conn->error);
-    }
-    $stmt1->bind_param("i", $bd_Id);
-    
-    // Update tbl_borrow status
-    $sql2 = "UPDATE tbl_borrow SET tb_status = 'Paid' WHERE Borrow_ID = (
-                SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ?
-            )";
-    $stmt2 = $conn->prepare($sql2);
-    if (!$stmt2) {
-        die("Error in preparing statement 2: " . $conn->error);
-    }
-    $stmt2->bind_param("i", $bd_Id);
-    
-    // Update tbl_returningdetails status
-    $sql3 = "UPDATE tbl_returningdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = ?";
-    $stmt3 = $conn->prepare($sql3);
-    if (!$stmt3) {
-        die("Error in preparing statement 3: " . $conn->error);
-    }
-    $stmt3->bind_param("i", $bd_Id);
-    
-     // Update tbl_returned with current date and status
-     $sql4 = "UPDATE tbl_returned SET Date_Returned = ?, tb_status = 'Resolved' WHERE Borrow_ID IN (
-        SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ? LIMIT 1)
+switch ($Reason) {
+case 'DAMAGE':
+$value = 1000;
+$fine += $value;
+$_SESSION['fine'] = $fine;  // Update fine directly in the session
+break;
+case 'PARTIALLY DAMAGE':
+$value = 500;
+$fine += $value;
+$_SESSION['fine'] = $fine;
+break;
+case 'GOOD CONDITION':
+$value = 30;
+$fine += $value;
+$_SESSION['fine'] = $fine;
+break;
+case 'LOST':
+$value = 2000;
+$fine += $value;
+$_SESSION['fine'] = $fine;
+break;
+default:
+// Handle the case where the payment status is not recognized
+echo "Invalid payment status selected.";
+break;
+}
+
+// Database connection
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+if ($conn->connect_error) {
+die("Connection failed: " . $conn->connect_error);
+}
+
+// Get the BorrowDetails_ID from the session
+$bd_Id = $_SESSION['BorrowDetails_ID'];
+$currentDate = date("Y-m-d");
+
+// Update tbl_borrowdetails status
+$sql1 = "UPDATE tbl_borrowdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = ?";
+$stmt1 = $conn->prepare($sql1);
+if (!$stmt1) {
+die("Error in preparing statement 1: " . $conn->error);
+}
+$stmt1->bind_param("i", $bd_Id);
+
+// Update tbl_borrow status
+$sql2 = "UPDATE tbl_borrow SET tb_status = 'Returned' WHERE Borrow_ID = (
+        SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ?
     )";
-    
-        $stmt4 = $conn->prepare($sql4);
-        if (!$stmt4) {
-        die("Error in preparing statement 4: " . $conn->error);
-        }
+$stmt2 = $conn->prepare($sql2);
+if (!$stmt2) {
+die("Error in preparing statement 2: " . $conn->error);
+}
+$stmt2->bind_param("i", $bd_Id);
 
-        $stmt4->bind_param("si", $currentDate, $bd_Id);
+// Update tbl_returningdetails status
+$sql3 = "UPDATE tbl_returningdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = ?";
+$stmt3 = $conn->prepare($sql3);
+if (!$stmt3) {
+die("Error in preparing statement 3: " . $conn->error);
+}
+$stmt3->bind_param("i", $bd_Id);
 
-            // Get Borrower_ID from session
-            $borrowerId = $_SESSION['borrower_id'];
+// Update tbl_returned with current date and status
+$sql4 = "UPDATE tbl_returned SET Date_Returned = ?, tb_status = 'Resolved' WHERE Borrow_ID IN (
+SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ? LIMIT 1)
+)";
 
-            // Get current date and time
-            $currentDateTime = date("Y-m-d H:i:s");
+$stmt4 = $conn->prepare($sql4);
+if (!$stmt4) {
+die("Error in preparing statement 4: " . $conn->error);
+}
 
-            // Prepare SQL statement to insert fine information
-            $sql5 = "INSERT INTO tbl_fines (Borrower_ID, ReturnDetails_ID, Amount, Payment_Status, Date_Created, Payment_Date) 
-                    VALUES (?, ?, ?,  ?, ?, ?)";
-            
-            $stmt5 = $conn->prepare($sql5);
-            if (!$stmt5) {
-                die("Error in preparing statement 5: " . $conn->error);
-            }
+$stmt4->bind_param("si", $currentDate, $bd_Id);
 
-            // Bind parameters and execute statement
-            $stmt5->bind_param("iiisss", $borrowerId, $bd_Id, $fine, $paymentStatus, $currentDate, $currentDateTime);
-          
-            $paymentStatus = "Paid"; // Assuming Payment_Status is always "Resolved"
+    // Get Borrower_ID from session
+    $borrowerId = $_SESSION['BorrowDetails_ID'];
 
-            
-            
-            $accessionCode = $_SESSION['Accession_Code'];
-            $qtyb = $_SESSION['qty'];
-            $sqlUpdateQuantity = "UPDATE tbl_books SET Quantity = Quantity + ? WHERE Accession_Code = ?";
+    // Get current date and time
+    $currentDateTime = date("Y-m-d H:i:s");
+
+  // Prepare SQL statement to insert fine information
+    $sql5 = "INSERT INTO tbl_fines (Borrower_ID, ReturnDetails_ID, Amount, Reason, Payment_Status, Date_Created, Payment_Date) 
+    VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $stmt5 = $conn->prepare($sql5);
+    if (!$stmt5) {
+    die("Error in preparing statement 5: " . $conn->error);
+    }
+
+    // Bind parameters and execute statement
+    $stmt5->bind_param("iiissss", $borrowerId, $bd_Id, $fine, $Reason, $paymentStatus, $currentDate, $currentDateTime);
+
+    // Set the payment status
+    $paymentStatus = "Paid";
+    $_SESSION['stat'] =  $paymentStatus;
+    $accessionCode = $_SESSION['Accession_Code'];
+    $qtyb = $_SESSION['qty'];
+    $sqlUpdateQuantity = "UPDATE tbl_books SET Quantity = Quantity + ? WHERE Accession_Code = ?";
     $stmtUpdateQuantity = $conn->prepare($sqlUpdateQuantity);
 
-    if ($stmtUpdateQuantity) {
-        // Bind parameters
-        $stmtUpdateQuantity->bind_param("is", $qtyb, $accessionCode);
+if ($stmtUpdateQuantity) {
+// Bind parameters
+$stmtUpdateQuantity->bind_param("is", $qtyb, $accessionCode);
 
-        // Execute the statement
-        if ($stmtUpdateQuantity->execute()) {
-            echo "Quantity updated successfully.";
-        } else {
-            echo "Error updating quantity: " . $stmtUpdateQuantity->error;
-        }
+// Execute the statement
+if ($stmtUpdateQuantity->execute()) {
+ 
+} else {
+    echo "Error updating quantity: " . $stmtUpdateQuantity->error;
+}
 
-        // Close the statement
-        $stmtUpdateQuantity->close();
-    } else {
-        echo "Error in preparing the statement: " . $conn->error;
-    }
+// Close the statement
+$stmtUpdateQuantity->close();
+} else {
+echo "Error in preparing the statement: " . $conn->error;
+}
 
 
 
-      // Execute the queries
+// Execute the queries
 $status1 = $stmt1->execute();
 $status2 = $stmt2->execute();
 $status3 = $stmt3->execute();
@@ -211,36 +243,38 @@ $status5 = $stmt5->execute();
 
 // Check each query execution status
 if ($status1 && $status2 && $status3 && $status4 && $status5) {
-    // All queries executed successfully
-    echo "Status updated successfully!";
+// All queries executed successfully
+echo '<script>alert("Record Updated successfully."); window.location.href = "print_return.php";</script>';
+exit();
 } else {
-    // Error occurred while executing queries
-    echo "Error updating status:";
-    if (!$status1) {
-        echo " Error in statement 1: " . $stmt1->error;
-    }
-    if (!$status2) {
-        echo " Error in statement 2: " . $stmt2->error;
-    }
-    if (!$status3) {
-        echo " Error in statement 3: " . $stmt3->error;
-    }
-    if (!$status4) {
-        echo " Error in statement 4: " . $stmt4->error;
-    }
-    if (!$status5) {
-        echo " Error in statement 5: " . $stmt5->error;
-    }
+// Error occurred while executing queries
+echo "Error updating status:";
+if (!$status1) {
+echo " Error in statement 1: " . $stmt1->error;
+}
+if (!$status2) {
+echo " Error in statement 2: " . $stmt2->error;
+}
+if (!$status3) {
+echo " Error in statement 3: " . $stmt3->error;
+}
+if (!$status4) {
+echo " Error in statement 4: " . $stmt4->error;
+}
+if (!$status5) {
+echo " Error in statement 5: " . $stmt5->error;
+}
 }
 
 
-            // Close the database connection
-            $conn->close();
-        }
+    // Close the database connection
+    $conn->close();
+}
 
 
 
 ?>
+
 
 
 
@@ -316,47 +350,106 @@ if ($status1 && $status2 && $status3 && $status4 && $status5) {
 
 <!-- Container for displaying search results with a fixed height and scrollable content -->
 <div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
-   
-    <?php
     
+<?php
+
+// Initialize $bd_Id to the BorrowDetails_ID from session
+$bd_Id = $_SESSION['BorrowDetails_ID'];
+
+// Prepare the SQL statement with a placeholder for the BorrowDetails_ID
+$sql = "SELECT DISTINCT
+        b.User_ID, 
+        b.Accession_Code, 
+        bk.Book_Title, 
+        bd.Quantity, 
+        b.Date_Borrowed, 
+        b.Due_Date, 
+        bd.tb_status, 
+        bd.Borrower_ID, 
+        bd.BorrowDetails_ID
+    FROM
+        tbl_borrowdetails AS bd
+    INNER JOIN
+        tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+    INNER JOIN
+        tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+    INNER JOIN
+        tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID AND bd.Borrower_ID = br.Borrower_ID
+    WHERE
+        bd.BorrowDetails_ID = ?";
+
+// Prepare and bind the statement
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $bd_Id);
+
+// Execute the statement
+$stmt->execute();
+
+// Get the result
+$result = $stmt->get_result();
+
+// Close the prepared statement (we'll reuse $stmt for the form later)
+$stmt->close();
+$conn->close();
+?>
+
+<!-- Container for displaying search results with a fixed height and scrollable content -->
+<div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
+    <?php
     if ($result->num_rows > 0) {
         // Output data of each row
-        while($row = $result->fetch_assoc()) {
-            echo "<p>Borrower Details ID : " .$row["BorrowDetails_ID"]."</p>"; 
-            echo "<p>Borrower ID : " .$row["Borrower_ID"]."</p>"; 
-            echo "<p>Accession Code : " .$row["Accession_Code"]."</p>"; 
+        while ($row = $result->fetch_assoc()) {
             $_SESSION['Accession_Code'] = $row["Accession_Code"];
-            echo "<p>Book Title : " .$row["Book_Title"]."</p>"; 
-            echo "<p>Quantity : " .$row["Quantity"]."</p>"; 
+            $_SESSION['Book_Title'] = $row["Book_Title"];
+            $_SESSION['Quantity'] = $row["Quantity"];
+            $_SESSION['BorrowDetails_ID'] = $row["BorrowDetails_ID"];
+            $_SESSION['Date_Borrowed'] = $row["Date_Borrowed"];
+            $_SESSION['Due_Date'] = $row["Due_Date"];
+            $_SESSION['status'] = $row["tb_status"];
             $_SESSION['qty'] = $row["Quantity"];
-            echo "<p><strong>Date Borrowed : </strong>" . $row["Date_Borrowed"] . "</p>"; 
-            echo "<p><strong>Due Date : </strong>" . $row["Due_Date"] . "</p>"; 
-                    
-            echo "<p>Status : " .$row["tb_status"]."</p>"; 
-            echo "Due Date from Database: " . $row["Due_Date"] . "<br>";
-            echo "Date Borrowed from Database: " . $row["Date_Borrowed"] . "<br><br>";
-                
-            echo "<input type='hidden' name='Accession_Code' value='".$row["Accession_Code"]."'>";
 
-            $bookStatus = "LOST";
+            echo "<div class='container'>";
+            echo "<div class='row'>";
+            echo "<div class='col'>";
+            echo "<p>Accession Code: " . $row["Accession_Code"] . "</p>";
+            $_SESSION['Accession_Code'] = $row["Accession_Code"];
 
+            echo "<p>Book Title: " . $row["Book_Title"] . "</p>";
+            echo "<p>Quantity: " . $row["Quantity"] . "</p>";
+
+            $bookStatus = "LOST"; // Example status, replace with actual logic
             $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"], $bookStatus);
             echo "Fine: " . $fine . "<br>";
+            $_SESSION['fine'] = $fine;
 
-            // Radio buttons for selecting book status
-            echo "<form class='update-form' method='POST' action=''>";
-            echo "<input type='hidden' name='borrowIdadmin' id='borrowIdadmin' value='" . $row["BorrowDetails_ID"] . "'>";
-            echo "<label for='bookStatus'>Book Status:</label><br>";
-            echo "<input type='radio' id='damage' name='bookStatus' value='DAMAGE'>";
-            echo "<label for='damage'>Damage</label><br>";
-            echo "<input type='radio' id='partialDamage' name='bookStatus' value='PARTIALLY DAMAGE'>";
-            echo "<label for='partialDamage'>Partially Damage</label><br>";
-            echo "<input type='radio' id='goodCondition' name='bookStatus' value='GOOD CONDITION'>";
-            echo "<label for='goodCondition'>Good Condition</label><br>";
-            echo "<input type='radio' id='lost' name='bookStatus' value='LOST'>";
-            echo "<label for='lost'>Lost</label><br>";
-            echo "<button type='submit' class='btn btn-primary'>Proceed to Payment</button>";
-            echo "</form>";
+            // Radio buttons for selecting book status within the same form
+            echo '<form class="update-form" method="POST" action="">';
+
+            echo '<div class="form-group">';
+            echo '<label for="paymentStatus">Book Status:</label><br>';
+            echo '<div class="form-check">';
+            echo '<input type="radio" id="damage" name="paymentStatus" value="DAMAGE" class="form-check-input">';
+            echo '<label for="damage" class="form-check-label">Damage</label><br>';
+            echo '</div>';
+            echo '<div class="form-check">';
+            echo '<input type="radio" id="partialDamage" name="paymentStatus" value="PARTIALLY DAMAGE" class="form-check-input">';
+            echo '<label for="partialDamage" class="form-check-label">Partially Damage</label><br>';
+            echo '</div>';
+            echo '<div class="form-check">';
+            echo '<input type="radio" id="goodCondition" name="paymentStatus" value="GOOD CONDITION" class="form-check-input">';
+            echo '<label for="goodCondition" class="form-check-label">Good Condition</label><br>';
+            echo '</div>';
+            echo '<div class="form-check">';
+            echo '<input type="radio" id="lost" name="paymentStatus" value="LOST" class="form-check-input">';
+            echo '<label for="lost" class="form-check-label">Lost</label><br>';
+            echo '</div>';
+            echo '</div>';
+            echo '<button type="submit" class="btn btn-primary">Proceed to Payment</button>';
+            echo '</form>';
+
+            echo "</div>"; // Close div.col
+            echo "</div>"; // Close div.row
+            echo "</div>"; // Close div.container
         }
     } else {
         echo "No records found for the provided Borrower ID.";

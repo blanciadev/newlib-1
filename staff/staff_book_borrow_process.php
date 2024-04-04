@@ -36,7 +36,7 @@ if(isset($_SESSION['Accession_Code'])) {
 
     $result = $conn->query($sql);
 
-    $Status = 'Pending';
+    $Status = 'Borrowed';
     $currentDate = date('Y-m-d');
     // Calculate due date as 3 days later
     $dueDate = date('Y-m-d', strtotime('+3 days', strtotime($currentDate)));
@@ -80,7 +80,7 @@ if(isset($_POST['submit'])) {
 
                     // Prepare and execute the INSERT statements for tbl_returned and tbl_returningdetails
                     $sql_returned = "INSERT INTO tbl_returned (User_ID, Borrower_ID, Date_Returned, tb_status) 
-                    VALUES ('$user_id', '$borrower_id', NULL, 'Pending')";
+                    VALUES ('$user_id', '$borrower_id', NULL, 'Borrowed')";
                     if (!$conn->query($sql_returned)) {
                     echo "Error inserting into tbl_returned: " . $conn->error;
                     exit; // Stop execution if an error occurs while inserting into tbl_returned

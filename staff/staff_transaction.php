@@ -156,7 +156,7 @@ $_SESSION['User_ID'];
             <div class="mb-3">
                 <label for="status" class="form-label">Status</label>
                 <select class="form-select" id="status" name="status" required>
-                    <option value="Pending">Pending</option>
+                    <option value="Borrowed">Borrowed</option>
                     <option value="Approved">Approved</option>
                     <option value="Denied">Denied</option>
                 </select>

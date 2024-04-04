@@ -20,7 +20,7 @@ $_SESSION['User_ID'];
     $edition = $_POST['edition'];
     $year = $_POST['year'];
     $quantity = $_POST['quantity'];
-    $status = "Pending";
+    $status = "Borrowed";
     $price = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
     
     

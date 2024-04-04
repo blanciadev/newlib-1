@@ -118,7 +118,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 $currentDate = date("Y-m-d");
 
 // Query to count visits for the current date using the Date&Time column
-$totalVisitsQuery = "SELECT COUNT(*) AS total_visits FROM tbl_log WHERE DATE(`Date&Time`) = '$currentDate'";
+$totalVisitsQuery = "SELECT COUNT(*) AS total_visits FROM tbl_log WHERE DATE(`Date_Time`) = '$currentDate'";
 $totalVisitsResult = mysqli_query($conn, $totalVisitsQuery);
 
 // Check if the query was successful and fetch the total visits

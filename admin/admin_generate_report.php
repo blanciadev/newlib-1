@@ -112,11 +112,11 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             }
 
             // Query to count unique Borrower_ID and Date & Time per month from tbl_log
-            $countLogsQuery = "SELECT MONTH(`Date&Time`) AS Month, 
+            $countLogsQuery = "SELECT MONTH(`Date_Time`) AS Month, 
                                     COUNT(DISTINCT Borrower_ID) AS UniqueBorrowers, 
                                     COUNT(*) AS TotalLogs 
                                 FROM tbl_log 
-                                GROUP BY MONTH(`Date&Time`)";
+                                GROUP BY MONTH(`Date_Time`)";
 
             $countLogsResult = mysqli_query($conn, $countLogsQuery);
 

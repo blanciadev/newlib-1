@@ -13,14 +13,23 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+
 // Check if the borrowId parameter is set in the URL
 if(isset($_GET['borrowId'])) {
-    // Set the session variable after sanitizing it
-    $_SESSION['BorrowDetails_ID'] = filter_var($_GET['borrowId'], FILTER_SANITIZE_STRING);
-    // Optionally, you can redirect back to the same page or perform any other action
-    header("Location: staff_return_transaction.php");
-    exit();
+    // Sanitize the borrowId parameter
+    $borrowId = filter_var($_GET['borrowId'], FILTER_SANITIZE_STRING);
+
+    // Set the session variable
+    $_SESSION['BorrowDetails_ID'] = $borrowId;
+
+   
+} else {
+    // Handle the case when borrowId is not provided in the URL
+    // For example, redirect back or show an error message
+    echo "Borrow ID not provided.";
+    exit; // Stop script execution if necessary
 }
+
 
 // Initialize $bd_Id to an empty string
     $bd_Id = $_SESSION['BorrowDetails_ID'];
@@ -142,7 +151,7 @@ switch ($Reason) {
     $currentDate = date("Y-m-d");
 
     // Update tbl_borrowdetails status
-    $sql1 = "UPDATE tbl_borrowdetails SET tb_status = 'Paid' WHERE BorrowDetails_ID = ?";
+    $sql1 = "UPDATE tbl_borrowdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = ?";
     $stmt1 = $conn->prepare($sql1);
     if (!$stmt1) {
         die("Error in preparing statement 1: " . $conn->error);
@@ -150,7 +159,7 @@ switch ($Reason) {
     $stmt1->bind_param("i", $bd_Id);
     
     // Update tbl_borrow status
-    $sql2 = "UPDATE tbl_borrow SET tb_status = 'Paid' WHERE Borrow_ID = (
+    $sql2 = "UPDATE tbl_borrow SET tb_status = 'Returned' WHERE Borrow_ID = (
                 SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ?
             )";
     $stmt2 = $conn->prepare($sql2);
@@ -333,62 +342,109 @@ if ($status1 && $status2 && $status3 && $status4 && $status5) {
 <div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
    
 <?php
-if ($result->num_rows > 0) {
-    // Output data of each row
-    while($row = $result->fetch_assoc()) {
-        $_SESSION['Accession_Code'] = $row["Accession_Code"];
-        $_SESSION['Book_Title'] = $row["Book_Title"];
-        $_SESSION['Quantity'] = $row["Quantity"];
-        $_SESSION['BorrowDetails_ID'] = $row["BorrowDetails_ID"];
-        $_SESSION['Date_Borrowed'] = $row["Date_Borrowed"];
-        $_SESSION['Due_Date'] = $row["Due_Date"];
-        $_SESSION['status'] = $row["tb_status"];
 
-        echo "<div class='container'>";
-        echo "<div class='row'>";
-        echo "<div class='col'>";
-        echo "<p>Accession Code: " . $row["Accession_Code"] . "</p>";
-        $_SESSION['Accession_Code'] = $row["Accession_Code"];
+// Initialize $bd_Id to the BorrowDetails_ID from session
+$bd_Id = $_SESSION['BorrowDetails_ID'];
 
-        echo "<p>Book Title: " . $row["Book_Title"] . "</p>";
-        echo "<p>Quantity: " . $row["Quantity"] . "</p>";
-        $_SESSION['qty'] = $row["Quantity"];
+// Prepare the SQL statement with a placeholder for the BorrowDetails_ID
+$sql = "SELECT DISTINCT
+        b.User_ID, 
+        b.Accession_Code, 
+        bk.Book_Title, 
+        bd.Quantity, 
+        b.Date_Borrowed, 
+        b.Due_Date, 
+        bd.tb_status, 
+        bd.Borrower_ID, 
+        bd.BorrowDetails_ID
+    FROM
+        tbl_borrowdetails AS bd
+    INNER JOIN
+        tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+    INNER JOIN
+        tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+    INNER JOIN
+        tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID AND bd.Borrower_ID = br.Borrower_ID
+    WHERE
+        bd.BorrowDetails_ID = ?";
 
-        
-        $bookStatus = "LOST";
-        $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"], $bookStatus);
-        echo "Fine: " . $fine . "<br>";
-        $_SESSION['fine'] = $fine;
+// Prepare and bind the statement
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $bd_Id);
 
-        // Radio buttons for selecting book status
-        echo '<form class="update-form" method="POST" action="">';
-      
-        echo '<div class="form-group">';
-        echo '<label for="paymentStatus">Book Status:</label><br>';
-        echo '<div class="form-check">';
-        echo '<input type="radio" id="damage" name="paymentStatus" value="DAMAGE" class="form-check-input">';
-        echo '<label for="damage" class="form-check-label">Damage</label><br>';
-        echo '</div>';
-        echo '<div class="form-check">';
-        echo '<input type="radio" id="partialDamage" name="paymentStatus" value="PARTIALLY DAMAGE" class="form-check-input">';
-        echo '<label for="partialDamage" class="form-check-label">Partially Damage</label><br>';
-        echo '</div>';
-        echo '<div class="form-check">';
-        echo '<input type="radio" id="goodCondition" name="paymentStatus" value="GOOD CONDITION" class="form-check-input">';
-        echo '<label for="goodCondition" class="form-check-label">Good Condition</label><br>';
-        echo '</div>';
-        echo '<div class="form-check">';
-        echo '<input type="radio" id="lost" name="paymentStatus" value="LOST" class="form-check-input">';
-        echo '<label for="lost" class="form-check-label">Lost</label><br>';
-        echo '</div>';
-        echo '</div>';
-        echo '<button type="submit" class="btn btn-primary">Proceed to Payment</button>';
-        echo '</form>';
-    }
-} else {
-    echo "No records found for the provided Borrower ID.";
-}
+// Execute the statement
+$stmt->execute();
+
+// Get the result
+$result = $stmt->get_result();
+
+// Close the prepared statement (we'll reuse $stmt for the form later)
+$stmt->close();
+$conn->close();
 ?>
+
+<!-- Container for displaying search results with a fixed height and scrollable content -->
+<div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
+    <?php
+    if ($result->num_rows > 0) {
+        // Output data of each row
+        while ($row = $result->fetch_assoc()) {
+            $_SESSION['Accession_Code'] = $row["Accession_Code"];
+            $_SESSION['Book_Title'] = $row["Book_Title"];
+            $_SESSION['Quantity'] = $row["Quantity"];
+            $_SESSION['BorrowDetails_ID'] = $row["BorrowDetails_ID"];
+            $_SESSION['Date_Borrowed'] = $row["Date_Borrowed"];
+            $_SESSION['Due_Date'] = $row["Due_Date"];
+            $_SESSION['status'] = $row["tb_status"];
+            $_SESSION['qty'] = $row["Quantity"];
+
+            echo "<div class='container'>";
+            echo "<div class='row'>";
+            echo "<div class='col'>";
+            echo "<p>Accession Code: " . $row["Accession_Code"] . "</p>";
+            $_SESSION['Accession_Code'] = $row["Accession_Code"];
+
+            echo "<p>Book Title: " . $row["Book_Title"] . "</p>";
+            echo "<p>Quantity: " . $row["Quantity"] . "</p>";
+
+            $bookStatus = "LOST"; // Example status, replace with actual logic
+            $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"], $bookStatus);
+            echo "Fine: " . $fine . "<br>";
+            $_SESSION['fine'] = $fine;
+
+            // Radio buttons for selecting book status within the same form
+            echo '<form class="update-form" method="POST" action="">';
+
+            echo '<div class="form-group">';
+            echo '<label for="paymentStatus">Book Status:</label><br>';
+            echo '<div class="form-check">';
+            echo '<input type="radio" id="damage" name="paymentStatus" value="DAMAGE" class="form-check-input">';
+            echo '<label for="damage" class="form-check-label">Damage</label><br>';
+            echo '</div>';
+            echo '<div class="form-check">';
+            echo '<input type="radio" id="partialDamage" name="paymentStatus" value="PARTIALLY DAMAGE" class="form-check-input">';
+            echo '<label for="partialDamage" class="form-check-label">Partially Damage</label><br>';
+            echo '</div>';
+            echo '<div class="form-check">';
+            echo '<input type="radio" id="goodCondition" name="paymentStatus" value="GOOD CONDITION" class="form-check-input">';
+            echo '<label for="goodCondition" class="form-check-label">Good Condition</label><br>';
+            echo '</div>';
+            echo '<div class="form-check">';
+            echo '<input type="radio" id="lost" name="paymentStatus" value="LOST" class="form-check-input">';
+            echo '<label for="lost" class="form-check-label">Lost</label><br>';
+            echo '</div>';
+            echo '</div>';
+            echo '<button type="submit" class="btn btn-primary">Proceed to Payment</button>';
+            echo '</form>';
+
+            echo "</div>"; // Close div.col
+            echo "</div>"; // Close div.row
+            echo "</div>"; // Close div.container
+        }
+    } else {
+        echo "No records found for the provided Borrower ID.";
+    }
+    ?>
 
 <!-- Button to trigger the print dialog and hide the navigation menu -->
 <button onclick="printAndToggleMenu()">Print Receipt</button>

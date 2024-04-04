@@ -31,33 +31,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         </a><!--header container-->
        
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-        <?php
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection    
-        // Check if the user's image path is available in the session or database
-        $userImagePath = ''; // Initialize the variable
-        if (isset($_SESSION["image_path"]) && !empty($_SESSION["image_path"])) {
-            // If the image path is in the session, use it
-            $userImagePath = $_SESSION["image_path"];
-        } else {
-            // Otherwise, fetch the image path from the database
-            $userID = $_SESSION["User_ID"];
-            $sql = "SELECT image_path FROM tbl_employee WHERE User_ID = $userID";
-            $result = mysqli_query($conn, $sql);
-            if ($result && mysqli_num_rows($result) > 0) {
-                $row = mysqli_fetch_assoc($result);
-                $userImagePath = $row['image_path'];
-                $_SESSION["image_path"] = $userImagePath; // Store in session for future use
-            }
-        }
-
-        // Display the user's image using the retrieved image path
-        if (!empty($userImagePath)) {
-            echo '<img src="' . $userImagePath . '" alt="User Image" width="50" height="50" class="rounded-circle me-2">';
-        } else {
-            // If no image is found, you can display a default image
-            echo '<img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">';
-        }
-        ?>
+       
         <strong><span><?php echo $_SESSION["admin_name"] . "<br/>" . $_SESSION["role"]; ?></span></strong> 
     </div>
     <hr>
