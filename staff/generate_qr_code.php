@@ -73,29 +73,7 @@ mysqli_close($conn);
     <!-- Include QRCode.js library -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@latest"></script>
 
-    <!-- <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" >
-        <!-- <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"> -->
-            <!-- <h2>Villa<span>Read</span>Hub</h2> 
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
-        </a><!--header container-->
-        <!-- <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly">user container -->
-            <!-- <img src="https://github.com/mdo.png" alt="" width="50" height="50" class="rounded-circle me-2"> -->
-            <!-- <strong><span><?php echo $_SESSION["staff_name"] ."<br/>"; echo $_SESSION["role"]; ?></span> </strong>  -->
-        <!-- </div> -->
-        <!-- <hr> -->
-        <!-- <ul class="nav nav-pills flex-column mb-auto">navitem container -->
-            <!-- <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li> -->
-            <!-- <li class="nav-item"> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li> -->
-            <!-- <li class="nav-item"> <a href="./staff_borrow.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>Borrow</a> </li> -->
-            <!-- <li class="nav-item"> <a href="./staff_return.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Return</a> </li> -->
-            <!-- <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li> -->
-            <!-- <li class="nav-item active"> <a href="./staff_registerUser.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li> -->
-            <!-- <hr> -->
-            <!-- <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li> -->
-            <!-- <li class="nav-item"> <a href="logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li> -->
-        <!-- </ul> -->
-    <!-- </div>  --> -->
-
+   
     <div class="board container"><!-- board container -->
     <div class="col-md-6 mt-4">
         <div class="card">
@@ -126,6 +104,7 @@ mysqli_close($conn);
 
 
 </div>
+<a href="staff_log.php" class="btn btn-primary">Go to Staff Log</a>
 
     <script>
     document.addEventListener("DOMContentLoaded", function() {
