@@ -69,6 +69,10 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 echo "Error: " . mysqli_error($conn);
             } else {
                 $userData = mysqli_fetch_assoc($result);
+           // Fetch the First_Name from $userData
+    $firstName = $userData['First_Name'];
+    $role = $userData['tb_role'];
+
             }
             ?>
             <?php if (!empty($userData['image_data'])): ?>
@@ -78,8 +82,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 <!-- Change the path to your actual default image -->
                 <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-
-        <strong><span><?php echo $_SESSION["admin_name"] . "<br/>" . $_SESSION["role"]; ?></span></strong> 
+            <strong><span><?php echo  $firstName . "<br/>" .  $role; ?></span></strong>
     </div>
 
         </div>
