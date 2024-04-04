@@ -16,12 +16,6 @@ if ($conn->connect_error) {
 }
 
 
-// Check if borrowId is provided in the URL
-if (isset($_GET['borrowId'])) {
-    // Sanitize and store the borrowId
-    $borrowId = mysqli_real_escape_string($conn, $_GET['borrowId']);
-}
-
 ?>
 
 
@@ -118,12 +112,11 @@ if (isset($_GET['borrowId'])) {
         <thead>
             <tr>
             <tr>
-                    <th>Borrow Id</th>
+                 
                     <th>Visitors Id</th>
-                    <th>Accession Code</th>
-                    <th>Book Title</th>
-                    <th>Quantity</th>
-                    <th>Date</th>
+                    <th>Borrowers Name</th>
+                    
+                    <th>Date Borrowed</th>
                     <th>Due Date</th>
                     <th>Status</th>
                     <th>Action</th>
@@ -132,84 +125,57 @@ if (isset($_GET['borrowId'])) {
         </thead>
         <tbody>
             <?php
-              
-// Database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+                $conn =  mysqli_connect("localhost","root","root","db_library_2", 3308); 
+                if ($conn->connect_error) {
+                    die("Connection failed: " . $conn->connect_error);
+                }
 
-// Initialize borrowId variable
-$borrowId = "";
-
-// Check if borrowId is provided in the URL
-if (isset($_GET['borrowId'])) {
-    // Sanitize and store the borrowId
-    $borrowId = mysqli_real_escape_string($conn, $_GET['borrowId']);
-}
-
-// Fetch records based on borrowId
-$sql = "SELECT DISTINCT
-b.User_ID, 
-b.Accession_Code, 
-bk.Book_Title, 
-bd.Quantity, 
-b.Date_Borrowed, 
-b.Due_Date, 
-bd.tb_status, 
-bd.Borrower_ID, 
-bd.BorrowDetails_ID
-FROM
-tbl_borrowdetails AS bd
-INNER JOIN
-tbl_borrow AS b
-ON 
-    bd.Borrower_ID = b.Borrower_ID
-INNER JOIN
-tbl_books AS bk
-ON 
-    b.Accession_Code = bk.Accession_Code
-INNER JOIN
-tbl_borrower AS br
-ON 
-    b.Borrower_ID = br.Borrower_ID AND
-    bd.Borrower_ID = br.Borrower_ID
-WHERE
-bd.Borrower_ID = ?"; // Using a placeholder for the borrowId
-
-// Prepare the SQL statement
-$stmt = mysqli_prepare($conn, $sql);
-if ($stmt) {
-    // Bind the parameter to the placeholder
-    mysqli_stmt_bind_param($stmt, "s", $borrowId);
+                // SQL query
+                $sql = "SELECT
+                MIN(b.User_ID) AS User_ID,
+                MIN(b.Accession_Code) AS Accession_Code,
+                MIN(bk.Book_Title) AS Book_Title,
+                MIN(bd.Quantity) AS Quantity,
+                MIN(b.Date_Borrowed) AS Date_Borrowed,
+                MIN(b.Due_Date) AS Due_Date,
+                MIN(bd.tb_status) AS tb_status,
+                MIN(bd.Borrower_ID) AS Borrower_ID,
+                MIN(br.First_Name) AS First_Name,
+                MIN(br.Middle_Name) AS Middle_Name,
+                MIN(br.Last_Name) AS Last_Name
+            FROM
+                tbl_borrowdetails AS bd
+                INNER JOIN tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+                INNER JOIN tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+                INNER JOIN tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID
+            GROUP BY
+                bd.Borrower_ID;
+            ";
     
-    // Execute the SQL query
-    mysqli_stmt_execute($stmt);
+                $result = $conn->query($sql);
+    
 
-    // Get the result
-    $result = mysqli_stmt_get_result($stmt);
-
-    // Use the result as needed
-    while ($row = mysqli_fetch_assoc($result)) {
+                // Output data of each row
+                while($row = $result->fetch_assoc()) {
                     echo "<tr>";
-                    echo "<td>" . $row["BorrowDetails_ID"] . "</td>";
+                //    echo "<td>" . $row["BorrowDetails_ID"] . "</td>";
                     echo "<td>" . $row["Borrower_ID"] . "</td>";
-                    echo "<td>" . $row["Accession_Code"] . "</td>";
-                    echo "<td>" . $row["Book_Title"] . "</td>";
-                    echo "<td>" . $row["Quantity"] . "</td>";
+                    echo "<td>" . $row["First_Name"] ." ". $row["Middle_Name"] ." ". $row["Last_Name"] . "</td>";
+                   
+                  
                     echo "<td>" . $row["Date_Borrowed"] . "</td>";
                     echo "<td>" . $row["Due_Date"] . "</td>";
                     echo "<td>" . $row["tb_status"] . "</td>";
 
                     echo "<td>";
-                    echo "<form class='update-form' method='GET' action='staff_borrow_details.php'>";
-                    echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["BorrowDetails_ID"] . "'>";
+                    echo "<form class='update-form' method='GET' action='staff_return.php'>";
+                    echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["Borrower_ID"] . "'>";
                     echo "</form>";
                     // Conditionally render the button based on the status
                     echo "<input type='hidden' name='borrowerId' value='" . $row["Borrower_ID"] . "'>";
 
                     if ($row["tb_status"] === 'Pending') {
-                        echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='updateAndSetSession(" . $row["BorrowDetails_ID"] . ")'>UPDATE</button>";
+                        echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='updateAndSetSession(" . $row["Borrower_ID"] . ")'>UPDATE</button>";
 
                     } else {
                         echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Update</button>";
@@ -219,7 +185,6 @@ if ($stmt) {
                     echo "</td>";
                     echo "</tr>";
                 }
-            }
                 echo "</table>";
 
                 // Close connection
@@ -293,7 +258,7 @@ if ($stmt) {
     function updateAndSetSession(borrowId) {
         console.log("Borrow ID:", borrowId); // Debugging console log
         // Redirect to staff_return_transaction.php with the borrowId parameter
-        window.location.href = "staff_return_transaction.php?borrowId=" + borrowId;
+        window.location.href = "staff_return.php?borrowId=" + borrowId;
     }
 </script>
 

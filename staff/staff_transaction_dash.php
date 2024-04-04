@@ -75,7 +75,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <h2>Transaction Page</h2>
     <div class="transaction-buttons">
         <a href="staff_borrow_dash.php" class="btn btn-lg btn-primary">Borrow Book</a>
-        <a href="staff_return.php" class="btn btn-lg btn-primary">Return Book</a>
+        <a href="staff_return_dash.php" class="btn btn-lg btn-primary">Return Book</a>
     </div>
 </div>
 

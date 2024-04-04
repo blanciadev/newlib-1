@@ -36,7 +36,7 @@ if(isset($_SESSION['Accession_Code'])) {
 
     $result = $conn->query($sql);
 
-    $Status = 'Borrowed';
+    $Status = 'Pending';
     $currentDate = date('Y-m-d');
     // Calculate due date as 3 days later
     $dueDate = date('Y-m-d', strtotime('+3 days', strtotime($currentDate)));
@@ -187,7 +187,14 @@ $conn->close();
     <form method="POST" action="">
 
     <?php
- 
+  // Retrieve book details from the database
+  $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
+  FROM tbl_books
+  INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
+  WHERE tbl_books.Accession_Code = '$accession_code'";
+
+$result = $conn->query($sql);
+
         if ($result && $result->num_rows > 0) {
             echo "<h2>Books Found</h2>";
             echo "<div class='books-container'>";
