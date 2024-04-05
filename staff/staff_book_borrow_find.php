@@ -10,8 +10,22 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
 $result = null; // Initialize $result variable
 
-// Check if Accession_Code is provided via POST method
-
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Check if Accession_Code is provided
+    if (!empty($_POST["Accession_Code"])) {
+        // Store Accession_Code in session variable
+        $_SESSION["Accession_Code"] = $_POST["Accession_Code"];
+        
+        // Redirect to staff_book_borrow_process.php
+        header("Location: staff_book_borrow_process.php");
+        exit(); // Ensure script execution stops after redirection
+    } else {
+        // Accession_Code is empty, handle the error or display a message
+        // For example:
+        echo "Accession_Code is required.";
+    }
+}
 
 ?>
 
@@ -81,7 +95,8 @@ $result = null; // Initialize $result variable
 
         <label for="Accession_Code">Accession Code:</label>
         <input type="text" id="Accession_Code" name="Accession_Code" placeholder="Enter Accession Code" required
-    <?php
+   
+   <?php
     // Check if there's a previous value in session, and if so, populate the input field with it
     if (isset($_SESSION['Accession_Code']) && !empty($_SESSION['Accession_Code'])) {
         echo ' value="' . htmlspecialchars($_SESSION['Accession_Code']) . '"';
@@ -107,7 +122,8 @@ if (isset($_POST['Accession_Code'])) {
         
         // Sanitize input to prevent SQL injection
         $Accession_Code = mysqli_real_escape_string($conn, $_POST['Accession_Code']);
-        
+        $_SESSION['$Accession_Code'] = $Accession_Code;
+
         // Query to retrieve book details based on Accession Code
         $sql = "SELECT * FROM tbl_books WHERE Accession_Code = ?";
         
@@ -143,7 +159,7 @@ if (isset($_POST['Accession_Code'])) {
     }
 }
             ?>
-             <form action="staff_book_borrow_process.php" method="POST">
+             <form action="" method="POST">
       <button type="submit" class="btn btn-primary" id="book_borrow" onclick="submitForm()">Get Book</button>
       </form>
   
@@ -176,21 +192,6 @@ if (isset($_POST['Accession_Code'])) {
     });
 </script>
 
-
-    
-<script>
-    // Function to check if Accession_Code is in session and submit the form
-    function submitForm() {
-        // Check if Accession_Code is in session
-        if ('<?php echo isset($_SESSION['Accession_Code']) ? 'true' : 'false'; ?>' === 'true') {
-            // Accession_Code is in session, submit the form
-            document.getElementById('dataform').submit();
-        } else {
-            // Accession_Code is not in session, display an alert or handle it as needed
-            alert('Accession_Code is required.'); // You can customize this alert message
-        }
-    }
-</script>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
