@@ -12,20 +12,43 @@ $result = null; // Initialize $result variable
 
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Check if Accession_Code is provided
-    if (!empty($_POST["Accession_Code"])) {
-        // Store Accession_Code in session variable
-        $_SESSION["Accession_Code"] = $_POST["Accession_Code"];
-        
-        // Redirect to staff_book_borrow_process.php
-        header("Location: staff_book_borrow_process.php");
-        exit(); // Ensure script execution stops after redirection
-    } else {
-        // Accession_Code is empty, handle the error or display a message
-        // For example:
-        echo "Accession_Code is required.";
-    }
-}
+   // Sanitize input to prevent SQL injection
+   $conn =  mysqli_connect("localhost", "root", "root", "db_library_2", 3308); //database connection
+   $Accession_Code = mysqli_real_escape_string($conn, $_REQUEST['Accession_Code']);
+   
+   // Store the accession code in a session variable
+   $_SESSION['Accession_Code'] = $Accession_Code;
+   
+   // Query to retrieve book details based on Accession Code
+   $sql = "SELECT
+               tbl_books.*, 
+               tbl_authors.Authors_Name, 
+               tbl_books.Accession_Code
+           FROM
+               tbl_books
+           INNER JOIN
+               tbl_authors
+           ON 
+               tbl_books.Authors_ID = tbl_authors.Authors_ID
+           WHERE
+               Accession_Code = '$Accession_Code'";
+   
+   $result = $conn->query($sql);
+   
+   // Check if the query returned any rows
+   if ($result && $result->num_rows > 0) {
+       // Close the database connection
+       $conn->close();
+       // Redirect to staff_book_borrow_process.php
+       header("Location: staff_book_borrow_process.php");
+       exit(); // Ensure script execution stops after redirection
+   } else {
+       // Close the database connection
+       $conn->close();
+       // Display an alert for invalid Accession Code
+       echo '<script>alert("Invalid Accession Code. No book found.");</script>';
+   }
+} 
 
 ?>
 
@@ -139,7 +162,7 @@ if (isset($_POST['Accession_Code'])) {
             // Check if the result set is empty (Accession_Code is invalid)
             if (mysqli_num_rows($result) === 0) {
                 // Display an alert message
-                echo '<script>alert("Invalid Accession Code. No book found.");</script>';
+              
             } else {
                 echo "<h2>Books Found</h2>";
                 echo "<div class='book'>";
