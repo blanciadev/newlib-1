@@ -182,79 +182,70 @@ if ($isBorrowerIdValid) {
 
 
 
+<?php
+                // Database connection and SQL query
+                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                if ($conn->connect_error) {
+                    die("Connection failed: " . $conn->connect_error);
+                }
 
-    <?php
-    // Database connection and SQL query
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    $sql = "SELECT
-	bd.BorrowDetails_ID, 
-	b.User_ID, 
-	b.Accession_Code, 
-	bk.Book_Title, 
-	bd.Quantity, 
-	b.Date_Borrowed, 
-	b.Due_Date, 
-	br.Borrower_ID, 
-	bd.tb_status, 
-	b.Borrower_ID, 
-	bd.Borrower_ID
-FROM
-	tbl_borrowdetails AS bd
-	INNER JOIN
-	tbl_borrow AS b
-	ON 
-		bd.Borrower_ID = b.Borrow_ID
-	INNER JOIN
-	tbl_books AS bk
-	ON 
-		b.Accession_Code = bk.Accession_Code
-	INNER JOIN
-	tbl_borrower AS br
-	ON 
-		b.Borrower_ID = br.Borrower_ID;
-            ";
+                $sql = "SELECT DISTINCT
+                        bd.BorrowDetails_ID, 
+                        b.User_ID, 
+                        bk.Book_Title, 
+                        bd.Quantity, 
+                        b.Date_Borrowed, 
+                        b.Due_Date, 
+                        bd.tb_status, 
+                        bd.Borrower_ID, 
+                        b.Accession_Code
+                    FROM
+                        tbl_borrowdetails AS bd
+                    INNER JOIN
+                        tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+                    INNER JOIN
+                        tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+                    INNER JOIN
+                        tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID AND bd.Borrower_ID = br.Borrower_ID;
+                    ";
 
 
-    $result = $conn->query($sql);
+                $result = $conn->query($sql);
                 // Output data of each row
-                while($row = $result->fetch_assoc()) {
+                while ($row = $result->fetch_assoc()) {
                     echo "<tr>";
-                    echo "<td>".$row["BorrowDetails_ID"]."</td>";
-                    echo "<td>".$row["Borrower_ID"]."</td>";
-                    echo "<td>".$row["Accession_Code"]."</td>";
-                    echo "<td>".$row["Book_Title"]."</td>";
-                    echo "<td>".$row["Quantity"]."</td>";
-                    echo "<td>".$row["Date_Borrowed"]."</td>";
-                    echo "<td>".$row["Due_Date"]."</td>";
-                    echo "<td>".$row["tb_status"]."</td>";
-                                    
-                   echo "<td>";
-                echo "<form class='update-form' method='GET' action='staff_borrow_details.php'>"; 
-                echo "<input type='hidden' name='borrowId' id='borrowId' value='".$row["BorrowDetails_ID"]."'>";
+                    echo "<td>" . $row["BorrowDetails_ID"] . "</td>";
+                    echo "<td>" . $row["Borrower_ID"] . "</td>";
+                    echo "<td>" . $row["Accession_Code"] . "</td>";
+                    echo "<td>" . $row["Book_Title"] . "</td>";
+                    echo "<td>" . $row["Quantity"] . "</td>";
+                    echo "<td>" . $row["Date_Borrowed"] . "</td>";
+                    echo "<td>" . $row["Due_Date"] . "</td>";
+                    echo "<td>" . $row["tb_status"] . "</td>";
 
-                // Conditionally render the button based on the status
-                echo "<input type='hidden' name='borrowerId' value='".$row["Borrower_ID"]."'>";
+                    echo "<td>";
+                    echo "<form class='update-form' method='GET' action='staff_borrow_details.php'>";
+                    echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["BorrowDetails_ID"] . "'>";
 
-                // if ($row["tb_status"] === 'Pending') {
-                //     echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='redirectToBorrowDetails(" . $row["BorrowDetails_ID"] . ")'>UPDATE</button>";
-                // } else {
-                //     echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
-                // }
+                    // Conditionally render the button based on the status
+                    echo "<input type='hidden' name='borrowerId' value='" . $row["Borrower_ID"] . "'>";
+
+                    // if ($row["tb_status"] === 'Borrowed') {
+                    //     echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='redirectToBorrowDetails(" . $row["BorrowDetails_ID"] . ")'>UPDATE</button>";
+                    // } else {
+                    //     echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
+                    // }
                 
-                echo "<div class='update-message'></div>";
-                echo "</form>";
-                echo "</td>";
+                    echo "<div class='update-message'></div>";
+                    echo "</form>";
+                    echo "</td>";
 
-                                    
+
                     echo "</tr>";
                 }
-                
-                    // Close connection
-                    $conn->close();
+
+                // Close connection
+                $conn->close();
                 ?>
            
 
