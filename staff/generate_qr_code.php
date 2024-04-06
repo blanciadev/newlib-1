@@ -23,20 +23,17 @@ $email = $_SESSION['email'];
 $affiliation = $_SESSION['affiliation'];
 
 
-    // CHANGE THE PORT IF NEEDED
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+// CHANGE THE PORT IF NEEDED
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 
-    // Check if the email already exists in the database
+// Check if the email already exists in the database
 $checkEmailQuery = "SELECT * FROM tbl_borrower WHERE Email = '$email'";
 $result = mysqli_query($conn, $checkEmailQuery);
 if (mysqli_num_rows($result) > 0) {
     // Email already exists, handle accordingly (e.g., show error message or update existing record)
     echo "Email address already exists in the database.";
 
-      // Retrieve the QR code data from wherever it's stored
- //     $qrCodeData = ''; // Update this line with the actual retrieval of QR code data
-
-   // sendQRCodeEmail($qrCodeData);
+   
 } else {
 
     // Email does not exist, proceed with insertion
@@ -46,93 +43,19 @@ if (mysqli_num_rows($result) > 0) {
     // Execute the insertion query
     $insertResult = mysqli_query($conn, $insertQuery);
 
-    // Check if insertion was successful
     if ($insertResult) {
-        echo "Data inserted successfully.";
+        // Get the last inserted ID
+        $lastInsertedID = mysqli_insert_id($conn);
+        $_SESSION['lastInsertedID'] = $lastInsertedID;
+      
+        echo json_encode(['lastInsertedID' => $lastInsertedID]);
         
-        // Get the dataURL parameter
-        $dataURL = $_POST['dataURL'];
-    
-        // Extract base64 encoded data
-        $base64Data = substr($dataURL, strpos($dataURL, ",") + 1);
-    
-        // Convert base64 data to binary data
-        $binaryData = base64_decode($base64Data);
-        
-        // Insert binary image data into database
-        $query = "UPDATE tbl_borrower SET image_file = ? WHERE Borrower_ID = ?";
-        $statement = $mysqli->prepare($query);
-    
-        // Assuming you have already inserted the row and retrieved its ID
-        $borrowerID = mysqli_insert_id($mysqli);
-    
-        $statement->bind_param("bi", $binaryData, $borrowerID);
-        $statement->execute();
-        
-        // Check if update was successful
-        if ($statement->affected_rows > 0) {
-            echo "QR Code inserted into database successfully.";
-        } else {
-            echo "Failed to insert QR Code into database.";
-        }
     } else {
-        echo "Failed to insert data into database.";
+        echo "Error: " . mysqli_error($conn);
     }
+
     
-} 
-
-
-function sendQRCodeEmail($qrCodeData) {
-    echo "<script>console.log('sendQRCodeEmail is called');</script>";
-
-    // Extract QR code data
-    $qrCodeData = $qrCodeData['qrCodeData'];
-
-    // Create a new PHPMailer instance
-    $mail = new PHPMailer(true);
-
-    // Try sending the email
-    try {
-        // SMTP configuration for Gmail
-        $email = $_SESSION['email'];
-
-        $mail->isSMTP();
-        $mail->Host = 'smtp.gmail.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'villareadhub@gmail.com'; // Your Gmail email address
-        $mail->Password = 'ulmh emwr tsbw ijao'; // Your Gmail password
-        $mail->SMTPSecure = 'tls';
-        $mail->Port = 587;
-
-           // Email content
-        $mail->setFrom('villareadhub@gmail.com', 'ADMIN'); // Set sender email and name
-        $mail->addAddress($email); // Add recipient email
-        $mail->isHTML(false); // Set email format to plain text
-        $mail->Subject = 'QR CODE VILLA READ HUB';
-        $mail->Body = "Your QR CODE: $qrCodeData";
-
-
-        //   // Regenerate QR code server-side using PHP QR Code library
-        //   $qrCode = new Endroid\QrCode\QrCode($qrCodeData);
-        //   $qrCodeImage = $qrCode-getDataUri();
-  
-          // Attach QR code image
-        //   $mail->addStringAttachment($qrCodeImage, 'qrcode.png', 'base64', 'image/png');
-  
-
-          
-        // Send email
-        $mail->send();
-     
-        echo '<script>alert("Record Updated successfully.");</script>';
-    
-        exit(); // Exit after redirection
-
-    } catch (Exception $e) {
-        echo "Error sending email: {$mail->ErrorInfo}";
-    }
-    exit();
-} 
+}
 
 
 
@@ -209,39 +132,47 @@ function sendQRCodeEmail($qrCodeData) {
 
 
     <script>
-
         document.addEventListener("DOMContentLoaded", function() {
             console.log("Document loaded"); // Log that the document has loaded
             let qrCodeContainer = document.getElementById("qrcode-container");
             console.log("QR Code Container:", qrCodeContainer); // Log the QR code container element
             let lastInsertedID = "<?php echo isset($_SESSION['lastInsertedID']) ? $_SESSION['lastInsertedID'] : ''; ?>";
             console.log("Last Inserted ID:", lastInsertedID); // Log the last inserted ID from PHP session
-
+            let email = "<?php echo isset($_SESSION['email']) ? $_SESSION['email'] : ''; ?>";
+          
             if (lastInsertedID !== '') {
                 console.log("Generating QR Code for ID:", lastInsertedID); // Log that QR code generation is starting
                 // Set options for QRCode.js
                 let qrOptions = {
-                    text: lastInsertedID,
-                    width: 200, // Custom width in pixels
-                    height: 200, // Custom height in pixels
-                };
+                text: lastInsertedID,
+                width: 200, // Custom width in pixels
+                height: 200, // Custom height in pixels
+                colorDark: "#000000", // QR code color
+                colorLight: "#ffffff" // Background color
+            };
+
                 // Generate QR Code using QRCode.js with custom options
                 new QRCode(qrCodeContainer, qrOptions);
+
 
                 // Wait for the QR code image to be generated
                 setTimeout(function() {
                     // Convert QR code to data URL
                     let dataURL = qrCodeContainer.getElementsByTagName('img')[0].src;
 
-                    // Create a download link for the QR code image
-                    let downloadLink = document.createElement('a');
-                    downloadLink.href = dataURL;
-                    downloadLink.download = 'qr_code.png'; // Set the download file name
-                    downloadLink.textContent = 'Download QR Code';
+                   // Send the data URL and lastInsertedID to a PHP script using AJAX
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "save_qr_code.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText); // Log the server response to the console
+            }
+        };
+        xhr.send("dataURL=" + encodeURIComponent(dataURL) + "&lastInsertedID=" + encodeURIComponent(lastInsertedID)  + "&email=" + encodeURIComponent(email));
 
-                    // Append the download link to the document body
-                    document.body.appendChild(downloadLink);
                 }, 500); // Adjust the timeout if needed
+
             } else {
                 console.log("No ID available for QR Code"); // Log that no ID is available for QR code generation
                 qrCodeContainer.innerHTML = "QR Code not available";
@@ -250,22 +181,7 @@ function sendQRCodeEmail($qrCodeData) {
 
 
 
-    // Function to send email with QR code attachment
-    // function sendQRCodeEmail(qrOptions, lastInsertedID) {
-    //     let xhr = new XMLHttpRequest();
-    //     xhr.open('POST', ''); // Call the PHP file containing the sendQRCodeEmail function
-    //     xhr.setRequestHeader('Content-Type', 'application/json');
-    //     xhr.onload = function() {
-    //         if (xhr.status === 200) {
-    //             console.log(xhr.responseText); // Log the response
-    //         } else {
-    //             console.error('Failed to send email');
-    //         }
-    //     };
-    //     xhr.send(JSON.stringify({ qrOptions, lastInsertedID })); // Send necessary data
-    // }
-
-        
+       
     </script>
 
 
