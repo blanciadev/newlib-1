@@ -158,13 +158,14 @@ b.Date_Borrowed,
 b.Due_Date, 
 bd.tb_status, 
 bd.Borrower_ID, 
-bd.BorrowDetails_ID
+b.Borrow_ID
 FROM
 tbl_borrowdetails AS bd
 INNER JOIN
 tbl_borrow AS b
 ON 
-    bd.Borrower_ID = b.Borrower_ID
+    bd.Borrower_ID = b.Borrower_ID AND
+    bd.BorrowDetails_ID = b.Borrow_ID
 INNER JOIN
 tbl_books AS bk
 ON 
@@ -192,7 +193,7 @@ if ($stmt) {
     // Use the result as needed
     while ($row = mysqli_fetch_assoc($result)) {
                     echo "<tr>";
-                    echo "<td>" . $row["BorrowDetails_ID"] . "</td>";
+                    echo "<td>" . $row["Borrow_ID"] . "</td>";
                     echo "<td>" . $row["Borrower_ID"] . "</td>";
                     echo "<td>" . $row["Accession_Code"] . "</td>";
                     echo "<td>" . $row["Book_Title"] . "</td>";
@@ -202,14 +203,16 @@ if ($stmt) {
                     echo "<td>" . $row["tb_status"] . "</td>";
 
                     echo "<td>";
+
                     echo "<form class='update-form' method='GET' action='staff_borrow_details.php'>";
-                    echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["BorrowDetails_ID"] . "'>";
+                    echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["Borrow_ID"] . "'>";
                     echo "</form>";
+
                     // Conditionally render the button based on the status
                     echo "<input type='hidden' name='borrowerId' value='" . $row["Borrower_ID"] . "'>";
 
                     if ($row["tb_status"] === 'Pending') {
-                        echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='updateAndSetSession(" . $row["BorrowDetails_ID"] . ")'>UPDATE</button>";
+                        echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='updateAndSetSession(" . $row["Borrow_ID"] . ")'>UPDATE</button>";
 
                     } else {
                         echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Update</button>";
