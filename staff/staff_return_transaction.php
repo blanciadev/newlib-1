@@ -88,7 +88,7 @@ function calculateFine($dueDate, $dateBorrowed, $bookStatus) {
 switch (true) {
     case $daysOverdue > 0:
         // Add default penalty fine of 30 pesos
-        $fine += 30;
+        $fine += 0;
         // Add per-day fine of 15 pesos for each subsequent day of overdue
         $fine += ($daysOverdue - 1) * 15;
         break;
@@ -125,7 +125,7 @@ switch ($Reason) {
         $_SESSION['fine'] = $fine;
         break;
     case 'GOOD CONDITION':
-        $value = 30;
+        $value = 0;
         $fine += $value;
         $_SESSION['fine'] = $fine;
         break;
@@ -446,8 +446,6 @@ $conn->close();
     }
     ?>
 
-<!-- Button to trigger the print dialog and hide the navigation menu -->
-<button onclick="printAndToggleMenu()">Print Receipt</button>
 
 <script>
 function printAndToggleMenu() {
