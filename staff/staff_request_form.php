@@ -20,7 +20,7 @@ $_SESSION['User_ID'];
     $edition = $_POST['edition'];
     $year = $_POST['year'];
     $quantity = $_POST['quantity'];
-    $status = "Borrowed";
+    $status = "Pending";
     $price = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
     
     
@@ -42,7 +42,7 @@ $_SESSION['User_ID'];
         $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); //database connection
 
         // Assuming you have a database connection named $conn
-        $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Authors_ID, Publisher_ID, price, tb_edition, Year_Published, Quantity, tb_status) 
+        $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Authors_Name, Publisher_Name, price, tb_edition, Year_Published, Quantity, tb_status) 
         VALUES ('$userID', '$bookTitle', '$author', '$publisher', '$price', '$edition', '$year', '$quantity', '$status')";
 
         $result = mysqli_query($conn, $query);
@@ -139,6 +139,7 @@ $_SESSION['User_ID'];
                 </div>
             <?php endif; ?>
         </div>
+
     <form method="POST" action="staff_request_form.php">
 
             <input type="hidden" name="userID" value="<?php echo $_SESSION['User_ID']; ?>">
@@ -147,10 +148,44 @@ $_SESSION['User_ID'];
                 <label for="bookTitle" class="form-label">Book Title</label>
                 <input type="text" class="form-control" id="bookTitle" name="bookTitle" required>
             </div>
-            <div class="mb-3">
-                <label for="author" class="form-label">Author</label>
-                <input type="text" class="form-control" id="author" name="author" required>
-            </div>
+
+          
+            <?php
+        // Database connection
+        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $query = "SELECT Authors_Name, Authors_ID FROM tbl_authors";
+        $result = mysqli_query($conn, $query);
+
+        $existingAuthors = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $existingAuthors[] = $row['Authors_Name'];
+        }
+
+        // Add an "Other" option to the existing authors
+        $existingAuthors[] = "Other";
+        ?>
+
+<div class="mb-3">
+    <label for="authorSelect" class="form-label">Author</label>
+    <select class="form-select" id="authorSelect" name="author" required>
+        <option value="" disabled selected>Select an author</option>
+        <?php foreach ($existingAuthors as $author) : ?>
+            <option value="<?php echo $author; ?>"><?php echo $author; ?></option>
+        <?php endforeach; ?>
+    </select>
+</div>
+<div class="mb-3" id="newAuthorInput" style="display: none;">
+    <label for="newAuthor" class="form-label">New Author</label>
+    <input type="text" class="form-control" id="newAuthor" name="author">
+</div>
+
+
+
+
             <div class="mb-3">
                 <label for="publisher" class="form-label">Publisher</label>
                 <input type="text" class="form-control" id="publisher" name="publisher" required>
@@ -186,12 +221,20 @@ $_SESSION['User_ID'];
             </div>
          
             <button type="submit" class="btn btn-primary" name="submit">Submit Request</button>
+            <a href="./staff_request_list.php"><button class="btn">Back</button></a>
         </form>
        
     </div>
-    <a href="./staff_request_list.php"><button class="btn">Back</button></a>
+   
     </div>
-
+    
+<!-- JavaScript to toggle input field -->
+<script>
+    document.getElementById("authorSelect").addEventListener("change", function() {
+        const newAuthorInput = document.getElementById("newAuthorInput");
+        newAuthorInput.style.display = (this.value === "Other") ? "block" : "none";
+    });
+</script>
 
     
 <script>

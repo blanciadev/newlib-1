@@ -182,38 +182,47 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     <!-- Button to register visitor -->
     <a href="staff_registerUser.php" class="btn btn-primary">Register Visitor</a>
   
-
     <h1>Borrower Logs</h1>
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Borrower ID</th>
-                    <th>Borrower Name</th>
-                    <th>Date & Time</th>
-                    <!-- Add more headers as needed -->
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                if ($result_display_all && $result_display_all->num_rows > 0) {
-                    while ($row = $result_display_all->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<td>" . $row['Borrower_ID'] . "</td>";
-                        echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
-                        echo "<td>" . $row['Date_Time'] . "</td>";
-                        // Add more columns as needed
-                        echo "</tr>";
-                    }
-                } else {
-                    echo "<tr><td colspan='3'>No records found.</td></tr>";
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>QR CODE</th>
+                <th>Borrower ID</th>
+                <th>Borrower Name</th>
+                <th>Date & Time</th>
+                <!-- Add more headers as needed -->
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            if ($result_display_all && $result_display_all->num_rows > 0) {
+                while ($row = $result_display_all->fetch_assoc()) {
+                    echo "<tr>";
+                    $imageData = base64_encode($row['image_file']);
+                    echo "<td><img class='img-responsive' src='data:image/png;base64," . $imageData . "' /></td>";
+                    echo "<td>" . $row['Borrower_ID'] . "</td>";
+                    echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
+                    echo "<td>" . $row['Date_Time'] . "</td>";
+                    // Add more columns as needed
+                    echo "</tr>";
                 }
-                ?>
-            </tbody>
-        </table>
-
+            } else {
+                echo "<tr><td colspan='3'>No records found.</td></tr>";
+            }
+            ?>
+        </tbody>
+    </table>
 </div>
 
+<style>
+
+.img-responsive {
+    max-width: 20%; /* This will make sure the image does not exceed the width of its container */
+    height: auto; /* This will maintain the aspect ratio of the image */
+}
+
+</style>
 
 
 
@@ -234,7 +243,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 
     function success(result) {
     // Set the scanned result as the value of the input field
-    document.getElementById('borrowerIdInput').value = result;
+    document.getElementById('borrower_Id').value = result;
 
     // Clear the scanning instance
     scanner.clear();

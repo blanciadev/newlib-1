@@ -201,31 +201,38 @@ if ($isBorrowerIdValid) {
                 }
 
                 $sql = "SELECT DISTINCT
-                        bd.BorrowDetails_ID, 
-                        b.User_ID, 
-                        bk.Book_Title, 
-                        bd.Quantity, 
-                        b.Date_Borrowed, 
-                        b.Due_Date, 
-                        bd.tb_status, 
-                        bd.Borrower_ID, 
-                        b.Accession_Code
-                    FROM
-                        tbl_borrowdetails AS bd
-                    INNER JOIN
-                        tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
-                    INNER JOIN
-                        tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-                    INNER JOIN
-                        tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID AND bd.Borrower_ID = br.Borrower_ID;
-                    ";
+                b.User_ID, 
+                bk.Book_Title, 
+                bd.Quantity, 
+                b.Date_Borrowed, 
+                b.Due_Date, 
+                bd.tb_status, 
+                bd.Borrower_ID, 
+                b.Accession_Code, 
+                b.Borrow_ID
+            FROM
+                tbl_borrowdetails AS bd
+                INNER JOIN
+                tbl_borrow AS b
+                ON 
+                    bd.Borrower_ID = b.Borrower_ID
+                INNER JOIN
+                tbl_books AS bk
+                ON 
+                    b.Accession_Code = bk.Accession_Code
+                INNER JOIN
+                tbl_borrower AS br
+                ON 
+                    b.Borrower_ID = br.Borrower_ID AND
+                    bd.Borrower_ID = br.Borrower_ID;
+                               ";
 
 
                 $result = $conn->query($sql);
                 // Output data of each row
                 while ($row = $result->fetch_assoc()) {
                     echo "<tr>";
-                    echo "<td>" . $row["BorrowDetails_ID"] . "</td>";
+                    echo "<td>" . $row["Borrow_ID"] . "</td>";
                     echo "<td>" . $row["Borrower_ID"] . "</td>";
                     echo "<td>" . $row["Accession_Code"] . "</td>";
                     echo "<td>" . $row["Book_Title"] . "</td>";
@@ -236,10 +243,10 @@ if ($isBorrowerIdValid) {
 
                     echo "<td>";
                     echo "<form class='update-form' method='GET' action='staff_borrow_details.php'>";
-                    echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["BorrowDetails_ID"] . "'>";
+                    echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["Borrow_ID"] . "'>";
 
                     // Conditionally render the button based on the status
-                    echo "<input type='hidden' name='borrowerId' value='" . $row["Borrower_ID"] . "'>";
+                    echo "<input type='hidden' name='borrowerId' value='" . $row["Borrow_ID"] . "'>";
 
                     // if ($row["tb_status"] === 'Borrowed') {
                     //     echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='redirectToBorrowDetails(" . $row["BorrowDetails_ID"] . ")'>UPDATE</button>";
