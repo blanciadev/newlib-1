@@ -92,7 +92,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             if (action === 'borrow') {
                 window.location.href = 'admin_book_borrow_dash.php';
             } else if (action === 'return') {
-                window.location.href = 'admin_book_return.php';
+                window.location.href = 'admin_return_dash.php';
             }
         });
     </script>

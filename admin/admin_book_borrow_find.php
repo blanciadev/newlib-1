@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 // Check if the User_ID session variable is not set or empty
 if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     // Redirect to index.php
@@ -8,60 +9,48 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 }
 
 $result = null; // Initialize $result variable
-$_SESSION['Accession_Code'] = null;
 
-
-// Check if the borrower_id session variable is set
-if(isset($_SESSION['borrower_id'])) {
-    // Retrieve the borrower_id from the session
-    $borrower_id = $_SESSION['borrower_id'];
-
-    // Now you can use $borrower_id in your code as needed
-    echo "Borrower ID: " . $borrower_id;
-} else {
-    // Handle the case where the session variable is not set
-    echo "Borrower ID not found in session.";
-}
-
-
-if(isset($_REQUEST['Accession_Code'])) {
+// Check if the form is submitted
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+   // Sanitize input to prevent SQL injection
+   $conn =  mysqli_connect("localhost", "root", "root", "db_library_2", 3308); //database connection
+   $Accession_Code = mysqli_real_escape_string($conn, $_REQUEST['Accession_Code']);
    
-    // Sanitize input to prevent SQL injection
-    $conn =  mysqli_connect("localhost","root","root","db_library_2", 3308); //database connection
-    $Accession_Code = mysqli_real_escape_string($conn, $_REQUEST['Accession_Code']);
-    
-    // Store the accession code in a session variable
-    $_SESSION['Accession_Code'] = $Accession_Code;
-    
-    // Query to retrieve book details based on Accession Code
-    $sql = "SELECT
-	tbl_books.*, 
-	tbl_authors.Authors_Name, 
-	tbl_books.Accession_Code
-FROM
-	tbl_books
-	INNER JOIN
-	tbl_authors
-	ON 
-		tbl_books.Authors_ID = tbl_authors.Authors_ID
-WHERE
-	Accession_Code = '$Accession_Code'";
-    
-    $result = $conn->query($sql);
+   // Store the accession code in a session variable
+   $_SESSION['Accession_Code'] = $Accession_Code;
+   
+   // Query to retrieve book details based on Accession Code
+   $sql = "SELECT
+               tbl_books.*, 
+               tbl_authors.Authors_Name, 
+               tbl_books.Accession_Code
+           FROM
+               tbl_books
+           INNER JOIN
+               tbl_authors
+           ON 
+               tbl_books.Authors_ID = tbl_authors.Authors_ID
+           WHERE
+               Accession_Code = '$Accession_Code'";
+   
+   $result = $conn->query($sql);
+   
+   // Check if the query returned any rows
+   if ($result && $result->num_rows > 0) {
+       // Close the database connection
+       $conn->close();
+       // Redirect to staff_book_borrow_process.php
+       header("Location: admin_book_borrow_process.php");
+       exit(); // Ensure script execution stops after redirection
+   } else {
+       // Close the database connection
+       $conn->close();
+       // Display an alert for invalid Accession Code
+       echo '<script>alert("Invalid Accession Code. No book found.");</script>';
+   }
+} 
 
-  
-    // Close the database connection
-    $conn->close();
-} else {
-    // Accession Code is not provided
-     // Check if the form has been submitted
-     if(isset($_REQUEST['Accession_Code'])) {
-        // Accession Code is not provided
-        echo "<div class='books-container'><p>No book found with the provided Accession Code</p></div>";
-    }
-}
 ?>
-
 
 
 <!DOCTYPE html>
@@ -129,45 +118,28 @@ WHERE
         
     </div>
     
-    <div class="board container">
-        
-    
+    <div class="board container"><!--board container-->
+    <div class='books-container'>
     <h1>Search Book by Accession Code</h1>
-    <form action="admin_book_borrow_find.php" method="GET">
+
+    <form id="dataform" action="" method="POST">
+
         <label for="Accession_Code">Accession Code:</label>
-        <?php
-    echo '<input type="text" id="Accession_Code" name="Accession_Code" placeholder="Enter Accession Code" required';
-    if(isset($_SESSION['Accession_Code']) && !empty($_SESSION['Accession_Code'])) {
+        <input type="text" id="Accession_Code" name="Accession_Code" placeholder="Enter Accession Code" required
+   
+   <?php
+    // Check if there's a previous value in session, and if so, populate the input field with it
+    if (isset($_SESSION['Accession_Code']) && !empty($_SESSION['Accession_Code'])) {
         echo ' value="' . htmlspecialchars($_SESSION['Accession_Code']) . '"';
     }
-    echo '>';
-?>
+    ?>>
 
-    </form>
-
-    <?php
-        if ($result && $result->num_rows > 0) {
-            echo "<h2>Books Found</h2>";
-            echo "<div class='books-container'>";
-            while ($book_details = $result->fetch_assoc()) {
-                echo "<div class='book'>";
-                echo "<p><strong>Borrower ID:</strong> " . $borrower_id . "</p>";
-                echo "<p><strong>Title:</strong> " . $book_details['Book_Title'] . "</p>";
-                echo "<p><strong>Author:</strong> " . $book_details['Authors_Name'] . "</p>";
-                echo "<p><strong>Status:</strong> " . $book_details['tb_status'] . "</p>";
-                echo "</div>";
-            }
-            echo "</div>";
-        } else {
-            // Book not found or error occurred
-           
-        }
-        ?>
-      <button type="submit" class="btn btn-primary" id="book_borrow">Get Book</button>
-
+         
+      <button type="submit" class="btn btn-primary" id="book_borrow" onclick="submitForm()">Get Book</button>
+      </form>
+  
+        </div>
     </div>
-    </div>
-
     <script>
     // Get the input field and form
     const inputField = document.getElementById('Accession_Code');

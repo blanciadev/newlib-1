@@ -14,10 +14,9 @@ $result = null; // Initialize $result variable
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
    // Sanitize input to prevent SQL injection
    $conn =  mysqli_connect("localhost", "root", "root", "db_library_2", 3308); //database connection
-   $Accession_Code = mysqli_real_escape_string($conn, $_REQUEST['Accession_Code']);
-   
-   // Store the accession code in a session variable
-   $_SESSION['Accession_Code'] = $Accession_Code;
+ 
+   $Accession_Code = $_POST['Accession_Code'];
+ 
    
    // Query to retrieve book details based on Accession Code
    $sql = "SELECT
@@ -39,6 +38,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    if ($result && $result->num_rows > 0) {
        // Close the database connection
        $conn->close();
+         // Store the accession code in a session variable
+   $_SESSION['Accession_Code'] = $Accession_Code;
        // Redirect to staff_book_borrow_process.php
        header("Location: staff_book_borrow_process.php");
        exit(); // Ensure script execution stops after redirection
@@ -126,63 +127,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     ?>>
 
-      </form>
-     
-<?php
          
-// Check if Accession_Code is provided via POST method
-if (isset($_POST['Accession_Code'])) { 
-    // Check if Accession_Code is empty
-    if (empty($_POST['Accession_Code'])) {
-        echo '<script>alert("Accession Code is required.");</script>';
-        echo '<script>console.log("Accession Code is required.");</script>'; // Log message to console
-    } else {
-        // Database connection
-        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-        if (!$conn) {
-            die("Connection failed: " . mysqli_connect_error());
-        }
-        
-        // Sanitize input to prevent SQL injection
-        $Accession_Code = mysqli_real_escape_string($conn, $_POST['Accession_Code']);
-        $_SESSION['$Accession_Code'] = $Accession_Code;
-
-        // Query to retrieve book details based on Accession Code
-        $sql = "SELECT * FROM tbl_books WHERE Accession_Code = ?";
-        
-        // Using prepared statements to prevent SQL injection
-        $stmt = mysqli_stmt_init($conn);
-        if (!mysqli_stmt_prepare($stmt, $sql)) {
-            echo '<script>alert("SQL Error.");</script>';
-        } else {
-            mysqli_stmt_bind_param($stmt, "s", $Accession_Code);
-            mysqli_stmt_execute($stmt);
-            $result = mysqli_stmt_get_result($stmt);
-            
-            // Check if the result set is empty (Accession_Code is invalid)
-            if (mysqli_num_rows($result) === 0) {
-                // Display an alert message
-              
-            } else {
-                echo "<h2>Books Found</h2>";
-                echo "<div class='book'>";
-                while ($book_details = mysqli_fetch_assoc($result)) {
-                    echo "<p><strong>Borrower ID:</strong> " . $_SESSION['borrower_id'] . "</p>";
-                    echo "<p><strong>Title:</strong> " . $book_details['Book_Title'] . "</p>";
-                    echo "<p><strong>Author:</strong> " . $book_details['Authors_ID'] . "</p>";
-                    echo "<p><strong>Status:</strong> " . $book_details['tb_status'] . "</p>";
-                }
-                echo "</div>";
-            }
-            
-            // Close the database connection
-            mysqli_stmt_close($stmt);
-            mysqli_close($conn);
-        }
-    }
-}
-            ?>
-             <form action="" method="POST">
       <button type="submit" class="btn btn-primary" id="book_borrow" onclick="submitForm()">Get Book</button>
       </form>
   
