@@ -74,5 +74,10 @@ $stat = $_SESSION['stat'];
             <span class="info-label">Status:</span> <?php echo $stat; ?>
         </div>
     </div>
+
+    
+    <a href="staff_transaction_dash.php" class="btn btn-primary">Go to Staff Log</a>
+
+
 </body>
 </html>
