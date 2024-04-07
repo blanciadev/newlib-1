@@ -7,21 +7,22 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
-
 $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // Database connection
 
 // Retrieve User_ID from session
 $userID = $_SESSION["User_ID"];
 
-// Query to retrieve user data excluding password
-$sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address 
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+
+$userID = $_SESSION["User_ID"];
+
+$sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
         FROM tbl_employee 
         WHERE User_ID = $userID";
 
 $result = mysqli_query($conn, $sql);
 
 if (!$result) {
-    // Handle query error
     echo "Error: " . mysqli_error($conn);
 } else {
     $userData = mysqli_fetch_assoc($result);
@@ -32,8 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 if (!mysqli_ping($conn)) {
     mysqli_close($conn);
     $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-}
-else{
+}else{
     if (isset($_POST['uploadImageBtn'])) {
         $imageFile = $_FILES['imageFile'];
         // Check if there was an error uploading the file
@@ -56,7 +56,7 @@ else{
                 $stmt = mysqli_prepare($conn, $sql);
                 mysqli_stmt_bind_param($stmt, "si", $imageData, $userID);
                 if (mysqli_stmt_execute($stmt)) {
-                    echo '<script>alert("Image Updated successfully."); window.location.href = "admin_dashboard.php";</script>';
+                    echo '<script>alert("Image Updated successfully."); window.location.href = "staff_dashboard.php";</script>';
                 } else {
                     echo '<script>alert("Error updating image data.");</script>';
                 }
@@ -65,65 +65,89 @@ else{
         } else {
             echo '<script>alert("Error uploading file: ' . $imageFile['error'] . '");</script>';
         }
+    } 
+ 
+// Check if the profile update form is submitted
+if (isset($_POST['updateProfile'])) {
+    // Profile update logic
+    $firstName = $_POST['firstName'];
+    $middleName = $_POST['middleName'];
+    $lastName = $_POST['lastName'];
+    $contactNumber = $_POST['contactNumber'];
+    $email = $_POST['email'];
+    $address = $_POST['address'];
+
+    // Perform necessary validations if required
+
+    // Update user's data in the database
+    // $conn should be your database connection object
+    $updateQuery = "UPDATE tbl_employee 
+                    SET First_Name = ?, Middle_Name = ?, Last_Name = ?,
+                        Contact_Number = ?, E_mail = ?, tb_address = ? 
+                    WHERE User_ID = ?";
+    $stmt = mysqli_prepare($conn, $updateQuery);
+
+    mysqli_stmt_bind_param($stmt, "ssssssi", $firstName, $middleName, $lastName, 
+        $contactNumber, $email, $address, $userID);
+    if (mysqli_stmt_execute($stmt)) {
+        echo '<script>alert("Profile Updated successfully."); window.location.href = "admin_dashboard.php";</script>';
+    } else {
+        echo '<script>alert("Error updating profile: ' . mysqli_error($conn) . '");</script>';
     }
-    elseif (isset($_POST['firstName'])) {
-        // Profile update logic
-        $firstName = $_POST['firstName'];
-        $middleName = $_POST['middleName'];
-        $lastName = $_POST['lastName'];
-        $role = $_POST['role'];
-        $contactNumber = $_POST['contactNumber'];
-        $email = $_POST['email'];
-        $address = $_POST['address'];
-        $oldPassword = $_POST['oldPassword'];
-        $newPassword = $_POST['newPassword'];
-        $confirmPassword = $_POST['confirmPassword'];
-    
-        // Check if the new password and confirm password match
-        if ($newPassword === $confirmPassword) {
-            // Check if the old password matches the user's password in the database
-            $sqlCheckPassword = "SELECT tb_password FROM tbl_employee WHERE User_ID = ?";
-            $stmtCheckPassword = mysqli_prepare($conn, $sqlCheckPassword);
-            mysqli_stmt_bind_param($stmtCheckPassword, "i", $userID);
-            mysqli_stmt_execute($stmtCheckPassword);
-            mysqli_stmt_bind_result($stmtCheckPassword, $storedPassword);
-            mysqli_stmt_fetch($stmtCheckPassword);
-            mysqli_stmt_close($stmtCheckPassword);
-        
-            // Debugging: Echo or log to check values
-            echo "Old Password: $oldPassword<br>";
-            echo "Stored Password: $storedPassword<br>";
-        
-            // Verify the old password using password_verify function
-            if (($oldPassword == $storedPassword)) {
-                // Old password matches, update the user's data in the database
-                $updateQuery = "UPDATE tbl_employee 
-                                SET First_Name = ?, Middle_Name = ?, Last_Name = ?, tb_role = ?, 
-                                    Contact_Number = ?, E_mail = ?, tb_address = ?, tb_password = ? 
-                                WHERE User_ID = ?";
-                $stmt = mysqli_prepare($conn, $updateQuery);
-        
-             
-              
-        
-                mysqli_stmt_bind_param($stmt, "ssssssssi", $firstName, $middleName, $lastName, $role,
-                    $contactNumber, $email, $address, $newPassword, $userID);
-                if (mysqli_stmt_execute($stmt)) {
-                    echo '<script>alert("Profile Updated successfully."); window.location.href = "admin_dashboard.php";</script>';
-                } else {
-                    echo '<script>alert("Error updating profile: ' . mysqli_error($conn) . '");</script>';
-                }
-                mysqli_stmt_close($stmt); // Close the statement
-            } else {
-                echo '<script>alert("Old password does not match!");</script>';
-            }
-        } else {
-            echo '<script>alert("New password and confirm password do not match!");</script>';
-        }
-        
-    }
+    mysqli_stmt_close($stmt); // Close the statement
 }
 
+// Check if the password update form is submitted
+if (isset($_POST['updatePassword'])) {
+    // Password update logic
+    $oldPassword = $_POST['oldPassword'];
+    $newPassword = $_POST['newPassword'];
+    $confirmPassword = $_POST['confirmPassword'];
+
+    // Perform necessary validations if required
+
+    // Check if the new password and confirm password match
+    if ($newPassword === $confirmPassword) {
+        // Check if the old password matches the user's password in the database
+        $sqlCheckPassword = "SELECT tb_password FROM tbl_employee WHERE User_ID = ?";
+        $stmtCheckPassword = mysqli_prepare($conn, $sqlCheckPassword);
+        mysqli_stmt_bind_param($stmtCheckPassword, "i", $userID);
+        mysqli_stmt_execute($stmtCheckPassword);
+        mysqli_stmt_bind_result($stmtCheckPassword, $storedPassword);
+        mysqli_stmt_fetch($stmtCheckPassword);
+        mysqli_stmt_close($stmtCheckPassword);
+
+        // Verify the old password using password_verify function
+        if (($oldPassword == $storedPassword)) {
+            // Check if old password is different from the new password
+            if ($oldPassword != $newPassword) {
+                // Old password matches and it's different from the new password, update the user's password in the database
+                $updatePasswordQuery = "UPDATE tbl_employee 
+                                        SET tb_password = ? 
+                                        WHERE User_ID = ?";
+                $stmtUpdatePassword = mysqli_prepare($conn, $updatePasswordQuery);
+
+            
+
+                mysqli_stmt_bind_param($stmtUpdatePassword, "si", $newPassword, $userID);
+                if (mysqli_stmt_execute($stmtUpdatePassword)) {
+                    echo '<script>alert("Profile Updated successfully."); window.location.href = "admin_dashboard.php";</script>';
+          
+                } else {
+                    echo '<script>alert("Error updating password: ' . mysqli_error($conn) . '");</script>';
+                }
+                mysqli_stmt_close($stmtUpdatePassword); // Close the statement
+            } else {
+                echo '<script>alert("Old and new passwords cannot be the same.");</script>';
+            }
+        } else {
+            echo '<script>alert("Old password does not match!");</script>';
+        }
+    } else {
+        echo '<script>alert("New password and confirm password do not match!");</script>';
+    }
+}
+}
 }
 ?>
 
@@ -192,74 +216,81 @@ else{
         
     </div>
 
-    <div class="board container"><!--board container-->
-
-
+    <div class="settingForms">
+        <form id="imageUploadForm" action="" method="post" enctype="multipart/form-data">
+            <input type="file" name="imageFile" id="imageFile">
+            <button type="submit" name="uploadImageBtn">Upload Image</button><br>
+        </form>
     
-    <form id="imageUploadForm" action="" method="post" enctype="multipart/form-data">
-   
-    <input type="file" name="imageFile" id="imageFile">
-    <button type="submit" name="uploadImageBtn">Upload Image</button>
-    </form>
-    
-    <form id="userProfileForm" action="" method="post">
-    <!-- Display user data -->
-    <div class="mb-3">
-     <!-- //   <label for="userID" class="form-label">User ID</label> -->
-        <input type="hidden" id="userID" name="userID" value="<?php echo $userData['User_ID']; ?>">
-    </div>
-   
-    <div class="mb-3">
-        <label for="firstName" class="form-label">First Name</label>
-        <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $userData['First_Name']; ?>" >
-    </div>
-    <div class="mb-3">
-        <label for="middleName" class="form-label">Middle Name</label>
-        <input type="text" class="form-control" id="middleName" name="middleName" value="<?php echo $userData['Middle_Name']; ?>">
-    </div>
-    <div class="mb-3">
-        <label for="lastName" class="form-label">Last Name</label>
-        <input type="text" class="form-control" id="lastName" name="lastName" value="<?php echo $userData['Last_Name']; ?>" >
-    </div>
-    <div class="mb-3">
-        <label for="role" class="form-label">Role</label>
-        <input type="text" class="form-control" id="role" name="role" value="<?php echo $userData['tb_role']; ?>" readonly>
-    </div>
-    <div class="mb-3">
-        <label for="contactNumber" class="form-label">Contact Number</label>
-        <input type="tel" class="form-control" id="contactNumber" name="contactNumber" value="<?php echo $userData['Contact_Number']; ?>" >
-    </div>
-    <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="email" name="email" value="<?php echo $userData['E_mail']; ?>" >
-    </div>
-    <div class="mb-3">
-        <label for="address" class="form-label">Address</label>
-        <input type="text" class="form-control" id="address" name="address" value="<?php echo $userData['tb_address']; ?>" >
-    </div>
+        <form id="userProfileForm" action="" method="post">
+                   
+                    <!-- Display user data -->
+                    <h4>Personal Details</h4>
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $userData['First_Name']; ?>" >
+                    </div>
+                    <div class="mb-3">
+                        <label for="middleName" class="form-label">Middle Name</label>
+                        <input type="text" class="form-control" id="middleName" name="middleName" value="<?php echo $userData['Middle_Name']; ?>">
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" value="<?php echo $userData['Last_Name']; ?>" >
+                    </div> 
+                    <div class="mb-3">
+                        <label for="contactNumber" class="form-label">Contact Number</label>
+                        <input type="tel" class="form-control" id="contactNumber" name="contactNumber" value="<?php echo $userData['Contact_Number']; ?>" >
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="<?php echo $userData['E_mail']; ?>" >
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="address" name="address" value="<?php echo $userData['tb_address']; ?>" >
+                    </div>
+                       <!-- Update button -->
+                       <button type="submit" class="btn btn-primary" name="updateProfile" value="Update Profile">Update Profile</button>
+  
+              <br><br>
+                    <!-- Password Change Section -->
+                    <h4>Reset your Password</h4>
+                    <div class="mb-3">
+                        <label for="oldPassword" class="form-label">Old Password</label>
+                        <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                    </div>
 
+                    <!-- Update button -->
+                    <button type="submit" class="btn btn-primary" name="updatePassword" value="Update Password">Update Password</button>
 
-    
-    <!-- Password Change Section -->
-    <div class="col-md-4">
-    <label for="oldPassword">Old Password:</label>
-    <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>
-    </div>
-    <div class="mb-3">
-        <label for="newPassword" class="form-label">New Password</label>
-        <input type="password" class="form-control" id="newPassword" name="newPassword" required>
-    </div>
-    <div class="mb-3">
-        <label for="confirmPassword" class="form-label">Confirm Password</label>
-        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
-    </div>
+                </form>
+            </div>
+        </div>
 
-    <!-- Update button -->
-    <button type="submit" class="btn btn-primary">Update Password</button>
-</form>
-
-    </div>
         
+
+    </div>
+</div>
+        
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('[name="updateProfile"]').addEventListener('click', function() {
+        // Remove the 'required' attribute from password fields
+        document.getElementById('oldPassword').removeAttribute('required');
+        document.getElementById('newPassword').removeAttribute('required');
+        document.getElementById('confirmPassword').removeAttribute('required');
+    });
+});
+</script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
