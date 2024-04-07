@@ -53,7 +53,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
-        <!-- <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"> -->
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container-->
@@ -76,8 +76,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else: ?>
-                <!-- Change the path to your actual default image -->
-                <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+                <!--default image -->
+                <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
         <strong><span><?php echo $_SESSION["staff_name"] . "<br/>" . $_SESSION["role"]; ?></span></strong> 
     </div>
@@ -86,54 +86,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item"> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i >Books</a> </li>
             <li class="nav-item"> <a href="./staff_transaction_dash.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>
-         <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
+            <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
             <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>  <hr>
             <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
             <li class="nav-item"> <a href="logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
 
-    <!-- index.php -->
-<div class="container">
-    <form method="POST" action="">
-        <div class="row">
-            <div class="col-md-6">
-                <label for="first_name" class="form-label">Enter First Name:</label>
-                <input type="text" id="first_name" name="first_name" class="form-control" required>
+    <div class="board1 container"><!--board container-->
+    <div class="header1">
+            <div class="text">
+                <div class="back-btn">
+                        <a href="./staff_registeredList.php"><i class='bx bx-arrow-back'></i></a>
+                    </div>
+                <div class="title">
+                    <h2>Register Borrower</h2>
+                </div>
             </div>
-            <div class="col-md-6">
-                <label for="middle_name" class="form-label">Enter Middle Name:</label>
-                <input type="text" id="middle_name" name="middle_name" class="form-control" required> 
-            </div>
-     
-            <div class="col-md-6">
-                <label for="last_name" class="form-label">Enter Last Name:</label>
-                <input type="text" id="last_name" name="last_name" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-                <label for="contact_number" class="form-label">Contact Number:</label>
-                <input type="text" id="contact_number" name="contact_number" class="form-control" required>
-            </div>
-       
+    </div>
+    <div class="books container">
+        <form method="POST" action="">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="first_name" class="form-label">First Name:</label>
+                    <input type="text" id="first_name" name="first_name" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="middle_name" class="form-label">Middle Initial:</label>
+                    <input type="text" id="middle_name" name="middle_name" class="form-control" required> 
+                </div>
+        
+                <div class="col-md-6">
+                    <label for="last_name" class="form-label">Last Name:</label>
+                    <input type="text" id="last_name" name="last_name" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="contact_number" class="form-label">Contact Number:</label>
+                    <input type="text" id="contact_number" name="contact_number" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email:</label>
+                    <input type="text" id="email" name="email" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="affiliation" class="form-label">School / Affiliation:</label>
+                    <input type="text" id="affiliation" name="affiliation" class="form-control" required>
+                </div>
+    
 
-     
-            <div class="col-md-6">
-                <label for="email" class="form-label">Email:</label>
-                <input type="text" id="email" name="email" class="form-control" required>
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">Generate QR Code</button>
+                </div>
             </div>
-            <div class="col-md-6">
-                <label for="affiliation" class="form-label">Affiliation:</label>
-                <input type="text" id="affiliation" name="affiliation" class="form-control" required>
-            </div>
-  
-
-        <div class="row mt-3">
-            <div class="col-md-12">
-                <button type="submit" class="btn btn-primary">Generate QR Code</button>
-            </div>
-        </div>
-    </form>
-</div>
+        </form>
+    </div>
 
         
 

@@ -131,74 +131,60 @@ if ($isBorrowerIdValid) {
                 </span></strong>
         </div>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
-            <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis "> <i
-                        class='bx bxs-home'></i>Dashboard </a> </li>
-            <li class="nav-item"> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i
-                        class='bx bxs-book'></i>Books</a> </li>
-            <li class="nav-item"> <a href="./staff_transaction_dash.php" class="nav-link link-body-emphasis"><i
-                        class='bx bxs-customize'></i>Transaction</a> </li>
-            <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i
-                        class='bx bxs-user-detail'></i>Log Record</a> </li>
-            <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i
-                        class='bx bxs-wallet'></i>Fines</a> </li>
+            <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis "> <i class='bx bxs-home'></i>Dashboard </a> </li>
+            <li class="nav-item"> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
+            <li class="nav-item"> <a href="./staff_transaction_dash.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>
+            <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
+            <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
             <hr>
-            <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i
-                        class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="logout.php" class="nav-link link-body-emphasis"><i
-                        class='bx bxs-wallet'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
+            <li class="nav-item"> <a href="logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-
-
-
-    <main>
-        <div id="reader"></div>
-        <div id="result"></div>
-    </main>
-
-    <form method="POST" action="">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Borrow Id</th>
-                    <th>Visitors Id</th>
-                    <th>Accession Code</th>
-                    <th>Book Title</th>
-                    <th>Quantity</th>
-                    <th>Date</th>
-                    <th>Due Date</th>
-                    <th>Status</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                <div id="statusMessage"></div>
-
-                <form id="borrowForm" action="staff_borrow.dash.php" method="post">
-                    <div class="mb-3">
-                        <label for="borrowerIdInput" class="form-label">Borrower ID</label>
-                        <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
+    <div class="board container"><!--board container-->
+    <div class="header1">
+            <div class="text">
+                <div class="back-btn">
+                        <a href="./staff_transaction_dash.php"><i class='bx bx-arrow-back'></i></a>
                     </div>
+                <div class="title">
+                    <h2>Borrow A Book</h2>
+                </div>
+            </div>
+    </div>
+    <div class="books container">
+        <main>
+            <div id="reader"></div>
+            <div id="result"></div>
+        </main>
 
-                    <button type="submit" class="btn btn-primary" id="book_borrow" disabled>
-                        Book Borrow
-                    </button>
+        <form method="POST" action="">
+                    <div id="statusMessage"></div>
 
-                </form>
+                    <form id="borrowForm" action="staff_borrow.dash.php" method="post">
+                        <div class="mb-3">
+                            <label for="borrowerIdInput" class="form-label">Borrower ID</label>
+                            <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="book_borrow" disabled>
+                            Book Borrow
+                        </button>
+                    </form>
 
 
-                <?php if (!empty($errorMessage)): ?>
-                    <div class="alert alert-danger" role="alert">
-                        <?php echo $errorMessage; ?>
-                    </div>
-                <?php endif; ?>
+                    <?php if (!empty($errorMessage)): ?>
+                        <div class="alert alert-danger" role="alert">
+                            <?php echo $errorMessage; ?>
+                        </div>
+                    <?php endif; ?>
 
-                <?php
-                // Database connection and SQL query
-                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-                if ($conn->connect_error) {
-                    die("Connection failed: " . $conn->connect_error);
-                }
+                    <?php
+                    // Database connection and SQL query
+                    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                    if ($conn->connect_error) {
+                        die("Connection failed: " . $conn->connect_error);
+                    }
 
                 $sql = "SELECT DISTINCT
                 b.User_ID, 
@@ -262,15 +248,11 @@ if ($isBorrowerIdValid) {
                     echo "</tr>";
                 }
 
-                // Close connection
-                $conn->close();
-                ?>
-
-
-            </tbody>
-        </table>
-
-        </div>
+                    // Close connection
+                    $conn->close();
+                    ?>
+        </form>
+    </div>
 
 
 

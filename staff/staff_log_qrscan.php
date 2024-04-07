@@ -122,142 +122,71 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-    <div class="board container"><!--board container-->
-    <div class="header1">
-            <div class="text">
-                <div class="title">
-                    <h2>Log Record</h2>
+
+    <style>
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #reader {
+            width: 600px;
+        }
+        #result {
+            text-align: center;
+            font-size: 1.5rem;
+        }
+    </style>
+    <div class="board1 container"><!--board container-->
+        <div class="header1">
+                <div class="text">
+                    <div class="back-btn">
+                        <a href="./staff_log.php"><i class='bx bx-arrow-back'></i></a>
+                    </div>
+                    <div class="title">
+                        <h2>Scan Card</h2>
+                    </div>
+                </div>
+        </div>
+        <div class="books container">
+            <main>
+                <div id="reader"></div>
+                <div id="result"></div>
+            </main>
+
+            <div id="statusMessage"></div>
+
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                <label for="borrower_id">Or Enter Borrower ID:</label>
+                <input type="text" id="borrower_id" name="borrower_id">
+                <button type="submit">Submit</button>
+                
+            </form>
+
+            <?php if (!empty($errorMessage)): ?>
+                <div class="alert alert-danger" role="alert">
+                    <?php echo $errorMessage; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <!--Logout Modal -->
+        <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+                </div>
+                <div class="modal-body">
+                    Do you want to log out?
+                </div>
+                <div class="modal-footer d-flex flex-row justify-content-center">
+                    <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                    <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+                </div>
                 </div>
             </div>
-            <div class="searchbar">
-                <form action="">
-                    <input type="search" id="searchInput"  placeholder="Search..." required>
-                    <i class='bx bx-search' id="search-icon"></i>
-                </form>
-            </div>
-    </div>
-    <div class="books container">
-    <table class="table table-striped table-m">
-        <thead>
-                <tr>
-                    <th>Borrower ID</th>
-                    <th>Borrower Name</th>
-                    <th>Date & Time</th>
-                </tr>
-            </thead>
-            <?php
-
-            // Database connection
-            $conn_display_all = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
-            if ($conn_display_all->connect_error) {
-                die("Connection failed: " . $conn_display_all->connect_error);
-            }
-            
-            // SQL query to select all records from tbl_borrower and tbl_log
-            $sql_display_all = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID";
-            $result_display_all = $conn_display_all->query($sql_display_all);
-
-  // Close display connection
-  $conn_display_all->close();
-  ?>
-  
- 
-  <div class="container"> 
-  
-    <!-- Button to register visitor -->
-    <a href="staff_registerUser.php" class="btn btn-primary">Register Visitor</a>
-  
-    <h1>Borrower Logs</h1>
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>QR CODE</th>
-                <th>Borrower ID</th>
-                <th>Borrower Name</th>
-                <th>Date & Time</th>
-                <!-- Add more headers as needed -->
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            if ($result_display_all && $result_display_all->num_rows > 0) {
-                while ($row = $result_display_all->fetch_assoc()) {
-                    echo "<tr>";
-                    $imageData = base64_encode($row['image_file']);
-                    echo "<td><img class='img-responsive' src='data:image/png;base64," . $imageData . "' /></td>";
-                    echo "<td>" . $row['Borrower_ID'] . "</td>";
-                    echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
-                    echo "<td>" . $row['Date_Time'] . "</td>";
-                    // Add more columns as needed
-                    echo "</tr>";
-                }
-            } else {
-                echo "<tr><td colspan='3'>No records found.</td></tr>";
-            }
-            ?>
-        </tbody>
-    </table>
-</div>
-
-<style>
-
-.img-responsive {
-    max-width: 20%; /* This will make sure the image does not exceed the width of its container */
-    height: auto; /* This will maintain the aspect ratio of the image */
-}
-
-</style>
-
-            // Close display connection
-            $conn_display_all->close();
-            ?>
-            <tbody>
-                <?php
-                if ($result_display_all && $result_display_all->num_rows > 0) {
-                    while ($row = $result_display_all->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<td>" . $row['Borrower_ID'] . "</td>";
-                        echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
-                        echo "<td>" . $row['Date_Time'] . "</td>";
-                        // Add more columns as needed
-                        echo "</tr>";
-                    }
-                } else {
-                    echo "<tr><td colspan='3'>No records found.</td></tr>";
-                }
-                ?>
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="btn-con">
-        <a href="staff_log_qrscan.php" class="btn">Scan</a>
-        <a href="staff_registeredList.php" class="btn">Registered List</a>
-    </div>
-    
-  
-
-</div>
-
-
-<!--Logout Modal -->
-<div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
-            </div>
-            <div class="modal-body">
-                Do you want to log out?
-            </div>
-            <div class="modal-footer d-flex flex-row justify-content-center">
-                <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
-                <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
-            </div>
-            </div>
         </div>
-    </div>
 
 <script>
 
@@ -276,7 +205,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 
     function success(result) {
     // Set the scanned result as the value of the input field
-    document.getElementById('borrower_Id').value = result;
+    document.getElementById('borrowerIdInput').value = result;
 
     // Clear the scanning instance
     scanner.clear();
@@ -292,6 +221,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     }
 
 </script>
+
+
+
 
 <script>
     function redirectToBorrowDetails(borrowId) {
@@ -333,28 +265,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 
 </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-    <script> 
-      // JavaScript code for search functionality
-      document.getElementById("searchInput").addEventListener("input", function() {
-            let searchValue = this.value.toLowerCase();
-            let rows = document.querySelectorAll("tbody tr");
-            rows.forEach(row => {
-                let cells = row.querySelectorAll("td");
-                let found = false;
-                cells.forEach(cell => {
-                    if (cell.textContent.toLowerCase().includes(searchValue)) {
-                        found = true;
-                    }
-                });
-                if (found) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        });
-
-    </script> 
 </body>
 </html>

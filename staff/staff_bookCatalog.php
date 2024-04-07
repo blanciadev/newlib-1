@@ -68,8 +68,11 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <div class="board container"><!--board container-->
     <div class="header1">
             <div class="text">
+                    <div class="back-btn">
+                        <a href="./staff_books.php"><i class='bx bx-arrow-back'></i></a>
+                    </div>
                 <div class="title">
-                    <h2>Books</h2>
+                    <h2>Catalog</h2>
                 </div>
             </div>
             <div class="searchbar">
@@ -80,88 +83,51 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             </div>
     </div>
     <div class="books container">
-    <table class="table table-hover table-sm">
-        <thead class="bg-light sticky-top">
-            <tr>
-                <th>Accession Code</th>
-                <th>Book Title</th>
-                <th>Authors ID</th>
-                <th>Publisher ID</th>
-                <th>Section Code</th>
-                <th>Shelf Number</th>
-                <th>Edition</th>
-                <th>Year Published</th>
-                <th>ISBN</th>
-                <th>Bibliography</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-                $conn =  mysqli_connect("localhost","root","root","db_library_2", 3308); 
-                if ($conn->connect_error) {
-                    die("Connection failed: " . $conn->connect_error);
-                }
+    <div class="d-flex flex-column flex-md-row p-4 gap-4 py-md-5">
+  <div class="list-group list-group-radio d-grid gap-2 border-0">
+    <div class="position-relative">
+      <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGrid" id="listGroupRadioGrid1" value="" checked="">
+      <label class="list-group-item py-3 pe-5" for="listGroupRadioGrid1">
+        <strong class="fw-semibold">Assorted</strong>
+        <span class="d-block small opacity-75">With support text underneath to add more detail</span>
+      </label>
+    </div>
 
-                // SQL query
-                $sql = "SELECT
-                tbl_books.Accession_Code, 
-                tbl_books.Book_Title, 
-                tbl_books.Authors_ID, 
-                tbl_books.Publisher_ID, 
-                tbl_books.Section_Code, 
-                tbl_books.Shelf_Number, 
-                tbl_books.tb_edition, 
-                tbl_books.Year_Published, 
-                tbl_books.ISBN, 
-                tbl_books.Bibliography, 
-                tbl_books.Quantity, 
-                tbl_books.tb_status, 
-                tbl_books.Price, 
-                tbl_section.Section_uid, 
-                tbl_section.Section_Name, 
-                tbl_section.Section_Code
-            FROM
-                tbl_books
-                INNER JOIN
-                tbl_section
-                ON 
-                    tbl_books.Section_Code = tbl_section.Section_uid";
-    
-                $result = $conn->query($sql);
-    
+    <div class="position-relative">
+      <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGrid" id="listGroupRadioGrid2" value="">
+            <label class="list-group-item py-3 pe-5" for="listGroupRadioGrid2">
+                <strong class="fw-semibold">Circulation</strong>
+                <span class="d-block small opacity-75">Some other text goes here</span>
+            </label>
+            </div>
 
-                // Output data of each row
-                while($row = $result->fetch_assoc()) {
-                    echo "<tr><td>".$row["Accession_Code"]."</td>
-                    <td>".$row["Book_Title"]."</td>
-                    <td>".$row["Authors_ID"]."</td>
-                    <td>".$row["Publisher_ID"]."</td>
-                    <td>".$row["Section_Code"]."</td>
-                    <td>".$row["Shelf_Number"]."</td>
-                    <td>".$row["tb_edition"]."</td>
-                    <td>".$row["Year_Published"]."</td>
-                    <td>".$row["ISBN"]."</td>
-                    <td>".$row["Bibliography"]."</td>
-                    <td>".$row["Quantity"]."</td>
-                    <td>".$row["Price"]."</td>
-                    <td>".$row["tb_status"]."</td></tr>";
-                }
-                echo "</table>";
+            <div class="position-relative">
+            <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGrid" id="listGroupRadioGrid3" value="">
+            <label class="list-group-item py-3 pe-5" for="listGroupRadioGrid3">
+                <strong class="fw-semibold">Fiction</strong>
+                <span class="d-block small opacity-75">And we end with another snippet of text</span>
+            </label>
+            </div>
 
-                // Close connection
-                $conn->close();
-            ?>
-        </tbody>
-    </table>
+            <div class="position-relative">
+            <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGrid" id="listGroupRadioGrid3" value="">
+            <label class="list-group-item py-3 pe-5" for="listGroupRadioGrid3">
+                <strong class="fw-semibold">Filipiniana</strong>
+                <span class="d-block small opacity-75">And we end with another snippet of text</span>
+            </label>
+            </div>
+
+            <div class="position-relative">
+            <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGrid" id="listGroupRadioGrid3" value="">
+            <label class="list-group-item py-3 pe-5" for="listGroupRadioGrid3">
+                <strong class="fw-semibold">Reference</strong>
+                <span class="d-block small opacity-75">And we end with another snippet of text</span>
+            </label>
+            </div>
+        </div>
+    </div>
     </div>
     
-    <div class="btn-con">
-        <button class="btn" id="requestButton">Request List</button>
-        <a href="./staff_bookCatalog.php" class="btn">Catalog</a>
-    </div>
 </div>
     
     <!--Logout Modal -->
@@ -203,23 +169,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 }
             });
         });
-
-        document.getElementById("requestButton").addEventListener("click", function() {
-        window.location.href = "staff_request_list.php";
-        });
-
-        let navItems = document.querySelectorAll(".nav-item");  //adding .active class to navitems 
-        navItems.forEach(item => {
-            item.addEventListener('click', ()=> { 
-                document.querySelector('.active')?.classList.remove('active');
-                item.classList.add('active');
-                
-                
-            })
-            
-        })
-     
-
 
     </script>
 </body>

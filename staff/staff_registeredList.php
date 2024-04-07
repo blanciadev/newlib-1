@@ -37,10 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
         $_SESSION['borrower_id'] = $borrower_id;
 
             
-        // SQL query to insert data with auto-increment Log_ID and current timestamp
-        $sql = "INSERT INTO tbl_log (Borrower_ID, `Date_Time`) 
-        VALUES ($borrower_id, NOW())";
-
+        
         if ($conn->query($sql) === TRUE) {
             echo '<script>alert("Record inserted successfully."); window.location.href = "staff_log.php";</script>';
             exit();
@@ -60,14 +57,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 }
 
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - LOGS</title>
+    <title>VillaReadHub - List of Registered Borrowers</title>
     <script src="../node_modules/html5-qrcode/html5-qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
@@ -125,8 +120,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     <div class="board container"><!--board container-->
     <div class="header1">
             <div class="text">
+                <div class="back-btn">
+                        <a href="./staff_log.php"><i class='bx bx-arrow-back'></i></a>
+                    </div>
                 <div class="title">
-                    <h2>Log Record</h2>
+                    <h2>Registered List</h2>
                 </div>
             </div>
             <div class="searchbar">
@@ -137,12 +135,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             </div>
     </div>
     <div class="books container">
-    <table class="table table-striped table-m">
-        <thead>
+    <table class="table table-hover table-m">
+        <thead class="bg-light sticky-top">
                 <tr>
                     <th>Borrower ID</th>
                     <th>Borrower Name</th>
-                    <th>Date & Time</th>
+                    <th>Contact Number</th>
+                    <th>Email</th>
+                    <th>School/Affiliation</th>
                 </tr>
             </thead>
             <?php
@@ -154,60 +154,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             }
             
             // SQL query to select all records from tbl_borrower and tbl_log
-            $sql_display_all = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID";
+            $sql_display_all = "SELECT * FROM tbl_borrower";
             $result_display_all = $conn_display_all->query($sql_display_all);
-
-  // Close display connection
-  $conn_display_all->close();
-  ?>
-  
- 
-  <div class="container"> 
-  
-    <!-- Button to register visitor -->
-    <a href="staff_registerUser.php" class="btn btn-primary">Register Visitor</a>
-  
-    <h1>Borrower Logs</h1>
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>QR CODE</th>
-                <th>Borrower ID</th>
-                <th>Borrower Name</th>
-                <th>Date & Time</th>
-                <!-- Add more headers as needed -->
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            if ($result_display_all && $result_display_all->num_rows > 0) {
-                while ($row = $result_display_all->fetch_assoc()) {
-                    echo "<tr>";
-                    $imageData = base64_encode($row['image_file']);
-                    echo "<td><img class='img-responsive' src='data:image/png;base64," . $imageData . "' /></td>";
-                    echo "<td>" . $row['Borrower_ID'] . "</td>";
-                    echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
-                    echo "<td>" . $row['Date_Time'] . "</td>";
-                    // Add more columns as needed
-                    echo "</tr>";
-                }
-            } else {
-                echo "<tr><td colspan='3'>No records found.</td></tr>";
-            }
-            ?>
-        </tbody>
-    </table>
-</div>
-
-<style>
-
-.img-responsive {
-    max-width: 20%; /* This will make sure the image does not exceed the width of its container */
-    height: auto; /* This will maintain the aspect ratio of the image */
-}
-
-</style>
 
             // Close display connection
             $conn_display_all->close();
@@ -215,11 +163,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             <tbody>
                 <?php
                 if ($result_display_all && $result_display_all->num_rows > 0) {
+                    
                     while ($row = $result_display_all->fetch_assoc()) {
-                        echo "<tr>";
+                        $id = $row['Borrower_ID'];
+                        echo '<tr data-toggle="modal" onclick="BorrowerModal('.$id.')">';
                         echo "<td>" . $row['Borrower_ID'] . "</td>";
                         echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
-                        echo "<td>" . $row['Date_Time'] . "</td>";
+                        echo "<td>" . $row['Contact_Number'] . "</td>";
+                        echo "<td>" . $row['Email'] . "</td>";
+                        echo "<td>" . $row['affiliation'] . "</td>";
                         // Add more columns as needed
                         echo "</tr>";
                     }
@@ -230,16 +182,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             </tbody>
         </table>
     </div>
-    
     <div class="btn-con">
-        <a href="staff_log_qrscan.php" class="btn">Scan</a>
-        <a href="staff_registeredList.php" class="btn">Registered List</a>
+        <a href="staff_registerUser.php" class="btn">Register Borrower</a>
     </div>
-    
-  
-
 </div>
 
+<div id="BorrowerModal" class="modal fade" role="dialog" aria-labelledby="orderModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+         <h3>Order</h3>
+    </div>
+    <div id="orderDetails" class="modal-body">Hii </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    </div>
+</div>
 
 <!--Logout Modal -->
 <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -258,83 +215,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             </div>
         </div>
     </div>
-
-<script>
-
-    const scanner = new Html5QrcodeScanner('reader', { 
-        // Scanner will be initialized in DOM inside element with id of 'reader'
-        qrbox: {
-            width: 250,
-            height: 250,
-        },  // Sets dimensions of scanning box (set relative to reader element width)
-        fps: 20, // Frames per second to attempt a scan
-    });
-
-
-    scanner.render(success, error);
-    // Starts scanner
-
-    function success(result) {
-    // Set the scanned result as the value of the input field
-    document.getElementById('borrower_Id').value = result;
-
-    // Clear the scanning instance
-    scanner.clear();
-
-    // Remove the reader element from the DOM since it's no longer needed
-    document.getElementById('reader').remove();
-}
-
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+    <script> 
+    
+    function BorrowerModal(id){
+        console.log(id);
+        $('#BorrowerModal').modal({
+            keyboard: true,
+            backdrop: "static"
+        });
+    }
+     
 
     function error(err) {
         console.error(err);
         // Prints any errors to the console
     }
-
-</script>
-
-<script>
-    function redirectToBorrowDetails(borrowId) {
-        window.location.href = "staff_borrow_find.php?borrowId=" + borrowId;
-    }
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-    console.log("DOMContentLoaded event fired.");
-
-    var borrowForm = document.getElementById("borrowForm");
-    var borrowerIdInput = document.getElementById("borrowerIdInput");
-    var bookBorrowButton = document.getElementById("book_borrow");
-
-    // Add an input event listener to the Borrower ID input field
-    borrowerIdInput.addEventListener("input", function() {
-        console.log("Input event triggered.");
-        // Enable the button if there is input in the Borrower ID field
-        if (borrowerIdInput.value.trim() !== "") {
-            console.log("Enabling button.");
-            bookBorrowButton.removeAttribute("disabled");
-        } else {
-            console.log("Disabling button.");
-            // Otherwise, disable the button
-            bookBorrowButton.setAttribute("disabled", "disabled");
-        }
-    });
-
-    // Automatically submit the form when a value is present in the Borrower ID field
-    borrowerIdInput.addEventListener("change", function() {
-        console.log("Change event triggered.");
-        if (borrowerIdInput.value.trim() !== "") {
-            console.log("Submitting form.");
-            borrowForm.submit();
-        }
-    });
-});
-
-</script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-    <script> 
       // JavaScript code for search functionality
       document.getElementById("searchInput").addEventListener("input", function() {
             let searchValue = this.value.toLowerCase();

@@ -24,7 +24,7 @@ if ($conn->connect_error) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Return List</title>
+    <title>VillaReadHub - Return a Book</title>
     <script src="../node_modules/html5-qrcode/html5-qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
@@ -77,8 +77,8 @@ if ($conn->connect_error) {
                 <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else: ?>
-                <!-- Change the path to your actual default image -->
-                <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+                <!--default image -->
+                <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
         <strong><span><?php echo $_SESSION["staff_name"] . "<br/>" . $_SESSION["role"]; ?></span></strong> 
     </div>
@@ -97,7 +97,7 @@ if ($conn->connect_error) {
     <div class="header1">
             <div class="text">
                 <div class="title">
-                    <h2>Return List</h2>
+                    <h2>Borrowed Books</h2>
                 </div>
             </div>
             <div class="searchbar">

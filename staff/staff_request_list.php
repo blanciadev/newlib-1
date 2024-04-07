@@ -36,7 +36,7 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Books</title>
+    <title>VillaReadHub - Request List</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,8 +70,8 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
                 <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else: ?>
-                <!-- Change the path to your actual default image -->
-                <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+                <!--default image -->
+                <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
         <strong><span><?php echo $_SESSION["staff_name"] . "<br/>" . $_SESSION["role"]; ?></span></strong> 
     </div>
@@ -107,8 +107,7 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
     </div>
     <div class="books container">
     <table class="table table-hover table-sm">
-        
-        <thead>
+        <thead class="bg-light sticky-top">
             <tr>
                 <th>Request ID</th>
                 <th>Employee ID</th>                 

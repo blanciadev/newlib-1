@@ -170,8 +170,8 @@ if (!mysqli_ping($conn)) {
                 <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else: ?>
-                <!-- Change the path to your actual default image -->
-                <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+                <!--default image -->
+                <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
             <strong><span><?php echo $_SESSION["staff_name"] . "<br/>" . $_SESSION["role"]; ?></span></strong>
         </div>
@@ -187,69 +187,81 @@ if (!mysqli_ping($conn)) {
         </ul>
     </div>
 
-    <div class="board container"><!--board container-->
-
-   
+    <div class=" board container"><!--board container-->
+    <div class="header1">
+        <div class="text">
+            <div class="title">
+                <h2>Settings</h2>
+            </div>
+        </div>
+    </div>
+    <div class="books container">
     <!-- Display user data -->
- 
-    <form id="imageUploadForm" action="" method="post" enctype="multipart/form-data">
-    <input type="file" name="imageFile" id="imageFile">
-    <button type="submit" name="uploadImageBtn">Upload Image</button>
-    </form>
+        
+    <div class="settingForms">
+        <form id="imageUploadForm" action="" method="post" enctype="multipart/form-data">
+            <input type="file" name="imageFile" id="imageFile">
+            <button type="submit" name="uploadImageBtn">Upload Image</button>
+        </form>
     
-    <form id="userProfileForm" action="" method="post">
+        <form id="userProfileForm" action="" method="post">
+                    <form id="userProfileForm" action="" method="post">
+                    <!-- Display user data -->
+                    <h4>Personal Details</h4>
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $userData['First_Name']; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="middleName" class="form-label">Middle Name</label>
+                        <input type="text" class="form-control" id="middleName" name="middleName" value="<?php echo $userData['Middle_Name']; ?>">
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="lastName" name="lastName" value="<?php echo $userData['Last_Name']; ?>" required>
+                    </div> 
+                    <div class="mb-3">
+                        <label for="contactNumber" class="form-label">Contact Number</label>
+                        <input type="tel" class="form-control" id="contactNumber" name="contactNumber" value="<?php echo $userData['Contact_Number']; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="<?php echo $userData['E_mail']; ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" class="form-control" id="address" name="address" value="<?php echo $userData['tb_address']; ?>" required>
+                    </div>
+                    <!-- Update button -->
+                    <button type="submit" class="btn">Save Changes</button>
+                </form>
 
+                <form id="userPasswordForm" action="" method="post">
+                    <!-- Password Change Section -->
+                    <h4>Reset your Password</h4>
+                    <div class="mb-3">
+                        <label for="oldPassword" class="form-label">Old Password</label>
+                        <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                    </div>
 
-    <div class="col-md-4">
-        <label for="firstName" class="form-label">First Name</label>
-        <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $userData['First_Name']; ?>" >
-    </div>
-    <div class="col-md-4">>
-        <label for="middleName" class="form-label">Middle Name</label>
-        <input type="text" class="form-control" id="middleName" name="middleName" value="<?php echo $userData['Middle_Name']; ?>">
-    </div>
-    <div class="col-md-4">>
-        <label for="lastName" class="form-label">Last Name</label>
-        <input type="text" class="form-control" id="lastName" name="lastName" value="<?php echo $userData['Last_Name']; ?>" >
-    </div>
-    <div class="col-md-4">>
-        <label for="role" class="form-label">Role</label>
-        <input type="text" class="form-control" id="role" name="role" value="<?php echo $userData['tb_role']; ?>" readonly>
-    </div>
-    <div class="col-md-4">
-        <label for="contactNumber" class="form-label">Contact Number</label>
-        <input type="tel" class="form-control" id="contactNumber" name="contactNumber" value="<?php echo $userData['Contact_Number']; ?>" >
-    </div>
-    <div class="col-md-4">     <label for="email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="email" name="email" value="<?php echo $userData['E_mail']; ?>" >
-    </div>
-    <div class="col-md-4">
-        <label for="address" class="form-label">Address</label>
-        <input type="text" class="form-control" id="address" name="address" value="<?php echo $userData['tb_address']; ?>" >
-    </div>
+                    <!-- Update button -->
+                    <button type="submit" class="btn">Confirm</button>
+                </form>
+            </div>
+        </div>
 
-
-    
-    <!-- Password Change Section -->
-  
-    <div class="col-md-4">
-    <label for="oldPassword">Old Password:</label>
-    <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>
-    </div>
-    <div class="col-md-4">
-        <label for="newPassword" class="form-label">New Password</label>
-        <input type="password" class="form-control" id="newPassword" name="newPassword" required>
-    </div>
-    <div class="col-md-4">
-        <label for="confirmPassword" class="form-label">Confirm Password</label>
-        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
-    </div>
-
-    <!-- Update button -->
-    <button type="submit" class="btn btn-primary">Update Password</button>
-    </form>
+        </form>
 
     </div>
+</div>
         
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>

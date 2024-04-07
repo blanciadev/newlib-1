@@ -52,8 +52,8 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else: ?>
-                <!-- Change the path to your actual default image -->
-                <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+                <!--default image -->
+                <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
         <strong><span><?php echo $_SESSION["staff_name"] . "<br/>" . $_SESSION["role"]; ?></span></strong> 
     </div>
@@ -69,110 +69,85 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <li class="nav-item"> <a href="logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-    <div class="container"><!--board container-->
-<div class="scrollable-table" style="max-height: 900px; overflow-y:auto;">
-    <?php
-    // Database connection
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    // Fetch log records from the database
-    $query = "SELECT DISTINCT
-                bd.BorrowDetails_ID, 
-                b.User_ID, 
-                b.Accession_Code, 
-                bk.Book_Title, 
-                bd.Quantity, 
-                b.Date_Borrowed, 
-                b.Due_Date, 
-                br.Borrower_ID, 
-                bd.tb_status, 
-                tbl_fines.Amount
-            FROM
-                tbl_borrowdetails AS bd
-            INNER JOIN
-                tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
-            INNER JOIN
-                tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-            INNER JOIN
-                tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
-            INNER JOIN
-                tbl_fines ON bd.BorrowDetails_ID = tbl_fines.Borrower_ID";
-
-    $result = mysqli_query($conn, $query);
-
-    ?>
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Borrower ID</th>
-                <th scope="col">Accession Code</th>
-                <th scope="col">Book Title</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Date Borrowed</th>
-                <th scope="col">Due Date</th>
-                <th scope="col">Fine Amount</th>
-                <th scope="col">Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            // Loop through each row in the result set
-            while ($row = mysqli_fetch_assoc($result)) {
-                echo '<tr>';
-                echo '<td>' . $row['Borrower_ID'] . '</td>'; 
-                echo '<td>' . $row['Accession_Code'] . '</td>'; 
-                echo '<td>' . $row['Book_Title'] . '</td>'; 
-                echo '<td>' . $row['Quantity'] . '</td>'; 
-                echo '<td>' . $row['Date_Borrowed'] . '</td>'; 
-                echo '<td>' . $row['Due_Date'] . '</td>'; 
-                echo '<td>' . $row['Amount'] . '</td>'; 
-                echo '<td>' . $row['tb_status'] . '</td>'; 
-                echo '</tr>';
+    <div class=" board container"><!--board container-->
+    <div class="header1">
+        <div class="text">
+            <div class="title">
+                <h2>Fines</h2>
+            </div>
+        </div>
+    </div>
+    <div class="books container">
+        <?php
+            // Database connection
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
             }
-            ?>
-        </tbody>
-    </table>
-</div>
-</div>
 
+            // Fetch log records from the database
+            $query = "SELECT DISTINCT
+                        bd.BorrowDetails_ID, 
+                        b.User_ID, 
+                        b.Accession_Code, 
+                        bk.Book_Title, 
+                        bd.Quantity, 
+                        b.Date_Borrowed, 
+                        b.Due_Date, 
+                        br.Borrower_ID, 
+                        bd.tb_status, 
+                        tbl_fines.Amount
+                    FROM
+                        tbl_borrowdetails AS bd
+                    INNER JOIN
+                        tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+                    INNER JOIN
+                        tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+                    INNER JOIN
+                        tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
+                    INNER JOIN
+                        tbl_fines ON bd.BorrowDetails_ID = tbl_fines.Borrower_ID";
+
+            $result = mysqli_query($conn, $query);
+
+        ?>
+        <table class="table table-striped table-m">
+            <thead class="bg-light sticky-top">
+                <tr>
+                    <th scope="col">Borrower ID</th>
+                    <th scope="col">Accession Code</th>
+                    <th scope="col">Book Title</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Date Borrowed</th>
+                    <th scope="col">Due Date</th>
+                    <th scope="col">Fine Amount</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                // Loop through each row in the result set
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo '<tr>';
+                    echo '<td>' . $row['Borrower_ID'] . '</td>'; 
+                    echo '<td>' . $row['Accession_Code'] . '</td>'; 
+                    echo '<td>' . $row['Book_Title'] . '</td>'; 
+                    echo '<td>' . $row['Quantity'] . '</td>'; 
+                    echo '<td>' . $row['Date_Borrowed'] . '</td>'; 
+                    echo '<td>' . $row['Due_Date'] . '</td>'; 
+                    echo '<td>' . $row['Amount'] . '</td>'; 
+                    echo '<td>' . $row['tb_status'] . '</td>'; 
+                    echo '</tr>';
+                }
+                ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
-        let date = new Date().toLocaleDateString('en-US', {  
-            day:   'numeric',
-            month: 'long',
-            year:  'numeric' ,  
-            weekday: 'long', 
-        });   
-        document.getElementById("currentDate").innerText = date; 
-
-        setInterval( () => {
-            let time = new Date().toLocaleTimeString('en-US',{ 
-            hour: 'numeric',
-            minute: 'numeric', 
-            second: 'numeric',
-            hour12: 'true',
-        })  
-        document.getElementById("currentTime").innerText = time; 
-
-        }, 1000)
-        
-
-        let navItems = document.querySelectorAll(".nav-item");  //adding .active class to navitems 
-        navItems.forEach(item => {
-            item.addEventListener('click', ()=> { 
-                document.querySelector('.active')?.classList.remove('active');
-                item.classList.add('active');
-                
-                
-            })
-            
-        })
-     
-
 
     </script>
 </body>

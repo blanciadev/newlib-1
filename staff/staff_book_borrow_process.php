@@ -181,8 +181,20 @@ $conn->close();
 
   
     <div class='books-container'>
-   
-    <h1>Search Book by Accession Code</h1>
+    <div class="header1">
+            <div class="text">
+                <div class="title">
+                    <h2>Search Book by Accession Code</h2>
+                </div>
+            </div>
+            <div class="searchbar">
+                <form action="">
+                    <input type="search" id="searchInput"  placeholder="Search..." required>
+                    <i class='bx bx-search' id="search-icon"></i>
+                </form>
+            </div>
+    </div>
+    <div class="books container">
 
     <form method="POST" action="">
 

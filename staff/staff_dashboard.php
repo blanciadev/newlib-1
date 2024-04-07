@@ -80,16 +80,16 @@ $dataJSON = json_encode($data);
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon" />
         </a><!--header container-->
         
-        <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly">
+        <div class="user-header d-flex flex-row flex-wrap align-content-center justify-content-evenly">
             <!-- Display user image -->
             <?php if (!empty($userData['image_data'])): ?>
                 <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else: ?>
-                <!-- Change the path to your actual default image -->
-                <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+                <!--default image -->
+                <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-            <strong><span><?php echo  $firstName . "<br/>" .  $role; ?></span></strong>
+            <strong><span><?php echo $_SESSION["staff_name"] . "<br/>" . $_SESSION["role"]; ?></span></strong> 
         </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
@@ -103,7 +103,7 @@ $dataJSON = json_encode($data);
             <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-    <div class="board container"><!--board container-->
+    <div class="board1 container"><!--board container-->
         <div class="header">
             <div class="text">
                 <div class="title">

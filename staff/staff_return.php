@@ -103,7 +103,7 @@ if (isset($_GET['borrowId'])) {
     <div class="header1">
             <div class="text">
                 <div class="title">
-                    <h2>Return List</h2>
+                    <h2>Borrow Details</h2>
                 </div>
             </div>
             <div class="searchbar">
@@ -215,7 +215,7 @@ if ($stmt) {
                         echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='updateAndSetSession(" . $row["Borrow_ID"] . ")'>UPDATE</button>";
 
                     } else {
-                        echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Update</button>";
+                        echo "<button type='button' class='btn btn-sm' disabled>Update</button>";
                     }
                 
                     echo "<div class='update-message'></div>";
