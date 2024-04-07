@@ -190,8 +190,8 @@ if (!$requestBooksResult) {
         while ($row = mysqli_fetch_assoc($requestBooksResult)) {
             echo '<div class="book-details">';
             echo '<h4><strong>' . $row['Book_Title'] . '</strong></h4><br>';
-            echo '<p><strong>Authors ID:</strong> ' . $row['Authors_ID'] . '</p>';
-            echo '<p><strong>Publisher ID:</strong> ' . $row['Publisher_ID'] . '</p>';
+            echo '<p><strong>Authors ID:</strong> ' . $row['Authors_Name'] . '</p>';
+            echo '<p><strong>Publisher ID:</strong> ' . $row['Publisher_Name'] . '</p>';
             echo '<p><strong>Year Published:</strong> ' . $row['Year_Published'] . '</p>';
             echo '<p><strong>Quantity:</strong> ' . $row['Quantity'] . '</p>';
             echo '<hr>';

@@ -140,8 +140,8 @@ if ($result->num_rows > 0) {
 while ($row = $result->fetch_assoc()) {
     echo "<tr>
             <td>".$row["Book_Title"]."</td>
-            <td>".$row["Authors_ID"]."</td>
-            <td>".$row["Publisher_ID"]."</td>
+            <td>".$row["Authors_Name"]."</td>
+            <td>".$row["Publisher_Name"]."</td>
             <td>".$row["tb_edition"]."</td>
             <td>".$row["Year_Published"]."</td>
             <td>".$row["Quantity"]."</td>

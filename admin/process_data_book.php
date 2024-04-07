@@ -42,7 +42,7 @@ if(isset($_POST['submit'])) {
     $pubID = substr(uniqid('P_', true), -6);
 
     $bookTitle = $_POST['Book_Title'];
-    $pubname = $_POST['Publisher_ID'];
+    $pubname = $_POST['Publisher_Name'];
     $edition = $_POST['tb_edition'];
     $yr = $_POST['Year_Published'];
     $qty = $_POST['Quantity'];
@@ -65,10 +65,10 @@ if(isset($_POST['submit'])) {
     $sql = "INSERT INTO tbl_authors (Authors_ID, Authors_Name, Nationality) 
     VALUES ('$authorsID', '$authorsName ', 'N/A' )";
 
-    $pubsql = "INSERT INTO tbl_publisher (Publisher_ID, Publisher_Name, Address) 
+    $pubsql = "INSERT INTO tbl_publisher (Publisher_Name, Publisher_Name, Address) 
     VALUES ('$pubID', '$pubname', 'NA')";
 
-    $booksql = "INSERT INTO tbl_books (Book_Title, Authors_ID, Publisher_ID, Section_Code, Shelf_Number, tb_edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status) 
+    $booksql = "INSERT INTO tbl_books (Book_Title, Authors_ID, Publisher_Name, Section_Code, Shelf_Number, tb_edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status) 
     VALUES ('$bookTitle', '$authorsID', '$pubID', '$sectionCode', '$shelfNumber', '$edition', '$yr', '$isbn', '$bibliography', '$qty', '$price', 'Available')";
 
     $update = "UPDATE ";
@@ -173,7 +173,7 @@ while ($row = $result->fetch_assoc()) {
 
     echo "<p><strong>Book Title:</strong> " . $row["Book_Title"] . "</p>";
     echo "<p><strong>Authors ID:</strong> " . $row["Authors_ID"] . "</p>";
-    echo "<p><strong>Publisher ID:</strong> " . $row["Publisher_ID"] . "</p>";
+    echo "<p><strong>Publisher ID:</strong> " . $row["Publisher_Name"] . "</p>";
     echo "<p><strong>Edition:</strong> " . $row["tb_edition"] . "</p>";
     echo "<p><strong>Year Published:</strong> " . $row["Year_Published"] . "</p>";
     echo "<p><strong>Quantity:</strong> " . $row["Quantity"] . "</p>";
@@ -182,7 +182,7 @@ while ($row = $result->fetch_assoc()) {
 
     echo "<input type='Visible' id='Authors_ID' name='Authors_ID' value='" . $row["Authors_ID"] . "'>";
     echo "<input type='Visible' name='Book_Title' value='" . $row["Book_Title"] . "'>";
-    echo "<input type='Visible' name='Publisher_ID' value='" . $row["Publisher_ID"] . "'>";
+    echo "<input type='Visible' name='Publisher_Name' value='" . $row["Publisher_Name"] . "'>";
     echo "<input type='Visible' name='tb_edition' value='" . $row["tb_edition"] . "'>";
     echo "<input type='Visible' name='Year_Published' value='" . $row["Year_Published"] . "'>";
     echo "<input type='Visible' name='Quantity' value='" . $row["Quantity"] . "'>";

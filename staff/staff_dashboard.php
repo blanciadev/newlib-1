@@ -23,7 +23,7 @@ if (!$result) {
     echo "Error: " . mysqli_error($conn);
 } else {
     $userData = mysqli_fetch_assoc($result);
-    
+
     // Fetch the First_Name from $userData
     $firstName = $userData['First_Name'];
     $role = $userData['tb_role'];
@@ -46,7 +46,7 @@ $data = [];
 while ($row = mysqli_fetch_assoc($result)) {
     // Add the month to labels array
     $labels[] = $row['Month'];
-    
+
     // Add the number of visits to data array
     $data[] = $row['Visits'];
 }
@@ -79,17 +79,17 @@ $dataJSON = json_encode($data);
             <h2>Villa<span>Read</span>Hub</h2>
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon" />
         </a><!--header container-->
-        
+
         <div class="user-header d-flex flex-row flex-wrap align-content-center justify-content-evenly">
             <!-- Display user image -->
-            <?php if (!empty($userData['image_data'])): ?>
+            <?php if (!empty($userData['image_data'])) : ?>
                 <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
-            <?php else: ?>
+            <?php else : ?>
                 <!--default image -->
                 <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-            <strong><span><?php echo $_SESSION["staff_name"] . "<br/>" . $_SESSION["role"]; ?></span></strong> 
+            <strong><span><?php echo $_SESSION["staff_name"] . "<br/>" . $_SESSION["role"]; ?></span></strong>
         </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
@@ -97,7 +97,7 @@ $dataJSON = json_encode($data);
             <li class="nav-item"> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
             <li class="nav-item"> <a href="./staff_transaction_dash.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>
             <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
-           <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
+            <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
             <hr>
             <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
             <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
@@ -120,58 +120,58 @@ $dataJSON = json_encode($data);
                 <h3>Overview</h3>
                 <div class="ovw-con">
                     <div class="totalbooks">
-                    <?php
-                    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
+                        <?php
+                        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
 
-                    // Query to get the total quantity of all books
-                    $totalQuantityQuery = "SELECT SUM(Quantity) AS total_quantity FROM tbl_books";
-                    $totalQuantityResult = mysqli_query($conn, $totalQuantityQuery);
+                        // Query to get the total quantity of all books
+                        $totalQuantityQuery = "SELECT SUM(Quantity) AS total_quantity FROM tbl_books";
+                        $totalQuantityResult = mysqli_query($conn, $totalQuantityQuery);
 
-                    // Check if the query was successful and fetch the total quantity
-                    if ($totalQuantityResult && mysqli_num_rows($totalQuantityResult) > 0) {
-                        $totalQuantityData = mysqli_fetch_assoc($totalQuantityResult);
-                        $totalQuantity = $totalQuantityData['total_quantity'];
-                        
-                        // Display the total quantity of all books
-                        echo "<h4>Total  of Books: " . $totalQuantity . "</h4>";
-                    } else {
-                        echo "No books found";
-                    }
+                        // Check if the query was successful and fetch the total quantity
+                        if ($totalQuantityResult && mysqli_num_rows($totalQuantityResult) > 0) {
+                            $totalQuantityData = mysqli_fetch_assoc($totalQuantityResult);
+                            $totalQuantity = $totalQuantityData['total_quantity'];
 
-                    ?>
+                            // Display the total quantity of all books
+                            echo "<h4>Total  of Books: " . $totalQuantity . "</h4>";
+                        } else {
+                            echo "No books found";
+                        }
 
-                        
+                        ?>
+
+
                     </div>
                     <div class="line"></div>
                     <div class="totalvisits">
-                    <?php
-                    $currentDate = date("Y-m-d");
-                    // Query to count visits for the current date using the Date_Time column
-                    $totalVisitsQuery = "SELECT COUNT(*) AS total_visits FROM tbl_log WHERE DATE(`Date_Time`) = '$currentDate'";
-                    $totalVisitsResult = mysqli_query($conn, $totalVisitsQuery);
+                        <?php
+                        $currentDate = date("Y-m-d");
+                        // Query to count visits for the current date using the Date_Time column
+                        $totalVisitsQuery = "SELECT COUNT(*) AS total_visits FROM tbl_log WHERE DATE(`Date_Time`) = '$currentDate'";
+                        $totalVisitsResult = mysqli_query($conn, $totalVisitsQuery);
 
-                    // Check if the query was successful and fetch the total visits
-                    if ($totalVisitsResult && mysqli_num_rows($totalVisitsResult) > 0) {
-                        $totalVisitsData = mysqli_fetch_assoc($totalVisitsResult);
-                        $totalVisitsCount = $totalVisitsData['total_visits'];
-                        
-                        // Display the total visits for the current date
-                        echo "<h4>Total Visits Today: " . $totalVisitsCount . "</h4>";
-                    } else {
-                        echo "<h4>0</h4>"; // No visits found for the current date
-                    }
-                    ?>
+                        // Check if the query was successful and fetch the total visits
+                        if ($totalVisitsResult && mysqli_num_rows($totalVisitsResult) > 0) {
+                            $totalVisitsData = mysqli_fetch_assoc($totalVisitsResult);
+                            $totalVisitsCount = $totalVisitsData['total_visits'];
 
-                      
+                            // Display the total visits for the current date
+                            echo "<h4>Total Visits Today: " . $totalVisitsCount . "</h4>";
+                        } else {
+                            echo "<h4>0</h4>"; // No visits found for the current date
+                        }
+                        ?>
+
+
                     </div>
                 </div>
             </div>
 
-            <div class="duebooks" >
-    <h3>Due Today</h3>
-    <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 20px;">
-        <?php
-        $totalVisits = "SELECT
+            <div class="duebooks">
+                <h3>Due Today</h3>
+                <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 20px;">
+                    <?php
+                    $totalVisits = "SELECT
                             bd.BorrowDetails_ID, 
                             b.User_ID, 
                             b.Accession_Code, 
@@ -200,21 +200,21 @@ $dataJSON = json_encode($data);
                         WHERE
                             b.Due_Date = CURDATE();";
 
-        $totalVisits_run = mysqli_query($conn, $totalVisits);
+                    $totalVisits_run = mysqli_query($conn, $totalVisits);
 
-        if ($totalVisits_run && mysqli_num_rows($totalVisits_run) > 0) {
-            echo '<table class="table">';
-            while ($row = mysqli_fetch_assoc($totalVisits_run)) {
-                echo '<tr><td></td><td><strong>' . $row['Book_Title'] . '</strong></td></tr>';
-                echo '<tr><td><strong></strong></td><td>' . $row['First_Name'] . ' ' . $row['Last_Name'] . '</td></tr>';
-            }
-            echo '</table>';
-        } else {
-            echo "<p>No books due today.</p>";
-        }
-        ?>
-    </div>
-</div>
+                    if ($totalVisits_run && mysqli_num_rows($totalVisits_run) > 0) {
+                        echo '<table class="table">';
+                        while ($row = mysqli_fetch_assoc($totalVisits_run)) {
+                            echo '<tr><td></td><td><strong>' . $row['Book_Title'] . '</strong></td></tr>';
+                            echo '<tr><td><strong></strong></td><td>' . $row['First_Name'] . ' ' . $row['Last_Name'] . '</td></tr>';
+                        }
+                        echo '</table>';
+                    } else {
+                        echo "<p>No books due today.</p>";
+                    }
+                    ?>
+                </div>
+            </div>
 
             <div class="stats">
                 <h3>Statistics</h3>
@@ -260,7 +260,6 @@ $dataJSON = json_encode($data);
 
         </div>
 
-
     </div>
 
 
@@ -268,16 +267,16 @@ $dataJSON = json_encode($data);
     <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
-            </div>
-            <div class="modal-body">
-                Do you want to log out?
-            </div>
-            <div class="modal-footer d-flex flex-row justify-content-center">
-                <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
-                <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
-            </div>
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+                </div>
+                <div class="modal-body">
+                    Do you want to log out?
+                </div>
+                <div class="modal-footer d-flex flex-row justify-content-center">
+                    <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                    <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+                </div>
             </div>
         </div>
     </div>
@@ -285,7 +284,6 @@ $dataJSON = json_encode($data);
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script>
-
         let date = new Date().toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'long',
@@ -313,12 +311,9 @@ $dataJSON = json_encode($data);
                 item.classList.add('active');
             })
         })
-    
-       
-
     </script>
-    
-      <script>
+
+    <script>
         // Access PHP-generated JSON data
         const labels = <?php echo $labelsJSON; ?>;
         const data = <?php echo $dataJSON; ?>;

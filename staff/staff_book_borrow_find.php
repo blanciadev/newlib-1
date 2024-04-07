@@ -20,15 +20,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
    
    // Query to retrieve book details based on Accession Code
    $sql = "SELECT
-               tbl_books.*, 
-               tbl_authors.Authors_Name, 
-               tbl_books.Accession_Code
-           FROM
-               tbl_books
-           INNER JOIN
-               tbl_authors
-           ON 
-               tbl_books.Authors_ID = tbl_authors.Authors_ID
+   tbl_books.*, 
+   tbl_authors.Authors_Name
+FROM
+   tbl_books
+   INNER JOIN
+   tbl_authors
+   ON 
+       tbl_books.Authors_ID = tbl_authors.Authors_ID
            WHERE
                Accession_Code = '$Accession_Code'";
    
@@ -128,15 +127,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ?>>
 
          
-      <button type="submit" class="btn btn-primary" id="book_borrow" onclick="submitForm()">Get Book</button>
+      
+    <button type="submit" class="btn btn-primary" id="book_borrow" onclick="submitForm()">Get Book</button>
       </form>
-  
-        </div>
-    </div>
-    
-    </div>
-    
-    </div>
 
     <script>
     // Get the form and button
