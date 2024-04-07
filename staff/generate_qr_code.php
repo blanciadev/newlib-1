@@ -20,10 +20,8 @@ $middle_name = $_SESSION['middle_name'];
 $last_name = $_SESSION['last_name'];
 $contact_number = $_SESSION['contact_number'];
 $email = $_SESSION['email'];
-$affiliation = $_SESSION['affiliation'];
+$affiliation = $_SESSION['affiliation']; 
 
-
-// CHANGE THE PORT IF NEEDED
 $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 
 // Check if the email already exists in the database
