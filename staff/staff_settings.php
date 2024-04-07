@@ -70,7 +70,6 @@ if (!mysqli_ping($conn)) {
         $firstName = $_POST['firstName'];
         $middleName = $_POST['middleName'];
         $lastName = $_POST['lastName'];
-        $role = $_POST['role'];
         $contactNumber = $_POST['contactNumber'];
         $email = $_POST['email'];
         $address = $_POST['address'];
@@ -88,42 +87,40 @@ if (!mysqli_ping($conn)) {
             mysqli_stmt_bind_result($stmtCheckPassword, $storedPassword);
             mysqli_stmt_fetch($stmtCheckPassword);
             mysqli_stmt_close($stmtCheckPassword);
-        
+    
             // Debugging: Echo or log to check values
             echo "Old Password: $oldPassword<br>";
             echo "Stored Password: $storedPassword<br>";
-        
+    
             // Verify the old password using password_verify function
             if (($oldPassword == $storedPassword)) {
-                // Old password matches, update the user's data in the database
-                $updateQuery = "UPDATE tbl_employee 
-                                SET First_Name = ?, Middle_Name = ?, Last_Name = ?, tb_role = ?, 
-                                    Contact_Number = ?, E_mail = ?, tb_address = ?, tb_password = ? 
-                                WHERE User_ID = ?";
-                $stmt = mysqli_prepare($conn, $updateQuery);
-        
-             
-              
-        
-                mysqli_stmt_bind_param($stmt, "ssssssssi", $firstName, $middleName, $lastName, $role,
-                    $contactNumber, $email, $address, $newPassword, $userID);
-                if (mysqli_stmt_execute($stmt)) {
-                    echo '<script>alert("Profile Updated successfully."); window.location.href = "staff_dashboard.php";</script>';
+                if ($oldPassword != $newPassword) {
+                    // Old password matches and it's different from the new password, update the user's data in the database
+                    $updateQuery = "UPDATE tbl_employee 
+                                    SET First_Name = ?, Middle_Name = ?, Last_Name = ?,
+                                        Contact_Number = ?, E_mail = ?, tb_address = ?, tb_password = ? 
+                                    WHERE User_ID = ?";
+                    $stmt = mysqli_prepare($conn, $updateQuery);
+    
+                    mysqli_stmt_bind_param($stmt, "sssssssi", $firstName, $middleName, $lastName, 
+                        $contactNumber, $email, $address, $newPassword, $userID);
+                    if (mysqli_stmt_execute($stmt)) {
+                        echo '<script>alert("Profile Updated successfully."); window.location.href = "staff_dashboard.php";</script>';
+                    } else {
+                        echo '<script>alert("Error updating profile: ' . mysqli_error($conn) . '");</script>';
+                    }
+                    mysqli_stmt_close($stmt); // Close the statement
                 } else {
-                    echo '<script>alert("Error updating profile: ' . mysqli_error($conn) . '");</script>';
+                    echo '<script>alert("Old and new passwords cannot be the same.");</script>';
                 }
-                mysqli_stmt_close($stmt); // Close the statement
             } else {
                 echo '<script>alert("Old password does not match!");</script>';
             }
         } else {
             echo '<script>alert("New password and confirm password do not match!");</script>';
         }
-        
     }
-    
 }
-
 }
 ?>
 
@@ -205,7 +202,7 @@ if (!mysqli_ping($conn)) {
         </form>
     
         <form id="userProfileForm" action="" method="post">
-                    <form id="userProfileForm" action="" method="post">
+                   
                     <!-- Display user data -->
                     <h4>Personal Details</h4>
                     <div class="mb-3">
@@ -232,11 +229,8 @@ if (!mysqli_ping($conn)) {
                         <label for="address" class="form-label">Address</label>
                         <input type="text" class="form-control" id="address" name="address" value="<?php echo $userData['tb_address']; ?>" required>
                     </div>
-                    <!-- Update button -->
-                    <button type="submit" class="btn">Save Changes</button>
-                </form>
-
-                <form id="userPasswordForm" action="" method="post">
+                
+              
                     <!-- Password Change Section -->
                     <h4>Reset your Password</h4>
                     <div class="mb-3">
@@ -253,12 +247,12 @@ if (!mysqli_ping($conn)) {
                     </div>
 
                     <!-- Update button -->
-                    <button type="submit" class="btn">Confirm</button>
+                    <button type="submit" class="btn btn-primary">Confirm Update</button>
                 </form>
             </div>
         </div>
 
-        </form>
+        
 
     </div>
 </div>
