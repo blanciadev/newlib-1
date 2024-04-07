@@ -67,7 +67,6 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
             }
             ?>
             <?php if (!empty($userData['image_data'])): ?>
-                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else: ?>
                 <!--default image -->
@@ -130,7 +129,7 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
         }
 
         // SQL query
-        $sql = "SELECT Request_ID, User_ID, Book_Title, Authors_ID, Publisher_ID, price, tb_edition, Year_Published, Quantity, tb_status FROM tbl_requestbooks";
+        $sql = "SELECT Request_ID, User_ID, Book_Title, Authors_Name, Publisher_Name, price, tb_edition, Year_Published, Quantity, tb_status FROM tbl_requestbooks";
         $result = $conn->query($sql);
 
             while ($row = $result->fetch_assoc()) {
@@ -138,8 +137,8 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
                         <td>".$row["Request_ID"]."</td>
                         <td>".$row["User_ID"]."</td>
                         <td>".$row["Book_Title"]."</td>
-                        <td>".$row["Authors_ID"]."</td>
-                        <td>".$row["Publisher_ID"]."</td>
+                        <td>".$row["Authors_Name"]."</td>
+                        <td>".$row["Publisher_Name"]."</td>
                         <td>".$row["price"]."</td>
                         <td>".$row["tb_edition"]."</td>
                         <td>".$row["Year_Published"]."</td>

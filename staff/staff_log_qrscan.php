@@ -205,7 +205,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 
     function success(result) {
     // Set the scanned result as the value of the input field
-    document.getElementById('borrowerIdInput').value = result;
+    document.getElementById('borrower_id').value = result;
 
     // Clear the scanning instance
     scanner.clear();
@@ -236,7 +236,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     console.log("DOMContentLoaded event fired.");
 
     var borrowForm = document.getElementById("borrowForm");
-    var borrowerIdInput = document.getElementById("borrowerIdInput");
+    var borrowerIdInput = document.getElementById("borrower_id");
     var bookBorrowButton = document.getElementById("book_borrow");
 
     // Add an input event listener to the Borrower ID input field

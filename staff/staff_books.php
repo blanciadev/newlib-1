@@ -85,10 +85,10 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <tr>
                 <th>Accession Code</th>
                 <th>Book Title</th>
-                <th>Authors ID</th>
-                <th>Publisher ID</th>
-                <th>Section Code</th>
-                <th>Shelf Number</th>
+                <th>Authors</th>
+                <th>Publisher</th>
+                <th>Section</th>
+                <th>Shelf #</th>
                 <th>Edition</th>
                 <th>Year Published</th>
                 <th>ISBN</th>
@@ -110,7 +110,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 tbl_books.Accession_Code, 
                 tbl_books.Book_Title, 
                 tbl_books.Authors_ID, 
-                tbl_books.Publisher_ID, 
+                tbl_books.Publisher_Name, 
                 tbl_books.Section_Code, 
                 tbl_books.Shelf_Number, 
                 tbl_books.tb_edition, 
@@ -138,7 +138,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                     echo "<tr><td>".$row["Accession_Code"]."</td>
                     <td>".$row["Book_Title"]."</td>
                     <td>".$row["Authors_ID"]."</td>
-                    <td>".$row["Publisher_ID"]."</td>
+                    <td>".$row["Publisher_Name"]."</td>
                     <td>".$row["Section_Code"]."</td>
                     <td>".$row["Shelf_Number"]."</td>
                     <td>".$row["tb_edition"]."</td>

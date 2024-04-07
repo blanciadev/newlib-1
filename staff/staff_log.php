@@ -78,9 +78,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./staff.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
+
+    <style>
+
+    .img-responsive {
+        max-width: 20%; /* This will make sure the image does not exceed the width of its container */
+        height: auto; /* This will maintain the aspect ratio of the image */
+    }
+
+    </style>
 </head>
 <body>
-
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
@@ -102,7 +110,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             }
             ?>
             <?php if (!empty($userData['image_data'])): ?>
-                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else: ?>
                 <!--default image -->
@@ -137,16 +144,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             </div>
     </div>
     <div class="books container">
-    <table class="table table-striped table-m">
-        <thead>
+        <table class="table table-striped">
+            <thead class="bg-light sticky-top">
                 <tr>
-                    <th>Borrower ID</th>
+                    <th>QR Code</th>
                     <th>Borrower Name</th>
                     <th>Date & Time</th>
                 </tr>
             </thead>
             <?php
-
             // Database connection
             $conn_display_all = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
             if ($conn_display_all->connect_error) {
@@ -157,67 +163,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             $sql_display_all = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID";
             $result_display_all = $conn_display_all->query($sql_display_all);
 
-  // Close display connection
-  $conn_display_all->close();
-  ?>
-  
- 
-  <div class="container"> 
-  
-    <!-- Button to register visitor -->
-    <a href="staff_registerUser.php" class="btn btn-primary">Register Visitor</a>
-  
-    <h1>Borrower Logs</h1>
-<div class="table-responsive">
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>QR CODE</th>
-                <th>Borrower ID</th>
-                <th>Borrower Name</th>
-                <th>Date & Time</th>
-                <!-- Add more headers as needed -->
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            if ($result_display_all && $result_display_all->num_rows > 0) {
-                while ($row = $result_display_all->fetch_assoc()) {
-                    echo "<tr>";
-                    $imageData = base64_encode($row['image_file']);
-                    echo "<td><img class='img-responsive' src='data:image/png;base64," . $imageData . "' /></td>";
-                    echo "<td>" . $row['Borrower_ID'] . "</td>";
-                    echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
-                    echo "<td>" . $row['Date_Time'] . "</td>";
-                    // Add more columns as needed
-                    echo "</tr>";
-                }
-            } else {
-                echo "<tr><td colspan='3'>No records found.</td></tr>";
-            }
-            ?>
-        </tbody>
-    </table>
-</div>
-
-<style>
-
-.img-responsive {
-    max-width: 20%; /* This will make sure the image does not exceed the width of its container */
-    height: auto; /* This will maintain the aspect ratio of the image */
-}
-
-</style>
-
             // Close display connection
             $conn_display_all->close();
             ?>
+    
             <tbody>
                 <?php
                 if ($result_display_all && $result_display_all->num_rows > 0) {
                     while ($row = $result_display_all->fetch_assoc()) {
                         echo "<tr>";
-                        echo "<td>" . $row['Borrower_ID'] . "</td>";
+                        $imageData = base64_encode($row['image_file']);
+                        echo "<td><img class='img-responsive' src='data:image/png;base64," . $imageData . "' /></td>";
                         echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
                         echo "<td>" . $row['Date_Time'] . "</td>";
                         // Add more columns as needed
@@ -230,19 +186,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             </tbody>
         </table>
     </div>
-    
     <div class="btn-con">
         <a href="staff_log_qrscan.php" class="btn">Scan</a>
         <a href="staff_registeredList.php" class="btn">Registered List</a>
     </div>
-    
-  
-
 </div>
 
-
-<!--Logout Modal -->
-<div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    
+    <!--Logout Modal -->
+    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
             <div class="modal-header">
@@ -258,80 +210,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             </div>
         </div>
     </div>
-
-<script>
-
-    const scanner = new Html5QrcodeScanner('reader', { 
-        // Scanner will be initialized in DOM inside element with id of 'reader'
-        qrbox: {
-            width: 250,
-            height: 250,
-        },  // Sets dimensions of scanning box (set relative to reader element width)
-        fps: 20, // Frames per second to attempt a scan
-    });
-
-
-    scanner.render(success, error);
-    // Starts scanner
-
-    function success(result) {
-    // Set the scanned result as the value of the input field
-    document.getElementById('borrower_Id').value = result;
-
-    // Clear the scanning instance
-    scanner.clear();
-
-    // Remove the reader element from the DOM since it's no longer needed
-    document.getElementById('reader').remove();
-}
-
-
-    function error(err) {
-        console.error(err);
-        // Prints any errors to the console
-    }
-
-</script>
-
-<script>
-    function redirectToBorrowDetails(borrowId) {
-        window.location.href = "staff_borrow_find.php?borrowId=" + borrowId;
-    }
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-    console.log("DOMContentLoaded event fired.");
-
-    var borrowForm = document.getElementById("borrowForm");
-    var borrowerIdInput = document.getElementById("borrowerIdInput");
-    var bookBorrowButton = document.getElementById("book_borrow");
-
-    // Add an input event listener to the Borrower ID input field
-    borrowerIdInput.addEventListener("input", function() {
-        console.log("Input event triggered.");
-        // Enable the button if there is input in the Borrower ID field
-        if (borrowerIdInput.value.trim() !== "") {
-            console.log("Enabling button.");
-            bookBorrowButton.removeAttribute("disabled");
-        } else {
-            console.log("Disabling button.");
-            // Otherwise, disable the button
-            bookBorrowButton.setAttribute("disabled", "disabled");
-        }
-    });
-
-    // Automatically submit the form when a value is present in the Borrower ID field
-    borrowerIdInput.addEventListener("change", function() {
-        console.log("Change event triggered.");
-        if (borrowerIdInput.value.trim() !== "") {
-            console.log("Submitting form.");
-            borrowForm.submit();
-        }
-    });
-});
-
-</script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 

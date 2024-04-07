@@ -221,7 +221,6 @@ $_SESSION['User_ID'];
             </div>
          
             <button type="submit" class="btn btn-primary" name="submit">Submit Request</button>
-            <a href="./staff_request_list.php"><button class="btn">Back</button></a>
         </form>
        
     </div>

@@ -113,9 +113,8 @@ if ($conn->connect_error) {
             <tr>
             <tr>
                  
-                    <th>Visitors Id</th>
+                    <th>ID</th>
                     <th>Borrowers Name</th>
-                    
                     <th>Date Borrowed</th>
                     <th>Due Date</th>
                     <th>Status</th>
