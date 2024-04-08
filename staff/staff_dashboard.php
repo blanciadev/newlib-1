@@ -101,7 +101,7 @@ if (!$result) {
     <!--default image -->
     <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
 <?php endif; ?>
-<strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong>
+<strong><span><?php $fname = $userData["First_Name"]; $lname = $userData["Last_Name"]; $userName = $fname." ". $lname;  echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong>
 
         </div>
         <hr>
@@ -116,7 +116,7 @@ if (!$result) {
             <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-    <div class="board container"><!--board container-->
+    <div class="board1 container"><!--board container-->
         <div class="header">
             <div class="text">
                 <div class="title">
@@ -232,7 +232,13 @@ if (!$result) {
             <div class="stats">
                 <h3>Statistics</h3>
                 <div class="stats-con">
-                    <canvas id="myChart" width="500"></canvas>
+                    <div class="chart">
+                        <canvas id="myChart" width="450"></canvas>
+                    </div>
+                    <div class="visitorRanking">
+                        <!-- Add code here T-->
+                        <p>top1-3</p>
+                    </div>
                 </div>
             </div>
             <div class="newbooks">

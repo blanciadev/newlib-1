@@ -71,7 +71,18 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         </ul>
          
     </div>
-    
+    <div class="board1 container"><!--board container-->
+        <div class="header1">
+            <div class="text">
+                <div class="title">
+                    <h2>Dashboard</h2>
+                </div>
+                <div class="datetime">
+                    <p id="currentDate"></p>
+                    <p id="currentTime"></p>
+                </div>
+            </div>
+        </div>
     <div class="content">
     <div class="overview">
         <div class="ovw-con">

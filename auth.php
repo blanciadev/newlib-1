@@ -32,7 +32,6 @@
                         $_SESSION["admin_name"] = $fname ." " .$lname; 
                        
                         $_SESSION["role"] = $row["tb_role"];
-                       // setcookie('user', $User_ID, time()+60*60*24*120);
                         header('location:admin/admin_dashboard.php');
                         
                     }elseif($row["tb_role"] == "Staff"){ 
@@ -43,7 +42,6 @@
                         $_SESSION["User_ID"] = $User_ID;
                         $_SESSION["staff_name"] = $fname ." " .$lname; 
                         $_SESSION["role"] = $row["tb_role"]; 
-                  //      setcookie('user', $User_ID, time()+60*60*24*120);
                         header('location: staff/staff_dashboard.php?User_ID=' . $_SESSION['User_ID']);
 
                     }
