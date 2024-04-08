@@ -17,7 +17,7 @@ if(isset($_SESSION['borrower_id'])) {
     $borrower_id = $_SESSION['borrower_id'];
     $User_ID = $_SESSION["User_ID"];
     // Now you can use $borrower_id in your code as needed
-    echo "Borrower ID: " . $borrower_id;
+  //  echo "Borrower ID: " . $borrower_id;
 } else {
     // Handle the case where the session variable is not set
     echo "Borrower ID not found in session.";
@@ -102,8 +102,9 @@ if(isset($_POST['submit'])) {
                     
                     if ($conn->query($sql_borrow) === TRUE && $conn->query($sql_borrowdetails) === TRUE) {
                         // Redirect user or display success message as per your requirement
-                        $successMessage = "Request submitted successfully.";
-                        header("Location: admin_book_borrow_dash.php");
+                        echo '<script>alert("Borrow Process Success!");</script>';
+                        echo '<script>window.onload = function() { setTimeout(function() { window.location.href = "admin_transactions.php"; }, 500); }</script>';
+                        
                     } else {
                         echo "Error: " . $sql_borrow . "<br>" . $conn->error;
                     }
@@ -200,7 +201,14 @@ $conn->close();
     <form method="POST" action="">
 
     <?php
- 
+  // Retrieve book details from the database
+  $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
+  FROM tbl_books
+  INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
+  WHERE tbl_books.Accession_Code = '$accession_code'";
+
+$result = $conn->query($sql);
+
         if ($result && $result->num_rows > 0) {
             echo "<h2>Books Found</h2>";
             echo "<div class='books-container'>";

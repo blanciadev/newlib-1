@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     // Check if Borrower_ID starts with '0'
     if (substr($borrower_id, 0, 1) === '0') {
         // Borrower_ID starts with '0', flag as error
-        $errorMessage = "Borrower ID cannot start with '0'.";
+        echo '<script>alert("ID cannot start with 0");</script>';
     } else {
         // Validate Borrower_ID against tbl_borrower table
         $sql_validate_borrower = "SELECT * FROM tbl_borrower WHERE Borrower_ID = '$borrower_id'";
@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             $_SESSION['borrower_id'] = $borrower_id;
         } else {
             // Borrower_ID is invalid
-            $errorMessage = "Invalid Borrower ID.";
+            echo '<script>alert("Invalid ID");</script>';
         }
     }
 
@@ -109,9 +109,9 @@ if ($isBorrowerIdValid) {
     </div>
     <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
-        <li class="nav-item active"> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
+        <li class="nav-item"> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
-            <li class="nav-item"> <a href="./admin_transactions.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transactions</a> </li>
+            <li class="nav-item active"> <a href="./admin_transactions.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transactions</a> </li>
             <li class="nav-item"> <a href="./admin_staff.php" class="nav-link link-body-emphasis"><i class='bx bxs-user'></i>Manage Staff</a> </li>
             <li class="nav-item"> <a href="./admin_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
             <li class="nav-item"> <a href="./admin_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
@@ -123,7 +123,7 @@ if ($isBorrowerIdValid) {
         
         
     </div>
-    <div class="board container"><!--board container--> 
+    < class="board container"><!--board container--> 
             
             
     <style>
@@ -141,125 +141,29 @@ if ($isBorrowerIdValid) {
     }
 </style>
 
-<main>
-    <div id="reader"></div>
-    <div id="result"></div>
-</main>
+<div class="books container">
+        <main>
+            <div id="reader"></div>
+            <div id="result"></div>
+        </main>
 
+        <form method="POST" action="">
+                    <div id="statusMessage"></div>
 
-    <form method="POST" action="">
-    <table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Borrow Id</th>
-            <th>Visitors Id</th>
-            <th>Accession Code</th>
-            <th>Book Title</th>
-            <th>Quantity</th>
-            <th>Date</th>
-            <th>Due Date</th>
-            <th>Status</th>
-            <th></th> 
-        </tr>
-    </thead>
-    <tbody>
-    <div id="statusMessage"></div>
+                    <form id="borrowForm" action="staff_borrow.dash.php" method="post">
+                        <div class="mb-3">
+                            <label for="borrowerIdInput" class="form-label">Borrower ID</label>
+                            <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
+                        </div>
 
-    <div class="mb-3">
-        <label for="borrowerIdInput" class="form-label">Borrower ID</label>
-        <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
+                        <button type="submit" class="btn btn-primary" id="book_borrow" disabled>
+                            Book Borrow
+                        </button>
+                    </form>
+
+        </form>
     </div>
 
-    <button type="submit" class="btn btn-primary" id="book_borrow" <?php if (empty($_POST['borrower_id'])) echo "disabled"; ?>>
-    Book Borrow
-</button>
-<?php if (!empty($errorMessage)): ?>
-    <div class="alert alert-danger" role="alert">
-        <?php echo $errorMessage; ?>
-    </div>
-<?php endif; ?>
-
-
-
-
-<?php
-                // Database connection and SQL query
-                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-                if ($conn->connect_error) {
-                    die("Connection failed: " . $conn->connect_error);
-                }
-
-                $sql = "SELECT DISTINCT
-                b.User_ID, 
-                bk.Book_Title, 
-                bd.Quantity, 
-                b.Date_Borrowed, 
-                b.Due_Date, 
-                bd.tb_status, 
-                bd.Borrower_ID, 
-                b.Accession_Code, 
-                b.Borrow_ID
-            FROM
-                tbl_borrowdetails AS bd
-                INNER JOIN
-                tbl_borrow AS b
-                ON 
-                    bd.Borrower_ID = b.Borrower_ID
-                INNER JOIN
-                tbl_books AS bk
-                ON 
-                    b.Accession_Code = bk.Accession_Code
-                INNER JOIN
-                tbl_borrower AS br
-                ON 
-                    b.Borrower_ID = br.Borrower_ID AND
-                    bd.Borrower_ID = br.Borrower_ID;
-                                ";
-
-
-                $result = $conn->query($sql);
-                // Output data of each row
-                while ($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>" . $row["Borrow_ID"] . "</td>";
-                    echo "<td>" . $row["Borrower_ID"] . "</td>";
-                    echo "<td>" . $row["Accession_Code"] . "</td>";
-                    echo "<td>" . $row["Book_Title"] . "</td>";
-                    echo "<td>" . $row["Quantity"] . "</td>";
-                    echo "<td>" . $row["Date_Borrowed"] . "</td>";
-                    echo "<td>" . $row["Due_Date"] . "</td>";
-                    echo "<td>" . $row["tb_status"] . "</td>";
-
-                    echo "<td>";
-                    echo "<form class='update-form' method='GET' action='staff_borrow_details.php'>";
-                    echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["Borrow_ID"] . "'>";
-
-                    // Conditionally render the button based on the status
-                    echo "<input type='hidden' name='borrowerId' value='" . $row["Borrow_ID"] . "'>";
-
-                    // if ($row["tb_status"] === 'Borrowed') {
-                    //     echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='redirectToBorrowDetails(" . $row["BorrowDetails_ID"] . ")'>UPDATE</button>";
-                    // } else {
-                    //     echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
-                    // }
-                
-                    echo "<div class='update-message'></div>";
-                    echo "</form>";
-                    echo "</td>";
-
-
-                    echo "</tr>";
-                }
-
-                // Close connection
-                $conn->close();
-                ?>
-           
-
-    </tbody>
-</table>
-
-</div>
 
 
 

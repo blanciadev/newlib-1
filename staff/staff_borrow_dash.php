@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     // Check if Borrower_ID starts with '0'
     if (substr($borrower_id, 0, 1) === '0') {
         // Borrower_ID starts with '0', flag as error
-        $errorMessage = "Borrower ID cannot start with '0'.";
+        echo '<script>alert("ID cannot start with 0");</script>';
     } else {
         // Validate Borrower_ID against tbl_borrower table
         $sql_validate_borrower = "SELECT * FROM tbl_borrower WHERE Borrower_ID = '$borrower_id'";
@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             $_SESSION['borrower_id'] = $borrower_id;
         } else {
             // Borrower_ID is invalid
-            $errorMessage = "Invalid Borrower ID.";
+            echo '<script>alert("Invalid ID");</script>';
         }
     }
 
@@ -172,85 +172,6 @@ if ($isBorrowerIdValid) {
                         </button>
                     </form>
 
-
-                    <?php if (!empty($errorMessage)): ?>
-                        <div class="alert alert-danger" role="alert">
-                            <?php echo $errorMessage; ?>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php
-                    // Database connection and SQL query
-                    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-                    if ($conn->connect_error) {
-                        die("Connection failed: " . $conn->connect_error);
-                    }
-
-                $sql = "SELECT DISTINCT
-                b.User_ID, 
-                bk.Book_Title, 
-                bd.Quantity, 
-                b.Date_Borrowed, 
-                b.Due_Date, 
-                bd.tb_status, 
-                bd.Borrower_ID, 
-                b.Accession_Code, 
-                b.Borrow_ID
-            FROM
-                tbl_borrowdetails AS bd
-                INNER JOIN
-                tbl_borrow AS b
-                ON 
-                    bd.Borrower_ID = b.Borrower_ID
-                INNER JOIN
-                tbl_books AS bk
-                ON 
-                    b.Accession_Code = bk.Accession_Code
-                INNER JOIN
-                tbl_borrower AS br
-                ON 
-                    b.Borrower_ID = br.Borrower_ID AND
-                    bd.Borrower_ID = br.Borrower_ID;
-                               ";
-
-
-                $result = $conn->query($sql);
-                // Output data of each row
-                while ($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                    echo "<td>" . $row["Borrow_ID"] . "</td>";
-                    echo "<td>" . $row["Borrower_ID"] . "</td>";
-                    echo "<td>" . $row["Accession_Code"] . "</td>";
-                    echo "<td>" . $row["Book_Title"] . "</td>";
-                    echo "<td>" . $row["Quantity"] . "</td>";
-                    echo "<td>" . $row["Date_Borrowed"] . "</td>";
-                    echo "<td>" . $row["Due_Date"] . "</td>";
-                    echo "<td>" . $row["tb_status"] . "</td>";
-
-                    echo "<td>";
-                    echo "<form class='update-form' method='GET' action='staff_borrow_details.php'>";
-                    echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["Borrow_ID"] . "'>";
-
-                    // Conditionally render the button based on the status
-                    echo "<input type='hidden' name='borrowerId' value='" . $row["Borrow_ID"] . "'>";
-
-                    // if ($row["tb_status"] === 'Borrowed') {
-                    //     echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='redirectToBorrowDetails(" . $row["BorrowDetails_ID"] . ")'>UPDATE</button>";
-                    // } else {
-                    //     echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Returned</button>";
-                    // }
-                
-                    echo "<div class='update-message'></div>";
-                    echo "</form>";
-                    echo "</td>";
-
-
-                    echo "</tr>";
-                }
-
-                    // Close connection
-                    $conn->close();
-                    ?>
         </form>
     </div>
 
