@@ -146,13 +146,18 @@ if (!$result) {
                             $totalQuantity = $totalQuantityData['total_quantity'];
 
                             // Display the total quantity of all books
-                            echo "<h4>Total  of Books: " . $totalQuantity . "</h4>";
+                            echo "<h3>" . $totalQuantity . "</h3>";
                         } else {
                             echo "No books found";
                         }
 
                         ?>
-
+                    <div class="d-flex w-100 flex-wrap justify-content-around ">
+                        <i class='bx bxs-book' style="font-size: 30pt;"></i>
+                        <p>Total Books</p>
+                    </div>   
+                    
+                        
 
                     </div>
                     <div class="line"></div>
@@ -169,12 +174,15 @@ if (!$result) {
                             $totalVisitsCount = $totalVisitsData['total_visits'];
 
                             // Display the total visits for the current date
-                            echo "<h4>Total Visits Today: " . $totalVisitsCount . "</h4>";
+                            echo "<h3>" . $totalVisitsCount . "</h3>";
                         } else {
                             echo "<h4>0</h4>"; // No visits found for the current date
                         }
                         ?>
-
+                        <div class="d-flex w-100 flex-wrap justify-content-around ">
+                            <i class='bx bxs-book-reader' style="font-size: 30pt;"></i>
+                            <p>Total Visits</p>
+                        </div>
 
                     </div>
                 </div>
