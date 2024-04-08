@@ -71,29 +71,133 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         </ul>
          
     </div>
-    <div class="board1 container">
-    <div class="header1">
-                <div class="text">
-                    <div class="title">
-                        <h2>Transaction</h2>
-                    </div>
-                </div>
-        </div>
-        <div class="books container">
-            <div class="transaction-details">
-                <div class="totalBorrowed">
+    
+    <div class="content">
+    <div class="overview">
+        <div class="ovw-con">
+            <div class="overview-item">
+                <h3>Pending</h3>
+                <?php
+              // CHANGE THE PORT IF NEEDED
+              $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
 
-                </div>
-                <div class="totalReturned">
-                    
-                </div>
+              // Query to get the total quantity of borrowed books
+              $borrowedQuery = "SELECT 
+                  COUNT(*) AS borrowed_count,
+                  SUM(Quantity) AS borrowed_quantity
+              FROM 
+                  tbl_borrowdetails
+              WHERE 
+                  tb_status = 'Pending'"; // Assuming 'Pending' status indicates borrowed books
+              $borrowedResult = mysqli_query($conn, $borrowedQuery);
+
+              // Query to get the total quantity of returned books
+              $returnedQuery = "SELECT 
+                  COUNT(*) AS returned_count,
+                  SUM(Quantity) AS returned_quantity
+              FROM 
+                  tbl_borrowdetails
+              WHERE 
+                  tb_status = 'Returned'";
+              $returnedResult = mysqli_query($conn, $returnedQuery);
+
+              // Display the total quantity of borrowed books
+              if ($borrowedResult && mysqli_num_rows($borrowedResult) > 0) {
+                  $borrowedData = mysqli_fetch_assoc($borrowedResult);
+                  $borrowedCount = $borrowedData['borrowed_count'];
+                  $borrowedQuantity = $borrowedData['borrowed_quantity'];
+
+                  echo "<h4>Total Borrowed Books: $borrowedQuantity</h4>";
+                  echo "<p>Records: $borrowedCount</p>";
+              } else {
+                  echo "<p>No borrowed books found</p>";
+              }
+
+                ?>
             </div>
-            <div class="transaction-buttons">
+            <div class="overview-item">
+                <h3>Returned</h3>
+                <?php
+                        // CHANGE THE PORT IF NEEDED
+                        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
+
+                        // Query to get the total quantity of borrowed books
+                        $borrowedQuery = "SELECT 
+                            COUNT(*) AS borrowed_count,
+                            SUM(Quantity) AS borrowed_quantity
+                        FROM 
+                            tbl_borrowdetails
+                        WHERE 
+                            tb_status = 'Pending'"; // Assuming 'Pending' status indicates borrowed books
+                        $borrowedResult = mysqli_query($conn, $borrowedQuery);
+
+                        // Query to get the total quantity of returned books
+                        $returnedQuery = "SELECT 
+                            COUNT(*) AS returned_count,
+                            SUM(Quantity) AS returned_quantity
+                        FROM 
+                            tbl_borrowdetails
+                        WHERE 
+                            tb_status = 'Returned'";
+                        $returnedResult = mysqli_query($conn, $returnedQuery);
+
+                        // Display the total quantity of returned books
+                        if ($returnedResult && mysqli_num_rows($returnedResult) > 0) {
+                            $returnedData = mysqli_fetch_assoc($returnedResult);
+                            $returnedCount = $returnedData['returned_count'];
+                            $returnedQuantity = $returnedData['returned_quantity'];
+
+                            echo "<br><h4>Total Returned Books:</h4>";
+                            echo "<p>Total Quantity: $returnedQuantity (Records: $returnedCount)</p>";
+                        } else {
+                            echo "<p>No returned books found</p>";
+                        }
+
+
+                        ?>
+            </div>
+        </div>
+    </div>
+    
+        <div class="content">
+            <div class="buttons">
                 <a href="staff_borrow_dash.php" class="btn btn-lg btn-primary">Borrow Book</a>
                 <a href="staff_return_dash.php" class="btn btn-lg btn-primary">Return Book</a>
             </div>
+        </div>
     </div>
+</div>
 
+
+<style>
+    .overview {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.ovw-con {
+    display: flex;
+}
+
+.overview-item {
+    flex: 1;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+.overview-item h3 {
+    margin-top: 0;
+}
+
+.buttons {
+    text-align: center;
+    margin-top: 20px;
+}
+
+</style>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
         let date = new Date().toLocaleDateString('en-US', {  
