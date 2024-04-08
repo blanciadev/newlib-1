@@ -86,7 +86,7 @@ $dataJSON = json_encode($data);
             </div>
             
             <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-              <!-- Display user image -->
+         
               <?php
             $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
             $userID = $_SESSION["User_ID"];
@@ -99,8 +99,8 @@ $dataJSON = json_encode($data);
             } else {
                 $userData = mysqli_fetch_assoc($result);
            // Fetch the First_Name from $userData
-    $firstName = $userData['First_Name'];
-    $role = $userData['tb_role'];
+                $firstName = $userData['First_Name'];
+                $role = $userData['tb_role'];
 
             }
             ?>
@@ -117,9 +117,9 @@ $dataJSON = json_encode($data);
         </div>
         <div class="content">
     <div class="overview">
-        <h3>Overview</h3>
-        <div class="ovw-con">
-        <?php
+                <h3>Overview</h3>
+                <div class="ovw-con">
+                    <?php
                     // CHANGE THE PORT IF NEEDED
                     $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
 
@@ -139,28 +139,30 @@ $dataJSON = json_encode($data);
                     }
 
                     ?>
-            <div class="line"></div>
+            <div class="line">
+                
+            </div>
            
            
            <?php
-// Assuming you have established a database connection named $conn
-$currentDate = date("Y-m-d");
+            // Assuming you have established a database connection named $conn
+            $currentDate = date("Y-m-d");
 
-// Query to count visits for the current date using the Date&Time column
-$totalVisitsQuery = "SELECT COUNT(*) AS total_visits FROM tbl_log WHERE DATE(`Date_Time`) = '$currentDate'";
-$totalVisitsResult = mysqli_query($conn, $totalVisitsQuery);
+            // Query to count visits for the current date using the Date&Time column
+            $totalVisitsQuery = "SELECT COUNT(*) AS total_visits FROM tbl_log WHERE DATE(`Date_Time`) = '$currentDate'";
+            $totalVisitsResult = mysqli_query($conn, $totalVisitsQuery);
 
-// Check if the query was successful and fetch the total visits
-if ($totalVisitsResult && mysqli_num_rows($totalVisitsResult) > 0) {
-    $totalVisitsData = mysqli_fetch_assoc($totalVisitsResult);
-    $totalVisitsCount = $totalVisitsData['total_visits'];
-    
-    // Display the total visits for the current date
-    echo "<h4>Total Visits Today: " . $totalVisitsCount . "</h4>";
-} else {
-    echo "<h4>0</h4>"; // No visits found for the current date
-}
-?>
+            // Check if the query was successful and fetch the total visits
+            if ($totalVisitsResult && mysqli_num_rows($totalVisitsResult) > 0) {
+                $totalVisitsData = mysqli_fetch_assoc($totalVisitsResult);
+                $totalVisitsCount = $totalVisitsData['total_visits'];
+                
+                // Display the total visits for the current date
+                echo "<h4>Total Visits Today: " . $totalVisitsCount . "</h4>";
+            } else {
+                echo "<h4>0</h4>"; // No visits found for the current date
+            }
+            ?>
 
         </div>
     </div>
