@@ -26,7 +26,7 @@ if(isset($_GET['id'])) {
             $result = $conn->query($sql);
 
 
-    echo "ID received from previous page: " . $id;
+  //  echo "ID received from previous page: " . $id;
 } else {
     // If the ID parameter is not set in the URL
     echo "No ID parameter found in the URL.";
@@ -65,11 +65,8 @@ if(isset($_POST['submit'])) {
     $sql = "INSERT INTO tbl_authors (Authors_ID, Authors_Name, Nationality) 
     VALUES ('$authorsID', '$authorsName ', 'N/A' )";
 
-    $pubsql = "INSERT INTO tbl_publisher (Publisher_Name, Publisher_Name, Address) 
-    VALUES ('$pubID', '$pubname', 'NA')";
-
     $booksql = "INSERT INTO tbl_books (Book_Title, Authors_ID, Publisher_Name, Section_Code, Shelf_Number, tb_edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status) 
-    VALUES ('$bookTitle', '$authorsID', '$pubID', '$sectionCode', '$shelfNumber', '$edition', '$yr', '$isbn', '$bibliography', '$qty', '$price', 'Available')";
+    VALUES ('$bookTitle', '$authorsID', '$pubname', '$sectionCode', '$shelfNumber', '$edition', '$yr', '$isbn', '$bibliography', '$qty', '$price', 'Available')";
 
     $update = "UPDATE ";
 
@@ -83,15 +80,7 @@ if ($conn->query($sql) === TRUE) {
     echo "<br>Error: " . $sql . "<br>" . $conn->error;
 }
 
-// Execute the SQL statement
-if ($conn->query($pubsql) === TRUE) {
-    // If the insertion is successful
-    $lastInsertedID = $conn->insert_id; // Get the auto-generated Authors_ID
-  //  echo "New record created successfully. The Author's ID is: " . $lastInsertedID;
-} else {
-    // If an error occurred during insertion
-    echo "<br>Error: " . $pubsql . "<br>" . $conn->error;
-}
+
 
 
 // Execute the SQL statement
@@ -147,7 +136,7 @@ if ($conn->query($sql) === TRUE) {
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item"> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
-            <li class="nav-item active"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
+            <li class="nav-item active active"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
             <li class="nav-item"> <a href="./admin_transactions.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transactions</a> </li>
             <li class="nav-item"> <a href="./admin_staff.php" class="nav-link link-body-emphasis"><i class='bx bxs-user'></i>Manage Staff</a> </li>
             <li class="nav-item"> <a href="./admin_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
@@ -172,15 +161,15 @@ if ($conn->query($sql) === TRUE) {
 while ($row = $result->fetch_assoc()) {
 
     echo "<p><strong>Book Title:</strong> " . $row["Book_Title"] . "</p>";
-    echo "<p><strong>Authors ID:</strong> " . $row["Authors_ID"] . "</p>";
-    echo "<p><strong>Publisher ID:</strong> " . $row["Publisher_Name"] . "</p>";
+    echo "<p><strong>Authors Name:</strong> " . $row["Authors_Name"] . "</p>";
+    echo "<p><strong>Publisher Name:</strong> " . $row["Publisher_Name"] . "</p>";
     echo "<p><strong>Edition:</strong> " . $row["tb_edition"] . "</p>";
     echo "<p><strong>Year Published:</strong> " . $row["Year_Published"] . "</p>";
     echo "<p><strong>Quantity:</strong> " . $row["Quantity"] . "</p>";
     echo "<p><strong>Price:</strong> " . $row["price"] . "</p>";
     echo "<p><strong>Status:</strong> " . $row["tb_status"] . "</p>";
 
-    echo "<input type='Visible' id='Authors_ID' name='Authors_ID' value='" . $row["Authors_ID"] . "'>";
+    echo "<input type='Visible' id='Authors_ID' name='Authors_ID' value='" . $row["Authors_Name"] . "'>";
     echo "<input type='Visible' name='Book_Title' value='" . $row["Book_Title"] . "'>";
     echo "<input type='Visible' name='Publisher_Name' value='" . $row["Publisher_Name"] . "'>";
     echo "<input type='Visible' name='tb_edition' value='" . $row["tb_edition"] . "'>";
