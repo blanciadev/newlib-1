@@ -116,7 +116,7 @@ if (!$result) {
             <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-    <div class="board1 container"><!--board container-->
+    <div class="board container"><!--board container-->
         <div class="header">
             <div class="text">
                 <div class="title">
