@@ -66,7 +66,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <li class="nav-item active"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
             <hr>
             <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
     <div class=" board container"><!--board container-->
@@ -143,8 +143,92 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             </tbody>
         </table>
     </div>
-</div>
     
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <h4>LOST Fines Summary:</h4>
+            <?php
+            // Query for LOST fines
+            $lostQuery = "SELECT 
+                                COUNT(*) AS record_count,
+                                SUM(Amount) AS total_amount
+                            FROM 
+                                tbl_fines
+                            WHERE 
+                                Reason = 'LOST';";
+            $lostResult = mysqli_query($conn, $lostQuery);
+            displayFinesSummary($lostResult);
+            ?>
+        </div>
+
+            <h4>DAMAGE Fines Summary:</h4>
+            <?php
+            // Query for DAMAGE fines
+            $damageQuery = "SELECT 
+                                COUNT(*) AS record_count,
+                                SUM(Amount) AS total_amount
+                            FROM 
+                                tbl_fines
+                            WHERE 
+                                Reason = 'DAMAGE';";
+            $damageResult = mysqli_query($conn, $damageQuery);
+            displayFinesSummary($damageResult);
+            ?>
+        </div>
+
+   
+        <div class="col-md-6">
+            <h4>GOOD CONDITION Fines Summary:</h4>
+            <?php
+            // Query for GOOD CONDITION fines
+            $goodConditionQuery = "SELECT 
+                                COUNT(*) AS record_count,
+                                SUM(Amount) AS total_amount
+                            FROM 
+                                tbl_fines
+                            WHERE 
+                                Reason = 'GOOD CONDITION';";
+            $goodConditionResult = mysqli_query($conn, $goodConditionQuery);
+            displayFinesSummary($goodConditionResult);
+            ?>
+        </div>
+        
+            <h4>PARTIALLY DAMAGE Fines Summary:</h4>
+            <?php
+            // Query for PARTIALLY DAMAGE fines
+            $partiallyDamageQuery = "SELECT 
+                                COUNT(*) AS record_count,
+                                SUM(Amount) AS total_amount
+                            FROM 
+                                tbl_fines
+                            WHERE 
+                                Reason = 'PARTIALLY DAMAGE';";
+            $partiallyDamageResult = mysqli_query($conn, $partiallyDamageQuery);
+            displayFinesSummary($partiallyDamageResult);
+            ?>
+        </div>
+    </div>
+</div>
+
+<?php
+// Function to display fines summary
+function displayFinesSummary($result)
+{
+    if ($result && mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $recordCount = $row['record_count'];
+        $totalAmount = $row['total_amount'];
+        echo "<p>Record Count: $recordCount</p>";
+        echo "<p>Total Amount: $totalAmount</p>";
+    } else {
+        echo "<p>No fines found</p>";
+    }
+}
+?>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
