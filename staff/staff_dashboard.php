@@ -235,9 +235,30 @@ if (!$result) {
                     <div class="chart">
                         <canvas id="myChart" width="450"></canvas>
                     </div>
-                    <div class="visitorRanking">
-                        <!-- Add code here T-->
-                        <p>top1-3</p>
+                    <div class="visitorRanking container-sm">
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex flex-column justify-content-between align-items-start">
+                                <div class="w-100 d-flex flex-row justify-content-between">
+                                <div class="fw-bold"> Top 1</div>
+                                <span class="badge text-bg-primary rounded-pill">21</span>
+                                </div>
+                                <small>Angela Salvana</small>
+                            </li>
+                            <li class="list-group-item d-flex flex-column justify-content-between align-items-start">
+                                <div class="w-100 d-flex flex-row justify-content-between">
+                                <div class="fw-bold"> Top 2</div>
+                                <span class="badge text-bg-primary rounded-pill">17</span>
+                                </div>
+                                <small>John Wick</small>
+                            </li>
+                            <li class="list-group-item d-flex flex-column justify-content-between align-items-start">
+                                <div class="w-100 d-flex flex-row justify-content-between">
+                                <div class="fw-bold"> Top 3</div>
+                                <span class="badge text-bg-primary rounded-pill">14</span>
+                                </div>
+                                <small>Soohyeon Kim</small>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
