@@ -137,7 +137,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 while($row = $result->fetch_assoc()) {
                     echo "<tr><td>".$row["Accession_Code"]."</td>
                     <td>".$row["Book_Title"]."</td>
-                    <td>".$row["Authors_ID"]."</td>
+                    <td class='authorPop' data-bs-container='body' data-bs-toggle='popover' data-bs-placement='right' data-bs-content='Author Name'>".$row["Authors_ID"]."</td>
                     <td>".$row["Publisher_Name"]."</td>
                     <td>".$row["Section_Code"]."</td>
                     <td>".$row["Shelf_Number"]."</td>
@@ -184,6 +184,9 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
+        const popover = new bootstrap.Popover('.authorPop', {
+            container: 'body'
+            })
          // JavaScript code for search functionality
         document.getElementById("searchInput").addEventListener("input", function() {
             let searchValue = this.value.toLowerCase();
