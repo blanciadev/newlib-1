@@ -229,7 +229,7 @@ if (isset($_POST['updatePassword'])) {
         <form id="userProfileForm" action="" method="post">
                    
                     <!-- Display user data -->
-                    <h4>Personal Details</h4>
+                    <h4>Account Settings</h4>
                     <div class="mb-3">
                         <label for="firstName" class="form-label">First Name</label>
                         <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $userData['First_Name']; ?>" >
@@ -258,8 +258,7 @@ if (isset($_POST['updatePassword'])) {
                        <button type="submit" class="btn btn-primary" name="updateProfile" value="Update Profile">Update Profile</button>
   
               <br><br>
-                    <!-- Password Change Section -->
-                    <h4>Reset your Password</h4>
+                    <!-- Password Change Section --> 
                     <div class="mb-3">
                         <label for="oldPassword" class="form-label">Old Password</label>
                         <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>

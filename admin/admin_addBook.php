@@ -1,20 +1,9 @@
-<?php
-session_start();
-// Check if the User_ID session variable is not set or empty
-if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
-    // Redirect to index.php
-    header("Location: ../index.php");
-    exit(); // Ensure script execution stops after redirection
-}
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Dashboard</title>
+    <title>VillaReadHub - Add Books</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,7 +31,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 echo "Error: " . mysqli_error($conn);
             } else {
                 $userData = mysqli_fetch_assoc($result);
-             // Fetch the First_Name from $userData
+            // Fetch the First_Name from $userData
     $firstName = $userData['First_Name'];
     $role = $userData['tb_role'];
 
@@ -73,65 +62,20 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         
         
     </div>
-    <div class="board container"><!--board container--> 
-            
-    <form id="bookForm" method="POST">
-        <!-- Fix Button -->
-            <button type="submit" class="btn btn-primary" id="borrow" name="action" value="borrow">Book Borrow</button>
-            <button type="submit" class="btn btn-primary" id="return" name="action" value="return">Book Return</button>
-        </form>
+    
+    <div class="board container">
+        <h3>New Book Form</h3>
+        <!--Add Code here-->
+    </div>
+    
+    <div class="btn-con">
+        <button class="btn" id="requestButton">Request List</button>
+        <a href="./staff_bookCatalog.php" class="btn">Catalog</a>
     </div>
 </div>
-        
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-    <script>
-        document.getElementById('bookForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const action = event.submitter.value;
-            if (action === 'borrow') {
-                window.location.href = 'admin_book_borrow_dash.php';
-            } else if (action === 'return') {
-                window.location.href = 'admin_return_dash.php';
-            }
-        });
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-    <script> 
-        let date = new Date().toLocaleDateString('en-US', {  
-            day:   'numeric',
-            month: 'long',
-            year:  'numeric' ,  
-            weekday: 'long', 
-        });   
-        document.getElementById("currentDate").innerText = date; 
-
-        setInterval( () => {
-            let time = new Date().toLocaleTimeString('en-US',{ 
-            hour: 'numeric',
-            minute: 'numeric', 
-            second: 'numeric',
-            hour12: 'true',
-        })  
-        document.getElementById("currentTime").innerText = time; 
-
-        }, 1000)
-        
-
-        let navItems = document.querySelectorAll(".nav-item");  //adding .active class to navitems 
-        navItems.forEach(item => {
-            item.addEventListener('click', ()=> { 
-                document.querySelector('.active')?.classList.remove('active');
-                item.classList.add('active');
-                
-                
-            })
-            
-        })
-     
-
-
-    </script>
+    
 </body>
 </html>

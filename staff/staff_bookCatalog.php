@@ -65,7 +65,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         </ul>
          
     </div>
-    <div class="board container"><!--board container-->
+    <div class="board1 container"><!--board container-->
     <div class="header1">
             <div class="text">
                     <div class="back-btn">
@@ -83,49 +83,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             </div>
     </div>
     <div class="books container">
-    <div class="d-flex flex-column flex-md-row p-4 gap-4 py-md-5">
-  <div class="list-group list-group-radio d-grid gap-2 border-0">
-    <div class="position-relative">
-      <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGrid" id="listGroupRadioGrid1" value="" checked="">
-      <label class="list-group-item py-3 pe-5" for="listGroupRadioGrid1">
-        <strong class="fw-semibold">Assorted</strong>
-        <span class="d-block small opacity-75">With support text underneath to add more detail</span>
-      </label>
-    </div>
-
-    <div class="position-relative">
-      <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGrid" id="listGroupRadioGrid2" value="">
-            <label class="list-group-item py-3 pe-5" for="listGroupRadioGrid2">
-                <strong class="fw-semibold">Circulation</strong>
-                <span class="d-block small opacity-75">Some other text goes here</span>
-            </label>
-            </div>
-
-            <div class="position-relative">
-            <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGrid" id="listGroupRadioGrid3" value="">
-            <label class="list-group-item py-3 pe-5" for="listGroupRadioGrid3">
-                <strong class="fw-semibold">Fiction</strong>
-                <span class="d-block small opacity-75">And we end with another snippet of text</span>
-            </label>
-            </div>
-
-            <div class="position-relative">
-            <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGrid" id="listGroupRadioGrid3" value="">
-            <label class="list-group-item py-3 pe-5" for="listGroupRadioGrid3">
-                <strong class="fw-semibold">Filipiniana</strong>
-                <span class="d-block small opacity-75">And we end with another snippet of text</span>
-            </label>
-            </div>
-
-            <div class="position-relative">
-            <input class="form-check-input position-absolute top-50 end-0 me-3 fs-5" type="radio" name="listGroupRadioGrid" id="listGroupRadioGrid3" value="">
-            <label class="list-group-item py-3 pe-5" for="listGroupRadioGrid3">
-                <strong class="fw-semibold">Reference</strong>
-                <span class="d-block small opacity-75">And we end with another snippet of text</span>
-            </label>
-            </div>
-        </div>
-    </div>
     </div>
     
 </div>
