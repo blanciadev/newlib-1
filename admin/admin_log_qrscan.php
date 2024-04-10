@@ -27,37 +27,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
         // Borrower_ID starts with '0', flag as error
         $errorMessage = "Borrower ID cannot start with '0'.";
     } else {
-    // Validate Borrower_ID against tbl_borrower table
-    $sql_validate_borrower = "SELECT * FROM tbl_borrower WHERE Borrower_ID = '$borrower_id'";
-    $result_validate_borrower = $conn->query($sql_validate_borrower);
+        // Check if a log entry already exists for the specified Borrower ID and the current date
+        $currentDate = date("Y-m-d");
+        $sql_check_log = "SELECT * FROM tbl_log WHERE Borrower_ID = '$borrower_id' AND DATE(`Date_Time`) = '$currentDate'";
+        $result_check_log = $conn->query($sql_check_log);
 
-    if ($result_validate_borrower->num_rows > 0) {
-        // Borrower_ID is valid
-        $isBorrowerIdValid = true;
-        $_SESSION['borrower_id'] = $borrower_id;
-
-            
-        // SQL query to insert data with auto-increment Log_ID and current timestamp
-        $sql = "INSERT INTO tbl_log (Borrower_ID, `Date_Time`) 
-        VALUES ($borrower_id, NOW())";
-
-        if ($conn->query($sql) === TRUE) {
-            echo '<script>alert("Record inserted successfully."); window.location.href = "staff_log.php";</script>';
-            exit();
+        if ($result_check_log->num_rows > 0) {
+            // Log entry already exists for the current date, display error message
+            $errorMessage = "A log entry for this borrower already exists for today.";
         } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+            // Validate Borrower_ID against tbl_borrower table
+            $sql_validate_borrower = "SELECT * FROM tbl_borrower WHERE Borrower_ID = '$borrower_id'";
+            $result_validate_borrower = $conn->query($sql_validate_borrower);
+
+            if ($result_validate_borrower->num_rows > 0) {
+                // Borrower_ID is valid
+                $isBorrowerIdValid = true;
+                $_SESSION['borrower_id'] = $borrower_id;
+
+                // SQL query to insert data with auto-increment Log_ID and current timestamp
+                $sql = "INSERT INTO tbl_log (Borrower_ID, `Date_Time`) 
+                VALUES ($borrower_id, NOW())";
+
+                if ($conn->query($sql) === TRUE) {
+                    echo '<script>alert("Record inserted successfully."); window.location.href = "staff_log.php";</script>';
+                    exit();
+                } else {
+                    echo "Error: " . $sql . "<br>" . $conn->error;
+                }
+            } else {
+                // Borrower_ID is invalid
+                $errorMessage = "Invalid Borrower ID.";
+            }
         }
-     //   header("Location: staff_book_borrow_find.php?borrower_id=$borrower_id");
-       // Make sure to exit after redirecting
-    } else {
-        // Borrower_ID is invalid
-        $errorMessage = "Invalid Borrower ID.";
     }
-}
 
     // Close connection
     $conn->close();
 }
+
 
 ?>
 
