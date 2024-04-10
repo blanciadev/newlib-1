@@ -76,11 +76,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VillaReadHub - Dashboard</title>
-    
-<script src="../node_modules/html5-qrcode/html5-qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-  
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -89,7 +84,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     <link href="./admin.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
 
+    <script src="../node_modules/html5-qrcode/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 </head>
+    
 <body>  <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>LOGS</h2> 
@@ -256,7 +255,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 
 
     function error(err) {
-        console.error(err);
+   //     console.error(err);
         // Prints any errors to the console
     }
 
@@ -271,38 +270,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     }
 </script>
 
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function() {
     console.log("DOMContentLoaded event fired.");
 
-    var borrowForm = document.getElementById("borrowForm");
-    var borrowerIdInput = document.getElementById("borrowerIdInput");
-    var bookBorrowButton = document.getElementById("book_borrow");
+    var borrowerIdInput = document.getElementById("borrower_id");
+    var borrowForm = document.querySelector('form'); // Get the form element
 
-    // Add an input event listener to the Borrower ID input field
-    borrowerIdInput.addEventListener("input", function() {
-        console.log("Input event triggered.");
-        // Enable the button if there is input in the Borrower ID field
+    // Function to submit the form if the borrower ID input field has a value
+    function checkAndSubmitForm() {
+        // Check if the input field has a value
         if (borrowerIdInput.value.trim() !== "") {
-            console.log("Enabling button.");
-            bookBorrowButton.removeAttribute("disabled");
+            console.log("Input field has a value. Submitting form.");
+            borrowForm.submit(); // Submit the form
         } else {
-            console.log("Disabling button.");
-            // Otherwise, disable the button
-            bookBorrowButton.setAttribute("disabled", "disabled");
+            console.log("Input field is empty.");
         }
-    });
+    }
 
-    // Automatically submit the form when a value is present in the Borrower ID field
-    borrowerIdInput.addEventListener("change", function() {
-        console.log("Change event triggered.");
-        if (borrowerIdInput.value.trim() !== "") {
-            console.log("Submitting form.");
-            borrowForm.submit();
-        }
-    });
+    // Check and submit the form every 2 seconds
+    setInterval(checkAndSubmitForm, 5000);
 });
-
 </script>
 
 

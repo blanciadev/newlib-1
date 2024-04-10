@@ -223,7 +223,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 
 
     function error(err) {
-        console.error(err);
+        // console.error(err);
         // Prints any errors to the console
     }
 
@@ -238,39 +238,37 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     }
 </script>
 
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function() {
     console.log("DOMContentLoaded event fired.");
 
-    var borrowForm = document.getElementById("borrowForm");
     var borrowerIdInput = document.getElementById("borrower_id");
-    var bookBorrowButton = document.getElementById("book_borrow");
+    var borrowForm = document.querySelector('form'); // Get the form element
 
-    // Add an input event listener to the Borrower ID input field
-    borrowerIdInput.addEventListener("input", function() {
-        console.log("Input event triggered.");
-        // Enable the button if there is input in the Borrower ID field
+    // Function to submit the form if the borrower ID input field has a value
+    function checkAndSubmitForm() {
+        // Check if the input field has a value
         if (borrowerIdInput.value.trim() !== "") {
-            console.log("Enabling button.");
-            bookBorrowButton.removeAttribute("disabled");
+            console.log("Input field has a value. Submitting form.");
+            borrowForm.submit(); // Submit the form
         } else {
-            console.log("Disabling button.");
-            // Otherwise, disable the button
-            bookBorrowButton.setAttribute("disabled", "disabled");
+            console.log("Input field is empty.");
         }
-    });
+    }
 
-    // Automatically submit the form when a value is present in the Borrower ID field
-    borrowerIdInput.addEventListener("change", function() {
-        console.log("Change event triggered.");
-        if (borrowerIdInput.value.trim() !== "") {
-            console.log("Submitting form.");
-            borrowForm.submit();
-        }
-    });
+    // Check and submit the form every 2 seconds
+    setInterval(checkAndSubmitForm, 5000);
 });
-
 </script>
+
+
+
+
+
+
+
+
 
 </body>
 </html>

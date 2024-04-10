@@ -147,21 +147,19 @@ if ($isBorrowerIdValid) {
             <div id="result"></div>
         </main>
 
-        <form method="POST" action="">
-                    <div id="statusMessage"></div>
+        <div id="statusMessage"></div>
 
-                    <form id="borrowForm" action="staff_borrow.dash.php" method="post">
-                        <div class="mb-3">
-                            <label for="borrowerIdInput" class="form-label">Borrower ID</label>
-                            <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
-                        </div>
+<form id="borrowForm" action="" method="post">
+    <div class="mb-3">
+        <label for="borrowerIdInput" class="form-label">Borrower ID</label>
+        <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
+    </div>
 
-                        <button type="submit" class="btn btn-primary" id="book_borrow" disabled>
-                            Book Borrow
-                        </button>
-                    </form>
+    <button type="submit" class="btn btn-primary" id="book_borrow" disabled>
+        Book Borrow
+    </button>
+</form>
 
-        </form>
     </div>
 
 
@@ -194,7 +192,7 @@ if ($isBorrowerIdValid) {
 
 
     function error(err) {
-        console.error(err);
+      //  console.error(err);
         // Prints any errors to the console
     }
 
@@ -211,25 +209,52 @@ if ($isBorrowerIdValid) {
 </script>
 
 <script>
-    
-    document.addEventListener("DOMContentLoaded", function() {
-        // Get the input field for the Borrower ID
-        var borrowerIdInput = document.getElementById("borrowerIdInput");
-        // Get the button
-        var bookBorrowButton = document.getElementById("book_borrow");
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("DOMContentLoaded event fired.");
 
-        // Add an input event listener to the Borrower ID input field
-        borrowerIdInput.addEventListener("input", function() {
-            // Enable the button if there is input in the Borrower ID field
-            if (borrowerIdInput.value.trim() !== "") {
-                bookBorrowButton.removeAttribute("disabled");
-            } else {
-                // Otherwise, disable the button
-                bookBorrowButton.setAttribute("disabled", "disabled");
-            }
-        });
+    var borrowForm = document.getElementById("borrowForm");
+    var borrowerIdInput = document.getElementById("borrowerIdInput");
+    var bookBorrowButton = document.getElementById("book_borrow");
+
+    // Function to check if the input field has a value and submit the form accordingly
+    function checkAndSubmitForm() {
+        // Check if the input field has a value
+        if (borrowerIdInput.value.trim() !== "") {
+            console.log("Input field has a value. Submitting form.");
+            borrowForm.submit(); // Submit the form
+        } else {
+            console.log("Input field is empty.");
+        }
+    }
+
+    // Check and submit the form every 5 seconds
+    setInterval(checkAndSubmitForm, 5000);
+
+    // Add an input event listener to the Borrower ID input field
+    borrowerIdInput.addEventListener("input", function () {
+        console.log("Input event triggered.");
+        // Enable the button if there is input in the Borrower ID field
+        if (borrowerIdInput.value.trim() !== "") {
+            console.log("Enabling button.");
+            bookBorrowButton.removeAttribute("disabled");
+        } else {
+            console.log("Disabling button.");
+            // Otherwise, disable the button
+            bookBorrowButton.setAttribute("disabled", "disabled");
+        }
     });
+
+    // Automatically submit the form when a value is present in the Borrower ID field
+    borrowerIdInput.addEventListener("change", function () {
+        console.log("Change event triggered.");
+        if (borrowerIdInput.value.trim() !== "") {
+            console.log("Submitting form.");
+            borrowForm.submit();
+        }
+    });
+});
 </script>
+
 
 
 
