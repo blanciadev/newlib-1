@@ -23,6 +23,13 @@
             if($stmt_result->num_rows == 1) { // 2 usertypes
                 $row = $stmt_result->fetch_assoc();
                 if($row["User_ID"] == $User_ID && $row["tb_password"] == $Password){ 
+
+                    if ($row["status"] == "Deactivated") {
+                        $error = "Your account has been deactivated. Please contact the administrator.";
+                        header("Location: index.php?error=" . urlencode($error));
+                        exit();
+                    } else {
+                        
                     $_SESSION["User_ID"] = $User_ID;
                     if($row["tb_role"] == "Admin"){ 
                         $_SESSION["User_ID"] = $User_ID;
@@ -45,7 +52,9 @@
                         header('location: staff/staff_dashboard.php?User_ID=' . $_SESSION['User_ID']);
 
                     }
-                }else{
+                }
+                }
+                else{
                      
                     $error = "Invalid Username or Password! Please Try Again";
                     header("Location: index.php?error=" . urlencode($error));

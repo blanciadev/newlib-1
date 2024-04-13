@@ -330,7 +330,7 @@ if ($topVisitorsResult && mysqli_num_rows($topVisitorsResult) > 0) {
                             echo "<hr>";
                         }
                     } else {
-                        echo "Error fetching books: " . mysqli_error($conn);
+                        echo  "No New Books" . "<br>";
                     }
                     ?>
                 </div>

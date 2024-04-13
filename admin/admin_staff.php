@@ -14,14 +14,14 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-if(isset($_GET['delete_id'])) {
-    $deleteId = $_GET['delete_id'];
-    // Construct the SQL query to delete the record
-    $deleteSql = "DELETE FROM tbl_employee WHERE User_ID = $deleteId";
-    
-    if (mysqli_query($conn, $deleteSql)) {
+if(isset($_GET['deactivated_id'])) {
+    $deactivatedId = $_GET['deactivated_id'];
+    // Construct the SQL query to deactivated the record
+    $updateSql = "UPDATE tbl_employee SET Status = 'Deactivated' WHERE User_ID = $deactivatedId";
+
+    if (mysqli_query($conn, $updateSql)) {
         // Deletion successful, redirect to the same page to refresh the data
-        echo '<script>alert("Record deleted successfully.");</script>';
+        echo '<script>alert("Record deactivatedd successfully.");</script>';
         echo '<script>window.location.href = "admin_staff.php";</script>';
         exit(); // Ensure to exit after header redirection
     } else {
@@ -161,7 +161,7 @@ if ($conn->connect_error) {
 }
 
 // Query to fetch data from your database
-$sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address FROM tbl_employee";
+$sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, status FROM tbl_employee";
 $result = mysqli_query($conn, $sql);
 
 if ($result) {
@@ -182,9 +182,16 @@ if ($result) {
 
         // Add a button for rows where Role is 'Staff'
         if ($row['tb_role'] === 'Staff') {
-            echo "<td><form class='delete-form' method='GET' action='admin_staff.php'>";
-            echo "<input type='hidden' name='delete_id' value='" . $row['User_ID'] . "'>";
-            echo "<button type='submit' class='btn btn-danger btn-sm delete-btn' onclick='return confirmDelete(" . $row['User_ID'] . ")'>DELETE</button>";
+            // Check if the user status is "Deactivated"
+            $status = $row['status'];
+            
+            // Check if the status is "Deactivated" and disable the button accordingly
+            $disabled = ($status === 'Deactivated') ? 'disabled' : '';
+        
+            echo "<td><form class='deactivated-form' method='GET' action='admin_staff.php'>";
+            echo "<input type='hidden' name='deactivated_id' value='" . $row['User_ID'] . "'>";
+            // Add the $disabled variable to the button
+            echo "<button type='submit' class='btn btn-danger btn-sm deactivated-btn' $disabled onclick='return confirmdeactivated(" . $row['User_ID'] . ")'>Deactivate</button>";
             echo "</form></td>";
         } else {
             echo '<td></td>'; // Empty cell for other roles
