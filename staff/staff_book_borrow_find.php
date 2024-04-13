@@ -111,8 +111,17 @@ FROM
     </div>
 
     <div class="board container"><!--board container-->
+    <div class="header1">
+            <div class="text">
+                <div class="back-btn">
+                    <a href="./staff_borrow_dash.php"><i class='bx bx-arrow-back'></i></a>
+                </div>
+                <div class="title">
+                    <h2>Search Book by Accession Code</h2>
+                </div>
+            </div>
+    </div>
     <div class='books-container'>
-    <h1>Search Book by Accession Code</h1>
 
     <form id="dataform" action="" method="POST">
 

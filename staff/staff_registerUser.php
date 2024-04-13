@@ -113,7 +113,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <div class="col-md-6">
                     <label for="middle_name" class="form-label">Middle Initial:</label>
-                    <input type="text" id="middle_name" name="middle_name" class="form-control" required> 
+                    <input type="text" id="middle_name" name="middle_name" class="form-control"> 
                 </div>
         
                 <div class="col-md-6">

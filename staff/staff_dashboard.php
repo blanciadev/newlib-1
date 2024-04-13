@@ -240,63 +240,72 @@ if (!$result) {
             <div class="stats">
                 <h3>Statistics</h3>
                 <div class="stats-con">
-                    <div class="chart">
+                    <div class="chart" style="width: 70%; height: 98%;">
                         <canvas id="myChart" width="450"></canvas>
                     </div>
                     <?php
-$currentMonth = date("Y-m");
+                        $currentMonth = date("Y-m");
 
-// Query to count visits for the current month and get the top 3 visitors
-$topVisitorsQuery = "
-SELECT
-    tbl_log.Borrower_ID, -- Specify the table for Borrower_ID
-    COUNT(*) AS visit_count,
-    tbl_borrower.First_Name,
-    tbl_borrower.Middle_Name,
-    tbl_borrower.Last_Name
-FROM
-    tbl_log
-INNER JOIN
-    tbl_borrower ON tbl_log.Borrower_ID = tbl_borrower.Borrower_ID
-WHERE
-    DATE_FORMAT(tbl_log.Date_Time, '%Y-%m') = '$currentMonth'
-GROUP BY
-    tbl_log.Borrower_ID, -- Specify the table for Borrower_ID
-    tbl_borrower.First_Name,
-    tbl_borrower.Middle_Name,
-    tbl_borrower.Last_Name
-ORDER BY
-    visit_count DESC
-LIMIT 3;
-";
+                        // Query to count visits for the current month and get the top 3 visitors
+                        $topVisitorsQuery = "
+                        SELECT
+                            tbl_log.Borrower_ID, -- Specify the table for Borrower_ID
+                            COUNT(*) AS visit_count,
+                            tbl_borrower.First_Name,
+                            tbl_borrower.Middle_Name,
+                            tbl_borrower.Last_Name
+                        FROM
+                            tbl_log
+                        INNER JOIN
+                            tbl_borrower ON tbl_log.Borrower_ID = tbl_borrower.Borrower_ID
+                        WHERE
+                            DATE_FORMAT(tbl_log.Date_Time, '%Y-%m') = '$currentMonth'
+                        GROUP BY
+                            tbl_log.Borrower_ID, -- Specify the table for Borrower_ID
+                            tbl_borrower.First_Name,
+                            tbl_borrower.Middle_Name,
+                            tbl_borrower.Last_Name
+                        ORDER BY
+                            visit_count DESC
+                        LIMIT 3;
+                        ";
 
-$topVisitorsResult = mysqli_query($conn, $topVisitorsQuery);
+                        $topVisitorsResult = mysqli_query($conn, $topVisitorsQuery);
 
-// Check if the query was successful and fetch the top visitors
-if ($topVisitorsResult && mysqli_num_rows($topVisitorsResult) > 0) {
-    echo "<div class='visitorRanking container-sm'>";
-    echo "<ul class='list-group'>";
+                        // Check if the query was successful and fetch the top visitors
+                        if ($topVisitorsResult && mysqli_num_rows($topVisitorsResult) > 0) {
+                            echo "<div class='visitorRanking container-sm' style='width: 30%;
+                                                                                height: 95%;
+                                                                                background-color: palegreen;
+                                                                                border-radius: 10px;
+                                                                                padding: 5px;
+                                                                                display: flex;
+                                                                                flex-direction: column;
+                                                                                flex-wrap: wrap;
+                                                                                justify-content: center;
+                                                                                align-content: stretch;'>";
+                            echo "<ul class='list-group'>";
 
-    // Loop through the top visitors
-    while ($row = mysqli_fetch_assoc($topVisitorsResult)) {
-        $visitorName = $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'];
-        $visitCount = $row['visit_count'];
+                            // Loop through the top visitors
+                            while ($row = mysqli_fetch_assoc($topVisitorsResult)) {
+                                $visitorName = $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'];
+                                $visitCount = $row['visit_count'];
 
-        echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start'>";
-        echo "<div class='w-100 d-flex flex-row justify-content-between'>";
-        echo "<div class='fw-bold'>Top Visitor</div>";
-        echo "<span class='badge text-bg-primary rounded-pill'>$visitCount</span>";
-        echo "</div>";
-        echo "<small>$visitorName</small>";
-        echo "</li>";
-    }
+                                echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px'>";
+                                echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
+                                echo "<p style='font-size:12pt' class='fw-bold'>Top Visitor</p>";
+                                echo "<span class='badge text-bg-primary rounded-pill'>$visitCount</span>";
+                                echo "</div>";
+                                echo "<small style='font-size:12px'>$visitorName</small>";
+                                echo "</li>";
+                            }
 
-    echo "</ul>";
-    echo "</div>";
-} else {
-    echo "<p>No visits found for the current month</p>";
-}
-?>
+                            echo "</ul>";
+                            echo "</div>";
+                        } else {
+                            echo "<p>No visits found for the current month</p>";
+                        }
+                    ?>
 
 
                 </div>
