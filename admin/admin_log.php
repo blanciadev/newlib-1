@@ -125,11 +125,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     
     <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
-            <li class="nav-item active"> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
+            <li class="nav-item "> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
             <li class="nav-item"> <a href="./admin_transactions.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transactions</a> </li>
             <li class="nav-item"> <a href="./admin_staff.php" class="nav-link link-body-emphasis"><i class='bx bxs-user'></i>Manage Staff</a> </li>
-            <li class="nav-item"> <a href="./admin_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
+            <li class="nav-item active"> <a href="./admin_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
             <li class="nav-item"> <a href="./admin_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
             <li class="nav-item"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-cloud'></i>Generate Report</a> </li>
             <hr>
@@ -157,7 +157,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
         <table class="table table-striped">
             <thead class="bg-light sticky-top">
                 <tr>
-                    <th>QR Code</th>
+                    <th>Borrower ID</th>
                     <th>Borrower Name</th>
                     <th>Date & Time</th>
                 </tr>
@@ -182,9 +182,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
                 if ($result_display_all && $result_display_all->num_rows > 0) {
                     while ($row = $result_display_all->fetch_assoc()) {
                         echo "<tr>";
-                        $imageData = base64_encode($row['image_file']);
-                        echo "<td><img class='img-responsive' src='data:image/png;base64," . $imageData . "' /></td>";
-                        echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
+                        echo "<td>" . $row['Borrower_ID'] . "</td>";
+                          echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
                         echo "<td>" . $row['Date_Time'] . "</td>";
                         // Add more columns as needed
                         echo "</tr>";
