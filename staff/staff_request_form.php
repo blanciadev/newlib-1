@@ -22,7 +22,7 @@ $_SESSION['User_ID'];
     $quantity = $_POST['quantity'];
     $status = "Pending";
     $price = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
-    
+    $country = $_POST['country'];
     
     // Validate form data (you may need more robust validation)
     if (empty($bookTitle) || empty($author) || empty($publisher) || empty($quantity) || empty($status)) {
@@ -42,8 +42,8 @@ $_SESSION['User_ID'];
         $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); //database connection
 
         // Assuming you have a database connection named $conn
-        $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Authors_Name, Publisher_Name, price, tb_edition, Year_Published, Quantity, tb_status) 
-        VALUES ('$userID', '$bookTitle', '$author', '$publisher', '$price', '$edition', '$year', '$quantity', '$status')";
+        $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Authors_Name, Publisher_Name, price, tb_edition, Year_Published, Quantity, country ,tb_status) 
+        VALUES ('$userID', '$bookTitle', '$author', '$publisher', '$price', '$edition', '$year', '$quantity', '$country', '$status')";
 
         $result = mysqli_query($conn, $query);
 
@@ -181,6 +181,9 @@ $_SESSION['User_ID'];
 <div class="mb-3" id="newAuthorInput" style="display: none;">
     <label for="newAuthor" class="form-label">New Author</label>
     <input type="text" class="form-control" id="newAuthor" name="author">
+
+    <label for="country" class="form-label">Country</label>
+    <input type="text" class="form-control" id="country" name="country">
 </div>
 
 
