@@ -80,16 +80,13 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <div class="books container">
     <!-- Sorting dropdown -->
     <div class="mb-3">
-        <label for="sortSelect" class="form-label">Sort By:</label>
-        <select class="form-select" id="sortSelect" onchange="sortTable()">
-            <option value="0">Borrower ID Ascending</option>
-            <option value="1">Borrower ID Descending</option>
-            <option value="4">Book Title Ascending</option>
-            <option value="5">Book Title Descending</option>
-            <option value="6">Status Pending</option>
-            <option value="7">Status Returned</option>
-        </select>
-    </div>
+    <label for="sortSelect" class="form-label">Sort By:</label>
+    <select class="form-select" id="sortSelect" onchange="sortTable()">
+        <option value="4">Date Borrowed Latest to Oldest</option>
+        <option value="8">Date Borrowed Oldest to Latest</option>
+    </select>
+</div>
+
 
     <table class="table table-striped table-m" id="borrowerTable">
         <!-- Table header -->
@@ -132,6 +129,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             // Calculate the offset for the SQL query
             $offset = ($currentPage - 1) * $recordsPerPage;
         
+
             // Fetch log records from the database with pagination
             $query = "SELECT DISTINCT
                         bd.BorrowDetails_ID, 
@@ -157,10 +155,23 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                     LIMIT $offset, $recordsPerPage";
         
             $result = mysqli_query($conn, $query);
-        
+        // Initialize variables to store oldest and earliest dates
+$oldestDate = PHP_INT_MAX;
+$earliestDate = PHP_INT_MIN;
+
         
             // Loop through each row in the result set
             while ($row = mysqli_fetch_assoc($result)) {
+                $dateBorrowed = strtotime($row['Date_Borrowed']);
+                  // Check if the current date is older than the oldestDate
+    if ($dateBorrowed < $oldestDate) {
+        $oldestDate = $dateBorrowed;
+    }
+    
+    // Check if the current date is earlier than the earliestDate
+    if ($dateBorrowed > $earliestDate) {
+        $earliestDate = $dateBorrowed;
+    }
                 echo '<tr>';
                 echo '<td>' . $row['Borrower_ID'] . '</td>'; 
                 echo '<td>' . $row['Accession_Code'] . '</td>'; 
@@ -189,50 +200,53 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     </ul>
 </div>
 
-
-
-
 <script>
-    // Function to sort the table
-    function sortTable() {
-        var selectBox = document.getElementById("sortSelect");
-        var selectedValue = selectBox.options[selectBox.selectedIndex].value;
-        var table, rows, switching, i, x, y, shouldSwitch;
+// Function to sort the table
+function sortTable() {
+    var selectBox = document.getElementById("sortSelect");
+    var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+    var table, rows, switching, i, shouldSwitch;
 
-        table = document.getElementById("borrowerTable");
-        switching = true;
-        while (switching) {
-            switching = false;
-            rows = table.rows;
-            for (i = 1; i < (rows.length - 1); i++) {
-                shouldSwitch = false;
-                x = rows[i].getElementsByTagName("td")[selectedValue];
-                y = rows[i + 1].getElementsByTagName("td")[selectedValue];
-                if (selectedValue == 0 || selectedValue == 2 || selectedValue == 4 || selectedValue == 6) {
-                    // For numeric or string comparison
-                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+    table = document.getElementById("borrowerTable");
+    switching = true;
+    while (switching) {
+        switching = false;
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            var x = rows[i].getElementsByTagName("td")[selectedValue];
+            var y = rows[i + 1].getElementsByTagName("td")[selectedValue];
+            if (x && y) {
+                if (selectedValue == 4) {
+                    // Sort from latest to oldest
+                    if (new Date(x.innerHTML) < new Date(y.innerHTML)) {
                         shouldSwitch = true;
                         break;
                     }
-                } else if (selectedValue == 1 || selectedValue == 3 || selectedValue == 5 || selectedValue == 7) {
-                    // For numeric or string comparison
-                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                } else if (selectedValue == 8) {
+                    // Sort from oldest to latest
+                    if (new Date(x.innerHTML) > new Date(y.innerHTML)) {
                         shouldSwitch = true;
                         break;
                     }
                 }
-            }
-            if (shouldSwitch) {
-                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-                switching = true;
+            } else {
+                // Handle case where selected table cell is undefined
+                console.error("Error: One or more table cells are undefined.");
+                return;
             }
         }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+        }
     }
+}
 
-    // Add event listener to the dropdown
-    document.getElementById("sortSelect").addEventListener("change", sortTable);
+// Add event listener to the dropdown
+document.getElementById("sortSelect").addEventListener("change", sortTable);
+
 </script>
-
 
 
 
