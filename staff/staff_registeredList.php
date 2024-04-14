@@ -73,6 +73,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./staff.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
+    <style>
+
+.img-responsive {
+    max-width: 20%; /* This will make sure the image does not exceed the width of its container */
+    height: auto; /* This will maintain the aspect ratio of the image */
+}
+
+</style>
+
 </head>
 <body>
 
@@ -138,6 +147,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     <table class="table table-hover table-m">
         <thead class="bg-light sticky-top">
                 <tr>
+                    <th>QR Code</th>
                     <th>Borrower ID</th>
                     <th>Borrower Name</th>
                     <th>Contact Number</th>
@@ -165,8 +175,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
                 if ($result_display_all && $result_display_all->num_rows > 0) {
                     
                     while ($row = $result_display_all->fetch_assoc()) {
+                        $imageData = base64_encode($row['image_file']);
+                       
                         $id = $row['Borrower_ID'];
                         echo '<tr data-toggle="modal" onclick="BorrowerModal('.$id.')">';
+                        echo "<td><img class='img-responsive' src='data:image/png;base64," . $imageData . "' /></td>";
+                    
                         echo "<td>" . $row['Borrower_ID'] . "</td>";
                         echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
                         echo "<td>" . $row['Contact_Number'] . "</td>";
