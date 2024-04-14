@@ -9,10 +9,8 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
-    
-
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -78,58 +76,23 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         </div>
     </div>
 
+        
     <div class="books container">
-    <?php
-    // Database connection
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+    <!-- Sorting dropdown -->
+    <div class="mb-3">
+        <label for="sortSelect" class="form-label">Sort By:</label>
+        <select class="form-select" id="sortSelect" onchange="sortTable()">
+            <option value="0">Borrower ID Ascending</option>
+            <option value="1">Borrower ID Descending</option>
+            <option value="4">Book Title Ascending</option>
+            <option value="5">Book Title Descending</option>
+            <option value="6">Status Pending</option>
+            <option value="7">Status Returned</option>
+        </select>
+    </div>
 
-    // Number of records per page
-    $recordsPerPage = 9;
-
-    // Calculate the total number of records
-    $totalRecordsQuery = "SELECT COUNT(*) AS total FROM tbl_borrowdetails";
-    $totalRecordsResult = mysqli_query($conn, $totalRecordsQuery);
-    $totalRecords = mysqli_fetch_assoc($totalRecordsResult)['total'];
-
-    // Calculate total number of pages
-    $totalPages = ceil($totalRecords / $recordsPerPage);
-
-    // Determine current page number
-    $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
-
-    // Calculate the offset for the SQL query
-    $offset = ($currentPage - 1) * $recordsPerPage;
-
-    // Fetch log records from the database with pagination
-    $query = "SELECT DISTINCT
-                bd.BorrowDetails_ID, 
-                b.User_ID, 
-                b.Accession_Code, 
-                bk.Book_Title, 
-                bd.Quantity, 
-                b.Date_Borrowed, 
-                b.Due_Date, 
-                br.Borrower_ID, 
-                bd.tb_status, 
-                tbl_fines.Amount
-            FROM
-                tbl_borrowdetails AS bd
-            INNER JOIN
-                tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
-            INNER JOIN
-                tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-            INNER JOIN
-                tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
-            INNER JOIN
-                tbl_fines ON bd.BorrowDetails_ID = tbl_fines.Borrower_ID
-            LIMIT $offset, $recordsPerPage";
-
-    $result = mysqli_query($conn, $query);
-    ?>
-    <table class="table table-striped table-m">
+    <table class="table table-striped table-m" id="borrowerTable">
+        <!-- Table header -->
         <thead class="bg-light sticky-top">
             <tr>
                 <th scope="col">Borrower ID</th>
@@ -142,8 +105,60 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 <th scope="col">Status</th>
             </tr>
         </thead>
+        <!-- Table body -->
         <tbody>
             <?php
+            
+            // Database connection
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+            }
+        
+            // Number of records per page
+            $recordsPerPage = 12;
+        
+            // Calculate the total number of records
+            $totalRecordsQuery = "SELECT COUNT(*) AS total FROM tbl_borrowdetails";
+            $totalRecordsResult = mysqli_query($conn, $totalRecordsQuery);
+            $totalRecords = mysqli_fetch_assoc($totalRecordsResult)['total'];
+        
+            // Calculate total number of pages
+            $totalPages = ceil($totalRecords / $recordsPerPage);
+        
+            // Determine current page number
+            $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
+        
+            // Calculate the offset for the SQL query
+            $offset = ($currentPage - 1) * $recordsPerPage;
+        
+            // Fetch log records from the database with pagination
+            $query = "SELECT DISTINCT
+                        bd.BorrowDetails_ID, 
+                        b.User_ID, 
+                        b.Accession_Code, 
+                        bk.Book_Title, 
+                        bd.Quantity, 
+                        b.Date_Borrowed, 
+                        b.Due_Date, 
+                        br.Borrower_ID, 
+                        bd.tb_status, 
+                        tbl_fines.Amount
+                    FROM
+                        tbl_borrowdetails AS bd
+                    INNER JOIN
+                        tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+                    INNER JOIN
+                        tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+                    INNER JOIN
+                        tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
+                    INNER JOIN
+                        tbl_fines ON bd.BorrowDetails_ID = tbl_fines.Borrower_ID
+                    LIMIT $offset, $recordsPerPage";
+        
+            $result = mysqli_query($conn, $query);
+        
+        
             // Loop through each row in the result set
             while ($row = mysqli_fetch_assoc($result)) {
                 echo '<tr>';
@@ -173,6 +188,53 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         ?>
     </ul>
 </div>
+
+
+
+
+<script>
+    // Function to sort the table
+    function sortTable() {
+        var selectBox = document.getElementById("sortSelect");
+        var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+        var table, rows, switching, i, x, y, shouldSwitch;
+
+        table = document.getElementById("borrowerTable");
+        switching = true;
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("td")[selectedValue];
+                y = rows[i + 1].getElementsByTagName("td")[selectedValue];
+                if (selectedValue == 0 || selectedValue == 2 || selectedValue == 4 || selectedValue == 6) {
+                    // For numeric or string comparison
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (selectedValue == 1 || selectedValue == 3 || selectedValue == 5 || selectedValue == 7) {
+                    // For numeric or string comparison
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+            }
+        }
+    }
+
+    // Add event listener to the dropdown
+    document.getElementById("sortSelect").addEventListener("change", sortTable);
+</script>
+
+
+
 
 
 <div class="container">
