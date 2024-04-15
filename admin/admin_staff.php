@@ -47,13 +47,15 @@ if(isset($_POST['submit'])) {
     $contactNumber = $_POST['empContactNumber'];
     $email = $_POST['empEmail'];
     $address = $_POST['empAddress'];
-    $password = $_POST['empPassword'];
+    $token = 0;
+    $password = $lastName . '@' . $role;
+
 
     // Hash the password for security
     
 
-    $sql = "INSERT INTO tbl_employee (tb_password, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address ) 
-            VALUES ('$password','$firstName', '$lastName','$midName', '$role', '$contactNumber', '$email', '$address' )";
+    $sql = "INSERT INTO tbl_employee (tb_password, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, token ) 
+            VALUES ('$password','$firstName', '$lastName','$midName', '$role', '$contactNumber', '$email', '$address', $token )";
 
     // Debugging: output the SQL query for inspection
     echo "SQL Query: $sql";
@@ -61,6 +63,7 @@ if(isset($_POST['submit'])) {
     if (mysqli_query($conn, $sql)) {
         // Display a banner for successful insertion
         echo '<div id="successBanner" style="display: none; background-color: #4CAF50; color: white; padding: 10px; text-align: center;">';
+        echo 'defualt password will be your Lastname@role';
         echo 'Insertion Successful!';
         echo '</div>';
         
@@ -235,10 +238,10 @@ mysqli_close($conn);
                         <option value="Staff">Staff</option>
                     </select>
                 </div>
-                <div class="mb-3">
+                <!-- <div class="mb-3">
                     <label for="empPassword" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="empPassword" name="empPassword" required>
-                </div>
+                    <input type="password" class="form-control" id="empPassword" name="empPassword" value="auto-generated" readonly>
+                </div> -->
 
                 <div class="mb-3">
                     <label for="empContactNumber" class="form-label">Contact Number</label>
