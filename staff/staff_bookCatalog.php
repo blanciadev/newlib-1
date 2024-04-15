@@ -82,8 +82,53 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 </form>
             </div>
     </div>
-    <div class="books container">
+    <div class="bookCatalog">
+        <div class="catalogOptions">
+            <div class="d-flex w-100">
+                <div class="list-group list-group-checkable d-flex flex-row flex-wrap justify-content-around gap-2 border-0">
+                    <input class="list-group-item-check pe-none" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadio" value="1" checked="" hidden>
+                    <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadio">
+                    Filipiniana 
+                    </label>
+
+                    <input class="list-group-item-check pe-none" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadio" value="2" hidden>
+                    <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadio">
+                    Circulation
+                    </label>
+
+                    <input class="list-group-item-check pe-none" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadio" value="3" hidden>
+                    <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadio">
+                    Fiction 
+                    </label>
+
+                    <input class="list-group-item-check pe-none" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadio" value="3" hidden>
+                    <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadio">
+                    Reference 
+                    </label>
+
+                    <input class="list-group-item-check pe-none" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadio" value="3" hidden>
+                    <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadio">
+                    Assorted Books
+                    </label>
+
+                    <input class="list-group-item-check pe-none" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadio" value="3" hidden>
+                    <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadio">
+                    Authors 
+                    </label>
+
+                    <script>
+                        const radio1 = document.getElementById('listGroupCheckableRadio');
+                        radio1.addEventListener("click", (e) => { alert('selected'); console.log('clicky')})
+                    </script>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="books container">
+            
+        </div>
     </div>
+    
     
 </div>
     

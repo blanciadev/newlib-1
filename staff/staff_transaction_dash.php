@@ -164,7 +164,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 </div>
             </div>
         </div>
-        <div class="duebooks">
+        <div class="duebooks"> <!--Borrowers dont change class name-->
         <h3>Top Borrowers</h3>
             <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 20px;">
                 <!--ADD CODE HERE... top 3 borrowers + borrowed book count-->
@@ -179,7 +179,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 </div>
             </div>
         </div>
-        <div class="newbooks">
+        <div class="newbooks"><!--books dont change class name-->
             <h3>Most Borrowed Book</h3>
             <div class="newbooks-con">
                 <!--ADD CODE HERE... top 3 most borrowed books + borrower count-->

@@ -209,7 +209,7 @@ if (isset($_POST['updatePassword'])) {
         </ul>
     </div>
 
-    <div class=" board container"><!--board container-->
+    <div class=" board1 container"><!--board container-->
     <div class="header1">
         <div class="text">
             <div class="title">
