@@ -339,7 +339,7 @@ if (!$result) {
                             echo "<hr>";
                         }
                     } else {
-                        echo "Error fetching books: " . mysqli_error($conn);
+                        echo  "No New Books" . "<br>";
                     }
                     ?>
                 </div>

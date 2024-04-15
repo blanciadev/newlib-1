@@ -165,8 +165,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                 <label for="borrower_id">Or Enter Borrower ID:</label>
-                <input type="text" id="borrower_id" name="borrower_id">
-                <button type="submit">Submit</button>
+                  <!-- Bootstrap input field -->
+            <input type="text" class="form-control" id="borrower_id" name="borrower_id" placeholder="Enter Borrower ID">
+         
+          <button type="submit" class="btn btn-primary">Submit</button>
+    
                 
             </form>
 

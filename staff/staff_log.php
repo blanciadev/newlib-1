@@ -155,7 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
         <table class="table table-striped">
             <thead class="bg-light sticky-top">
                 <tr>
-                    <th>QR Code</th>
+                   <th>Borrower ID</th>
                     <th>Borrower Name</th>
                     <th>Date & Time</th>
                 </tr>
@@ -180,9 +180,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
                 if ($result_display_all && $result_display_all->num_rows > 0) {
                     while ($row = $result_display_all->fetch_assoc()) {
                         echo "<tr>";
-                        $imageData = base64_encode($row['image_file']);
-                        echo "<td><img class='img-responsive' src='data:image/png;base64," . $imageData . "' /></td>";
-                        echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
+                        echo "<td>" . $row['Borrower_ID'] . "</td>";
+                     echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
                         echo "<td>" . $row['Date_Time'] . "</td>";
                         // Add more columns as needed
                         echo "</tr>";

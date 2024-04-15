@@ -8,48 +8,62 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
-$result = null; // Initialize $result variable
+// Initialize $result variable
+$result = null;
+$bookDetails = [];
 
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-   // Sanitize input to prevent SQL injection
-   $conn =  mysqli_connect("localhost", "root", "root", "db_library_2", 3308); //database connection
-   $Accession_Code = mysqli_real_escape_string($conn, $_REQUEST['Accession_Code']);
-   
-   // Store the accession code in a session variable
-   $_SESSION['Accession_Code'] = $Accession_Code;
-   
-   // Query to retrieve book details based on Accession Code
-   $sql = "SELECT
-               tbl_books.*, 
-               tbl_authors.Authors_Name, 
-               tbl_books.Accession_Code
-           FROM
-               tbl_books
-           INNER JOIN
-               tbl_authors
-           ON 
-               tbl_books.Authors_ID = tbl_authors.Authors_ID
-           WHERE
-               Accession_Code = '$Accession_Code'";
-   
-   $result = $conn->query($sql);
-   
-   // Check if the query returned any rows
-   if ($result && $result->num_rows > 0) {
-       // Close the database connection
-       $conn->close();
-       // Redirect to staff_book_borrow_process.php
-       header("Location: admin_book_borrow_process.php");
-       exit(); // Ensure script execution stops after redirection
-   } else {
-       // Close the database connection
-       $conn->close();
-       // Display an alert for invalid Accession Code
-       echo '<script>alert("Invalid Accession Code. No book found.");</script>';
-   }
-} 
+    // Sanitize input to prevent SQL injection
+    $conn =  mysqli_connect("localhost", "root", "root", "db_library_2", 3308); //database connection
 
+      // Initialize an empty array to store book details
+      $bookDetails = [];
+    // Retrieve all Accession Codes from the form
+    $accessionCodes = $_POST['Accession_Code'];
+
+    // Ensure $accessionCodes is treated as an array
+    if (!is_array($accessionCodes)) {
+        $accessionCodes = [$accessionCodes];
+    }
+
+    // Loop through each Accession Code
+    foreach ($accessionCodes as $Accession_Code) {
+        // Query to retrieve book details based on Accession Code
+        $sql = "SELECT
+                    tbl_books.*, 
+                    tbl_authors.Authors_Name
+                FROM
+                    tbl_books
+                INNER JOIN
+                    tbl_authors
+                ON 
+                    tbl_books.Authors_ID = tbl_authors.Authors_ID
+                WHERE
+                    Accession_Code = '$Accession_Code'";
+
+        $result = $conn->query($sql);
+
+        // Check if the query returned any rows
+        if ($result && $result->num_rows > 0) {
+            $bookDetails[] = $result->fetch_assoc();
+            echo json_encode($bookDetails);
+
+        } else {
+            // Display an alert for invalid Accession Code
+            echo '<script>alert("Invalid Accession Code");</script>';
+        }
+    }
+
+    // Close the database connection
+    $conn->close();
+      // Store bookDetails array in session
+      $_SESSION['bookDetails'] = $bookDetails;
+
+    // Output book details in JSON format
+    
+    exit(); // Stop further execution
+}
 ?>
 
 
@@ -67,15 +81,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link href="./admin.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
+
 <body>
-<div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
-        <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-            <h2>Villa<span>Read</span>Hub</h2> 
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
+    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary"><!--sidenav container-->
+        <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+            <h2>Villa<span>Read</span>Hub</h2>
+            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon" />
         </a><!--header container-->
-       
-        <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-        <?php
+        <div class="user-header d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
+            <!-- Display user image -->
+            <?php
             $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
             $userID = $_SESSION["User_ID"];
             $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
@@ -86,123 +101,142 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "Error: " . mysqli_error($conn);
             } else {
                 $userData = mysqli_fetch_assoc($result);
-         // Fetch the First_Name from $userData
-    $firstName = $userData['First_Name'];
-    $role = $userData['tb_role'];
-
             }
             ?>
-            <?php if (!empty($userData['image_data'])): ?>
+            <?php if (!empty($userData['image_data'])) : ?>
                 <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
-            <?php else: ?>
+            <?php else : ?>
                 <!-- Change the path to your actual default image -->
                 <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-            <strong><span><?php echo  $firstName . "<br/>" .  $role; ?></span></strong>
-    </div>
-    <hr>
-        <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
-            <li class="nav-item "> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
-            <li class="nav-item"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
-            <li class="nav-item active"> <a href="./admin_transactions.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transactions</a> </li>
-            <li class="nav-item"> <a href="./admin_staff.php" class="nav-link link-body-emphasis"><i class='bx bxs-user'></i>Manage Staff</a> </li>
-            <li class="nav-item"> <a href="./admin_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
-            <li class="nav-item"> <a href="./admin_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
-            <li class="nav-item"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-cloud'></i>Generate Report</a> </li>
+            <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong>
+        </div><!-- navitem container -->
+        <ul class="nav nav-pills flex-column mb-auto">
+            <!-- navitem container -->
+            <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis "> <i class='bx bxs-home'></i>Dashboard </a> </li>
+            <li class="nav-item"> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
+            <li class="nav-item"> <a href="./staff_transaction_dash.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>
+            <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
+            <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
             <hr>
-            <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
+            <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
             <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
-        
-        
     </div>
-    
-    <div class="board container"><!--board container-->
-    <div class='books-container'>
-    <h1>Search Book by Accession Code</h1>
 
-    <form id="dataform" action="" method="POST">
+    <div class="board container">
+        <div class='books-container'>
+            <h1>Search Book by Accession Code</h1>
 
-        <label for="Accession_Code">Accession Code:</label>
-        <input type="text" id="Accession_Code" name="Accession_Code" placeholder="Enter Accession Code" required
-   
-   <?php
-    // Check if there's a previous value in session, and if so, populate the input field with it
-    if (isset($_SESSION['Accession_Code']) && !empty($_SESSION['Accession_Code'])) {
-        echo ' value="' . htmlspecialchars($_SESSION['Accession_Code']) . '"';
-    }
-    ?>>
+            <form id="dataform" method="POST">
+                <label for="Accession_Code">Accession Code:</label>
+                <!-- Allow multiple Accession Codes -->
+                <input type="text" id="Accession_Code" name="Accession_Code[]" placeholder="Enter Accession Code" required onkeydown="return (event.keyCode !== 13);">
 
-         
-      <button type="submit" class="btn btn-primary" id="book_borrow" onclick="submitForm()">Get Book</button>
-      </form>
-  
+                <!-- <button type="button" class="btn btn-primary" id="book_borrow">Retrieve Book</button> -->
+                <br><br>
+                <a id="checkoutBtn" class="btn btn-primary">Checkout</a>
+            <br>
+            </form>
+
+            <div class="board container">
+                <div class='books-container' id="bookDetailsContainer">
+                    <h1>Book Details</h1>
+                    <!-- Display book details will be added dynamically -->
+                    
+                </div>
+            </div>
         </div>
     </div>
+
     <script>
-    // Get the input field and form
-    const inputField = document.getElementById('Accession_Code');
-    const form = document.getElementById('searchForm');
 
-    // Add event listener to input field for keyup event
-    inputField.addEventListener('keyup', function(event) {
-        // If Enter key is pressed (key code 13) and the input field is not empty, submit the form
-        if (event.keyCode === 13 && inputField.value.trim() !== "") {
-            event.preventDefault(); // Prevent the default form submission behavior
-            form.submit();
-        }
-    });
+document.addEventListener('DOMContentLoaded', function() {
+    // Define the bookDetails array
+    let bookDetails = [];
 
-    // Add event listener to book_borrow button
-    document.getElementById("book_borrow").addEventListener("click", function() {
-        // Check if the accession code input field is not empty before redirecting
-        if (inputField.value.trim() !== "") {
-            window.location.href = "admin_book_borrow_process.php";
+    // Hide the "Checkout" button initially
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    checkoutBtn.style.display = 'none';
+
+    // Add event listener to input field for instant search
+    document.getElementById('Accession_Code').addEventListener('input', function() {
+        // Get the value of the input field
+        const accessionCode = this.value.trim();
+        if (accessionCode !== '') {
+            // Send an AJAX request if input is not empty
+            fetch('admin_book_borrow_find.php', {
+                method: 'POST',
+                body: new FormData(document.getElementById('dataform'))
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response:', data); // Log the response data
+                // Check if the response indicates invalid Accession Code
+                if (data && data.invalid_accession_code) {
+                    // Display an alert for invalid Accession Code
+                    alert('Invalid Accession Code');
+                } else {
+                    // Display book details dynamically
+                    const bookDetailsContainer = document.getElementById('bookDetailsContainer');
+                    bookDetailsContainer.innerHTML = '';
+                    data.forEach(book => {
+                        const bookDiv = document.createElement('div');
+                        bookDiv.classList.add('book');
+                        bookDiv.innerHTML = `
+                            <p><strong>Accession Code:</strong> ${book['Accession_Code']}</p>
+                            <p><strong>Title:</strong> ${book['Book_Title']}</p>
+                            <p><strong>Author:</strong> ${book['Authors_Name']}</p>
+                            <p><strong>Availability:</strong> ${book['Quantity']}</p>
+                            <button type="button" class="btn btn-secondary add-book-btn" data-accession="${book['Accession_Code']}">Add Book</button>
+                            <hr>
+                        `;
+
+                        const quantity = book['Quantity'];
+
+                            // Add event listener to "Add Book" button
+                            const addBookBtn = bookDiv.querySelector('.add-book-btn');
+                            if (quantity ==0 ) {
+                            addBookBtn.disabled = true; // Disable button if quantity is 0 or 10
+                        } else {
+                           addBookBtn.addEventListener('click', function() {
+                                    // Add the book to the bookDetails array if it's not already there
+                                    const accessionCode = this.getAttribute('data-accession');
+                                    if (!bookDetails.includes(accessionCode)) {
+                                        bookDetails.push(accessionCode);
+                                        console.log(bookDetails); // Show the "Checkout" button when bookDetails is populated
+                                        checkoutBtn.style.display = 'block';
+                                    } else {
+                                        console.log('Book already added.');
+                                    }
+                                });
+                        }
+
+                        bookDetailsContainer.appendChild(bookDiv);
+                    });
+                }
+            })
+            .catch(error => console.error('Error:', error)); // Log any errors
         } else {
-            // If the accession code input field is empty, display an alert or handle it accordingly
-            alert("Accession code is required.");
+            // Clear the book details container if input is empty
+            document.getElementById('bookDetailsContainer').innerHTML = '';
         }
     });
+
+    // Add event listener to "Checkout" button
+    checkoutBtn.addEventListener('click', function() {
+        // Construct the URL with the bookDetails array values
+        const url = 'admin_book_borrow_process.php?bookDetails=' + JSON.stringify(bookDetails);
+        // Redirect to the checkout page with the bookDetails in the URL
+        window.location.href = url;
+    });
+});
+
+
 </script>
 
 
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-    <script> 
-        let date = new Date().toLocaleDateString('en-US', {  
-            day:   'numeric',
-            month: 'long',
-            year:  'numeric' ,  
-            weekday: 'long', 
-        });   
-        document.getElementById("currentDate").innerText = date; 
-
-        setInterval( () => {
-            let time = new Date().toLocaleTimeString('en-US',{ 
-            hour: 'numeric',
-            minute: 'numeric', 
-            second: 'numeric',
-            hour12: 'true',
-        })  
-        document.getElementById("currentTime").innerText = time; 
-
-        }, 1000)
-        
-
-        let navItems = document.querySelectorAll(".nav-item");  //adding .active class to navitems 
-        navItems.forEach(item => {
-            item.addEventListener('click', ()=> { 
-                document.querySelector('.active')?.classList.remove('active');
-                item.classList.add('active');
-                
-                
-            })
-            
-        })
-     
-
-
-    </script>
 </body>
+
 </html>

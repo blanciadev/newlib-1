@@ -87,15 +87,62 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             </div>
         </div>
     </div>
+
+    
+        
     <div class="books container">
-        <?php
+    <!-- Sorting dropdown -->
+    <div class="mb-3">
+    <label for="sortSelect" class="form-label">Sort By:</label>
+    <select class="form-select" id="sortSelect" onchange="sortTable()">
+        <option value="4">Date Borrowed Latest to Oldest</option>
+        <option value="8">Date Borrowed Oldest to Latest</option>
+    </select>
+</div>
+
+
+    <table class="table table-striped table-m" id="borrowerTable">
+        <!-- Table header -->
+        <thead class="bg-light sticky-top">
+            <tr>
+                <th scope="col">Borrower ID</th>
+                <th scope="col">Accession Code</th>
+                <th scope="col">Book Title</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Date Borrowed</th>
+                <th scope="col">Due Date</th>
+                <th scope="col">Fine Amount</th>
+                <th scope="col">Status</th>
+            </tr>
+        </thead>
+        <!-- Table body -->
+        <tbody>
+            <?php
+            
             // Database connection
             $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
             if ($conn->connect_error) {
                 die("Connection failed: " . $conn->connect_error);
             }
-
-            // Fetch log records from the database
+        
+            // Number of records per page
+            $recordsPerPage = 12;
+        
+            // Calculate the total number of records
+            $totalRecordsQuery = "SELECT COUNT(*) AS total FROM tbl_borrowdetails";
+            $totalRecordsResult = mysqli_query($conn, $totalRecordsQuery);
+            $totalRecords = mysqli_fetch_assoc($totalRecordsResult)['total'];
+        
+            // Calculate total number of pages
+            $totalPages = ceil($totalRecords / $recordsPerPage);
+        
+            // Determine current page number
+            $currentPage = isset($_GET['page']) ? $_GET['page'] : 1;
+        
+            // Calculate the offset for the SQL query
+            $offset = ($currentPage - 1) * $recordsPerPage;
+        
+            // Fetch log records from the database with pagination
             $query = "SELECT DISTINCT
                         bd.BorrowDetails_ID, 
                         b.User_ID, 
@@ -116,46 +163,92 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                     INNER JOIN
                         tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
                     INNER JOIN
-                        tbl_fines ON bd.BorrowDetails_ID = tbl_fines.Borrower_ID";
-
+                        tbl_fines ON bd.BorrowDetails_ID = tbl_fines.Borrower_ID
+                    LIMIT $offset, $recordsPerPage";
+        
             $result = mysqli_query($conn, $query);
+        
+        
+            // Loop through each row in the result set
+            while ($row = mysqli_fetch_assoc($result)) {
+                echo '<tr>';
+                echo '<td>' . $row['Borrower_ID'] . '</td>'; 
+                echo '<td>' . $row['Accession_Code'] . '</td>'; 
+                echo '<td>' . $row['Book_Title'] . '</td>'; 
+                echo '<td>' . $row['Quantity'] . '</td>'; 
+                echo '<td>' . $row['Date_Borrowed'] . '</td>'; 
+                echo '<td>' . $row['Due_Date'] . '</td>'; 
+                echo '<td>' . $row['Amount'] . '</td>'; 
+                echo '<td>' . $row['tb_status'] . '</td>'; 
+                echo '</tr>';
+            }
+            ?>
+        </tbody>
+    </table>
 
+    <!-- Pagination -->
+    <ul class="pagination">
+        <?php
+        // Display pagination links
+        for ($i = 1; $i <= $totalPages; $i++) {
+            echo '<li class="page-item';
+            if ($i == $currentPage) echo ' active';
+            echo '"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
+        }
         ?>
-        <table class="table table-striped table-m">
-            <thead class="bg-light sticky-top">
-                <tr>
-                    <th scope="col">Borrower ID</th>
-                    <th scope="col">Accession Code</th>
-                    <th scope="col">Book Title</th>
-                    <th scope="col">Quantity</th>
-                    <th scope="col">Date Borrowed</th>
-                    <th scope="col">Due Date</th>
-                    <th scope="col">Fine Amount</th>
-                    <th scope="col">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                // Loop through each row in the result set
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo '<tr>';
-                    echo '<td>' . $row['Borrower_ID'] . '</td>'; 
-                    echo '<td>' . $row['Accession_Code'] . '</td>'; 
-                    echo '<td>' . $row['Book_Title'] . '</td>'; 
-                    echo '<td>' . $row['Quantity'] . '</td>'; 
-                    echo '<td>' . $row['Date_Borrowed'] . '</td>'; 
-                    echo '<td>' . $row['Due_Date'] . '</td>'; 
-                    echo '<td>' . $row['Amount'] . '</td>'; 
-                    echo '<td>' . $row['tb_status'] . '</td>'; 
-                    echo '</tr>';
-                }
-                ?>
-            </tbody>
-        </table>
-    </div>
-    
+    </ul>
 </div>
 
+
+
+
+<script>
+// Function to sort the table
+function sortTable() {
+    var selectBox = document.getElementById("sortSelect");
+    var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+    var table, rows, switching, i, shouldSwitch;
+
+    table = document.getElementById("borrowerTable");
+    switching = true;
+    while (switching) {
+        switching = false;
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            var x = rows[i].getElementsByTagName("td")[selectedValue];
+            var y = rows[i + 1].getElementsByTagName("td")[selectedValue];
+            if (x && y) {
+                if (selectedValue == 4) {
+                    // Sort from latest to oldest
+                    if (new Date(x.innerHTML) < new Date(y.innerHTML)) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (selectedValue == 8) {
+                    // Sort from oldest to latest
+                    if (new Date(x.innerHTML) > new Date(y.innerHTML)) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            } else {
+                // Handle case where selected table cell is undefined
+                console.error("Error: One or more table cells are undefined.");
+                return;
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+        }
+    }
+}
+
+// Add event listener to the dropdown
+document.getElementById("sortSelect").addEventListener("change", sortTable);
+
+</script>
 <div class="container">
     <div class="row">
         <div class="col-md-6">
