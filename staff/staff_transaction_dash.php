@@ -185,7 +185,9 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 <!--ADD CODE HERE... top 3 most borrowed books + borrower count-->
             </div>
         </div>
+        
     </div>
+    
 </div>
 
 
