@@ -126,11 +126,9 @@ if ($isBorrowerIdValid) {
                 <!-- Change the path to your actual default image -->
                 <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-            <strong><span>
-                    <?php echo $_SESSION["staff_name"] . "<br/>" . $_SESSION["role"]; ?>
-                </span></strong>
-        </div>
-        <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
+            <strong><span><?php $fname = $userData["First_Name"]; $lname = $userData["Last_Name"]; $userName = $fname." ". $lname;  echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong></div>
+         <hr> 
+         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis "> <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item"> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
             <li class="nav-item active"> <a href="./staff_transaction_dash.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>
@@ -262,46 +260,8 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
-
-
-        <!-- 
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-    <script> 
-        let date = new Date().toLocaleDateString('en-US', {  
-            day:   'numeric',
-            month: 'long',
-            year:  'numeric' ,  
-            weekday: 'long', 
-        });   
-        document.getElementById("currentDate").innerText = date; 
-
-        setInterval( () => {
-            let time = new Date().toLocaleTimeString('en-US',{ 
-            hour: 'numeric',
-            minute: 'numeric', 
-            second: 'numeric',
-            hour12: 'true',
-        })  
-        document.getElementById("currentTime").innerText = time; 
-
-        }, 1000)
-        
-
-        let navItems = document.querySelectorAll(".nav-item");  //adding .active class to navitems 
-        navItems.forEach(item => {
-            item.addEventListener('click', ()=> { 
-                document.querySelector('.active')?.classList.remove('active');
-                item.classList.add('active');
-                
-                
-            })
-            
-        })
-     
-
-
-    </script> -->
+    
 </body>
 
 </html>

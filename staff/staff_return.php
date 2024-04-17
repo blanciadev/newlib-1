@@ -102,6 +102,9 @@ if (isset($_GET['borrowId'])) {
     <div class="board container"><!--board container-->
     <div class="header1">
             <div class="text">
+                <div class="back-btn">
+                    <a href="./staff_return_dash.php"><i class='bx bx-arrow-back'></i></a>
+                </div>
                 <div class="title">
                     <h2>Borrow Details</h2>
                 </div>
@@ -119,7 +122,6 @@ if (isset($_GET['borrowId'])) {
             <tr>
             <tr>
                     <th>Borrow Id</th>
-                    <th>Visitors Id</th>
                     <th>Accession Code</th>
                     <th>Book Title</th>
                     <th>Quantity</th>
@@ -194,7 +196,6 @@ if ($stmt) {
     while ($row = mysqli_fetch_assoc($result)) {
                     echo "<tr>";
                     echo "<td>" . $row["Borrow_ID"] . "</td>";
-                    echo "<td>" . $row["Borrower_ID"] . "</td>";
                     echo "<td>" . $row["Accession_Code"] . "</td>";
                     echo "<td>" . $row["Book_Title"] . "</td>";
                     echo "<td>" . $row["Quantity"] . "</td>";

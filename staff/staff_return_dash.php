@@ -80,9 +80,8 @@ if ($conn->connect_error) {
                 <!--default image -->
                 <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-       <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong></div> 
-    
-        <hr>
+            <strong><span><?php $fname = $userData["First_Name"]; $lname = $userData["Last_Name"]; $userName = $fname." ". $lname;  echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong></div>
+         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item "> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
@@ -96,6 +95,9 @@ if ($conn->connect_error) {
     <div class="board container"><!--board container-->
     <div class="header1">
             <div class="text">
+                <div class="back-btn">
+                    <a href="./staff_transaction_dash.php"><i class='bx bx-arrow-back'></i></a>
+                </div>
                 <div class="title">
                     <h2>Borrowed Books</h2>
                 </div>
@@ -115,8 +117,6 @@ if ($conn->connect_error) {
                  
                     <th>ID</th>
                     <th>Borrowers Name</th>
-                    <th>Date Borrowed</th>
-                    <th>Due Date</th>
                     <th>Status</th>
                     <th>Action</th>
                     <th></th>
@@ -160,10 +160,6 @@ if ($conn->connect_error) {
                 //    echo "<td>" . $row["BorrowDetails_ID"] . "</td>";
                     echo "<td>" . $row["Borrower_ID"] . "</td>";
                     echo "<td>" . $row["First_Name"] ." ". $row["Middle_Name"] ." ". $row["Last_Name"] . "</td>";
-                   
-                  
-                    echo "<td>" . $row["Date_Borrowed"] . "</td>";
-                    echo "<td>" . $row["Due_Date"] . "</td>";
                     echo "<td>" . $row["tb_status"] . "</td>";
 
                     echo "<td>";

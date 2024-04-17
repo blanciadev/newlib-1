@@ -56,8 +56,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 <!-- Change the path to your actual default image -->
                 <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-       <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong></div> 
-    
+            <strong><span><?php $fname = $userData["First_Name"]; $lname = $userData["Last_Name"]; $userName = $fname." ". $lname;  echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong></div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
@@ -164,10 +163,10 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 </div>
             </div>
         </div>
-        <div class="duebooks"> <!--Borrowers dont change class name-->
+        <div class="duebooks">
         <h3>Top Borrowers</h3>
             <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 20px;">
-                <!--ADD CODE HERE... top 3 borrowers + borrowed book count-->
+                <!--TOP BORROWERS - PLEASE MAKE IT TOP 3-->
                 <?php
                     // Database connection
                     $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
@@ -199,14 +198,19 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                         $borrowCount = $topBorrowerData['borrow_count'];
                         $name = $topBorrowerData['First_Name'];
                         $lname = $topBorrowerData['Last_Name'];
-
-                        echo "<p>$topBorrowerID</p>";
-                        echo "<p>$name, $lname</p>";
-                        echo "<p>Borrow Count: $borrowCount</p>";
-
+                        
+                        echo "<ul class='list-group'>";
+                        echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px; width=360px'>";
+                        echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
+                        echo "<p style='font-size:12pt' class='fw-bold'>$topBorrowerID</p>";
+                        echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";
+                        echo "</div>";
+                        echo "<small style='font-size:12px'>$name, $lname</small>";
+                        echo "</li>";
+                        echo "</ul>";
 
                     } else {
-                        echo "<p>No top borrower found</p>";
+                        echo "<p>No borrower found</p>";
                     }
                 ?>
             </div>
@@ -223,7 +227,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         <div class="newbooks"><!--books dont change class name-->
             <h3>Most Borrowed Book</h3>
             <div class="newbooks-con">
-                <!--ADD CODE HERE... top 3 most borrowed books + borrower count-->
+                <!--MOST BORROWED BOOKS - PLEASE MAKE IT TOP 3-->
                 <?php
                     // Query to get the most borrowed book details
                     $mostBorrowedBookQuery = "SELECT
@@ -250,8 +254,18 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                     $accessionCode = $mostBorrowedBookData['Accession_Code'];
                     $bookTitle = $mostBorrowedBookData['Book_Title'];
 
-                    echo "<p>Accession Code: $accessionCode</p>";
-                    echo "<p>Book Title: $bookTitle</p>";
+                    echo "<ul class='list-group'>";
+                    echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px; width=360px'>";
+                    echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
+                    echo "<p style='font-size:12pt' class='fw-bold'>$accessionCode</p>";
+                    echo "<span class='badge text-bg-primary rounded-pill'>0</span>";//insert here the quantity of this book that was borrowed
+                    echo "</div>";
+                    echo "<small style='font-size:12px'> $bookTitle</small>";
+                    echo "</li>";
+                    echo "</ul>";
+
+                    echo "<p>Accession Code: </p>";
+                    echo "<p>Book Title:</p>";
                 } else {
                     echo "<p>No most borrowed book found for the top borrower</p>";
                 }
