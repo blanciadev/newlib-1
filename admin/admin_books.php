@@ -129,7 +129,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 tbl_books.Authors_ID, 
                 tbl_books.Publisher_Name, 
                 tbl_books.Section_Code, 
-                tbl_books.Shelf_Number, 
+                tbl_books.shelf, 
                 tbl_books.tb_edition, 
                 tbl_books.Year_Published, 
                 tbl_books.ISBN, 
@@ -162,7 +162,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                     <td>".$row["Authors_Name"]."</td>
                     <td>".$row["Publisher_Name"]."</td>
                     <td>".$row["Section_Code"]."</td>
-                    <td>".$row["Shelf_Number"]."</td>
+                    <td>".$row["shelf"]."</td>
                     <td>".$row["tb_edition"]."</td>
                     <td>".$row["Year_Published"]."</td>
                     <td>".$row["ISBN"]."</td>

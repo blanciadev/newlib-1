@@ -54,7 +54,7 @@ if(isset($_POST['submit'])) {
     $isbn = 1; // Assuming ISBN is always 1
     $sectionCode = $_POST["section"];
     $shelfNumber = $_POST["shelf"];
-    $country = $_POST["country"];
+  
 
     echo "<br>" . $bookTitle;
     echo "<br>" . $pubname;
@@ -93,7 +93,7 @@ if(isset($_POST['submit'])) {
         }
 
         // Insert the new book into tbl_books
-        $booksql = "INSERT INTO tbl_books (Book_Title, Authors_ID, Publisher_Name, Section_Code, Shelf_Number, tb_edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status) 
+        $booksql = "INSERT INTO tbl_books (Book_Title, Authors_ID, Publisher_Name, Section_Code, shelf, tb_edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status) 
         VALUES ('$bookTitle', '$authorsID', '$pubname', '$sectionCode', '$shelfNumber', '$edition', '$yr', '$isbn', '$bibliography', '$qty', '$price', 'Available')";
 
         if ($conn->query($booksql) !== TRUE) {
@@ -189,21 +189,25 @@ if(isset($_POST['submit'])) {
                 echo "<input type='hidden' name='country' value='" . $row["country"] . "'>";
                 echo "<input type='hidden' name='Quantity' value='" . $row["Quantity"] . "'>";
                 echo "<input type='hidden' name='price' value='" . $row["price"] . "'>";
-                echo "<input type='hidden' name='tb_status' value='" . $row["tb_status"] . "'>";
-
-                echo "<label for='section'>Section:</label>";
-                echo "<select id='section' name='section' required>";
-                echo "<option value=''>Select Section</option>";
-                echo "<option value='ASRTD'>Assorted</option>";
-                echo "<option value='CIR'>Circulation</option>";
-                echo "<option value='FIC'>Fiction</option>";
-                echo "<option value='FIL'>Filipiniana</option>";
-                echo "<option value='REF'>Reference</option>";
-                echo "</select>";
+                echo "<input type='hidden' name='section' value='" . $row["Section_Code"] . "'>";
+                echo "<input type='hidden' name='shelf' value='" . $row["shelf"] . "'>";
 
 
-                echo "<br><label for='shelf'>Shelf Number:</label>";
-                echo "<input type='number' id='shelf' name='shelf' min='1' max='5' required>";
+
+
+                // echo "<label for='section'>Section:</label>";
+                // echo "<select id='section' name='section' required>";
+                // echo "<option value=''>Select Section</option>";
+                // echo "<option value='ASRTD'>Assorted</option>";
+                // echo "<option value='CIR'>Circulation</option>";
+                // echo "<option value='FIC'>Fiction</option>";
+                // echo "<option value='FIL'>Filipiniana</option>";
+                // echo "<option value='REF'>Reference</option>";
+                // echo "</select>";
+
+
+                // echo "<br><label for='shelf'>Shelf Number:</label>";
+                // echo "<input type='number' id='shelf' name='shelf' min='1' max='5' required>";
             }
 
 
