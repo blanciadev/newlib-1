@@ -10,6 +10,8 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }else{
 
+   $dueDate =  $_SESSION["due"];
+
     $User_ID = $_SESSION["borrower_id"];
 $bookAccessionCodes = $_SESSION['bookAccessionCodesStr'];
 echo "<script>console.log('Book CODES:', " . json_encode( $bookAccessionCodes) . ");</script>";
@@ -25,7 +27,7 @@ echo "<script>console.log('Book CODES:', " . json_encode( $bookAccessionCodes) .
   $result = $conn->query($sql);
 
 unset($_SESSION['bookAccessionCodesStr']);
-
+unset($_SESSION['due']);
 }
 
 ?>
@@ -113,7 +115,7 @@ unset($_SESSION['bookAccessionCodesStr']);
                 <span class="info-label">Date Borrowed:</span> <?php echo date('Y-m-d'); ?>
             </div>
             <div class="info-item">
-                <span class="info-label">Due Date:</span> <?php echo date('Y-m-d', strtotime('+3 days')); ?>
+            <span class="info-label">Due Date:</span> <?php echo  $dueDate;  ?>
             </div><hr>
         </div>
         <?php

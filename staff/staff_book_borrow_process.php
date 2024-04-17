@@ -70,8 +70,7 @@ if(!empty($bookDetails)) {
 
         $Status = 'Pending';
         $currentDate = date('Y-m-d');
-        // Calculate due date as 3 days later
-        $dueDate = date('Y-m-d', strtotime('+3 days', strtotime($currentDate)));
+       
     } else {
         // $bookAccessionCodesStr is empty, handle accordingly
         echo "No book Accession Codes available";
@@ -80,10 +79,17 @@ if(!empty($bookDetails)) {
     // $bookDetails is empty, handle accordingly
     echo "No book details available";
 }
-
 if(isset($_POST['submit'])) {
-    $User_ID = $_SESSION["User_ID"];
+    // Calculate due date as 3 days later by default
+    $dueDate = date('Y-m-d', strtotime('+3 days', strtotime($currentDate)));
+    
+    // Check if the selected due date is '3' for 3 days or 'custom' for a custom due date
+    if ($_POST['due_date'] == 'custom') {
+        $dueDate = null; // Set due date as null for custom due date
+    }
 
+    $User_ID = $_SESSION["User_ID"];
+    $_SESSION["due"] = $dueDate;
     // Check if $bookAccessionCodesStr is set
     if(isset($_SESSION['bookAccessionCodesStr']) && !empty($_SESSION['bookAccessionCodesStr'])) {
         echo "<script>console.log('Page Submit');</script>";
@@ -103,7 +109,15 @@ if(isset($_POST['submit'])) {
 
                 // Prepare and execute the INSERT statement for tbl_borrow
                 $sql_borrow = "INSERT INTO tbl_borrow (User_ID, Borrower_ID, Accession_Code, Date_Borrowed, Due_Date, tb_status) 
-                               VALUES ('$User_ID', '$borrower_id', $accessionCode, '$currentDate', '$dueDate', '$Status')";
+                               VALUES ('$User_ID', '$borrower_id', $accessionCode, '$currentDate', ";
+
+                if ($dueDate === null) {
+                    $sql_borrow .= "NULL"; // Inserting null for custom due date
+                } else {
+                    $sql_borrow .= "'$dueDate'";
+                }
+
+                $sql_borrow .= ", '$Status')";
 
                 if ($conn->query($sql_borrow) === TRUE) {
                     echo "<script>console.log('Inserted into tbl_borrow for Accession Code: $accessionCode');</script>";
@@ -132,6 +146,7 @@ if(isset($_POST['submit'])) {
         echo "No book details available";
     }
 }
+
 
 
 
@@ -207,50 +222,59 @@ $conn->close();
     </div>
     
     <div class="books container">
+    <form method="POST" action="">
+    <?php
+    // Retrieve book details from the database
+    $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
+    FROM tbl_books
+    INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
+    WHERE tbl_books.Accession_Code IN ($bookAccessionCodesStr)";
+    $result = $conn->query($sql);
 
-<form method="POST" action="">
+    // Check if the result set is not empty
+    if ($result && $result->num_rows > 0) {
+        echo "<h2>Book Borrow Process</h2><br>";
+        echo "<div class='books-container'>";
+        // Fetch each row from the result set
+        while ($row = $result->fetch_assoc()) {
+            echo "<div class='book'>";
+            echo "<p><strong>Title:</strong> " . $row['Book_Title'] . "</p>";
+            echo "<p><strong>Author:</strong> " . $row['Authors_Name'] . "</p>";
+            echo "<p><strong>Availability: </strong> " . $row['Quantity'] . "</p>";
+            echo "<label for='quantity'>Quantity:</label>";
+            // Input field for quantity with max attribute set to available quantity
+            echo "<input type='number' id='quantity' name='quantity[]' min='1' max='" . $row['Quantity'] . "' value='1' readonly>";
+            // Hidden input field to store the book ID or accession code for processing
+            echo "<input type='hidden' name='accession_code[]' value='" . $row['Accession_Code'] . "'>";
+            echo "<p><strong>Date Today:</strong> " . $currentDate . "</p>";
+      
 
-<?php
- // Retrieve book details from the database
- $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
- FROM tbl_books
- INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
- WHERE tbl_books.Accession_Code IN ($bookAccessionCodesStr)";
-   $result = $conn->query($sql);
-
-// Check if the result set is not empty
-if ($result && $result->num_rows > 0) {
-    echo "<h2>Book Borrow Process</h2><br>";
-    echo "<div class='books-container'>";
-    // Fetch each row from the result set
-    while ($row = $result->fetch_assoc()) {
-        echo "<div class='book'>";
-        echo "<p><strong>Title:</strong> " . $row['Book_Title'] . "</p>";
-        echo "<p><strong>Author:</strong> " . $row['Authors_Name'] . "</p>";
-        echo "<p><strong>Availability: </strong> " . $row['Quantity'] . "</p>";
-        echo "<label for='quantity'>Quantity:</label>";
-        // Input field for quantity with max attribute set to available quantity
-        echo "<input type='number' id='quantity' name='quantity[]' min='1' max='" . $row['Quantity'] . "' value='1' readonly>";
-        // Hidden input field to store the book ID or accession code for processing
-        echo "<input type='hidden' name='accession_code[]' value='" . $row['Accession_Code'] . "'>";
-        echo "<p><strong>Date Today:</strong> " . $currentDate . "</p>";
-        echo "<p><strong>Due Date:</strong> " . $dueDate . "</p>";
+            echo "<hr>";
+        }
+           // Dropdown for selecting due date
+echo "<div class='due-date'>";
+echo "<label for='due_date'>Date Return:</label>";
+echo "<select name='due_date' id='due_date'>";
+echo "<option value='3'>3 Days</option>";
+echo "<option value='custom'>Custom</option>";
+echo "</select>";
+echo "</div>";
         echo "</div>";
         echo "<hr>";
+    } else {
+        // Book not found or error occurred
+        echo "<p>No books found with the provided Accession Codes</p>";
     }
-    echo "</div>";
-    echo "<hr>";
-} else {
-    // Book not found or error occurred
-    echo "<p>No books found with the provided Accession Codes</p>";
-}
+    ?>
+    
+    <!-- Custom return section button -->
+    <div class="custom-return-section">
+        <h3>Custom Return Section</h3>
+        <!-- Add your custom return section content here -->
+    </div>
 
-?>
-
-
-</div>
-
-<div class="container">
+    <!-- Success and error messages -->
+    <div class="container">
         <?php if (!empty($successMessage)): ?>
             <div class="alert alert-success" role="alert">
                 <?php echo $successMessage; ?>
@@ -264,12 +288,11 @@ if ($result && $result->num_rows > 0) {
         <?php endif; ?>
     </div>
     
-<button type="submit" class="btn btn-primary" id="submit" name="submit">Submit</button>
-<!-- 
-<a href="staff_book_borrow_find.php" class="btn btn-primary">Add another book</a> -->
-<a href="staff_return.php" class="btn btn-primary">Cancel</a>
-
+    <!-- Submit and cancel buttons -->
+    <button type="submit" class="btn btn-primary" id="submit" name="submit">Submit</button>
+    <a href="staff_return.php" class="btn btn-primary">Cancel</a>
 </form>
+
 
     <script>
 document.getElementById("cancelButton").addEventListener("click", function() {
