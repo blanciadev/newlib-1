@@ -81,6 +81,21 @@ li.nav-item.active {
     flex-direction: row;
     justify-content: center;
 }
+.catalogCon{
+    width: 1039px;
+    height: 32%; 
+    overflow-y: auto;
+    background-color: #f8f9fa;
+    box-shadow:  5px 5px 10px #bababa,
+                -5px -5px 10px #dfdfdf;
+    padding: 2px;
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    flex-direction: row;
+    justify-content: center;
+}
 .books form{
     display: flex;
     flex-wrap: wrap;
@@ -319,6 +334,19 @@ li.nav-item.active {
     font-weight: 700;
     border-radius: 5px; 
     background-color: palegreen;
+    border: none;
+    color:black; 
+    transition: all 0.50s ease;
+}
+.btnOption{
+    width: auto;
+    height: auto;
+    padding: 16px 23px;
+    margin: 3px;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 5px; 
+    background-color: rgb(255, 255, 255);
     border: none;
     color:black; 
     transition: all 0.50s ease;

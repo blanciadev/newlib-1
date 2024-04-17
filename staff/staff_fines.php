@@ -47,14 +47,13 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             }
             ?>
             <?php if (!empty($userData['image_data'])): ?>
-                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else: ?>
                 <!--default image -->
                 <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-       <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong></div> 
-    
+            <strong><span><?php $fname = $userData["First_Name"]; $lname = $userData["Last_Name"]; $userName = $fname." ". $lname;  echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong></div>
+
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
@@ -75,24 +74,101 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             </div>
         </div>
     </div>
-
-        
     <div class="books container">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h4>LOST Fines Summary:</h4>
+                <?php
+                // Query for LOST fines
+                $lostQuery = "SELECT 
+                                    COUNT(*) AS record_count,
+                                    SUM(Amount) AS total_amount
+                                FROM 
+                                    tbl_fines
+                                WHERE 
+                                    Reason = 'LOST';";
+                $lostResult = mysqli_query($conn, $lostQuery);
+                displayFinesSummary($lostResult);
+                ?>
+            </div>
+            <div class="col-md-6">
+                <h4>DAMAGE Fines Summary:</h4>
+                <?php
+                // Query for DAMAGE fines
+                $damageQuery = "SELECT 
+                                    COUNT(*) AS record_count,
+                                    SUM(Amount) AS total_amount
+                                FROM 
+                                    tbl_fines
+                                WHERE 
+                                    Reason = 'DAMAGE';";
+                $damageResult = mysqli_query($conn, $damageQuery);
+                displayFinesSummary($damageResult);
+                ?>
+            </div>
+            <div class="col-md-6">
+                <h4>GOOD CONDITION Fines Summary:</h4>
+                <?php
+                // Query for GOOD CONDITION fines
+                $goodConditionQuery = "SELECT 
+                                    COUNT(*) AS record_count,
+                                    SUM(Amount) AS total_amount
+                                FROM 
+                                    tbl_fines
+                                WHERE 
+                                    Reason = 'GOOD CONDITION';";
+                $goodConditionResult = mysqli_query($conn, $goodConditionQuery);
+                displayFinesSummary($goodConditionResult);
+                ?>
+            </div>
+            <div class="col-md-6">
+                <h4>PARTIALLY DAMAGE Fines Summary:</h4>
+                <?php
+                // Query for PARTIALLY DAMAGE fines
+                $partiallyDamageQuery = "SELECT 
+                                    COUNT(*) AS record_count,
+                                    SUM(Amount) AS total_amount
+                                FROM 
+                                    tbl_fines
+                                WHERE 
+                                    Reason = 'PARTIALLY DAMAGE';";
+                $partiallyDamageResult = mysqli_query($conn, $partiallyDamageQuery);
+                displayFinesSummary($partiallyDamageResult);
+                ?>
+        </div>
+    </div>
+</div>
+
+<?php
+// Function to display fines summary
+function displayFinesSummary($result)
+{
+    if ($result && mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $recordCount = $row['record_count'];
+        $totalAmount = $row['total_amount'];
+        echo "<p>Record Count: $recordCount</p>";
+        echo "<p>Total Amount: $totalAmount</p>";
+    } else {
+        echo "<p>No fines found</p>";
+    }
+}
+?>
+
     <!-- Sorting dropdown -->
-    <div class="mb-3">
+    <!-- <div class="mb-3">
     <label for="sortSelect" class="form-label">Sort By:</label>
     <select class="form-select" id="sortSelect" onchange="sortTable()">
         <option value="4">Date Borrowed Latest to Oldest</option>
         <option value="8">Date Borrowed Oldest to Latest</option>
     </select>
-</div>
-
-
+</div>  KURT PWEDE DIRETSO NGA NA SORT ANG MGA TABLE NA LATEST(DESCENDING), ALL TABLES PLEASE EXCEPT SA BOOKS AND CATALOG-->
     <table class="table table-striped table-m" id="borrowerTable">
         <!-- Table header -->
         <thead class="bg-light sticky-top">
             <tr>
-                <th scope="col">Borrower ID</th>
+                <th scope="col">Borrower</th>
                 <th scope="col">Accession Code</th>
                 <th scope="col">Book Title</th>
                 <th scope="col">Quantity</th>
@@ -113,7 +189,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             }
         
             // Number of records per page
-            $recordsPerPage = 12;
+            $recordsPerPage = 10;
         
             // Calculate the total number of records
             $totalRecordsQuery = "SELECT COUNT(*) AS total FROM tbl_borrowdetails";
@@ -155,9 +231,9 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                     LIMIT $offset, $recordsPerPage";
         
             $result = mysqli_query($conn, $query);
-        // Initialize variables to store oldest and earliest dates
-$oldestDate = PHP_INT_MAX;
-$earliestDate = PHP_INT_MIN;
+            // Initialize variables to store oldest and earliest dates
+            $oldestDate = PHP_INT_MAX;
+            $earliestDate = PHP_INT_MIN;
 
         
             // Loop through each row in the result set
@@ -187,17 +263,7 @@ $earliestDate = PHP_INT_MIN;
         </tbody>
     </table>
 
-    <!-- Pagination -->
-    <ul class="pagination">
-        <?php
-        // Display pagination links
-        for ($i = 1; $i <= $totalPages; $i++) {
-            echo '<li class="page-item';
-            if ($i == $currentPage) echo ' active';
-            echo '"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
-        }
-        ?>
-    </ul>
+    
 </div>
 
 <script>
@@ -248,91 +314,17 @@ document.getElementById("sortSelect").addEventListener("change", sortTable);
 
 </script>
 
-
-
-
-<div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <h4>LOST Fines Summary:</h4>
-            <?php
-            // Query for LOST fines
-            $lostQuery = "SELECT 
-                                COUNT(*) AS record_count,
-                                SUM(Amount) AS total_amount
-                            FROM 
-                                tbl_fines
-                            WHERE 
-                                Reason = 'LOST';";
-            $lostResult = mysqli_query($conn, $lostQuery);
-            displayFinesSummary($lostResult);
-            ?>
-        </div>
-
-            <h4>DAMAGE Fines Summary:</h4>
-            <?php
-            // Query for DAMAGE fines
-            $damageQuery = "SELECT 
-                                COUNT(*) AS record_count,
-                                SUM(Amount) AS total_amount
-                            FROM 
-                                tbl_fines
-                            WHERE 
-                                Reason = 'DAMAGE';";
-            $damageResult = mysqli_query($conn, $damageQuery);
-            displayFinesSummary($damageResult);
-            ?>
-        </div>
-
-   
-        <div class="col-md-6">
-            <h4>GOOD CONDITION Fines Summary:</h4>
-            <?php
-            // Query for GOOD CONDITION fines
-            $goodConditionQuery = "SELECT 
-                                COUNT(*) AS record_count,
-                                SUM(Amount) AS total_amount
-                            FROM 
-                                tbl_fines
-                            WHERE 
-                                Reason = 'GOOD CONDITION';";
-            $goodConditionResult = mysqli_query($conn, $goodConditionQuery);
-            displayFinesSummary($goodConditionResult);
-            ?>
-        </div>
-        
-            <h4>PARTIALLY DAMAGE Fines Summary:</h4>
-            <?php
-            // Query for PARTIALLY DAMAGE fines
-            $partiallyDamageQuery = "SELECT 
-                                COUNT(*) AS record_count,
-                                SUM(Amount) AS total_amount
-                            FROM 
-                                tbl_fines
-                            WHERE 
-                                Reason = 'PARTIALLY DAMAGE';";
-            $partiallyDamageResult = mysqli_query($conn, $partiallyDamageQuery);
-            displayFinesSummary($partiallyDamageResult);
-            ?>
-        </div>
-    </div>
-</div>
-
-<?php
-// Function to display fines summary
-function displayFinesSummary($result)
-{
-    if ($result && mysqli_num_rows($result) > 0) {
-        $row = mysqli_fetch_assoc($result);
-        $recordCount = $row['record_count'];
-        $totalAmount = $row['total_amount'];
-        echo "<p>Record Count: $recordCount</p>";
-        echo "<p>Total Amount: $totalAmount</p>";
-    } else {
-        echo "<p>No fines found</p>";
-    }
-}
-?>
+<!-- Pagination -->
+<ul class="pagination">
+        <?php
+        // Display pagination links
+        for ($i = 1; $i <= $totalPages; $i++) {
+            echo '<li class="page-item';
+            if ($i == $currentPage) echo ' active';
+            echo '"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
+        }
+        ?>
+    </ul>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>

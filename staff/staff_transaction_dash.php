@@ -168,6 +168,47 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         <h3>Top Borrowers</h3>
             <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 20px;">
                 <!--ADD CODE HERE... top 3 borrowers + borrowed book count-->
+                <?php
+                    // Database connection
+                    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+
+                    // Query to get the top borrower based on Borrower_ID
+                    $topBorrowerQuery = "SELECT
+                        tbl_borrowdetails.Borrower_ID, 
+                        COUNT(*) AS borrow_count, 
+                        tbl_borrower.First_Name, 
+                        tbl_borrower.Middle_Name, 
+                        tbl_borrower.Last_Name
+                    FROM
+                        tbl_borrowdetails
+                    INNER JOIN
+                        tbl_borrower
+                    ON 
+                        tbl_borrowdetails.Borrower_ID = tbl_borrower.Borrower_ID
+                    GROUP BY
+                        tbl_borrowdetails.Borrower_ID
+                    ORDER BY
+                        borrow_count DESC
+                    LIMIT 1";
+                    $topBorrowerResult = mysqli_query($conn, $topBorrowerQuery);
+
+                    // Display the top borrower and most borrowed book
+                    if ($topBorrowerResult && mysqli_num_rows($topBorrowerResult) > 0) {
+                        $topBorrowerData = mysqli_fetch_assoc($topBorrowerResult);
+                        $topBorrowerID = $topBorrowerData['Borrower_ID'];
+                        $borrowCount = $topBorrowerData['borrow_count'];
+                        $name = $topBorrowerData['First_Name'];
+                        $lname = $topBorrowerData['Last_Name'];
+
+                        echo "<p>$topBorrowerID</p>";
+                        echo "<p>$name, $lname</p>";
+                        echo "<p>Borrow Count: $borrowCount</p>";
+
+
+                    } else {
+                        echo "<p>No top borrower found</p>";
+                    }
+                ?>
             </div>
         </div>
         <div class="stats">
@@ -183,6 +224,39 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <h3>Most Borrowed Book</h3>
             <div class="newbooks-con">
                 <!--ADD CODE HERE... top 3 most borrowed books + borrower count-->
+                <?php
+                    // Query to get the most borrowed book details
+                    $mostBorrowedBookQuery = "SELECT
+                    tbl_borrowdetails.Accession_Code,
+                    COUNT(*) AS borrow_count,
+                    tbl_books.Book_Title
+                FROM
+                    tbl_borrowdetails
+                INNER JOIN
+                    tbl_books
+                ON 
+                    tbl_borrowdetails.Accession_Code = tbl_books.Accession_Code
+                WHERE
+                    tbl_borrowdetails.Borrower_ID = $topBorrowerID
+                GROUP BY
+                    tbl_borrowdetails.Accession_Code
+                ORDER BY
+                    borrow_count DESC
+                LIMIT 1";
+                $mostBorrowedBookResult = mysqli_query($conn, $mostBorrowedBookQuery);
+
+                if ($mostBorrowedBookResult && mysqli_num_rows($mostBorrowedBookResult) > 0) {
+                    $mostBorrowedBookData = mysqli_fetch_assoc($mostBorrowedBookResult);
+                    $accessionCode = $mostBorrowedBookData['Accession_Code'];
+                    $bookTitle = $mostBorrowedBookData['Book_Title'];
+
+                    echo "<p>Accession Code: $accessionCode</p>";
+                    echo "<p>Book Title: $bookTitle</p>";
+                } else {
+                    echo "<p>No most borrowed book found for the top borrower</p>";
+                }
+            
+                ?>
             </div>
         </div>
         

@@ -50,8 +50,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 <!--default image -->
                 <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-       <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong></div> 
-    
+            <strong><span><?php $fname = $userData["First_Name"]; $lname = $userData["Last_Name"]; $userName = $fname." ". $lname;  echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong></div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
@@ -83,49 +82,100 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             </div>
     </div>
     <div class="bookCatalog">
-        <div class="catalogOptions">
+        <div class="catalogOptions"> <!-- kurt di ko kakuha ani ay, dapat pag tuplok ani mag make syag list of categories nga example Fictional gi click, Fictional lang na category(dropdown ni sya) and then pag click niya na dadto ang list sa books  naka based sa shelf number ni sya but naa syay order ako lang isend sa gc -->
             <div class="d-flex w-100">
-                <div class="list-group list-group-checkable d-flex flex-row flex-wrap justify-content-around gap-2 border-0">
-                    <input class="list-group-item-check pe-none" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadio" value="1" checked="" hidden>
-                    <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadio">
-                    Filipiniana 
-                    </label>
+                <input type="radio" class="btn-check" name="options-base" id="option5" autocomplete="off" checked>
+                <label class="btn btn-primary btnOption" for="option5">Filipiniana</label>
 
-                    <input class="list-group-item-check pe-none" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadio" value="2" hidden>
-                    <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadio">
-                    Circulation
-                    </label>
+                <input type="radio" class="btn-check" name="options-base" id="option6" autocomplete="off">
+                <label class="btn btn-primary btnOption" for="option6">Reference</label>
 
-                    <input class="list-group-item-check pe-none" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadio" value="3" hidden>
-                    <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadio">
-                    Fiction 
-                    </label>
+                <input type="radio" class="btn-check" name="options-base" id="option7" autocomplete="off">
+                <label class="btn btn-primary btnOption" for="option7">Circulation</label>
 
-                    <input class="list-group-item-check pe-none" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadio" value="3" hidden>
-                    <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadio">
-                    Reference 
-                    </label>
+                <input type="radio" class="btn-check" name="options-base" id="option8" autocomplete="off">
+                <label class="btn btn-primary btnOption" for="option8">Fiction</label>
 
-                    <input class="list-group-item-check pe-none" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadio" value="3" hidden>
-                    <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadio">
-                    Assorted Books
-                    </label>
+                <input type="radio" class="btn-check" name="options-base" id="option9" autocomplete="off">
+                <label class="btn btn-primary btnOption" for="option9">Assorted Books</label>
+                
+                <input type="radio" class="btn-check" name="options-base" id="option10" autocomplete="off">
+                <label class="btn btn-primary btnOption" for="option10">Authors</label>
 
-                    <input class="list-group-item-check pe-none" type="radio" name="listGroupCheckableRadios" id="listGroupCheckableRadio" value="3" hidden>
-                    <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadio">
-                    Authors 
-                    </label>
-
-                    <script>
-                        const radio1 = document.getElementById('listGroupCheckableRadio');
-                        radio1.addEventListener("click", (e) => { alert('selected'); console.log('clicky')})
-                    </script>
-                </div>
+                <input type="radio" class="btn-check" name="options-base" id="option10" autocomplete="off">
+                <label class="btn btn-primary btnOption" for="option10">Publishers</label>
             </div>
         </div>
         <hr>
-        <div class="books container">
-            
+        <div class="catalogCon container">
+            <div class="FIL container">
+                <h4>Filipiniana</h4>
+                <ul>
+                    <!--this are dropdowns, if clicked the list of books will be shown(based sa shelf numbers below)-->
+                    <li>Logic / Ethics</li>         <!-- 1-2 --> 
+                    <li>Social Science</li>         <!-- 3 -->
+                    <li>Law</li>                    <!-- 4 -->
+                    <li>English Language</li>       <!-- 5-8 -->
+                    <li>Filipino</li>               <!-- 9-12 -->
+                    <li>Mathematics</li>            <!-- 13-16 -->
+                    <li>Science</li>                <!-- 17 -->
+                    <li>Music</li>                  <!-- 18-20 -->
+                    <li>Philippine Literature</li>  <!-- 21-24 -->
+                    <li>Philippine History</li>     <!-- 25-32 -->
+                    <li>Geography and History</li>  <!-- 33-44 -->
+                </ul>
+            </div>
+            <div class="REF container">
+                <h4>Reference</h4>
+                <ul>
+                    <li>References</li>             <!-- 45-58 -->
+                    <li>Encyclopedia</li>           <!-- 59-66 -->
+                    <li>References</li>             <!-- 67-83 -->
+                    <li>Language</li>               <!-- 89 -->
+                    <li>Dictionaries</li>           <!-- 84-90 -->
+                    <li>Encyclopedia</li>           <!-- 91-98-->
+                </ul>
+            </div>
+            <div class="CIR container">
+                <h4>Circulation</h4>
+                <ul>
+                    <li>Psychology</li>            <!-- 99-100 -->
+                    <li>Political Science</li>     <!-- 101 -->
+                    <li>Law /  Criminology</li>    <!-- 102 -->
+                    <li>Education</li>             <!-- 103 -->
+                    <li>Language</li>              <!-- 104-105 -->
+                    <li>Social Problems and Services</li><!-- 106-107 -->
+                    <li>Natural Science and Math</li><!-- 108-109 -->
+                    <li>Technology</li>             <!-- 110 -->
+                    <li>Medical Science</li>        <!-- 111-112 -->
+                    <li>Engineering</li>            <!-- 113-115 -->
+                    <li>Home Economics</li>         <!-- 116-117 -->
+                    <li>Arts</li>                   <!-- 118-120 -->
+                    <li>Agriculture</li>            <!-- 121 -->
+                    <li>Economics</li>              <!-- 122-123 -->
+                    <li>Accounting</li>             <!-- 124-126 -->
+                    <li>English and Literature</li> <!-- 127-128 -->
+                    <li>Geography and History</li>  <!-- 129-133 -->
+                </ul>
+            </div>
+            <div class="FIC container">
+                <h4>Fiction</h4>
+                <ul>
+                    <li>Fictions</li>               <!-- 134-139 -->
+                </ul>
+            </div>
+            <div class="ASSRTD container">
+                <h4>Assorted Books</h4>
+                <ul>
+                    <li>Assorted</li>              <!-- 140-161 -->
+                </ul>
+            </div>
+            <div class="AUTHOR container">
+                <h4>Authors</h4>
+                <ul>
+                    <li>...</li>              <!-- based on authors added -->
+                </ul>
+            </div>
         </div>
     </div>
     

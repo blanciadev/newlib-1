@@ -109,10 +109,10 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
         <thead class="bg-light sticky-top">
             <tr>
                 <th>Request ID</th>
-                <th>Employee ID</th>                 
+                <th>Employee</th>                 
                 <th>Book Title</th>
-                <th>Authors ID</th>
-                <th>Publisher ID</th>
+                <th>Author</th>
+                <th>Publisher</th>
                 <th>Price</th>
                 <th>Edition</th>
                 <th>Year Published</th>
@@ -158,7 +158,9 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
                     } 
                 } else {
                     echo "<td></td>"; // Empty cell if the condition is not met
-                }
+                } 
+                // CAN YOU ALSO CHANGE THIS TO EDIT BUTTON NALANG DAW? THEN NAAY OPTION FOR CANCEL TRANSACTION DADTO?
+                
                 
 
                 echo "</tr>";
@@ -176,7 +178,6 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
     </div>
     <div class="btn-con">
         <button class="btn" id="requestButton">Request New Book</button>
-        <!--<a href="./staff_books.php"><button class="btn">Back</button></a>-->
     </div>
         
     </div>

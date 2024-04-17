@@ -211,20 +211,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         document.getElementById("requestButton").addEventListener("click", function() {
         window.location.href = "staff_request_list.php";
         });
-
-        let navItems = document.querySelectorAll(".nav-item");  //adding .active class to navitems 
-        navItems.forEach(item => {
-            item.addEventListener('click', ()=> { 
-                document.querySelector('.active')?.classList.remove('active');
-                item.classList.add('active');
-                
-                
-            })
-            
-        })
-     
-
-
     </script>
 </body>
 </html>

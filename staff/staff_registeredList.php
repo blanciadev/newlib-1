@@ -147,12 +147,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     <table class="table table-hover table-m">
         <thead class="bg-light sticky-top">
                 <tr>
-                    <th>QR Code</th>
-                    <th>Borrower ID</th>
-                    <th>Borrower Name</th>
+                    <th>ID</th>
+                    <th>Full Name</th>
                     <th>Contact Number</th>
                     <th>Email</th>
                     <th>School/Affiliation</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <?php
@@ -175,18 +175,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
                 if ($result_display_all && $result_display_all->num_rows > 0) {
                     
                     while ($row = $result_display_all->fetch_assoc()) {
-                        $imageData = base64_encode($row['image_file']);
-                       
-                        $id = $row['Borrower_ID'];
-                        echo '<tr data-toggle="modal" onclick="BorrowerModal('.$id.')">';
-                        echo "<td><img class='img-responsive' src='data:image/png;base64," . $imageData . "' /></td>";
-                    
+                        echo '<tr>';
                         echo "<td>" . $row['Borrower_ID'] . "</td>";
                         echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
                         echo "<td>" . $row['Contact_Number'] . "</td>";
                         echo "<td>" . $row['Email'] . "</td>";
                         echo "<td>" . $row['affiliation'] . "</td>";
-                        // Add more columns as needed
+                        echo "<td> <button type='button' class='btn' data-bs-toggle='modal' data-bs-target='#BorrowerModal' >Edit</button></td>";
                         echo "</tr>";
                     }
                 } else {
@@ -201,14 +196,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     </div>
 </div>
 
-<div id="BorrowerModal" class="modal fade" role="dialog" aria-labelledby="orderModalLabel" aria-hidden="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-         <h3>Order</h3>
-    </div>
-    <div id="orderDetails" class="modal-body">Hii </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+<div id="BorrowerModal" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Borrower Details</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- QR code image here-->
+            </div>
+            <div class="modal-body">
+                <form action=""><!-- starts here -->
+                <!-- form for editing borrower details-->
+            </div>
+            <div class="modal-footer d-flex flex-row justify-content-center">
+                <a href="#"><button type="button" class="btn">Send to Email</button></a>
+                <a href="#"><button type="button" class="btn">Save</button></a>
+                </form><!-- ends here -->
+            </div>
+        </div>
     </div>
 </div>
 
