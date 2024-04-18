@@ -27,6 +27,8 @@ if (isset($_POST['sectionCode'])) {
     echo "Invalid request.";
 }
 
+
+
 // Close connection
 mysqli_close($conn);
 ?>

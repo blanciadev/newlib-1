@@ -1,11 +1,12 @@
 <?php
-include '../auth.php';
+session_start();
 // Check if the User_ID session variable is not set or empty
 if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     // Redirect to index.php
     header("Location: ../index.php");
     exit(); // Ensure script execution stops after redirection
 }
+
 
 ?>
 <!DOCTYPE html>
@@ -21,7 +22,64 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./staff.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
+
+    <style>
+        /* CSS for the shelfDropdown */
+/* CSS for the shelfDropdown */
+#shelfDropdown {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  background-color: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+ 
+  padding: 6px 12px;
+}
+
+/* CSS for the dropdown arrow */
+#shelfDropdown::after {
+  content: '\25BC'; /* Unicode character for down arrow */
+  position: absolute;
+  top: 55%;
+  right: 13px;
+  transform: translateY(-50%);
+}
+
+/* CSS for the dropdown menu */
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  background-color: #fff;
+
+  padding: 5px 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/* CSS for the dropdown menu items */
+.dropdown-menu a {
+  display: block;
+  padding: 5px 15px;
+  color: #333;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+/* Hover effect for dropdown menu items */
+.dropdown-menu a:hover {
+  background-color: #f8f9fa;
+}
+
+/* Show dropdown menu on hover */
+#shelfDropdown:hover .dropdown-menu {
+  display: block;
+}
+
+
+    </style>
 </head>
+
 <body>
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
@@ -84,100 +142,41 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <div class="bookCatalog">
         <div class="catalogOptions"> <!-- kurt di ko kakuha ani ay, dapat pag tuplok ani mag make syag list of categories nga example Fictional gi click, Fictional lang na category(dropdown ni sya) and then pag click niya na dadto ang list sa books  naka based sa shelf number ni sya but naa syay order ako lang isend sa gc -->
             <div class="d-flex w-100">
-                <input type="radio" class="btn-check" name="options-base" id="option5" autocomplete="off" checked>
-                <label class="btn btn-primary btnOption" for="option5">Filipiniana</label>
+            <div class="catalogOptions">
+            <form id="sectionForm">
+    <div class="d-flex w-100">
+    <button type="button" class="btn btn-primary btnOption" data-target="FIL" value="FIL">Filipiniana</button>
 
-                <input type="radio" class="btn-check" name="options-base" id="option6" autocomplete="off">
-                <label class="btn btn-primary btnOption" for="option6">Reference</label>
+<button type="button" class="btn btn-primary btnOption" data-target="REF" value="REF">Reference</button>
 
-                <input type="radio" class="btn-check" name="options-base" id="option7" autocomplete="off">
-                <label class="btn btn-primary btnOption" for="option7">Circulation</label>
+<button type="button" class="btn btn-primary btnOption" data-target="CIR" value="CIR">Circulation</button>
 
-                <input type="radio" class="btn-check" name="options-base" id="option8" autocomplete="off">
-                <label class="btn btn-primary btnOption" for="option8">Fiction</label>
+<button type="button" class="btn btn-primary btnOption" data-target="FIC" value="FIC">Fiction</button>
 
-                <input type="radio" class="btn-check" name="options-base" id="option9" autocomplete="off">
-                <label class="btn btn-primary btnOption" for="option9">Assorted Books</label>
-                
-                <input type="radio" class="btn-check" name="options-base" id="option10" autocomplete="off">
-                <label class="btn btn-primary btnOption" for="option10">Authors</label>
+<button type="button" class="btn btn-primary btnOption" data-target="ASRTD" value="ASRTD">Assorted Books</button>
 
-                <input type="radio" class="btn-check" name="options-base" id="option10" autocomplete="off">
-                <label class="btn btn-primary btnOption" for="option10">Publishers</label>
-            </div>
+<button type="button" class="btn btn-primary btnOption" data-target="Authors" value="Authors">Authors</button>
+
+<button type="button" class="btn btn-primary btnOption" data-target="Publishers" value="Publishers">Publishers</button>
+
+    </div>
+</form>
+
+</div>
+
         </div>
         <hr>
         <div class="catalogCon container">
-            <div class="FIL container">
-                <h4>Filipiniana</h4>
-                <ul>
-                    <!--this are dropdowns, if clicked the list of books will be shown(based sa shelf numbers below)-->
-                    <li>Logic / Ethics</li>         <!-- 1-2 --> 
-                    <li>Social Science</li>         <!-- 3 -->
-                    <li>Law</li>                    <!-- 4 -->
-                    <li>English Language</li>       <!-- 5-8 -->
-                    <li>Filipino</li>               <!-- 9-12 -->
-                    <li>Mathematics</li>            <!-- 13-16 -->
-                    <li>Science</li>                <!-- 17 -->
-                    <li>Music</li>                  <!-- 18-20 -->
-                    <li>Philippine Literature</li>  <!-- 21-24 -->
-                    <li>Philippine History</li>     <!-- 25-32 -->
-                    <li>Geography and History</li>  <!-- 33-44 -->
-                </ul>
-            </div>
-            <div class="REF container">
-                <h4>Reference</h4>
-                <ul>
-                    <li>References</li>             <!-- 45-58 -->
-                    <li>Encyclopedia</li>           <!-- 59-66 -->
-                    <li>References</li>             <!-- 67-83 -->
-                    <li>Language</li>               <!-- 89 -->
-                    <li>Dictionaries</li>           <!-- 84-90 -->
-                    <li>Encyclopedia</li>           <!-- 91-98-->
-                </ul>
-            </div>
-            <div class="CIR container">
-                <h4>Circulation</h4>
-                <ul>
-                    <li>Psychology</li>            <!-- 99-100 -->
-                    <li>Political Science</li>     <!-- 101 -->
-                    <li>Law /  Criminology</li>    <!-- 102 -->
-                    <li>Education</li>             <!-- 103 -->
-                    <li>Language</li>              <!-- 104-105 -->
-                    <li>Social Problems and Services</li><!-- 106-107 -->
-                    <li>Natural Science and Math</li><!-- 108-109 -->
-                    <li>Technology</li>             <!-- 110 -->
-                    <li>Medical Science</li>        <!-- 111-112 -->
-                    <li>Engineering</li>            <!-- 113-115 -->
-                    <li>Home Economics</li>         <!-- 116-117 -->
-                    <li>Arts</li>                   <!-- 118-120 -->
-                    <li>Agriculture</li>            <!-- 121 -->
-                    <li>Economics</li>              <!-- 122-123 -->
-                    <li>Accounting</li>             <!-- 124-126 -->
-                    <li>English and Literature</li> <!-- 127-128 -->
-                    <li>Geography and History</li>  <!-- 129-133 -->
-                </ul>
-            </div>
-            <div class="FIC container">
-                <h4>Fiction</h4>
-                <ul>
-                    <li>Fictions</li>               <!-- 134-139 -->
-                </ul>
-            </div>
-            <div class="ASSRTD container">
-                <h4>Assorted Books</h4>
-                <ul>
-                    <li>Assorted</li>              <!-- 140-161 -->
-                </ul>
-            </div>
-            <div class="AUTHOR container">
-                <h4>Authors</h4>
-                <ul>
-                    <li>...</li>              <!-- based on authors added -->
-                </ul>
-            </div>
-        </div>
+            <br>
+            <div id="shelfDropdown">DropDown</div>
+          
+            <div class="bookDisplay container">
+   
+    <div id="bookList">
+        <!-- Fetched books will be displayed here -->
     </div>
+</div>
+
     
     
 </div>
@@ -201,26 +200,134 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-    <script> 
-         // JavaScript code for search functionality
-        document.getElementById("searchInput").addEventListener("input", function() {
-            let searchValue = this.value.toLowerCase();
-            let rows = document.querySelectorAll("tbody tr");
-            rows.forEach(row => {
-                let cells = row.querySelectorAll("td");
-                let found = false;
-                cells.forEach(cell => {
-                    if (cell.textContent.toLowerCase().includes(searchValue)) {
-                        found = true;
-                    }
-                });
-                if (found) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+
+    <script>
+  var sectionCode = ''; 
+  var selectedShelf = '';
+  $(document).ready(function() {
+    // Simulate click on Filipiniana button
+    $('.btnOption[data-target="FIL"]').addClass('active'); // Add 'active' class to the Filipiniana button
+    fetchShelfs('FIL'); // Fetch shelf categories for Filipiniana section initially
+
+    // Event listener for dropdown change
+    $('#shelfDropdown').on('change', '#shelf', function() {
+        var selectedShelf = $(this).val();
+        console.log("Selected shelf:", selectedShelf);
+
+        // AJAX request to fetch books based on selected shelf
+        fetchBooks(selectedShelf);
+    });
+
+    // Event listener for button click
+    $('.btnOption').click(function() {
+        // Remove 'active' class from all buttons
+        $('.btnOption').removeClass('active');
+        
+        // Add 'active' class to the clicked button
+        $(this).addClass('active');
+        
+        var sectionCode = $(this).data('target');
+        console.log("Selected section code:", sectionCode); // Log the sectionCode
+        
+        // Log the value of the clicked button
+        var buttonValue = $(this).attr('value');
+        console.log("Clicked button value:", buttonValue);
+        
+        fetchShelfs(sectionCode); // Fetch shelf categories for the selected section code
+    });
+});
+
+function fetchShelfs(sectionCode) {
+    // AJAX request to fetch shelf categories
+    $.ajax({
+        url: 'fetch_shelfs.php',
+        method: 'POST',
+        data: { sectionCode: sectionCode },
+        dataType: 'html',
+        success: function(response) {
+            console.log("Response:", response); // Log the response
+            // Update dropdown menu with fetched shelf categories
+            $('#shelfDropdown').html(response);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching shelf categories:', error);
+        }
+    });
+}
+
+function fetchBooks(selectedShelf) {
+    // AJAX request to fetch books based on selected shelf
+    $.ajax({
+        url: 'fetch_books.php',
+        method: 'POST',
+        data: { selectedShelf: selectedShelf },
+        dataType: 'html',
+        success: function(response) {
+            console.log("Books Response:", response); // Log the response
+            // Display fetched books in the bookList div
+            $('#bookList').html(response);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching books:', error);
+        }
+    });
+}
+
+// Event listener for Authors button click
+$('button[data-target="Authors"]').click(function() {
+    var target = $(this).data('target');
+    fetchData(target);
+});
+
+// Event listener for Publishers button click
+$('button[data-target="Publishers"]').click(function() {
+    var target = $(this).data('target');
+    fetchData(target);
+});
+
+function fetchData(target) {
+    // AJAX request to fetch data based on the target
+    $.ajax({
+        url: 'fetch_auth.php', // Replace 'fetch_data.php' with the appropriate server-side script
+        method: 'POST',
+        data: { target: target }, // Send the target as data
+        dataType: 'html',
+        success: function(response) {
+    console.log(target + " Response:", response); // Log the response for Authors or Publishers
+    // Append the fetched data to the bookList div
+    $('#bookList').html(response);
+},
+
+        error: function(xhr, status, error) {
+            console.error('Error fetching ' + target + ':', error);
+        }
+    });
+}
+
+
+// JavaScript code for search functionality
+document.getElementById("searchInput").addEventListener("input", function() {
+    let searchValue = this.value.toLowerCase();
+    let rows = document.querySelectorAll("tbody tr");
+    rows.forEach(row => {
+        let cells = row.querySelectorAll("td");
+        let found = false;
+        cells.forEach(cell => {
+            if (cell.textContent.toLowerCase().includes(searchValue)) {
+                found = true;
+            }
         });
+        if (found) {
+            row.style.display = "";
+        } else {
+            row.style.display = "none";
+        }
+    });
+});
+
 
     </script>
 </body>
