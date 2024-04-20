@@ -69,33 +69,38 @@ $stat = $_SESSION['stat'];
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Book Details</h2>
-        <div class="info-item">
-            <span class="info-label">Accession Code:</span> <?php echo $accessionCode; ?>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Book Title:</span> <?php echo $bookTitle; ?>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Quantity:</span> <?php echo $quantity; ?>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Borrow Details ID:</span> <?php echo $borrowDetailsId; ?>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Date Borrowed:</span> <?php echo $date; ?>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Due Date:</span> <?php echo $due; ?>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Fine:</span> <?php echo $fine; ?>
-        </div>
-        <div class="info-item">
-            <span class="info-label">Status:</span> <?php echo $stat; ?>
+<div class="container">
+    <h2 class="mb-4">Book Details</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Book Information</h5>
+            <div class="info-item">
+                <span class="info-label">Accession Code:</span> <?php echo $accessionCode; ?>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Book Title:</span> <?php echo $bookTitle; ?>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Quantity:</span> <?php echo $quantity; ?>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Borrow Details ID:</span> <?php echo $borrowDetailsId; ?>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Date Borrowed:</span> <?php echo $date; ?>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Due Date:</span> <?php echo $due; ?>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Fine:</span> <?php echo $fine; ?>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Status:</span> <?php echo $stat; ?>
+            </div>
         </div>
     </div>
+</div>
 
     
     <div class="container-fluid">

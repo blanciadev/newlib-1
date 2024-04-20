@@ -41,6 +41,9 @@ if ($conn->connect_error) {
         text-align: center;
         font-size: 1.5rem;
     }
+    table{
+        padding: 10px;
+    }
 </style>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
@@ -113,13 +116,11 @@ if ($conn->connect_error) {
     <table class="table table-hover table-sm">
         <thead>
             <tr>
-            <tr>
-                 
-                    <th>ID</th>
-                    <th>Borrowers Name</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                    <th></th>
+            <th></th>
+                <th>ID</th>
+                <th>Borrower's Name</th>
+                <th>Status</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -150,46 +151,35 @@ if ($conn->connect_error) {
             GROUP BY
                 bd.Borrower_ID;
             ";
-    
+
                 $result = $conn->query($sql);
-    
 
                 // Output data of each row
                 while($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                //    echo "<td>" . $row["BorrowDetails_ID"] . "</td>";
+                    echo "<tr>   <th></th>";
                     echo "<td>" . $row["Borrower_ID"] . "</td>";
                     echo "<td>" . $row["First_Name"] ." ". $row["Middle_Name"] ." ". $row["Last_Name"] . "</td>";
                     echo "<td>" . $row["tb_status"] . "</td>";
 
                     echo "<td>";
-                    echo "<form class='update-form' method='GET' action='staff_return.php'>";
-                    echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["Borrower_ID"] . "'>";
-                    echo "</form>";
                     // Conditionally render the button based on the status
-                    echo "<input type='hidden' name='borrowerId' value='" . $row["Borrower_ID"] . "'>";
-
                     if ($row["tb_status"] === 'Pending') {
                         echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='updateAndSetSession(" . $row["Borrower_ID"] . ")'>UPDATE</button>";
-
                     } else {
                         echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Update</button>";
                     }
-                
                     echo "<div class='update-message'></div>";
                     echo "</td>";
                     echo "</tr>";
                 }
-                echo "</table>";
-
+                echo "</tbody></table>";
                 // Close connection
                 $conn->close();
             ?>
         </tbody>
     </table>
-    </div>
-    
 </div>
+
     
     <!--Logout Modal -->
     <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

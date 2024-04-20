@@ -402,66 +402,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <!-- Container for displaying search results with a fixed height and scrollable content -->
             <div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
-                <?php
-                if ($result->num_rows > 0) {
-                    // Output data of each row
-                    while ($row = $result->fetch_assoc()) {
-                        $_SESSION['Accession_Code'] = $row["Accession_Code"];
-                        $_SESSION['Book_Title'] = $row["Book_Title"];
-                        $_SESSION['Quantity'] = $row["Quantity"];
-               //         $_SESSION['BorrowDetails_ID'] = $row["BorrowDetails_ID"];
-                        $_SESSION['Date_Borrowed'] = $row["Date_Borrowed"];
-                        $_SESSION['Due_Date'] = $row["Due_Date"];
-                        $_SESSION['status'] = $row["tb_status"];
-                        $_SESSION['qty'] = $row["Quantity"];
+    <?php
+    if ($result->num_rows > 0) {
+        // Output data of each row
+        while ($row = $result->fetch_assoc()) {
+            $_SESSION['Accession_Code'] = $row["Accession_Code"];
+            $_SESSION['Book_Title'] = $row["Book_Title"];
+            $_SESSION['Quantity'] = $row["Quantity"];
+            $_SESSION['Date_Borrowed'] = $row["Date_Borrowed"];
+            $_SESSION['Due_Date'] = $row["Due_Date"];
+            $_SESSION['status'] = $row["tb_status"];
+            $_SESSION['qty'] = $row["Quantity"];
+            ?>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Book Information</h5>
+                    <p class="card-text"><strong>Accession Code:</strong> <?php echo $row["Accession_Code"]; ?></p>
+                    <p class="card-text"><strong>Book Title:</strong> <?php echo $row["Book_Title"]; ?></p>
+                    <p class="card-text"><strong>Quantity:</strong> <?php echo $row["Quantity"]; ?></p>
 
-                        echo "<div class='container'>";
-                        echo "<div class='row'>";
-                        echo "<div class='col'>";
-                        echo "<p>Accession Code: " . $row["Accession_Code"] . "</p>";
-                        $_SESSION['Accession_Code'] = $row["Accession_Code"];
+                    <?php
+                    $bookStatus = "LOST"; // Example status, replace with actual logic
+                    $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"], $bookStatus);
+                    ?>
+                    <p class="card-text"><strong>Fine:</strong> <?php echo $fine; ?></p>
 
-                        echo "<p>Book Title: " . $row["Book_Title"] . "</p>";
-                        echo "<p>Quantity: " . $row["Quantity"] . "</p>";
+                    <form class="update-form" method="POST" action="">
+                        <div class="form-group">
+                            <label for="paymentStatus">Book Status:</label><br>
+                            <div class="form-check">
+                                <input type="radio" id="damage" name="paymentStatus" value="DAMAGE" class="form-check-input">
+                                <label for="damage" class="form-check-label">Damage</label><br>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" id="partialDamage" name="paymentStatus" value="PARTIALLY DAMAGE" class="form-check-input">
+                                <label for="partialDamage" class="form-check-label">Partially Damage</label><br>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" id="goodCondition" name="paymentStatus" value="GOOD CONDITION" class="form-check-input">
+                                <label for="goodCondition" class="form-check-label">Good Condition</label><br>
+                            </div>
+                            <div class="form-check">
+                                <input type="radio" id="lost" name="paymentStatus" value="LOST" class="form-check-input">
+                                <label for="lost" class="form-check-label">Lost</label><br>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+                    </form>
+                </div>
+            </div>
+        <?php
+        }
+    } else {
+        echo "No records found for the provided Borrower ID.";
+    }
+    ?>
+</div>
 
-                        $bookStatus = "LOST"; // Example status, replace with actual logic
-                        $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"], $bookStatus);
-                        echo "Fine: " . $fine . "<br>";
-                        $_SESSION['fine'] = $fine;
-
-                        // Radio buttons for selecting book status within the same form
-                        echo '<form class="update-form" method="POST" action="">';
-
-                        echo '<div class="form-group">';
-                        echo '<label for="paymentStatus">Book Status:</label><br>';
-                        echo '<div class="form-check">';
-                        echo '<input type="radio" id="damage" name="paymentStatus" value="DAMAGE" class="form-check-input">';
-                        echo '<label for="damage" class="form-check-label">Damage</label><br>';
-                        echo '</div>';
-                        echo '<div class="form-check">';
-                        echo '<input type="radio" id="partialDamage" name="paymentStatus" value="PARTIALLY DAMAGE" class="form-check-input">';
-                        echo '<label for="partialDamage" class="form-check-label">Partially Damage</label><br>';
-                        echo '</div>';
-                        echo '<div class="form-check">';
-                        echo '<input type="radio" id="goodCondition" name="paymentStatus" value="GOOD CONDITION" class="form-check-input">';
-                        echo '<label for="goodCondition" class="form-check-label">Good Condition</label><br>';
-                        echo '</div>';
-                        echo '<div class="form-check">';
-                        echo '<input type="radio" id="lost" name="paymentStatus" value="LOST" class="form-check-input">';
-                        echo '<label for="lost" class="form-check-label">Lost</label><br>';
-                        echo '</div>';
-                        echo '</div>';
-                        echo '<button type="submit" class="btn btn-primary">Proceed to Payment</button>';
-                        echo '</form>';
-
-                        echo "</div>"; // Close div.col
-                        echo "</div>"; // Close div.row
-                        echo "</div>"; // Close div.container
-                    }
-                } else {
-                    echo "No records found for the provided Borrower ID.";
-                }
-                ?>
 
 
                 <script>

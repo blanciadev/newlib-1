@@ -120,80 +120,86 @@ if (isset($_GET['borrowId'])) {
     <table class="table table-hover table-sm">
         <thead>
             <tr>
-            <tr>
-                    <th>Borrow Id</th>
-                    <th>Accession Code</th>
-                    <th>Book Title</th>
-                    <th>Quantity</th>
-                    <th>Date</th>
-                    <th>Due Date</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                    <th></th>
+                <th>Borrow Id</th>
+                <th>Accession Code</th>
+                <th>Book Title</th>
+                <th>Quantity</th>
+                <th>Date</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
             <?php
-              
-// Database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+            // Database connection
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+            }
 
-// Initialize borrowId variable
-$borrowId = "";
+            // Initialize borrowId variable
+            $borrowId = "";
 
-// Check if borrowId is provided in the URL
-if (isset($_GET['borrowId'])) {
-    // Sanitize and store the borrowId
-    $borrowId = mysqli_real_escape_string($conn, $_GET['borrowId']);
-}
+            // Check if borrowId is provided in the URL
+            if (isset($_GET['borrowId'])) {
+                // Sanitize and store the borrowId
+                $borrowId = mysqli_real_escape_string($conn, $_GET['borrowId']);
+            }
 
-// Fetch records based on borrowId
-$sql = "SELECT DISTINCT
-b.User_ID, 
-b.Accession_Code, 
-bk.Book_Title, 
-bd.Quantity, 
-b.Date_Borrowed, 
-b.Due_Date, 
-bd.tb_status, 
-bd.Borrower_ID, 
-b.Borrow_ID
-FROM
-tbl_borrowdetails AS bd
-INNER JOIN
-tbl_borrow AS b
-ON 
-    bd.Borrower_ID = b.Borrower_ID AND
-    bd.BorrowDetails_ID = b.Borrow_ID
-INNER JOIN
-tbl_books AS bk
-ON 
-    b.Accession_Code = bk.Accession_Code
-INNER JOIN
-tbl_borrower AS br
-ON 
-    b.Borrower_ID = br.Borrower_ID AND
-    bd.Borrower_ID = br.Borrower_ID
-WHERE
-bd.Borrower_ID = ?"; // Using a placeholder for the borrowId
+            // Pagination
+            $records_per_page = 5;
+            $page = 1;
+            if (isset($_GET['page']) && is_numeric($_GET['page'])) {
+                $page = $_GET['page'];
+            }
+            $start_from = ($page - 1) * $records_per_page;
 
-// Prepare the SQL statement
-$stmt = mysqli_prepare($conn, $sql);
-if ($stmt) {
-    // Bind the parameter to the placeholder
-    mysqli_stmt_bind_param($stmt, "s", $borrowId);
-    
-    // Execute the SQL query
-    mysqli_stmt_execute($stmt);
+            // Fetch records based on borrowId and pagination parameters
+            $sql = "SELECT DISTINCT
+                        b.User_ID, 
+                        b.Accession_Code, 
+                        bk.Book_Title, 
+                        bd.Quantity, 
+                        b.Date_Borrowed, 
+                        b.Due_Date, 
+                        bd.tb_status, 
+                        bd.Borrower_ID, 
+                        b.Borrow_ID
+                    FROM
+                        tbl_borrowdetails AS bd
+                    INNER JOIN
+                        tbl_borrow AS b
+                    ON 
+                        bd.Borrower_ID = b.Borrower_ID AND
+                        bd.BorrowDetails_ID = b.Borrow_ID
+                    INNER JOIN
+                        tbl_books AS bk
+                    ON 
+                        b.Accession_Code = bk.Accession_Code
+                    INNER JOIN
+                        tbl_borrower AS br
+                    ON 
+                        b.Borrower_ID = br.Borrower_ID AND
+                        bd.Borrower_ID = br.Borrower_ID
+                    WHERE
+                        bd.Borrower_ID = ?
+                    LIMIT ?, ?"; // Using a placeholder for the borrowId
 
-    // Get the result
-    $result = mysqli_stmt_get_result($stmt);
+            // Prepare the SQL statement
+            $stmt = mysqli_prepare($conn, $sql);
+            if ($stmt) {
+                // Bind the parameters to the placeholders
+                mysqli_stmt_bind_param($stmt, "sii", $borrowId, $start_from, $records_per_page);
+                
+                // Execute the SQL query
+                mysqli_stmt_execute($stmt);
 
-    // Use the result as needed
-    while ($row = mysqli_fetch_assoc($result)) {
+                // Get the result
+                $result = mysqli_stmt_get_result($stmt);
+
+                // Use the result as needed
+                while ($row = mysqli_fetch_assoc($result)) {
                     echo "<tr>";
                     echo "<td>" . $row["Borrow_ID"] . "</td>";
                     echo "<td>" . $row["Accession_Code"] . "</td>";
@@ -224,16 +230,37 @@ if ($stmt) {
                     echo "</tr>";
                 }
             }
-                echo "</table>";
-
-                // Close connection
-                $conn->close();
             ?>
         </tbody>
     </table>
-    </div>
-    
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <?php
+            $sql_count = "SELECT COUNT(*) AS total FROM tbl_borrowdetails WHERE Borrower_ID = ?";
+            $stmt_count = mysqli_prepare($conn, $sql_count);
+            mysqli_stmt_bind_param($stmt_count, "s", $borrowId);
+            mysqli_stmt_execute($stmt_count);
+            $result_count = mysqli_stmt_get_result($stmt_count);
+            $row_count = mysqli_fetch_assoc($result_count);
+            $total_records = $row_count['total'];
+            $total_pages = ceil($total_records / $records_per_page);
+
+            // Pagination links
+            for ($i = 1; $i <= $total_pages; $i++) {
+                echo "<li class='page-item'><a class='page-link' href='?borrowId=$borrowId&page=$i'>$i</a></li>";
+            }
+            ?>
+        </ul>
+    </nav>
 </div>
+
+<?php
+// Close connection
+$conn->close();
+?>
+
     
     <!--Logout Modal -->
     <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
