@@ -221,10 +221,13 @@ if (isset($_POST['updatePassword'])) {
     <!-- Display user data -->
         
     <div class="settingForms">
-        <form id="imageUploadForm" action="" method="post" enctype="multipart/form-data">
-            <input type="file" name="imageFile" id="imageFile">
-            <button type="submit" name="uploadImageBtn">Upload Image</button><br>
-        </form>
+    <form id="imageUploadForm" action="" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="imageFile" class="form-label">Profile Image</label>
+                    <input type="file" class="form-control" id="imageFile" name="imageFile">
+                </div>
+                <button type="submit" class="btn btn-primary" name="uploadImageBtn">Upload Image</button>
+            </form>
     
         <form id="userProfileForm" action="" method="post">
                    
@@ -257,7 +260,7 @@ if (isset($_POST['updatePassword'])) {
                        <!-- Update button -->
                        <button type="submit" class="btn btn-primary" name="updateProfile" value="Update Profile">Update Profile</button>
   
-              <br><br>
+              <br><br><br>
                     <!-- Password Change Section --> 
                     <div class="mb-3">
                         <label for="oldPassword" class="form-label">Old Password</label>

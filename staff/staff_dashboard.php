@@ -189,53 +189,56 @@ if (!$result) {
             </div>
 
             <div class="duebooks">
-                <h3>Due Today</h3>
-                <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 20px;">
-                    <?php
-                    $totalVisits = "SELECT
-                            bd.BorrowDetails_ID, 
-                            b.User_ID, 
-                            b.Accession_Code, 
-                            bk.Book_Title, 
-                            bd.Quantity, 
-                            b.Date_Borrowed, 
-                            b.Due_Date, 
-                            br.Borrower_ID, 
-                            bd.tb_status, 
-                            br.First_Name, 
-                            br.Last_Name
-                        FROM
-                            tbl_borrowdetails AS bd
-                        INNER JOIN
-                            tbl_borrow AS b
-                        ON 
-                            bd.Borrower_ID = b.Borrower_ID
-                        INNER JOIN
-                            tbl_books AS bk
-                        ON 
-                            b.Accession_Code = bk.Accession_Code
-                        INNER JOIN
-                            tbl_borrower AS br
-                        ON 
-                            bd.Borrower_ID = br.Borrower_ID
-                        WHERE
-                            b.Due_Date = CURDATE();";
+    <h3>Due Today</h3>
+    <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 20px;">
+        <?php
+        $totalVisits = "SELECT
+                bd.BorrowDetails_ID, 
+                b.User_ID, 
+                b.Accession_Code, 
+                bk.Book_Title, 
+                bd.Quantity, 
+                b.Date_Borrowed, 
+                b.Due_Date, 
+                br.Borrower_ID, 
+                bd.tb_status, 
+                br.First_Name, 
+                br.Last_Name
+            FROM
+                tbl_borrowdetails AS bd
+            INNER JOIN
+                tbl_borrow AS b
+            ON 
+                bd.Borrower_ID = b.Borrower_ID
+            INNER JOIN
+                tbl_books AS bk
+            ON 
+                b.Accession_Code = bk.Accession_Code
+            INNER JOIN
+                tbl_borrower AS br
+            ON 
+                bd.Borrower_ID = br.Borrower_ID
+            WHERE
+                b.Due_Date = CURDATE();";
 
-                    $totalVisits_run = mysqli_query($conn, $totalVisits);
+        $totalVisits_run = mysqli_query($conn, $totalVisits);
 
-                    if ($totalVisits_run && mysqli_num_rows($totalVisits_run) > 0) {
-                        echo '<table class="table">';
-                        while ($row = mysqli_fetch_assoc($totalVisits_run)) {
-                            echo '<tr><td></td><td><strong>' . $row['Book_Title'] . '</strong></td></tr>';
-                            echo '<tr><td><strong></strong></td><td>' . $row['First_Name'] . ' ' . $row['Last_Name'] . '</td></tr>';
-                        }
-                        echo '</table>';
-                    } else {
-                        echo "<p>No books due today.</p>";
-                    }
-                    ?>
-                </div>
-            </div>
+        if ($totalVisits_run && mysqli_num_rows($totalVisits_run) > 0) {
+            echo '<div class="table-responsive">';
+            echo '<table class="table table-striped">';
+            while ($row = mysqli_fetch_assoc($totalVisits_run)) {
+                echo '<tr><td><strong>' . $row['Book_Title'] . '</strong></td></tr>';
+                echo '<tr><td>' . $row['First_Name'] . ' ' . $row['Last_Name'] . '</td></tr>';
+            }
+            echo '</table>';
+            echo '</div>';
+        } else {
+            echo "<p>No books due today.</p>";
+        }
+        ?>
+    </div>
+</div>
+
 
             <div class="stats">
                 <h3>Statistics</h3>
@@ -311,39 +314,44 @@ if (!$result) {
                 </div>
             </div>
             <div class="newbooks">
-                <h3>What's New?</h3>
-                <div class="newbooks-con">
-                    <?php
+    <h3>What's New?</h3>
+    <div class="newbooks-con">
+        <?php
 
-                    // Calculate the date 3 days ago from today
-                    $threeDaysAgo = date('Y-m-d H:i:s', strtotime('-3 days'));
+        // Calculate the date 3 days ago from today
+        $threeDaysAgo = date('Y-m-d H:i:s', strtotime('-3 days'));
 
-                    // SQL query to fetch books inserted in the last 3 days or current along with author's name
-                    $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
-                    FROM tbl_books 
-                    INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
-                    WHERE tbl_books.date_inserted >= '$threeDaysAgo'";
+        // SQL query to fetch books inserted in the last 3 days or current along with author's name
+        $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
+                FROM tbl_books 
+                INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
+                WHERE tbl_books.date_inserted >= '$threeDaysAgo'";
 
-                    $result = mysqli_query($conn, $sql);
+        $result = mysqli_query($conn, $sql);
 
-                    if ($result) {
-                        $totalBooksCount = mysqli_num_rows($result);
+        if ($result) {
+            $totalBooksCount = mysqli_num_rows($result);
 
+            // Display the books or process further as needed
+            echo '<div class="list-group">';
+            while ($row = mysqli_fetch_assoc($result)) {
+                // Display book details or perform actions
+                echo '<a href="#" class="list-group-item list-group-item-action">';
+                echo '<div class="d-flex w-100 justify-content-between">';
+                echo '<h5 class="mb-1">' . $row['Book_Title'] . '</h5>';
+                echo '</div>';
+                echo '<p class="mb-1">' . $row['Authors_Name'] . '</p>';
+                echo '<small>' . $row['date_inserted'] . '</small>';
+                echo '</a>';
+            }
+            echo '</div>';
+        } else {
+            echo "<p>No New Books</p>";
+        }
+        ?>
+    </div>
+</div>
 
-                        // Display the books or process further as needed
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            // Display book details or perform actions
-                            echo  $row['Book_Title'] . "<br>";
-                            echo  $row['Authors_Name'] . "<br>";
-                            echo  $row['date_inserted'] . "<br>";
-                            echo "<hr>";
-                        }
-                    } else {
-                        echo  "No New Books" . "<br>";
-                    }
-                    ?>
-                </div>
-            </div>
 
 
         </div>
