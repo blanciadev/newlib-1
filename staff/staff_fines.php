@@ -77,7 +77,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <div class="books container">
     <div class="container">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-6"><br>
                 <h4>LOST Fines Summary:</h4>
                 <?php
                 // Query for LOST fines
@@ -92,7 +92,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 displayFinesSummary($lostResult);
                 ?>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6"><br>
                 <h4>DAMAGE Fines Summary:</h4>
                 <?php
                 // Query for DAMAGE fines
@@ -156,15 +156,10 @@ function displayFinesSummary($result)
 }
 ?>
 
-    <!-- Sorting dropdown -->
-    <!-- <div class="mb-3">
-    <label for="sortSelect" class="form-label">Sort By:</label>
-    <select class="form-select" id="sortSelect" onchange="sortTable()">
-        <option value="4">Date Borrowed Latest to Oldest</option>
-        <option value="8">Date Borrowed Oldest to Latest</option>
-    </select>
-</div>  KURT PWEDE DIRETSO NGA NA SORT ANG MGA TABLE NA LATEST(DESCENDING), ALL TABLES PLEASE EXCEPT SA BOOKS AND CATALOG-->
-    <table class="table table-striped table-m" id="borrowerTable">
+    <!-- 
+ KURT PWEDE DIRETSO NGA NA SORT ANG MGA TABLE NA LATEST(DESCENDING), ALL TABLES PLEASE EXCEPT SA BOOKS AND CATALOG-->
+    
+ <table class="table table-striped table-m" id="borrowerTable">
         <!-- Table header -->
         <thead class="bg-light sticky-top">
             <tr>
@@ -206,29 +201,31 @@ function displayFinesSummary($result)
             $offset = ($currentPage - 1) * $recordsPerPage;
         
 
-            // Fetch log records from the database with pagination
-            $query = "SELECT DISTINCT
-                        bd.BorrowDetails_ID, 
-                        b.User_ID, 
-                        b.Accession_Code, 
-                        bk.Book_Title, 
-                        bd.Quantity, 
-                        b.Date_Borrowed, 
-                        b.Due_Date, 
-                        br.Borrower_ID, 
-                        bd.tb_status, 
-                        tbl_fines.Amount
-                    FROM
-                        tbl_borrowdetails AS bd
-                    INNER JOIN
-                        tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
-                    INNER JOIN
-                        tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-                    INNER JOIN
-                        tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
-                    INNER JOIN
-                        tbl_fines ON bd.BorrowDetails_ID = tbl_fines.Borrower_ID
-                    LIMIT $offset, $recordsPerPage";
+            
+// Fetch log records from the database with pagination and sorted by Date_Borrowed
+$query = "SELECT DISTINCT
+bd.BorrowDetails_ID, 
+b.User_ID, 
+b.Accession_Code, 
+bk.Book_Title, 
+bd.Quantity, 
+b.Date_Borrowed, 
+b.Due_Date, 
+br.Borrower_ID, 
+bd.tb_status, 
+tbl_fines.Amount
+FROM
+tbl_borrowdetails AS bd
+INNER JOIN
+tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+INNER JOIN
+tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+INNER JOIN
+tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
+INNER JOIN
+tbl_fines ON bd.BorrowDetails_ID = tbl_fines.Borrower_ID
+ORDER BY b.Date_Borrowed DESC
+LIMIT $offset, $recordsPerPage";
         
             $result = mysqli_query($conn, $query);
             // Initialize variables to store oldest and earliest dates

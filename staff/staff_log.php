@@ -161,35 +161,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
                 </tr>
             </thead>
             <?php
-            // Database connection
-            $conn_display_all = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
-            if ($conn_display_all->connect_error) {
-                die("Connection failed: " . $conn_display_all->connect_error);
-            }
-            
-            // SQL query to select all records from tbl_borrower and tbl_log
-            $sql_display_all = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID";
-            $result_display_all = $conn_display_all->query($sql_display_all);
+// Database connection
+$conn_display_today = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
+if ($conn_display_today->connect_error) {
+    die("Connection failed: " . $conn_display_today->connect_error);
+}
 
-            // Close display connection
-            $conn_display_all->close();
-            ?>
-    
-            <tbody>
-                <?php
-                if ($result_display_all && $result_display_all->num_rows > 0) {
-                    while ($row = $result_display_all->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<td>" . $row['Borrower_ID'] . "</td>";
-                     echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
-                        echo "<td>" . $row['Date_Time'] . "</td>";
-                        // Add more columns as needed
-                        echo "</tr>";
-                    }
-                } else {
-                    echo "<tr><td colspan='3'>No records found.</td></tr>";
-                }
-                ?>
+// Get the current date in the format 'YYYY-MM-DD'
+$currentDate = date('Y-m-d');
+
+// SQL query to select records for the current date from tbl_borrower and tbl_log
+$sql_display_today = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID WHERE DATE(tbl_log.Date_Time) = '$currentDate'";
+$result_display_today = $conn_display_today->query($sql_display_today);
+
+// Close display connection
+$conn_display_today->close();
+?>
+
+<tbody>
+    <?php
+    if ($result_display_today && $result_display_today->num_rows > 0) {
+        while ($row = $result_display_today->fetch_assoc()) {
+            echo "<tr>";
+            echo "<td>" . $row['Borrower_ID'] . "</td>";
+            echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
+            echo "<td>" . $row['Date_Time'] . "</td>";
+            // Add more columns as needed
+            echo "</tr>";
+        }
+    } else {
+        echo "<tr><td colspan='3'>No records found for the current date.</td></tr>";
+    }
+    ?>
+
+
             </tbody>
         </table>
     </div>
