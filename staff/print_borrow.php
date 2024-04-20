@@ -98,33 +98,71 @@ unset($_SESSION['due']);
             while ($row = $result->fetch_assoc()) {
         ?>
          
-        <div class="col-md-4">
-            <div class="info-item"><hr>
-                <span class="info-label">Accession Code:</span> <?php echo $row['Accession_Code']; ?>
+         <div class="col-md-6 mb-4">
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Book Information</h5>
+            <hr>
+            <div class="row mb-2">
+                <div class="col-6">
+                    <span class="info-label">Accession Code:</span>
+                </div>
+                <div class="col-6">
+                    <?php echo $row['Accession_Code']; ?>
+                </div>
             </div>
-            <div class="info-item">
-                <span class="info-label">Book Title:</span> <?php echo $row['Book_Title']; ?>
+            <div class="row mb-2">
+                <div class="col-6">
+                    <span class="info-label">Book Title:</span>
+                </div>
+                <div class="col-6">
+                    <?php echo $row['Book_Title']; ?>
+                </div>
             </div>
-            <div class="info-item">
-                <span class="info-label">Author:</span> <?php echo $row['Authors_Name']; ?>
+            <div class="row mb-2">
+                <div class="col-6">
+                    <span class="info-label">Author:</span>
+                </div>
+                <div class="col-6">
+                    <?php echo $row['Authors_Name']; ?>
+                </div>
             </div>
-            <div class="info-item">
-                <span class="info-label">Quantity: 1 </span> 
+            <div class="row mb-2">
+                <div class="col-6">
+                    <span class="info-label">Quantity:</span>
+                </div>
+                <div class="col-6">
+                    <?php echo $row['Quantity']; ?>
+                </div>
             </div>
-            <div class="info-item">
-                <span class="info-label">Date Borrowed:</span> <?php echo date('Y-m-d'); ?>
+            <div class="row mb-2">
+                <div class="col-6">
+                    <span class="info-label">Date Borrowed:</span>
+                </div>
+                <div class="col-6">
+                    <?php echo date('Y-m-d'); ?>
+                </div>
             </div>
-            <div class="info-item">
-                <span class="info-label">Due Date:</span> <?php echo  $dueDate;  ?>
-            </div><hr>
+            <div class="row mb-2">
+                <div class="col-6">
+                    <span class="info-label">Due Date:</span>
+                </div>
+                <div class="col-6">
+                    <?php echo $dueDate; ?>
+                </div>
+            </div>
+            <hr>
         </div>
+    </div>
+</div>
+
         <?php
             }
         }
         ?>
     </div>
 </div>
-v
+
     <div class="container-fluid">
     <!-- Bootstrap print button -->
     <button id="printButton" class="print-button btn btn-primary" onclick="printPage()">Print</button>

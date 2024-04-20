@@ -126,15 +126,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="board container"><!--board container-->
     <div class="header1">
-            <div class="text">
-                <div class="back-btn">
-                    <a href="./staff_borrow_dash.php"><i class='bx bx-arrow-back'></i></a>
-                </div>
-                <div class="title">
-                    <h2>Search Book by Accession Code</h2>
-                </div>
-            </div>
+    <div class="text">
+        <div class="back-btn">
+            <a href="./staff_borrow_dash.php"><i class='bx bx-arrow-back'></i></a>
+        </div>
+        <div class="title">
+            <h2>Search Book by Accession Code</h2>
+        </div>
+        <!-- Add the book cart icon and badge -->
+        <div class="book-cart">
+            <i class='bx bx-cart-alt'></i>
+            <span class="badge bg-secondary" id="bookCartBadge">0</span>
+        </div>
     </div>
+</div>
+
     <div class='books-container'>
 
             <form id="dataform" method="POST">
@@ -143,9 +149,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="text" id="Accession_Code" name="Accession_Code[]" placeholder="Enter Accession Code" required onkeydown="return (event.keyCode !== 13);">
 
                 <!-- <button type="button" class="btn btn-primary" id="book_borrow">Retrieve Book</button> -->
-                <a id="checkoutBtn" class="btn btn-primary">Checkout</a>
+             
 
-            </form>
+        
 
             <div class="board container">
                 <div class='books-container' id="bookDetailsContainer">
@@ -154,79 +160,87 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 </div>
             </div>
-        </div>
+               </div> <a id="checkoutBtn" class="btn btn-primary">Checkout</a> 
     </div>
-
+    </form>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Define the bookDetails array
-            let bookDetails = [];
+     document.addEventListener('DOMContentLoaded', function() {
+    // Define the bookDetails array
+    let bookDetails = [];
 
-            // Hide the "Checkout" button initially
-            const checkoutBtn = document.getElementById('checkoutBtn');
-            checkoutBtn.style.display = 'none';
+    // Get the book cart badge element
+    const bookCartBadge = document.getElementById('bookCartBadge');
 
-            // Add event listener to "Retrieve Book" button
-            document.getElementById('Accession_Code').addEventListener('input', function() {
-                // Get the form data
-                const formData = new FormData(document.getElementById('dataform'));
+    // Hide the "Checkout" button initially
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    checkoutBtn.style.display = 'none';
 
-                // Send an AJAX request
-                fetch('staff_book_borrow_find.php', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Display book details dynamically
-                        const bookDetailsContainer = document.getElementById('bookDetailsContainer');
-                        bookDetailsContainer.innerHTML = '';
-                        data.forEach(book => {
-                            const bookDiv = document.createElement('div');
-                            bookDiv.classList.add('book');
-                            bookDiv.innerHTML = `
-                    <p><strong>Accession Code:</strong> ${book['Accession_Code']}</p>
-                    <p><strong>Title:</strong> ${book['Book_Title']}</p>
-                    <p><strong>Author:</strong> ${book['Authors_Name']}</p>
-                    <p><strong>Availability:</strong> ${book['Quantity']}</p>
-                    <button type="button" class="btn btn-secondary add-book-btn" data-accession="${book['Accession_Code']}">Add Book</button>
-                    <hr>
-                `;
-                const quantity = book['Quantity'];
+    // Add event listener to "Retrieve Book" button
+    document.getElementById('Accession_Code').addEventListener('input', function() {
+        // Get the form data
+        const formData = new FormData(document.getElementById('dataform'));
 
-                            // Add event listener to "Add Book" button
-                            const addBookBtn = bookDiv.querySelector('.add-book-btn');
-                            if (quantity ==0 ) {
-                                addBookBtn.disabled = true; // Disable button if quantity is 0 or 10
+        // Send an AJAX request
+        fetch('staff_book_borrow_find.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display book details dynamically
+                const bookDetailsContainer = document.getElementById('bookDetailsContainer');
+                bookDetailsContainer.innerHTML = '';
+                data.forEach(book => {
+                    const bookDiv = document.createElement('div');
+                    bookDiv.classList.add('book');
+                    bookDiv.innerHTML = `
+                        <p><strong>Accession Code:</strong> ${book['Accession_Code']}</p>
+                        <p><strong>Title:</strong> ${book['Book_Title']}</p>
+                        <p><strong>Author:</strong> ${book['Authors_Name']}</p>
+                        <p><strong>Availability:</strong> ${book['Quantity']}</p>
+                        <button type="button" class="btn btn-secondary add-book-btn" data-accession="${book['Accession_Code']}">Add Book</button>
+                        <hr>
+                    `;
+                    const quantity = book['Quantity'];
+
+                    // Add event listener to "Add Book" button
+                    const addBookBtn = bookDiv.querySelector('.add-book-btn');
+                    if (quantity == 0) {
+                        addBookBtn.disabled = true; // Disable button if quantity is 0
+                    } else {
+                        addBookBtn.addEventListener('click', function() {
+                            // Add or remove the book from the bookDetails array
+                            const accessionCode = this.getAttribute('data-accession');
+                            const index = bookDetails.indexOf(accessionCode);
+                            if (index === -1) {
+                                bookDetails.push(accessionCode);
                             } else {
-                                addBookBtn.addEventListener('click', function() {
-                                    // Add the book to the bookDetails array if it's not already there
-                                    const accessionCode = this.getAttribute('data-accession');
-                                    if (!bookDetails.includes(accessionCode)) {
-                                        bookDetails.push(accessionCode);
-                                        console.log(bookDetails); // Show the "Checkout" button when bookDetails is populated
-                                        checkoutBtn.style.display = 'block';
-                                    } else {
-                                        console.log('Book already added.');
-                                    }
-                                });
-
+                                bookDetails.splice(index, 1);
                             }
 
-                            bookDetailsContainer.appendChild(bookDiv);
-                        });
-                    })
-                    .catch(error => console.error('Error:', error));
-            });
+                            // Update the book cart badge count
+                            bookCartBadge.textContent = bookDetails.length;
 
-            // Add event listener to "Checkout" button
-            checkoutBtn.addEventListener('click', function() {
-                // Construct the URL with the bookDetails array values
-                const url = 'staff_book_borrow_process.php?bookDetails=' + JSON.stringify(bookDetails);
-                // Redirect to the checkout page with the bookDetails in the URL
-                window.location.href = url;
-            });
-        });
+                            // Show or hide the "Checkout" button based on the bookDetails array length
+                            checkoutBtn.style.display = bookDetails.length > 0 ? 'block' : 'none';
+                        });
+                    }
+
+                    bookDetailsContainer.appendChild(bookDiv);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    });
+
+    // Add event listener to "Checkout" button
+    checkoutBtn.addEventListener('click', function() {
+        // Construct the URL with the bookDetails array values
+        const url = 'staff_book_borrow_process.php?bookDetails=' + JSON.stringify(bookDetails);
+        // Redirect to the checkout page with the bookDetails in the URL
+        window.location.href = url;
+    });
+});
+
     </script>
 
 
