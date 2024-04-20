@@ -22,6 +22,7 @@ if (isset($_POST['submit'])) {
     $status = "Pending";
     $price = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
     $country = $_POST['country'];
+    
     // Retrieve selected section and shelf number from hidden input fields
     $selectedSection = $_POST['selectedSection'];
     $selectedShelf = $_POST['selectedShelf'];
@@ -269,7 +270,7 @@ if (isset($_POST['submit'])) {
                     <div id="shelfContainer"></div>
 
                     <input type="hidden" id="selectedSection" name="selectedSection">
-        <input type="hidden" id="selectedShelf" name="selectedShelf">
+                    <input type="hidden" id="selectedShelf" name="selectedShelf">
 
                     <br>
                     <button type="submit" class="btn btn-primary" name="submit">Submit Request</button>
@@ -280,6 +281,7 @@ if (isset($_POST['submit'])) {
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
  <script>
         $(document).ready(function() {
             // Event listener for section dropdown change

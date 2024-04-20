@@ -121,7 +121,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
                 <div class="btn-group">
                     <button class="btn btn-primary" id="requestButton">Request List</button>
-                    <a href="./staff_bookCatalog.php" class="btn btn-secondary">Catalog</a>
+                    <a href="./admin_bookCatalog.php" class="btn btn-secondary">Catalog</a>
                     <a href="./admin_addBook.php" class="btn btn-success">Add New Book</a><!--button for adding new book-->
                 </div>
             </div>
