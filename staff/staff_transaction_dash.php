@@ -152,7 +152,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                             $returnedCount = $returnedData['returned_count'];
                             $returnedQuantity = $returnedData['returned_quantity'];
 
-                            echo "<br><h4>Total Returned Books:$returnedQuantity</h4>";
+                            echo "<h4>Total Returned Books:$returnedQuantity</h4>";
                             echo "<p>Records: $returnedCount</p>";
                         } else {
                             echo "<p>No returned books found</p>";
@@ -225,66 +225,64 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             </div>
         </div>
         <div class="newbooks"><!--books dont change class name-->
-            <h3>Most Borrowed Book</h3>
-            <div class="newbooks-con">
-                <!--MOST BORROWED BOOKS - PLEASE MAKE IT TOP 3-->
-                <?php
-                    // Query to get the most borrowed book details
-                    $mostBorrowedBookQuery = "SELECT
-                    tbl_borrowdetails.Accession_Code,
-                    COUNT(*) AS borrow_count,
-                    tbl_books.Book_Title
-                FROM
-                    tbl_borrowdetails
-                INNER JOIN
-                    tbl_books
-                ON 
-                    tbl_borrowdetails.Accession_Code = tbl_books.Accession_Code
-                WHERE
-                    tbl_borrowdetails.Borrower_ID = $topBorrowerID
-                GROUP BY
-                    tbl_borrowdetails.Accession_Code
-                ORDER BY
-                    borrow_count DESC
-                LIMIT 1";
-                $mostBorrowedBookResult = mysqli_query($conn, $mostBorrowedBookQuery);
+        <h3>Most Borrowed Books</h3>
+<div class="newbooks-con">
+    <?php
+    // Query to get the most borrowed books details for the top borrower
+    $mostBorrowedBooksQuery = "SELECT
+            tbl_borrowdetails.Accession_Code,
+            COUNT(*) AS borrow_count,
+            tbl_books.Book_Title
+        FROM
+            tbl_borrowdetails
+        INNER JOIN
+            tbl_books
+        ON 
+            tbl_borrowdetails.Accession_Code = tbl_books.Accession_Code
+        WHERE
+            tbl_borrowdetails.Borrower_ID = $topBorrowerID
+        GROUP BY
+            tbl_borrowdetails.Accession_Code
+        ORDER BY
+            borrow_count DESC
+        LIMIT 3";
+    $mostBorrowedBooksResult = mysqli_query($conn, $mostBorrowedBooksQuery);
 
-                if ($mostBorrowedBookResult && mysqli_num_rows($mostBorrowedBookResult) > 0) {
-                    $mostBorrowedBookData = mysqli_fetch_assoc($mostBorrowedBookResult);
-                    $accessionCode = $mostBorrowedBookData['Accession_Code'];
-                    $bookTitle = $mostBorrowedBookData['Book_Title'];
+    if ($mostBorrowedBooksResult && mysqli_num_rows($mostBorrowedBooksResult) > 0) {
+        echo "<ul class='list-group'>";
+        while ($row = mysqli_fetch_assoc($mostBorrowedBooksResult)) {
+            $accessionCode = $row['Accession_Code'];
+            $bookTitle = $row['Book_Title'];
+            $borrowCount = $row['borrow_count'];
 
-                    echo "<ul class='list-group'>";
-                    echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px; width=360px'>";
-                    echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
-                    echo "<p style='font-size:12pt' class='fw-bold'>$accessionCode</p>";
-                    echo "<span class='badge text-bg-primary rounded-pill'>0</span>";//insert here the quantity of this book that was borrowed
-                    echo "</div>";
-                    echo "<small style='font-size:12px'> $bookTitle</small>";
-                    echo "</li>";
-                    echo "</ul>";
+            echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px; width=360px'>";
+            echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
+            echo "<p style='font-size:12pt' class='fw-bold'>$accessionCode</p>";
+            echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";
+            echo "</div>";
+            echo "<small style='font-size:12px'>$bookTitle</small>";
+            echo "</li>";
+        }
+        echo "</ul>";
+    } else {
+        echo "<p>No most borrowed books found for the top borrower</p>";
+    }
+    ?>
+</div>
 
-                    echo "<p>Accession Code: </p>";
-                    echo "<p>Book Title:</p>";
-                } else {
-                    echo "<p>No most borrowed book found for the top borrower</p>";
-                }
-            
-                ?>
-            </div>
         </div>
         
     </div>
     
 </div>
 
-
-<!-- <style>
+ 
+ <style>
      .overview {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
-}
+} 
 
 .ovw-con {
     display: flex;
@@ -292,9 +290,9 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
 .overview-item {
     flex: 1;
-    border: 1px solid #ccc;
+ 
     padding: 20px;
-    border-radius: 5px;
+   
     margin-right: 10px;
 }
 
@@ -307,7 +305,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     margin-top: 20px;
 }
 
-</style> -->
+</style> 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
 </body>
 </html>
