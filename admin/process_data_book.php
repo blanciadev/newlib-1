@@ -101,7 +101,7 @@ if(isset($_POST['submit'])) {
             exit(); // Stop execution if an error occurs
         }
 
-        echo '<script>alert("New book added successfully.");</script>';
+        // echo '<script>alert("New book added successfully.");</script>';
     }
 
     // Update tb_status based on Request_ID
@@ -193,21 +193,6 @@ if(isset($_POST['submit'])) {
                 echo "<input type='hidden' name='shelf' value='" . $row["shelf"] . "'>";
 
 
-
-
-                // echo "<label for='section'>Section:</label>";
-                // echo "<select id='section' name='section' required>";
-                // echo "<option value=''>Select Section</option>";
-                // echo "<option value='ASRTD'>Assorted</option>";
-                // echo "<option value='CIR'>Circulation</option>";
-                // echo "<option value='FIC'>Fiction</option>";
-                // echo "<option value='FIL'>Filipiniana</option>";
-                // echo "<option value='REF'>Reference</option>";
-                // echo "</select>";
-
-
-                // echo "<br><label for='shelf'>Shelf Number:</label>";
-                // echo "<input type='number' id='shelf' name='shelf' min='1' max='5' required>";
             }
 
 

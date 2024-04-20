@@ -17,6 +17,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -29,15 +30,16 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <link href="./admin.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
+
 <body>
-<div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
+    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary"><!--sidenav container-->
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-            <h2>Villa<span>Read</span>Hub</h2> 
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
+            <h2>Villa<span>Read</span>Hub</h2>
+            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon" />
         </a><!--header container-->
-       
+
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-        <?php
+            <?php
             $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
             $userID = $_SESSION["User_ID"];
             $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
@@ -48,24 +50,23 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 echo "Error: " . mysqli_error($conn);
             } else {
                 $userData = mysqli_fetch_assoc($result);
-            // Fetch the First_Name from $userData
-    $firstName = $userData['First_Name'];
-    $role = $userData['tb_role'];
-
+                // Fetch the First_Name from $userData
+                $firstName = $userData['First_Name'];
+                $role = $userData['tb_role'];
             }
             ?>
-            <?php if (!empty($userData['image_data'])): ?>
+            <?php if (!empty($userData['image_data'])) : ?>
                 <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
-            <?php else: ?>
+            <?php else : ?>
                 <!-- Change the path to your actual default image -->
                 <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
             <strong><span><?php echo  $firstName . "<br/>" .  $role; ?></span></strong>
-    </div>
-    <hr>
+        </div>
+        <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
-            <li class="nav-item "> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
+            <li class="nav-item "> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis "> <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item active"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
             <li class="nav-item"> <a href="./admin_transactions.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transactions</a> </li>
             <li class="nav-item"> <a href="./admin_staff.php" class="nav-link link-body-emphasis"><i class='bx bxs-user'></i>Manage Staff</a> </li>
@@ -76,201 +77,168 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
             <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
-        
-        
+
+
     </div>
-    
-    <div class="board container">
-        
 
-    <h2>Book Information</h2>
-    <div class="form-group">
-    <div class="col-sm-6"> <!-- Adjust the width as needed -->
-        <select id="statusFilter" class="form-control">
-            <option value="Available" selected>Available</option>
-            <option value="Archived">Archived</option>
-            <option value="Request">Request</option>
-        </select>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-13">
+                <h2 class="mt-4 mb-3">Book Information</h2>
+                <div class="form-group">
+                    <select id="statusFilter" class="form-select mb-3">
+                        <option value="Available" selected>Available</option>
+                        <option value="Archived">Archived</option>
+                        <option value="Request">Request</option>
+                    </select>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="bg-light sticky-top">
+                            <tr>
+                                <th>Accession Code</th>
+                                <th>Book Title</th>
+                                <th>Authors</th>
+                                <th>Publisher</th>
+                                <th>Section</th>
+                                <th>Shelf #</th>
+                                <th>Edition</th>
+                                <th>Year Published</th>
+                                <th>ISBN</th>
+                                <th>Bibliography</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookTableBody">
+                            <!-- Book records will be dynamically loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="requestButton">Request List</button>
+                    <a href="./staff_bookCatalog.php" class="btn btn-secondary">Catalog</a>
+                    <a href="./admin_addBook.php" class="btn btn-success">Add New Book</a><!--button for adding new book-->
+                </div>
+            </div>
+
+
+        </div>
     </div>
-</div>
+
+    <script>
+        // Function to fetch book information based on selected status
+        function fetchBooksByStatus(status) {
+            fetch('fetch_books.php?status=' + status)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('bookTableBody').innerHTML = data;
+                });
+        }
+
+        // Function to fetch requested books using AJAX
+        function fetchRequests() {
+            fetch('fetch_book_request.php')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('bookTableBody').innerHTML = data;
+                });
+        }
+
+        // Event listener for dropdown change
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            let selectedStatus = this.value;
+            if (selectedStatus === 'Request') {
+                fetchRequests();
+            } else {
+                fetchBooksByStatus(selectedStatus);
+            }
+        });
+
+        // Function to change status to Archived
+        function changeStatus(accessionCode) {
+            fetch('change_book_status.php?accessionCode=' + accessionCode, {
+                    method: 'POST'
+                })
+                .then(response => response.text())
+                .then(data => {
+                    // Refresh the table
+                    let currentStatus = document.getElementById('statusFilter').value;
+                    if (currentStatus === 'Requested') {
+                        fetchRequests();
+                    } else {
+                        fetchBooksByStatus(currentStatus);
+                    }
+                });
+        }
+
+        // Call fetchBooksByStatus with default status "Available" when the page loads
+        window.addEventListener('load', function() {
+            fetchBooksByStatus('Available');
+        });
+    </script>
 
 
 
-<div class="books container">
-    <table class="table table-hover table-sm">
-        <thead class="bg-light sticky-top">
-            <tr>
-                <th>Accession Code</th>
-                <th>Book Title</th>
-                <th>Authors</th>
-                <th>Publisher</th>
-                <th>Section</th>
-                <th>Shelf #</th>
-                <th>Edition</th>
-                <th>Year Published</th>
-                <th>ISBN</th>
-                <th>Bibliography</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-                $conn =  mysqli_connect("localhost","root","root","db_library_2", 3308); 
-                if ($conn->connect_error) {
-                    die("Connection failed: " . $conn->connect_error);
-                }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all archive buttons
+            const archiveButtons = document.querySelectorAll('.archive-btn');
 
-                // SQL query
-                $sql = "SELECT
-                tbl_books.Accession_Code, 
-                tbl_books.Book_Title, 
-                tbl_books.Authors_ID, 
-                tbl_books.Publisher_Name, 
-                tbl_books.Section_Code, 
-                tbl_books.shelf, 
-                tbl_books.tb_edition, 
-                tbl_books.Year_Published, 
-                tbl_books.ISBN, 
-                tbl_books.Bibliography, 
-                tbl_books.Quantity, 
-                tbl_books.tb_status, 
-                tbl_books.Price, 
-                tbl_section.Section_uid, 
-                tbl_section.Section_Name, 
-                tbl_section.Section_Code, 
-                tbl_authors.Authors_Name
-            FROM
-                tbl_books
-                INNER JOIN
-                tbl_section
-                ON 
-                    tbl_books.Section_Code = tbl_section.Section_uid
-                INNER JOIN
-                tbl_authors
-                ON 
-                    tbl_books.Authors_ID = tbl_authors.Authors_ID";
-    
-                $result = $conn->query($sql);
-    
+            // Add click event listener to each archive button
+            archiveButtons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    // Show the confirmation dialog
+                    if (!confirm("Do you want to archive this book?")) {
+                        event.preventDefault(); // Prevent default form submission if not confirmed
+                        return; // Exit function early if not confirmed
+                    }
 
-                // Output data of each row
-                while($row = $result->fetch_assoc()) {
-                    echo "<tr><td>".$row["Accession_Code"]."</td>
-                    <td>".$row["Book_Title"]."</td>
-                    <td>".$row["Authors_Name"]."</td>
-                    <td>".$row["Publisher_Name"]."</td>
-                    <td>".$row["Section_Code"]."</td>
-                    <td>".$row["shelf"]."</td>
-                    <td>".$row["tb_edition"]."</td>
-                    <td>".$row["Year_Published"]."</td>
-                    <td>".$row["ISBN"]."</td>
-                    <td>".$row["Bibliography"]."</td>
-                    <td>".$row["Quantity"]."</td>
-                    <td>".$row["Price"]."</td>
-                    <td>".$row["tb_status"]."</td></tr>";
-                }
-                echo "</table>";
-
-                // Close connection
-                $conn->close();
-            ?>
-        </tbody>
-    </table>
-    </div>
-    
-    <div class="btn-con">
-        <button class="btn" id="requestButton">Request List</button>
-        <a href="./staff_bookCatalog.php" class="btn">Catalog</a>
-        <a href="./admin_addBook.php" class="btn">Add New Book</a><!--button for adding new book-->
-    </div>
-</div>
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get all archive buttons
-        const archiveButtons = document.querySelectorAll('.archive-btn');
-
-        // Add click event listener to each archive button
-        archiveButtons.forEach(button => {
-            button.addEventListener('click', function(event) {
-                // Show the confirmation dialog
-                if (!confirm("Do you want to archive this book?")) {
-                    event.preventDefault(); // Prevent default form submission if not confirmed
-                    return; // Exit function early if not confirmed
-                }
-
-                // If confirmed, allow form submission
+                    // If confirmed, allow form submission
+                });
             });
         });
-    });
-
-</script>
+    </script>
 
 
-
-<script>
-   document.getElementById('statusFilter').addEventListener('change', function() {
-    var status = this.value;
-    console.log('Selected status:', status);
-
-    var url;
-    if (status === 'Request') {
-        url = 'admin_book_request.php';
-    } else if (status === 'Archived') {
-        url = 'admin_book_archived.php';
-    } else {
-        url = 'admin_book.php';
-    }
-    console.log('URL:', url);
-
-    // Navigate to the selected URL
-    window.location.href = url;
-});
-
-
-</script>
-
-
-        
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-    <script> 
-        let date = new Date().toLocaleDateString('en-US', {  
-            day:   'numeric',
+    <script>
+        let date = new Date().toLocaleDateString('en-US', {
+            day: 'numeric',
             month: 'long',
-            year:  'numeric' ,  
-            weekday: 'long', 
-        });   
-        document.getElementById("currentDate").innerText = date; 
+            year: 'numeric',
+            weekday: 'long',
+        });
+        document.getElementById("currentDate").innerText = date;
 
-        setInterval( () => {
-            let time = new Date().toLocaleTimeString('en-US',{ 
-            hour: 'numeric',
-            minute: 'numeric', 
-            second: 'numeric',
-            hour12: 'true',
-        })  
-        document.getElementById("currentTime").innerText = time; 
+        setInterval(() => {
+            let time = new Date().toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: 'true',
+            })
+            document.getElementById("currentTime").innerText = time;
 
         }, 1000)
-        
 
-        let navItems = document.querySelectorAll(".nav-item");  //adding .active class to navitems 
+
+        let navItems = document.querySelectorAll(".nav-item"); //adding .active class to navitems 
         navItems.forEach(item => {
-            item.addEventListener('click', ()=> { 
+            item.addEventListener('click', () => {
                 document.querySelector('.active')?.classList.remove('active');
                 item.classList.add('active');
-                
-                
+
+
             })
-            
+
         })
-     
-
-
     </script>
 </body>
+
 </html>

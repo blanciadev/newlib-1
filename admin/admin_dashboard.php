@@ -133,7 +133,7 @@ $dataJSON = json_encode($data);
                         $totalQuantity = $totalQuantityData['total_quantity'];
                         
                         // Display the total quantity of all books
-                        echo "<h4>Total  of Books: " . $totalQuantity . "</h4>";
+                        echo "<h4>Total  of Books: ". $totalQuantity . "</h4>";
                     } else {
                         echo "No books found";
                     }
