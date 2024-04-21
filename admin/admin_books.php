@@ -8,6 +8,27 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 }
 
 
+// Check if the accession code is set in the POST request
+if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
+    // Handle archiving the book
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    // Sanitize the accession code to prevent SQL injection
+    $accessionCode = mysqli_real_escape_string($conn, $_POST['accessionCode']);
+
+    // Update the status to 'Archived' for the specified accession code
+    $sql = "UPDATE tbl_books SET tb_status = 'Archived' WHERE Accession_Code = '$accessionCode'";
+    if ($conn->query($sql) === TRUE) {
+        echo "Status updated successfully";
+    } else {
+        echo "Error updating status: " . $conn->error;
+    }
+
+    $conn->close();
+}
 
 
 
@@ -120,9 +141,9 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 </div>
 
                 <div class="btn-group">
-                    <button class="btn btn-primary" id="requestButton">Request List</button>
+               
                     <a href="./admin_bookCatalog.php" class="btn btn-secondary">Catalog</a>
-                    <a href="./admin_addBook.php" class="btn btn-success">Add New Book</a><!--button for adding new book-->
+                    <a href="./admin_addBook.php" class="btn btn-success">Add New Book</a>
                 </div>
             </div>
 
@@ -159,50 +180,48 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             }
         });
 
-        // Function to change status to Archived
-        function changeStatus(accessionCode) {
-            fetch('change_book_status.php?accessionCode=' + accessionCode, {
-                    method: 'POST'
-                })
-                .then(response => response.text())
-                .then(data => {
-                    // Refresh the table
-                    let currentStatus = document.getElementById('statusFilter').value;
-                    if (currentStatus === 'Requested') {
-                        fetchRequests();
-                    } else {
-                        fetchBooksByStatus(currentStatus);
-                    }
-                });
-        }
+      
 
         // Call fetchBooksByStatus with default status "Available" when the page loads
         window.addEventListener('load', function() {
             fetchBooksByStatus('Available');
         });
     </script>
+    
+<script>
 
-
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Get all archive buttons
-            const archiveButtons = document.querySelectorAll('.archive-btn');
-
-            // Add click event listener to each archive button
-            archiveButtons.forEach(button => {
-                button.addEventListener('click', function(event) {
-                    // Show the confirmation dialog
-                    if (!confirm("Do you want to archive this book?")) {
-                        event.preventDefault(); // Prevent default form submission if not confirmed
-                        return; // Exit function early if not confirmed
-                    }
-
-                    // If confirmed, allow form submission
-                });
-            });
+function archiveBook(accessionCode) {
+    // Show the confirmation dialog
+    if (confirm("Do you want to archive this book?")) {
+        // If confirmed, send the AJAX request to archive the book
+        fetch('admin_books.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'archive_book=true&accessionCode=' + encodeURIComponent(accessionCode),
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data); // Log the response from the server
+            // Optionally, you can handle success or error messages here
+            // For example, display a message to the user indicating success or failure
+            // You can also update the UI if needed
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Error archiving book:', error);
+            // Handle errors here if needed
         });
-    </script>
+    } else {
+        // If canceled, do nothing
+        return;
+    }
+}
+
+</script>
+
+
 
 
 

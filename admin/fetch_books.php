@@ -62,13 +62,13 @@ while ($row = $result->fetch_assoc()) {
         <td>" . $row["tb_status"] . "</td>
         <td>";
 
-    if ($row["tb_status"] != 'Archived') {
-        echo "<button class='btn btn-primary' onclick='changeStatus(\"" . $row["Accession_Code"] . "\")'>Archive</button>";
-    } else {
-        echo "<button class='btn btn-primary' disabled>Archived</button>";
-    }
-
-    echo "</td></tr>";
+    
+        if ($row["tb_status"] != 'Archived') {
+            echo "<button class='btn btn-primary archive-btn' onclick='archiveBook(\"" . $row["Accession_Code"] . "\")'>Archive</button>";
+        } else {
+            echo "<button class='btn btn-primary' disabled>Archived</button>";
+        }
+        echo "</td></tr>";
 }
 
 
