@@ -227,8 +227,10 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         <div class="newbooks"><!--books dont change class name-->
         <h3>Most Borrowed Books</h3>
 <div class="newbooks-con">
-    <?php
-    // Query to get the most borrowed books details for the top borrower
+<?php
+// Check if $topBorrowerID is set and not empty
+if(isset($topBorrowerID) && !empty($topBorrowerID)) {
+    // Execute the SQL query to retrieve the most borrowed books details
     $mostBorrowedBooksQuery = "SELECT
             tbl_borrowdetails.Accession_Code,
             COUNT(*) AS borrow_count,
@@ -267,7 +269,11 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     } else {
         echo "<p>No most borrowed books found for the top borrower</p>";
     }
-    ?>
+} else {
+    echo "<p>No top borrower Found</p>";
+}
+?>
+
 </div>
 
         </div>
