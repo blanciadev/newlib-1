@@ -138,7 +138,9 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                             echo "<td>" . $row['Contact_Number'] . "</td>";
                             echo "<td>" . $row['Email'] . "</td>";
                             echo "<td>" . $row['affiliation'] . "</td>";
-                            echo "<td> <button type='button' class='btn borrower-edit-btn' data-bs-toggle='modal' data-bs-target='#BorrowerModal' data-borrower-id='" . $row['Borrower_ID'] . "' onclick='sendEmail(" . $row['Borrower_ID'] . ")'>Edit</button></td>";
+                            echo "<td><button type='button' class='btn borrower-edit-btn' data-bs-toggle='modal' data-bs-target='#BorrowerModal' data-borrower-id='" . $row['Borrower_ID'] . "'>Edit</button></td>";
+                            echo "<input type='hidden' id='borrowerID' name='borrowerID' value='" . $row['Borrower_ID'] . "'>";
+                            
                             echo "</tr>";
                         }
                     } else {
@@ -146,6 +148,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                     }
                     ?>
                 </tbody>
+              
             </table>
         </div>
         <div class="btn-con">
@@ -163,17 +166,39 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 <div class="modal-body">
                     <!-- QR code image here-->
                 </div>
-                <div class="modal-body">
-                    <form action="">
-                        <!-- starts here -->
-                        <!-- form for editing borrower details-->
-                    </form>
-                </div>
+                <!-- Modal -->
+<div class="modal fade" id="BorrowerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Edit Borrower Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Content will be dynamically populated here -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+     <!-- Button with data attribute for borrower ID -->
+<button type="button" class="btn btn-primary" onclick="saveData()" data-borrower-id="<?php echo $row['Borrower_ID']; ?>">Save changes</button>
+
+<!-- Hidden input field to store borrower ID -->
+<input type="hidden" id="borrowerID" name="borrowerID" value="<?php echo $row['Borrower_ID']; ?>">
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
                 <div class="modal-footer d-flex flex-row justify-content-center">
                     <a href="#"><button type="button" class="btn" onclick="sendEmail()">Send to Email</button></a>
 
-                    <a href="#"><button type="button" class="btn">Save</button></a>
-                    <!-- ends here -->
+                
+<a href="#"><button id="saveButton" type="button" class="btn">Save</button></a>
+
 
                 </div>
             </div>
@@ -202,6 +227,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
 
+
     <script>
         function BorrowerModal(id) {
             console.log(id);
@@ -210,6 +236,41 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 backdrop: "static"
             });
         }
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+    const borrowerEditButtons = document.querySelectorAll(".borrower-edit-btn");
+    borrowerEditButtons.forEach(button => {
+        button.addEventListener("click", function() {
+            // Get the Borrower_ID from the data attribute
+            const borrowerID = this.getAttribute("data-borrower-id");
+         
+
+            // Send AJAX request to update.php to fetch and populate data
+            fetch('displaymodal.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'borrowerID=' + encodeURIComponent(borrowerID),
+            })
+            .then(response => response.text())
+            .then(data => {
+                // Update modal content with fetched data
+                document.querySelector('.modal-body').innerHTML = data;
+                // Show the modal
+                $('#BorrowerModal').modal({
+                    keyboard: true,
+                    backdrop: "static"
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+});
+
 
         document.addEventListener("DOMContentLoaded", function() {
             const borrowerEditButtons = document.querySelectorAll(".borrower-edit-btn");
@@ -222,6 +283,68 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 });
             });
         });
+
+
+
+
+
+
+
+
+
+
+// Add event listener to the Save button
+document.addEventListener("DOMContentLoaded", function() {
+    const saveButton = document.getElementById("saveButton");
+    saveButton.addEventListener("click", function() {
+        saveData(); // Call the saveData() function when the button is clicked
+    });
+});
+
+// Function to handle the Save button click event
+function saveData(borrowerID) {
+    // Retrieve the updated values from the form fields
+    const firstName = document.getElementById("firstName").value;
+    const middleName = document.getElementById("middleName").value;
+    const lastName = document.getElementById("lastName").value;
+    const contactNumber = document.getElementById("contactNumber").value;
+    const email = document.getElementById("email").value;
+    const affiliation = document.getElementById("affiliation").value;
+
+    // Debugging: Log the retrieved values
+    console.log("Updated data:", borrowerID);
+    console.log("First Name:", firstName);
+    console.log("Middle Name:", middleName);
+    console.log("Last Name:", lastName);
+    console.log("Contact Number:", contactNumber);
+    console.log("Email:", email);
+    console.log("Affiliation:", affiliation);
+    console.log("Borrower ID:", borrowerID); // Log the borrower ID
+
+    // Send an AJAX request to update.php
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "update.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // Request was successful
+                console.log("Response from server:", xhr.responseText);
+                // You can perform further actions here if needed
+                alert("Record updated successfully."); // Display alert dialog
+            } else {
+                // Error handling
+                console.error("Error:", xhr.statusText);
+            }
+        }
+    };
+    // Send the updated values and borrower ID as data
+    xhr.send("borrowerID=" + encodeURIComponent(borrowerID) + "&firstName=" + encodeURIComponent(firstName) + "&middleName=" + encodeURIComponent(middleName) + "&lastName=" + encodeURIComponent(lastName) + "&contactNumber=" + encodeURIComponent(contactNumber) + "&email=" + encodeURIComponent(email) + "&affiliation=" + encodeURIComponent(affiliation));
+}
+
+
+
+
 
 
         function sendEmail(borrowerID) {
@@ -274,6 +397,8 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 }
             });
         });
+
+      
     </script>
 
 </body>
