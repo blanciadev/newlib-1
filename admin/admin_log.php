@@ -200,6 +200,7 @@ $conn_display_today->close();
     </div>
     <div class="btn-con">
         <a href="admin_log_qrscan.php" class="btn">Scan</a>
+        <a href="admin_registeredList.php" class="btn">Registered List</a>
     </div>
 </div>
 
