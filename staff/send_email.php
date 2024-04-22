@@ -5,6 +5,13 @@ require "../vendor/autoload.php";
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+// Check if the User_ID session variable is not set or empty
+if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
+    // Redirect to index.php
+    header("Location: ../index.php");
+    exit(); // Ensure script execution stops after redirection
+}
+
 // Get the Borrower_ID from the AJAX request
 if (isset($_POST['borrower_id'])) {
     $borrowerId = $_POST['borrower_id'];
