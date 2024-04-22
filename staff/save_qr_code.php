@@ -73,6 +73,8 @@ if ($insertResult) {
             // Send email
             $mail->send();
 
+            // Delete the temporary QR code file
+            unlink($filePath);
           //  echo '<script>alert("Record Updated successfully.");</script>';
 
             exit(); // Exit after redirection
