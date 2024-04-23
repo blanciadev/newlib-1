@@ -80,10 +80,15 @@ if (isset($_POST['submit'])) {
     // Calculate due date as 3 days later by default
     $dueDate = date('Y-m-d', strtotime('+3 days', strtotime($currentDate)));
 
-    // Check if the selected due date is '3' for 3 days or 'custom' for a custom due date
-    if ($_POST['due_date'] == 'custom') {
-        $dueDate = null; // Set due date as null for custom due date
-    }
+    
+if ($_POST['due_date'] == 'custom') {
+    $dueDate = null; // Set $dueDate to null if 'custom' option is selected
+} else {
+    // Convert the date format from 'MM/DD/YYYY' to 'YYYY-MM-DD'
+    $dueDate = date('Y-m-d', strtotime($_POST['due_date']));
+}
+
+
 
     $User_ID = $_SESSION["User_ID"];
     $_SESSION["due"] = $dueDate;
@@ -161,7 +166,17 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VillaReadHub - Return</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.10/datepicker.min.css">
+
+    <!-- jQuery library -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- jQuery UI library -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+<!-- jQuery UI Datepicker CSS -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
@@ -252,14 +267,12 @@ $conn->close();
                     <?php
                     }
                     ?>
-                    <!-- Dropdown for selecting due date -->
-                    <div class="mb-3" style="width: 200px;">
-                        <label for="due_date" class="form-label">Date Return:</label>
-                        <select name="due_date" id="due_date" class="form-select">
-                            <option value="3">3 Days</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                    </div>
+           <div class="mb-3" style="width: 200px;">
+    <label for="due_date" class="form-label">Date Return:</label>
+    <!-- Datepicker input field -->
+    <input type="text" name="due_date" id="due_date" class="form-control">
+</div>
+
                 <?php
                 } else {
                     // Book not found or error occurred
@@ -288,6 +301,14 @@ $conn->close();
             </form>
         </div>
     </div>
+
+    <script>
+    $(function() {
+        // Initialize datepicker
+        $("#due_date").datepicker();
+    });
+</script>
+
 
     <script>
         document.getElementById("cancelButton").addEventListener("click", function() {
