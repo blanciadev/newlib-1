@@ -146,12 +146,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
                     <h2>Log Record</h2>
                 </div>
             </div>
-            <div class="searchbar">
-                <form action="">
-                    <input type="search" id="searchInput"  placeholder="Search..." required>
-                    <i class='bx bx-search' id="search-icon"></i>
-                </form>
-            </div>
+            <div class="searchbar mt-4">
+    <form class="d-flex">
+        <input class="form-control me-2" type="search" id="searchInput" placeholder="Search..." required>
+        <button class="btn btn-outline-primary" type="submit"><i class='bx bx-search' id="search-icon"></i></button>
+    </form>
+</div>
+
     </div>
     <div class="books container">
         <table class="table table-striped">
@@ -198,10 +199,11 @@ $conn_display_today->close();
             </tbody>
         </table>
     </div>
-    <div class="btn-con">
-        <a href="admin_log_qrscan.php" class="btn">Scan</a>
-        <a href="admin_registeredList.php" class="btn">Registered List</a>
-    </div>
+    <div class="btn-con mt-4">
+    <a href="admin_log_qrscan.php" class="btn btn-primary mr-2">Scan</a>
+    <a href="admin_registeredList.php" class="btn btn-secondary">Registered List</a>
+</div>
+
 </div>
 
     

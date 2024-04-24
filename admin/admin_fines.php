@@ -144,26 +144,33 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         
             // Fetch log records from the database with pagination
             $query = "SELECT DISTINCT
-                        bd.BorrowDetails_ID, 
-                        b.User_ID, 
-                        b.Accession_Code, 
-                        bk.Book_Title, 
-                        bd.Quantity, 
-                        b.Date_Borrowed, 
-                        b.Due_Date, 
-                        br.Borrower_ID, 
-                        bd.tb_status, 
-                        tbl_fines.Amount
-                    FROM
-                        tbl_borrowdetails AS bd
-                    INNER JOIN
-                        tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
-                    INNER JOIN
-                        tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-                    INNER JOIN
-                        tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
-                    INNER JOIN
-                        tbl_fines ON bd.BorrowDetails_ID = tbl_fines.Borrower_ID
+            b.User_ID, 
+            b.Accession_Code, 
+            bk.Book_Title, 
+            b.Date_Borrowed, 
+            b.Due_Date, 
+            tbl_fines.Amount, 
+            b.Borrower_ID, 
+            tbl_borrowdetails.tb_status, 
+            tbl_borrowdetails.Quantity
+            FROM
+            tbl_borrow AS b
+            INNER JOIN
+            tbl_books AS bk
+            ON 
+                b.Accession_Code = bk.Accession_Code
+            INNER JOIN
+            tbl_borrower AS br
+            INNER JOIN
+            tbl_fines
+            ON 
+                b.Borrow_ID = tbl_fines.Borrower_ID
+            INNER JOIN
+            tbl_borrowdetails
+            WHERE
+            tbl_borrowdetails.tb_status = 'Returned'
+            ORDER BY
+            b.Date_Borrowed DESC
                     LIMIT $offset, $recordsPerPage";
         
             $result = mysqli_query($conn, $query);

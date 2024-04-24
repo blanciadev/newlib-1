@@ -16,6 +16,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,15 +29,16 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <link href="./staff.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
+
 <body>
-    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
+    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary"><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-            <h2>Villa<span>Read</span>Hub</h2> 
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
-        </a><!--header container--> 
+            <h2>Villa<span>Read</span>Hub</h2>
+            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon" />
+        </a><!--header container-->
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-         <!-- Display user image -->
-         <?php
+            <!-- Display user image -->
+            <?php
             $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
             $userID = $_SESSION["User_ID"];
             $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
@@ -49,26 +51,30 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 $userData = mysqli_fetch_assoc($result);
             }
             ?>
-            <?php if (!empty($userData['image_data'])): ?>
+            <?php if (!empty($userData['image_data'])) : ?>
                 <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
-            <?php else: ?>
+            <?php else : ?>
                 <!-- Change the path to your actual default image -->
                 <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-            <strong><span><?php $fname = $userData["First_Name"]; $lname = $userData["Last_Name"]; $userName = $fname." ". $lname;  echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong></div>
+            <strong><span><?php $fname = $userData["First_Name"];
+                            $lname = $userData["Last_Name"];
+                            $userName = $fname . " " . $lname;
+                            echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong>
+        </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
-            <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
+            <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis "> <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item "> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
             <li class="nav-item active"> <a href="./staff_transaction_dash.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>
             <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
-            <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>    
+            <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
             <hr>
             <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
             <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
-         
+
     </div>
     <div class="board1 container"><!--board container-->
         <div class="header1">
@@ -78,13 +84,13 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 </div>
             </div>
         </div>
-    <div class="content">
-        <div class="overview">
-            <h3>Overview</h3>
-            <div class="ovw-con">
-                <div class="overview-item">
-                    <h3>Pending</h3>
-                    <?php
+        <div class="content">
+            <div class="overview">
+                <h3>Overview</h3>
+                <div class="ovw-con">
+                    <div class="overview-item">
+                        <h3>Pending</h3>
+                        <?php
                         $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
 
                         // Query to get the total quantity of borrowed books
@@ -118,11 +124,11 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                         } else {
                             echo "<p>No borrowed books found</p>";
                         }
-                    ?>
-                </div>
-                <div class="overview-item">
-                    <h3>Returned</h3>
-                    <?php
+                        ?>
+                    </div>
+                    <div class="overview-item">
+                        <h3>Returned</h3>
+                        <?php
                         // CHANGE THE PORT IF NEEDED
                         $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
 
@@ -159,15 +165,15 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                         }
 
 
-                    ?>
+                        ?>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="duebooks">
-        <h3>Top Borrowers</h3>
-            <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 20px;">
-                <!--TOP BORROWERS - PLEASE MAKE IT TOP 3-->
-                <?php
+            <div class="duebooks">
+                <h3>Top Borrowers</h3>
+                <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 20px;">
+                    <!--TOP BORROWERS - PLEASE MAKE IT TOP 3-->
+                    <?php
                     // Database connection
                     $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 
@@ -191,47 +197,47 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                     LIMIT 3";
                     $topBorrowerResult = mysqli_query($conn, $topBorrowerQuery);
 
-                 // Display the top three borrowers
-if ($topBorrowerResult && mysqli_num_rows($topBorrowerResult) > 0) {
-    echo "<ul class='list-group'>";
-    while ($topBorrowerData = mysqli_fetch_assoc($topBorrowerResult)) {
-        $topBorrowerID = $topBorrowerData['Borrower_ID'];
-        $borrowCount = $topBorrowerData['borrow_count'];
-        $name = $topBorrowerData['First_Name'];
-        $lname = $topBorrowerData['Last_Name'];
+                    // Display the top three borrowers
+                    if ($topBorrowerResult && mysqli_num_rows($topBorrowerResult) > 0) {
+                        echo "<ul class='list-group'>";
+                        while ($topBorrowerData = mysqli_fetch_assoc($topBorrowerResult)) {
+                            $topBorrowerID = $topBorrowerData['Borrower_ID'];
+                            $borrowCount = $topBorrowerData['borrow_count'];
+                            $name = $topBorrowerData['First_Name'];
+                            $lname = $topBorrowerData['Last_Name'];
 
-        echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px; width=360px'>";
-        echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
-        echo "<p style='font-size:12pt' class='fw-bold'>$topBorrowerID</p>";
-        echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";
-        echo "</div>";
-        echo "<small style='font-size:12px'>$name, $lname</small>";
-        echo "</li>";
-    }
-    echo "</ul>";
-} else {
-    echo "<p>No borrower found</p>";
-}
-                ?>
-            </div>
-        </div>
-        <div class="stats">
-            <h3>Borrow / Return</h3>
-            <div class="stats-con">
-                <div class="buttons">
-                        <a href="staff_borrow_dash.php" class="btn btn-lg btn-primary">Borrow Book</a>
-                        <a href="staff_return_dash.php" class="btn btn-lg btn-primary">Return Book</a>
+                            echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px; width=360px'>";
+                            echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
+                            echo "<p style='font-size:12pt' class='fw-bold'>$topBorrowerID</p>";
+                            echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";
+                            echo "</div>";
+                            echo "<small style='font-size:12px'>$name, $lname</small>";
+                            echo "</li>";
+                        }
+                        echo "</ul>";
+                    } else {
+                        echo "<p>No borrower found</p>";
+                    }
+                    ?>
                 </div>
             </div>
-        </div>
-        <div class="newbooks"><!--books dont change class name-->
-        <h3>Most Borrowed Books</h3>
-<div class="newbooks-con">
-<?php
-// Check if $topBorrowerID is set and not empty
-if(isset($topBorrowerID) && !empty($topBorrowerID)) {
-    // Execute the SQL query to retrieve the most borrowed books details
-    $mostBorrowedBooksQuery = "SELECT
+            <div class="stats">
+                <h3>Borrow / Return</h3>
+                <div class="stats-con">
+                    <div class="buttons">
+                        <a href="staff_borrow_dash.php" class="btn btn-lg btn-primary">Borrow Book</a>
+                        <a href="staff_return_dash.php" class="btn btn-lg btn-primary">Return Book</a>
+                    </div>
+                </div>
+            </div>
+            <div class="newbooks"><!--books dont change class name-->
+                <h3>Most Borrowed Books</h3>
+                <div class="newbooks-con">
+                    <?php
+                    // Check if $topBorrowerID is set and not empty
+                    if (isset($topBorrowerID) && !empty($topBorrowerID)) {
+                        // Execute the SQL query to retrieve the most borrowed books details
+                        $mostBorrowedBooksQuery = "SELECT
             tbl_borrowdetails.Accession_Code,
             COUNT(*) AS borrow_count,
             tbl_books.Book_Title
@@ -248,70 +254,70 @@ if(isset($topBorrowerID) && !empty($topBorrowerID)) {
         ORDER BY
             borrow_count DESC
         LIMIT 3";
-    $mostBorrowedBooksResult = mysqli_query($conn, $mostBorrowedBooksQuery);
+                        $mostBorrowedBooksResult = mysqli_query($conn, $mostBorrowedBooksQuery);
 
-    if ($mostBorrowedBooksResult && mysqli_num_rows($mostBorrowedBooksResult) > 0) {
-        echo "<ul class='list-group'>";
-        while ($row = mysqli_fetch_assoc($mostBorrowedBooksResult)) {
-            $accessionCode = $row['Accession_Code'];
-            $bookTitle = $row['Book_Title'];
-            $borrowCount = $row['borrow_count'];
+                        if ($mostBorrowedBooksResult && mysqli_num_rows($mostBorrowedBooksResult) > 0) {
+                            echo "<ul class='list-group'>";
+                            while ($row = mysqli_fetch_assoc($mostBorrowedBooksResult)) {
+                                $accessionCode = $row['Accession_Code'];
+                                $bookTitle = $row['Book_Title'];
+                                $borrowCount = $row['borrow_count'];
 
-            echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px; width=360px'>";
-            echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
-            echo "<p style='font-size:12pt' class='fw-bold'>$accessionCode</p>";
-            echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";
-            echo "</div>";
-            echo "<small style='font-size:12px'>$bookTitle</small>";
-            echo "</li>";
-        }
-        echo "</ul>";
-    } else {
-        echo "<p>No most borrowed books found for the top borrower</p>";
-    }
-} else {
-    echo "<p>No top borrower Found</p>";
-}
-?>
+                                echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px; width=360px'>";
+                                echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
+                                echo "<p style='font-size:12pt' class='fw-bold'>$accessionCode</p>";
+                                echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";
+                                echo "</div>";
+                                echo "<small style='font-size:12px'>$bookTitle</small>";
+                                echo "</li>";
+                            }
+                            echo "</ul>";
+                        } else {
+                            echo "<p>No most borrowed books found for the top borrower</p>";
+                        }
+                    } else {
+                        echo "<p>No top borrower Found</p>";
+                    }
+                    ?>
 
-</div>
+                </div>
+
+            </div>
 
         </div>
-        
+
     </div>
-    
-</div>
 
- 
- <style>
-     .overview {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-} 
 
-.ovw-con {
-    display: flex;
-}
+    <style>
+        .overview {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
 
-.overview-item {
-    flex: 1;
- 
-    padding: 20px;
-   
-    margin-right: 10px;
-}
+        .ovw-con {
+            display: flex;
+        }
 
-.overview-item h3 {
-    margin-top: 0;
-}
+        .overview-item {
+            flex: 1;
 
-.buttons {
-    text-align: center;
-    margin-top: 20px;
-}
+            padding: 20px;
 
-</style> 
+            margin-right: 10px;
+        }
+
+        .overview-item h3 {
+            margin-top: 0;
+        }
+
+        .buttons {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
 </body>
+
 </html>

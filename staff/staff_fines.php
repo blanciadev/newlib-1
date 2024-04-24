@@ -204,35 +204,43 @@ function displayFinesSummary($result)
             
 // Fetch log records from the database with pagination and sorted by Date_Borrowed
 $query = "SELECT DISTINCT
-bd.BorrowDetails_ID, 
 b.User_ID, 
 b.Accession_Code, 
 bk.Book_Title, 
-bd.Quantity, 
 b.Date_Borrowed, 
 b.Due_Date, 
-br.Borrower_ID, 
-bd.tb_status, 
-tbl_fines.Amount
+tbl_fines.Amount, 
+b.Borrower_ID, 
+tbl_borrowdetails.tb_status, 
+tbl_borrowdetails.Quantity
 FROM
-tbl_borrowdetails AS bd
+tbl_borrow AS b
 INNER JOIN
-tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+tbl_books AS bk
+ON 
+    b.Accession_Code = bk.Accession_Code
 INNER JOIN
-tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+tbl_borrower AS br
 INNER JOIN
-tbl_borrower AS br ON bd.Borrower_ID = br.Borrower_ID
+tbl_fines
+ON 
+    b.Borrow_ID = tbl_fines.Borrower_ID
 INNER JOIN
-tbl_fines ON bd.BorrowDetails_ID = tbl_fines.Borrower_ID
-ORDER BY b.Date_Borrowed DESC
-LIMIT $offset, $recordsPerPage";
+tbl_borrowdetails
+WHERE
+tbl_borrowdetails.tb_status = 'Returned'
+ORDER BY
+b.Date_Borrowed DESC
+LIMIT
+$offset, $recordsPerPage;
+";
         
             $result = mysqli_query($conn, $query);
             // Initialize variables to store oldest and earliest dates
             $oldestDate = PHP_INT_MAX;
             $earliestDate = PHP_INT_MIN;
 
-        
+  
             // Loop through each row in the result set
             while ($row = mysqli_fetch_assoc($result)) {
                 $dateBorrowed = strtotime($row['Date_Borrowed']);
