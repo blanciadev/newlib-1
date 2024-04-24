@@ -122,13 +122,18 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 tbl_books.Price, 
                 tbl_section.Section_uid, 
                 tbl_section.Section_Name, 
-                tbl_section.Section_Code
+                tbl_section.Section_Code, 
+                tbl_authors.Authors_Name
             FROM
                 tbl_books
                 INNER JOIN
                 tbl_section
                 ON 
-                    tbl_books.Section_Code = tbl_section.Section_uid";
+                    tbl_books.Section_Code = tbl_section.Section_uid
+                INNER JOIN
+                tbl_authors
+                ON 
+                    tbl_books.Authors_ID = tbl_authors.Authors_ID";
     
                 $result = $conn->query($sql);
     
@@ -137,7 +142,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 while($row = $result->fetch_assoc()) {
                     echo "<tr><td>".$row["Accession_Code"]."</td>
                     <td>".$row["Book_Title"]."</td>
-                    <td class='authorPop' data-bs-container='body' data-bs-toggle='popover' data-bs-placement='right' data-bs-content='Author Name'>".$row["Authors_ID"]."</td>
+                    <td class='authorPop' data-bs-container='body' data-bs-toggle='popover' data-bs-placement='right' data-bs-content='Author Name'>".$row["Authors_Name"]."</td>
                     <td>".$row["Publisher_Name"]."</td>
                     <td>".$row["Section_Code"]."</td>
                     <td>".$row["shelf"]."</td>

@@ -149,7 +149,7 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
                     if ($row["tb_status"] != "Cancelled") {
                         echo "<td>
                             <form id='cancelForm' method='POST' action=''>
-                                <input type=\"hidden\" name=\"cancelButton\" value=\"1\"> <!-- This hidden input indicates the form was submitted -->
+                                <input type=\"hidden\" name=\"cancelButton\" value=\"1\"> 
                                 <input type='hidden' name='requestID' value='" . $row["Request_ID"] . "'>
                                 <input type='submit' value='Cancel'>
                             </form>
