@@ -169,7 +169,7 @@ if (isset($_POST['submit'])) {
         }
 
         // Redirect user or display success message after borrowing all books
-        echo '<script>alert("All selected books have been borrowed successfully."); window.location.href = "print_borrow.php";</script>';
+        echo '<script>alert("All selected books have been borrowed successfully."); window.location.href = "queries/print_borrow.php";</script>';
     } else {
         echo "No book details available";
     }

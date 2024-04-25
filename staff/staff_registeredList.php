@@ -195,7 +195,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
                 <div class="modal-footer d-flex flex-row justify-content-center">
                     <a href="#"><button type="button" class="btn" onclick="sendEmail()">Send to Email</button></a>
-                    <a href="print_details.php"><button id="print" type="button" class="btn">Print</button></a>
+                    <a href="queries/print_details.php"><button id="print" type="button" class="btn">Print</button></a>
                     <a href="#"><button id="saveButton" type="button" class="btn">Save</button></a>
 
 
@@ -246,7 +246,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
 
                     // Send AJAX request to update.php to fetch and populate data
-                    fetch('displaymodal.php', {
+                    fetch('queries/displaymodal.php', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -322,7 +322,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
             // Send an AJAX request to update.php
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "update.php", true);
+            xhr.open("POST", "queries/update.php", true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
@@ -352,7 +352,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
             // Send an AJAX request to a PHP script
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "send_email.php", true);
+            xhr.open("POST", "queries/send_email.php", true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === XMLHttpRequest.DONE) {

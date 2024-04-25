@@ -147,7 +147,7 @@ if (mysqli_num_rows($result) > 0) {
 
                    // Send the data URL and lastInsertedID to a PHP script using AJAX
         let xhr = new XMLHttpRequest();
-        xhr.open("POST", "save_qr_code.php", true);
+        xhr.open("POST", "queries/save_qr_code.php", true);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {

@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $_SESSION['affiliation'] = $affiliation;
 
     // Redirect to another page or perform other actions
-    header("Location: generate_qr_code.php");
+    header("Location: queries/generate_qr_code.php");
     exit();
 }
 ?>

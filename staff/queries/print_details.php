@@ -126,7 +126,7 @@ if (mysqli_num_rows($result) > 0) {
     <button id="printButton" class="print-button btn btn-primary" onclick="printPage()">Print</button>
 
     <!-- Go to Staff Log button -->
-    <a href="staff_log.php" id="goToStaffLogButton" class="go-to-staff-log-button btn btn-primary">Go to Staff Log</a>
+    <a href="../staff_log.php" id="goToStaffLogButton" class="go-to-staff-log-button btn btn-primary">Go to Staff Log</a>
     </div>
     <script>
     // Function to hide the button before printing starts

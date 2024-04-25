@@ -243,7 +243,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 function fetchShelfs(sectionCode) {
     // AJAX request to fetch shelf categories
     $.ajax({
-        url: 'fetch_shelfs.php',
+        url: 'queries/fetch_shelfs.php',
         method: 'POST',
         data: { sectionCode: sectionCode },
         dataType: 'html',
@@ -261,7 +261,7 @@ function fetchShelfs(sectionCode) {
 function fetchBooks(selectedShelf) {
     // AJAX request to fetch books based on selected shelf
     $.ajax({
-        url: 'fetch_books.php',
+        url: 'queries/fetch_books.php',
         method: 'POST',
         data: { selectedShelf: selectedShelf },
         dataType: 'html',
@@ -291,7 +291,7 @@ $('button[data-target="Publishers"]').click(function() {
 function fetchData(target) {
     // AJAX request to fetch data based on the target
     $.ajax({
-        url: 'fetch_auth.php', // Replace 'fetch_data.php' with the appropriate server-side script
+        url: 'queries/fetch_auth.php', // Replace 'fetch_data.php' with the appropriate server-side script
         method: 'POST',
         data: { target: target }, // Send the target as data
         dataType: 'html',
