@@ -118,28 +118,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         case 'DAMAGE':
             $value = 1000;
             $fine += $value;
-            $_SESSION['fine'] = $fine;  // Update fine directly in the session
-            break;
-        case 'PARTIALLY DAMAGE':
-            $value = 500;
-            $fine += $value;
-            $_SESSION['fine'] = $fine;
+            $_SESSION['fine'] += $fine;  // Update fine directly in the session
             break;
         case 'GOOD CONDITION':
             $value = 0;
             $fine += $value;
-            $_SESSION['fine'] = $fine;
+            $_SESSION['fine'] += $fine;
             break;
         case 'LOST':
             $value = 2000;
             $fine += $value;
-            $_SESSION['fine'] = $fine;
+            $_SESSION['fine'] += $fine;
             break;
         default:
             // Handle the case where the payment status is not recognized
             echo "Invalid payment status selected.";
             break;
     }
+
 
     // Database connection
     $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
@@ -438,10 +434,7 @@ SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tb
                         echo '<input type="radio" id="damage" name="paymentStatus" value="DAMAGE" class="form-check-input">';
                         echo '<label for="damage" class="form-check-label">Damage</label><br>';
                         echo '</div>';
-                        echo '<div class="form-check">';
-                        echo '<input type="radio" id="partialDamage" name="paymentStatus" value="PARTIALLY DAMAGE" class="form-check-input">';
-                        echo '<label for="partialDamage" class="form-check-label">Partially Damage</label><br>';
-                        echo '</div>';
+                      
                         echo '<div class="form-check">';
                         echo '<input type="radio" id="goodCondition" name="paymentStatus" value="GOOD CONDITION" class="form-check-input">';
                         echo '<label for="goodCondition" class="form-check-label">Good Condition</label><br>';

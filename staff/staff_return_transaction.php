@@ -75,7 +75,7 @@ $result = $stmt->get_result();
 
 
 // Function to calculate fine based on due date and book status
-function calculateFine($dueDate, $dateBorrowed, $bookStatus)
+function calculateFine($dueDate, $dateBorrowed)
 {
     // Get current timestamp
     $currentTimestamp = time();
@@ -119,29 +119,24 @@ function calculateFine($dueDate, $dateBorrowed, $bookStatus)
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $fine = $_SESSION['fine'];
+    $fine += $_SESSION['fine'];
     $Reason = $_POST['paymentStatus']; // Get the selected payment status
 
     switch ($Reason) {
         case 'DAMAGE':
             $value = 1000;
             $fine += $value;
-            $_SESSION['fine'] = $fine;  // Update fine directly in the session
-            break;
-        case 'PARTIALLY DAMAGE':
-            $value = 500;
-            $fine += $value;
-            $_SESSION['fine'] = $fine;
+            $_SESSION['fine'] += $fine;  // Update fine directly in the session
             break;
         case 'GOOD CONDITION':
             $value = 0;
             $fine += $value;
-            $_SESSION['fine'] = $fine;
+            $_SESSION['fine'] += $fine;
             break;
         case 'LOST':
             $value = 2000;
             $fine += $value;
-            $_SESSION['fine'] = $fine;
+            $_SESSION['fine'] += $fine;
             break;
         default:
             // Handle the case where the payment status is not recognized
@@ -168,9 +163,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt1->bind_param("i", $bd_Id);
 
     // Update tbl_borrow status
-    $sql2 = "UPDATE tbl_borrow SET tb_status = 'Returned' WHERE Borrow_ID = (
-                SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ?
-            )";
+    $sql2 = "UPDATE tbl_borrow SET tb_status = 'Returned' WHERE Borrow_ID = ?";
     $stmt2 = $conn->prepare($sql2);
     if (!$stmt2) {
         die("Error in preparing statement 2: " . $conn->error);
@@ -423,7 +416,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     <?php
                     $bookStatus = "LOST"; // Example status, replace with actual logic
-                    $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"], $bookStatus);
+                    $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"]);
                     ?>
                     <p class="card-text"><strong>Fine:</strong> <?php echo $fine; ?></p>
 
@@ -434,10 +427,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <input type="radio" id="damage" name="paymentStatus" value="DAMAGE" class="form-check-input">
                                 <label for="damage" class="form-check-label">Damage</label><br>
                             </div>
-                            <div class="form-check">
-                                <input type="radio" id="partialDamage" name="paymentStatus" value="PARTIALLY DAMAGE" class="form-check-input">
-                                <label for="partialDamage" class="form-check-label">Partially Damage</label><br>
-                            </div>
+                        
                             <div class="form-check">
                                 <input type="radio" id="goodCondition" name="paymentStatus" value="GOOD CONDITION" class="form-check-input">
                                 <label for="goodCondition" class="form-check-label">Good Condition</label><br>
