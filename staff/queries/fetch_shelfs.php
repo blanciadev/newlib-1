@@ -19,18 +19,31 @@ if (isset($_POST['sectionCode'])) {
     $sectionCode = $_POST['sectionCode'];
     $sql = "SELECT Category FROM tbl_shelf WHERE shelf_code = '$sectionCode'";
     $result = mysqli_query($conn, $sql);
-
+    
     if ($result && mysqli_num_rows($result) > 0) {
-        // Display shelf numbers as options
-        echo "<select id='shelf' name='shelf'>";
-        echo "<option value=''>Select Shelf </option>";
+        echo "<div id='shelfAccordion'>";
+        $index = 0;
         while ($row = mysqli_fetch_assoc($result)) {
-            echo "<option value='" . $row['Category'] . "'>" . $row['Category'] . "</option>";
+            $index++;
+            echo "<div class='accordion-item'>";
+            echo "<h2 class='accordion-header' id='heading{$index}'>";
+            echo "<button class='accordion-button' type='button' data-bs-toggle='collapse' data-bs-target='#collapse{$index}' aria-expanded='true' aria-controls='collapse{$index}'>";
+            echo $row['Category'];
+            echo "</button>";
+            echo "</h2>";
+            echo "<div id='collapse{$index}' class='accordion-collapse collapse' aria-labelledby='heading{$index}' data-bs-parent='#shelfAccordion'>";
+            echo "<div class='accordion-body'>";
+            echo "<a href='#' class='shelf-button' data-shelf='" . $row['Category'] . "'></a>";
+            echo "</div>";
+            echo "</div>";
+            echo "</div>";
         }
-        echo "</select>";
+        echo "</div>";
     } else {
         echo "No shelf numbers found for the selected section.";
     }
+    
+    
 } else {
     echo "Invalid request.";
 }

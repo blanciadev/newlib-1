@@ -193,33 +193,34 @@ if (!$result) {
     <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 20px;">
         <?php
         $totalVisits = "SELECT
-                bd.BorrowDetails_ID, 
-                b.User_ID, 
-                b.Accession_Code, 
-                bk.Book_Title, 
-                bd.Quantity, 
-                b.Date_Borrowed, 
-                b.Due_Date, 
-                br.Borrower_ID, 
-                bd.tb_status, 
-                br.First_Name, 
-                br.Last_Name
-            FROM
-                tbl_borrowdetails AS bd
-            INNER JOIN
-                tbl_borrow AS b
-            ON 
-                bd.Borrower_ID = b.Borrower_ID
-            INNER JOIN
-                tbl_books AS bk
-            ON 
-                b.Accession_Code = bk.Accession_Code
-            INNER JOIN
-                tbl_borrower AS br
-            ON 
-                bd.Borrower_ID = br.Borrower_ID
-            WHERE
-                b.Due_Date = CURDATE();";
+        bd.BorrowDetails_ID, 
+        b.User_ID, 
+        b.Accession_Code, 
+        bk.Book_Title, 
+        bd.Quantity, 
+        b.Date_Borrowed, 
+        b.Due_Date, 
+        br.Borrower_ID, 
+        bd.tb_status, 
+        br.First_Name, 
+        br.Last_Name
+    FROM
+        tbl_borrowdetails AS bd
+        INNER JOIN
+        tbl_borrow AS b
+        ON 
+            bd.Borrower_ID = b.Borrower_ID
+        INNER JOIN
+        tbl_books AS bk
+        ON 
+            b.Accession_Code = bk.Accession_Code
+        INNER JOIN
+        tbl_borrower AS br
+        ON 
+            bd.Borrower_ID = br.Borrower_ID
+    WHERE
+        b.Due_Date = CURDATE() AND
+        bd.tb_status = 'Pending'";
 
         $totalVisits_run = mysqli_query($conn, $totalVisits);
 
