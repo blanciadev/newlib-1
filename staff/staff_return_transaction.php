@@ -119,7 +119,18 @@ function calculateFine($dueDate, $dateBorrowed)
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $fine += $_SESSION['fine'];
+// Check if $_SESSION['fine'] is set before using it
+if(isset($_SESSION['fine'])) {
+    // Initialize $fine with the value of $_SESSION['fine']
+    $fine = $_SESSION['fine'];
+} else {
+    // If $_SESSION['fine'] is not set, initialize $fine with a default value
+    $fine = 0; // You can set this to whatever default value you prefer
+}
+
+// Now you can safely use $fine
+$fine += $_SESSION['fine'];
+
     $Reason = $_POST['paymentStatus']; // Get the selected payment status
 
     switch ($Reason) {
@@ -178,19 +189,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     $stmt3->bind_param("i", $bd_Id);
 
-    // Update tbl_returned with current date and status
-    $sql4 = "UPDATE tbl_returned SET Date_Returned = ?, tb_status = 'Resolved' WHERE Borrow_ID IN (
-        SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ? LIMIT 1)
-    )";
+    // // Update tbl_returned with current date and status
+    // $sql4 = "UPDATE tbl_returned SET Date_Returned = ?, tb_status = 'Resolved' WHERE = ?)
+    // )";
 
-    $stmt4 = $conn->prepare($sql4);
-    if (!$stmt4) {
-        die("Error in preparing statement 4: " . $conn->error);
-    }
+    // $stmt4 = $conn->prepare($sql4);
+    // if (!$stmt4) {
+    //     die("Error in preparing statement 4: " . $conn->error);
+    // }
 
-    $stmt4->bind_param("si", $currentDate, $bd_Id);
+    // $stmt4->bind_param("si", $currentDate, $bd_Id);
 
     // Get Borrower_ID from session
+
+
     $borrowerId = $_SESSION['BorrowDetails_ID'];
 
     // Get current date and time
@@ -237,11 +249,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $status1 = $stmt1->execute();
     $status2 = $stmt2->execute();
     $status3 = $stmt3->execute();
-    $status4 = $stmt4->execute();
+    // $status4 = $stmt4->execute();
     $status5 = $stmt5->execute();
 
     // Check each query execution status
-    if ($status1 && $status2 && $status3 && $status4 && $status5) {
+    if ($status1 && $status2 && $status3  && $status5) {
         // All queries executed successfully
         echo '<script>alert("Record Updated successfully."); window.location.href = "print_return.php";</script>';
         exit();
@@ -257,9 +269,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (!$status3) {
             echo " Error in statement 3: " . $stmt3->error;
         }
-        if (!$status4) {
-            echo " Error in statement 4: " . $stmt4->error;
-        }
+        // if (!$status4) {
+        //     echo " Error in statement 4: " . $stmt4->error;
+        // }
         if (!$status5) {
             echo " Error in statement 5: " . $stmt5->error;
         }

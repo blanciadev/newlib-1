@@ -76,17 +76,20 @@ if (!empty($bookDetails)) {
     // $bookDetails is empty, handle accordingly
     echo "No book details available";
 }
+
+
 if (isset($_POST['submit'])) {
     // Calculate due date as 3 days later by default
     $dueDate = date('Y-m-d', strtotime('+3 days', strtotime($currentDate)));
 
-    
-if ($_POST['due_date'] == 'custom') {
-    $dueDate = null; // Set $dueDate to null if 'custom' option is selected
-} else {
-    // Convert the date format from 'MM/DD/YYYY' to 'YYYY-MM-DD'
-    $dueDate = date('Y-m-d', strtotime($_POST['due_date']));
-}
+    $uid = $_SESSION["User_ID"];
+
+    if ($_POST['due_date'] == 'custom') {
+        $dueDate = null; // Set $dueDate to null if 'custom' option is selected
+    } else {
+        // Convert the date format from 'MM/DD/YYYY' to 'YYYY-MM-DD'
+        $dueDate = date('Y-m-d', strtotime($_POST['due_date']));
+    }
 
 
 
@@ -122,7 +125,7 @@ if ($_POST['due_date'] == 'custom') {
                 $sql_borrow .= ", '$Status')";
 
                 if ($conn->query($sql_borrow) === TRUE) {
-                    echo "<script>console.log('Inserted into tbl_borrow for Accession Code: $accessionCode');</script>";
+                    echo "<script>console.log('Inserted into  for Accession Code: $accessionCode');</script>";
 
                     // Prepare and execute the INSERT statement for tbl_borrowdetails
                     $sql_borrowdetails = "INSERT INTO tbl_borrowdetails (Borrower_ID, Accession_Code, Quantity, tb_status) 
@@ -130,12 +133,35 @@ if ($_POST['due_date'] == 'custom') {
 
                     if ($conn->query($sql_borrowdetails) === TRUE) {
                         // Insertion successful
-                        echo "<script>console.log('Inserted into tbl_borrowdetails for Accession Code: $accessionCode');</script>";
+                        echo "<script>console.log('Inserted into  for Accession Code: $accessionCode');</script>";
                     } else {
-                        echo "Error inserting into tbl_borrowdetails: " . $conn->error;
+                        echo "Error inserting into : " . $conn->error;
                     }
+
+                    // Prepare and execute the INSERT statement for tbl_borrowdetails
+                    $sql_returndetails = "INSERT INTO tbl_returningdetails (BorrowDetails_ID, tb_status) 
+                            VALUES ('$borrower_id', 'Borrowed')";
+
+                    if ($conn->query($sql_returndetails) === TRUE) {
+                        // Insertion successful
+                        echo "<script>console.log('Returning Details done');</script>";
+                    } else {
+                        echo "Error inserting into : " . $conn->error;
+                    }
+
+                    // Prepare and execute the INSERT statement for tbl_borrowdetails
+                    $sql_return = "INSERT INTO tbl_returned (User_ID, Borrower_ID, Date_Returned, tb_status) 
+                    VALUES ('$uid', '$borrower_id', NULL, 'Pending')";
+
+                    if ($conn->query($sql_return) === TRUE) {
+                        // Insertion successful
+                        echo "<script>console.log('Returning Details done');</script>";
+                    } else {
+                        echo "Error inserting into : " . $conn->error;
+                    }
+
                 } else {
-                    echo "Error inserting into tbl_borrow: " . $conn->error;
+                    echo "Error inserting into : " . $conn->error;
                 }
             } else {
                 echo "Error updating quantity: " . $conn->error;
@@ -169,14 +195,14 @@ $conn->close();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datepicker/1.0.10/datepicker.min.css">
 
     <!-- jQuery library -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- jQuery UI library -->
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <!-- jQuery UI library -->
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
-<!-- jQuery UI Datepicker CSS -->
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- jQuery UI Datepicker CSS -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
@@ -248,11 +274,11 @@ $conn->close();
                 if ($result && $result->num_rows > 0) {
                     // Fetch each row from the result set
                     while ($row = $result->fetch_assoc()) {
-                        ?>
+                ?>
                         <div class="card mb-4" style="width: 500px">
-                            <div class="card-body" >
+                            <div class="card-body">
                                 <h5 class="card-title"><strong>Title:</strong> <?php echo $row['Book_Title']; ?></h5>
-                                <p class="card-text"  ><strong>Author:</strong> <?php echo $row['Authors_Name']; ?></p>
+                                <p class="card-text"><strong>Author:</strong> <?php echo $row['Authors_Name']; ?></p>
                                 <p class="card-text"><strong>Availability:</strong> <?php echo $row['Quantity']; ?></p>
                                 <div class="mb-3">
                                     <label for="quantity" class="form-label">Quantity:</label>
@@ -267,11 +293,11 @@ $conn->close();
                     <?php
                     }
                     ?>
-           <div class="mb-3" style="width: 200px;">
-    <label for="due_date" class="form-label">Date Return:</label>
-    <!-- Datepicker input field -->
-    <input type="text" name="due_date" id="due_date" class="form-control">
-</div>
+                    <div class="mb-3" style="width: 200px;">
+                        <label for="due_date" class="form-label">Date Return:</label>
+                        <!-- Datepicker input field -->
+                        <input type="text" name="due_date" id="due_date" class="form-control">
+                    </div>
 
                 <?php
                 } else {
@@ -303,11 +329,11 @@ $conn->close();
     </div>
 
     <script>
-    $(function() {
-        // Initialize datepicker
-        $("#due_date").datepicker();
-    });
-</script>
+        $(function() {
+            // Initialize datepicker
+            $("#due_date").datepicker();
+        });
+    </script>
 
 
     <script>

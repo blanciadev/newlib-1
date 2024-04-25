@@ -157,33 +157,33 @@ if (isset($_GET['borrowId'])) {
 
             // Fetch records based on borrowId and pagination parameters
             $sql = "SELECT DISTINCT
-                        b.User_ID, 
-                        b.Accession_Code, 
-                        bk.Book_Title, 
-                        bd.Quantity, 
-                        b.Date_Borrowed, 
-                        b.Due_Date, 
-                        bd.tb_status, 
-                        bd.Borrower_ID, 
-                        b.Borrow_ID
-                    FROM
-                        tbl_borrowdetails AS bd
-                    INNER JOIN
-                        tbl_borrow AS b
-                    ON 
-                        bd.Borrower_ID = b.Borrower_ID AND
-                        bd.BorrowDetails_ID = b.Borrow_ID
-                    INNER JOIN
-                        tbl_books AS bk
-                    ON 
-                        b.Accession_Code = bk.Accession_Code
-                    INNER JOIN
-                        tbl_borrower AS br
-                    ON 
-                        b.Borrower_ID = br.Borrower_ID AND
-                        bd.Borrower_ID = br.Borrower_ID
-                    WHERE
-                        bd.Borrower_ID = ?
+            b.User_ID, 
+            b.Accession_Code, 
+            bk.Book_Title, 
+            bd.Quantity, 
+            b.Date_Borrowed, 
+            b.Due_Date, 
+            bd.tb_status, 
+            bd.Borrower_ID, 
+            b.Borrow_ID
+        FROM
+            tbl_borrowdetails AS bd
+            INNER JOIN
+            tbl_borrow AS b
+            ON 
+                bd.Borrower_ID = b.Borrower_ID AND
+                bd.BorrowDetails_ID = b.Borrow_ID
+            INNER JOIN
+            tbl_books AS bk
+            ON 
+                b.Accession_Code = bk.Accession_Code
+            INNER JOIN
+            tbl_borrower AS br
+            ON 
+                b.Borrower_ID = br.Borrower_ID AND
+                bd.Borrower_ID = br.Borrower_ID
+        WHERE
+            bd.Borrower_ID = ?
                     LIMIT ?, ?"; // Using a placeholder for the borrowId
 
             // Prepare the SQL statement
@@ -201,6 +201,7 @@ if (isset($_GET['borrowId'])) {
                 // Use the result as needed
                 while ($row = mysqli_fetch_assoc($result)) {
                     echo "<tr>";
+                    
                     echo "<td>" . $row["Borrow_ID"] . "</td>";
                     echo "<td>" . $row["Accession_Code"] . "</td>";
                     echo "<td>" . $row["Book_Title"] . "</td>";
