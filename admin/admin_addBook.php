@@ -302,7 +302,7 @@ $(document).ready(function() {
 
         // AJAX request to fetch shelf numbers
         $.ajax({
-            url: 'fetch_shelfs.php', // Update the URL to your PHP script
+            url: 'queries/shelfs.php', // Update the URL to your PHP script
             method: 'POST',
             data: { sectionCode: sectionCode },
             dataType: 'html',

@@ -154,7 +154,7 @@ if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
     <script>
         // Function to fetch book information based on selected status
         function fetchBooksByStatus(status) {
-            fetch('fetch_books.php?status=' + status)
+            fetch('queries/fetch_books.php?status=' + status)
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('bookTableBody').innerHTML = data;

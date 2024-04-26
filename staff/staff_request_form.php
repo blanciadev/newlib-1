@@ -290,7 +290,7 @@ if (isset($_POST['submit'])) {
                 
                 // AJAX request to fetch shelf numbers
                 $.ajax({
-                    url: 'queries/fetch_shelfs.php', // Update the URL to your PHP script
+                    url: 'queries/shelf.php', // Update the URL to your PHP script
                     method: 'POST',
                     data: { sectionCode: sectionCode },
                     dataType: 'html',

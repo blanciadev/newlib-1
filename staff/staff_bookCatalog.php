@@ -73,7 +73,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         </ul>
 
     </div>
-    <div class="board1 container"><!--board container-->
+    <div class="board1 container">
         <div class="header1">
             <div class="text">
                 <div class="back-btn">
@@ -91,7 +91,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             </div>
         </div>
         <div class="bookCatalog">
-            <div class="catalogOptions"> <!-- kurt di ko kakuha ani ay, dapat pag tuplok ani mag make syag list of categories nga example Fictional gi click, Fictional lang na category(dropdown ni sya) and then pag click niya na dadto ang list sa books  naka based sa shelf number ni sya but naa syay order ako lang isend sa gc -->
+            <div class="catalogOptions"> 
                 <div class="d-flex w-100">
                     <div class="catalogOptions">
                         <form id="sectionForm">
@@ -267,16 +267,17 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                     function fetchData(target) {
                         // AJAX request to fetch data based on the target
                         $.ajax({
-                            url: 'queries/fetch_auth.php', // Replace 'fetch_data.php' with the appropriate server-side script
+                            url: 'queries/fetch_auth.php', 
                             method: 'POST',
                             data: {
                                 target: target
                             }, // Send the target as data
                             dataType: 'html',
                             success: function(response) {
-                                console.log(target + " Response:", response); // Log the response for Authors or Publishers
+                                console.log(target + " Response:", response); 
                                 // Append the fetched data to the bookList div
                                 $('#bookList').html(response);
+                               
                             },
 
                             error: function(xhr, status, error) {

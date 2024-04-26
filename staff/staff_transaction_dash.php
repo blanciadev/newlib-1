@@ -238,21 +238,20 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                     if (isset($topBorrowerID) && !empty($topBorrowerID)) {
                         // Execute the SQL query to retrieve the most borrowed books details
                         $mostBorrowedBooksQuery = "SELECT
-            tbl_borrowdetails.Accession_Code,
-            COUNT(*) AS borrow_count,
-            tbl_books.Book_Title
-        FROM
-            tbl_borrowdetails
-        INNER JOIN
-            tbl_books
-        ON 
-            tbl_borrowdetails.Accession_Code = tbl_books.Accession_Code
-        WHERE
-            tbl_borrowdetails.Borrower_ID = $topBorrowerID
-        GROUP BY
-            tbl_borrowdetails.Accession_Code
-        ORDER BY
-            borrow_count DESC
+                        tbl_borrowdetails.Accession_Code,
+                        COUNT(*) AS borrow_count,
+                        tbl_books.Book_Title
+                    FROM
+                        tbl_borrowdetails
+                    INNER JOIN
+                        tbl_books
+                    ON 
+                        tbl_borrowdetails.Accession_Code = tbl_books.Accession_Code
+                   
+                    GROUP BY
+                        tbl_borrowdetails.Accession_Code
+                    ORDER BY
+                        borrow_count DESC
         LIMIT 3";
                         $mostBorrowedBooksResult = mysqli_query($conn, $mostBorrowedBooksQuery);
 
