@@ -136,95 +136,93 @@ if (!$result) {
                 <div class="ovw-con">
                     <div class="totalbooks">
                         <?php
-                        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
+                            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
 
-                        // Query to get the total quantity of all books
-                        $totalQuantityQuery = "SELECT SUM(Quantity) AS total_quantity FROM tbl_books";
-                        $totalQuantityResult = mysqli_query($conn, $totalQuantityQuery);
+                            // Query to get the total quantity of all books
+                            $totalQuantityQuery = "SELECT SUM(Quantity) AS total_quantity FROM tbl_books";
+                            $totalQuantityResult = mysqli_query($conn, $totalQuantityQuery);
 
-                        // Check if the query was successful and fetch the total quantity
-                        if ($totalQuantityResult && mysqli_num_rows($totalQuantityResult) > 0) {
-                            $totalQuantityData = mysqli_fetch_assoc($totalQuantityResult);
-                            $totalQuantity = $totalQuantityData['total_quantity'];
+                            // Check if the query was successful and fetch the total quantity
+                            if ($totalQuantityResult && mysqli_num_rows($totalQuantityResult) > 0) {
+                                $totalQuantityData = mysqli_fetch_assoc($totalQuantityResult);
+                                $totalQuantity = $totalQuantityData['total_quantity'];
 
-                            // Display the total quantity of all books
-                            echo "<h3>" . $totalQuantity . "</h3>";
-                        } else {
-                            echo "No books found";
-                        }
-
+                                // Display the total quantity of all books
+                                echo "<h3>" . $totalQuantity . "</h3>";
+                            } else {
+                                echo "No books found";
+                            }
                         ?>
-                    <div class="d-flex w-100 flex-wrap justify-content-around ">
-                        <i class='bx bxs-book' style="font-size: 30pt;"></i>
-                        <p>Total Books</p>
-                    </div>   
+                        <div class="d-flex w-100 flex-wrap justify-content-around ">
+                            <i class='bx bxs-book' style="font-size: 30pt;"></i>
+                            <p>Total Books</p>
+                        </div>   
                     </div>
 
                     <div class="line"></div>
                     
                     <div class="totalvisits">
                         <?php
-                        $currentDate = date("Y-m-d");
-                        // Query to count visits for the current date using the Date_Time column
-                        $totalVisitsQuery = "SELECT COUNT(*) AS total_visits FROM tbl_log WHERE DATE(`Date_Time`) = '$currentDate'";
-                        $totalVisitsResult = mysqli_query($conn, $totalVisitsQuery);
+                            $currentDate = date("Y-m-d");
+                            // Query to count visits for the current date using the Date_Time column
+                            $totalVisitsQuery = "SELECT COUNT(*) AS total_visits FROM tbl_log WHERE DATE(`Date_Time`) = '$currentDate'";
+                            $totalVisitsResult = mysqli_query($conn, $totalVisitsQuery);
 
-                        // Check if the query was successful and fetch the total visits
-                        if ($totalVisitsResult && mysqli_num_rows($totalVisitsResult) > 0) {
-                            $totalVisitsData = mysqli_fetch_assoc($totalVisitsResult);
-                            $totalVisitsCount = $totalVisitsData['total_visits'];
+                            // Check if the query was successful and fetch the total visits
+                            if ($totalVisitsResult && mysqli_num_rows($totalVisitsResult) > 0) {
+                                $totalVisitsData = mysqli_fetch_assoc($totalVisitsResult);
+                                $totalVisitsCount = $totalVisitsData['total_visits'];
 
-                            // Display the total visits for the current date
-                            echo "<h3>" . $totalVisitsCount . "</h3>";
-                        } else {
-                            echo "<h4>0</h4>"; // No visits found for the current date
-                        }
+                                // Display the total visits for the current date
+                                echo "<h3>" . $totalVisitsCount . "</h3>";
+                            } else {
+                                echo "<h4>0</h4>"; // No visits found for the current date
+                            }
                         ?>
                         <div class="d-flex w-100 flex-wrap justify-content-around ">
                             <i class='bx bxs-book-reader' style="font-size: 30pt;"></i>
                             <p>Total Visits</p>
                         </div>
-
                     </div>
                 </div>
             </div>
 
             <div class="due-books">
-    <h3 class="mb-3">Due Today</h3>
-    <div class="due-books-container" style="max-height: 200px; overflow-y: auto;">
-        <?php
-        $totalVisits = "SELECT
-        b.User_ID, 
-        b.Accession_Code, 
-        bk.Book_Title, 
-        bd.Quantity, 
-        b.Date_Borrowed, 
-        b.Due_Date, 
-        br.Borrower_ID, 
-        bd.tb_status, 
-        br.First_Name, 
-        br.Last_Name, 
-        b.Borrow_ID
-    FROM
-        tbl_borrowdetails AS bd
-        INNER JOIN
-        tbl_borrow AS b
-        ON 
-            bd.Borrower_ID = b.Borrower_ID AND
-            bd.BorrowDetails_ID = b.Borrow_ID
-        INNER JOIN
-        tbl_books AS bk
-        ON 
-            b.Accession_Code = bk.Accession_Code
-        INNER JOIN
-        tbl_borrower AS br
-        ON 
-            bd.Borrower_ID = br.Borrower_ID
-    WHERE
-        b.Due_Date = CURDATE() AND
-        bd.tb_status = 'Pending'";
+                <h3 class="mb-3">Due Today</h3>
+                <div class="duebooks-con" style="max-height: 200px; overflow-y: auto; padding-top:10px">
+                    <?php
+                        $totalVisits = "SELECT
+                        b.User_ID, 
+                        b.Accession_Code, 
+                        bk.Book_Title, 
+                        bd.Quantity, 
+                        b.Date_Borrowed, 
+                        b.Due_Date, 
+                        br.Borrower_ID, 
+                        bd.tb_status, 
+                        br.First_Name, 
+                        br.Last_Name, 
+                        b.Borrow_ID
+                        FROM
+                        tbl_borrowdetails AS bd
+                        INNER JOIN
+                        tbl_borrow AS b
+                        ON 
+                            bd.Borrower_ID = b.Borrower_ID AND
+                            bd.BorrowDetails_ID = b.Borrow_ID
+                        INNER JOIN
+                        tbl_books AS bk
+                        ON 
+                            b.Accession_Code = bk.Accession_Code
+                        INNER JOIN
+                        tbl_borrower AS br
+                        ON 
+                            bd.Borrower_ID = br.Borrower_ID
+                        WHERE
+                            b.Due_Date = CURDATE() AND
+                            bd.tb_status = 'Pending'";
 
-        $totalVisits_run = mysqli_query($conn, $totalVisits);
+                        $totalVisits_run = mysqli_query($conn, $totalVisits);
 
         if ($totalVisits_run && mysqli_num_rows($totalVisits_run) > 0) {
 

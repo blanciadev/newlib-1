@@ -102,11 +102,6 @@ li.nav-item.active {
     justify-content: flex-start;
     flex-direction: row;
     padding: 30px 20px;
-    gap: 7px;display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    flex-direction: row;
-    padding: 30px 20px;
     gap: 7px;
 }
 .cap{
@@ -376,25 +371,40 @@ li.nav-item.active {
     width: 99%;
     height: 535px;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 350px 1fr;
     grid-template-rows: 1fr 1fr;
     align-items: start;
     justify-content: center;
 }
 .settingForms > #userProfileForm{
-    height: 50%;
+    height: 100%;
     width: 100%;
     display: grid;
     grid-template-rows: 30px 1fr 1fr;
     grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-column-start: 2;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 2;
 
 }
+.settingForms > #imageUploadForm{
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+}
 .settingForms > #userPasswordForm{
-    height: 40%;
+    height: 100%;
     width: 100%;
     display: grid;
     grid-template-rows: 30px 1fr 1fr 1fr;
     grid-template-columns: 1fr 1fr;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3;
 }
 .settingForms > #userPasswordForm:nth-child(2){
     grid-column-start: 1;
