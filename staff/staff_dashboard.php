@@ -235,7 +235,7 @@ if (!$result) {
                         ' . $row['First_Name'] . ' ' . $row['Last_Name'] . '
                     </div>';
             echo '  <div class="view-btn">
-                        <a href="#"><i class="bx bx-chevron-right"></i></a>
+                        <a href="#"><i class="bx bxs-bell"></i></a> 
                     </div>';
             echo '</li>';
             

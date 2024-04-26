@@ -223,8 +223,12 @@ if (isset($_POST['updatePassword'])) {
     <div class="settingForms">
     <form id="imageUploadForm" action="" method="post" enctype="multipart/form-data">
                 <div class="mb-3">
-                    <label for="imageFile" class="form-label">Profile Image</label>
-                    <input type="file" class="form-control" id="imageFile" name="imageFile">
+                    <label for="imageFile" class="form-label">
+                        <div class="upload d-flex justify-content-center align-items-center" style="width: 200px; height: 200px; background-color: lightgrey; border-radius:15px;">
+                            <p>Upload</p>
+                        </div>
+                    </label>
+                    <input type="file" class="form-control" id="imageFile" name="imageFile" style="display: none;" hidden>
                 </div>
                 <button type="submit" class="btn btn-primary" name="uploadImageBtn">Upload Image</button>
             </form>

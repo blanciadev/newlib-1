@@ -375,10 +375,10 @@ li.nav-item.active {
 .settingForms{
     width: 99%;
     height: 535px;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    align-items: start;
     justify-content: center;
 }
 .settingForms > #userProfileForm{
