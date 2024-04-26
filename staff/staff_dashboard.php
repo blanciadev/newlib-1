@@ -188,12 +188,11 @@ if (!$result) {
                 </div>
             </div>
 
-            <div class="duebooks">
-    <h3>Due Today</h3>
-    <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 20px;">
+            <div class="due-books">
+    <h3 class="mb-3">Due Today</h3>
+    <div class="due-books-container" style="max-height: 200px; overflow-y: auto;">
         <?php
         $totalVisits = "SELECT
-        bd.BorrowDetails_ID, 
         b.User_ID, 
         b.Accession_Code, 
         bk.Book_Title, 
@@ -203,13 +202,15 @@ if (!$result) {
         br.Borrower_ID, 
         bd.tb_status, 
         br.First_Name, 
-        br.Last_Name
+        br.Last_Name, 
+        b.Borrow_ID
     FROM
         tbl_borrowdetails AS bd
         INNER JOIN
         tbl_borrow AS b
         ON 
-            bd.Borrower_ID = b.Borrower_ID
+            bd.Borrower_ID = b.Borrower_ID AND
+            bd.BorrowDetails_ID = b.Borrow_ID
         INNER JOIN
         tbl_books AS bk
         ON 
@@ -225,20 +226,36 @@ if (!$result) {
         $totalVisits_run = mysqli_query($conn, $totalVisits);
 
         if ($totalVisits_run && mysqli_num_rows($totalVisits_run) > 0) {
-            echo '<div class="table-responsive">';
-            echo '<table class="table table-striped">';
+            echo '<div class="list-group">';
             while ($row = mysqli_fetch_assoc($totalVisits_run)) {
-                echo '<tr><td><strong>' . $row['Book_Title'] . '</strong></td></tr>';
-                echo '<tr><td>' . $row['First_Name'] . ' ' . $row['Last_Name'] . '</td></tr>';
+                echo '<div class="list-group-item list-group-item-action" onclick="updateAndSetSession(' . $row['Borrow_ID'] . ')">';
+                echo '<div class="d-flex justify-content-between align-items-center">';
+                echo '<h5 class="mb-1" style="font-size: 0.9rem;">' . $row['Book_Title'] . '</h5>';
+                echo '</div>';
+               echo '<p class="mb-2 text-muted" style="font-size: 0.8rem;">' . $row['First_Name'] . ' ' . $row['Last_Name'] . '</p>';
+            
+                echo '</div>';
             }
-            echo '</table>';
             echo '</div>';
         } else {
-            echo "<p>No books due today.</p>";
+            echo "<p class='text-muted'>No books due today.</p>";
         }
         ?>
     </div>
 </div>
+
+<script>
+    // Function to handle the update action and redirect to staff_return_transaction.php
+    function updateAndSetSession(borrowId) {
+        console.log("Borrow ID:", borrowId); // Debugging console log
+        // Redirect to staff_return_transaction.php with the borrowId parameter
+        window.location.href = "staff_return_transaction.php?borrowId=" + borrowId;
+    }
+</script>
+
+
+
+
 
 
             <div class="stats">
