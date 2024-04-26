@@ -884,7 +884,6 @@ return array(
     'PHPUnit\\Util\\PHP\\AbstractPhpProcess' => $vendorDir . '/phpunit/phpunit/src/Util/PHP/AbstractPhpProcess.php',
     'PHPUnit\\Util\\PHP\\DefaultPhpProcess' => $vendorDir . '/phpunit/phpunit/src/Util/PHP/DefaultPhpProcess.php',
     'PHPUnit\\Util\\PHP\\PhpProcessException' => $vendorDir . '/phpunit/phpunit/src/Util/Exception/PhpProcessException.php',
-    'PHPUnit\\Util\\PHP\\WindowsPhpProcess' => $vendorDir . '/phpunit/phpunit/src/Util/PHP/WindowsPhpProcess.php',
     'PHPUnit\\Util\\Reflection' => $vendorDir . '/phpunit/phpunit/src/Util/Reflection.php',
     'PHPUnit\\Util\\Test' => $vendorDir . '/phpunit/phpunit/src/Util/Test.php',
     'PHPUnit\\Util\\ThrowableToStringMapper' => $vendorDir . '/phpunit/phpunit/src/Util/ThrowableToStringMapper.php',

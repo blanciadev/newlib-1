@@ -254,12 +254,6 @@ if (!$result) {
         ?>
     </div>
 </div>
-
-
-
-
-
-
             <div class="stats">
                 <h3>Statistics</h3>
                 <div class="stats-con">

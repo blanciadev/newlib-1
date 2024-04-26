@@ -2,36 +2,36 @@
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
-            "version": "2.0.8",
-            "version_normalized": "2.0.8.0",
+            "version": "v3.0.0",
+            "version_normalized": "3.0.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Bacon/BaconQrCode.git",
-                "reference": "8674e51bb65af933a5ffaf1c308a660387c35c22"
+                "reference": "510de6eca6248d77d31b339d62437cc995e2fb41"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Bacon/BaconQrCode/zipball/8674e51bb65af933a5ffaf1c308a660387c35c22",
-                "reference": "8674e51bb65af933a5ffaf1c308a660387c35c22",
+                "url": "https://api.github.com/repos/Bacon/BaconQrCode/zipball/510de6eca6248d77d31b339d62437cc995e2fb41",
+                "reference": "510de6eca6248d77d31b339d62437cc995e2fb41",
                 "shasum": ""
             },
             "require": {
                 "dasprid/enum": "^1.0.3",
                 "ext-iconv": "*",
-                "php": "^7.1 || ^8.0"
+                "php": "^8.1"
             },
             "require-dev": {
-                "phly/keep-a-changelog": "^2.1",
-                "phpunit/phpunit": "^7 | ^8 | ^9",
-                "spatie/phpunit-snapshot-assertions": "^4.2.9",
-                "squizlabs/php_codesniffer": "^3.4"
+                "phly/keep-a-changelog": "^2.12",
+                "phpunit/phpunit": "^10.5.11 || 11.0.4",
+                "spatie/phpunit-snapshot-assertions": "^5.1.5",
+                "squizlabs/php_codesniffer": "^3.9"
             },
             "suggest": {
                 "ext-imagick": "to generate QR code images"
             },
-            "time": "2022-12-07T17:46:57+00:00",
+            "time": "2024-04-18T11:16:25+00:00",
             "type": "library",
-            "installation-source": "dist",
+            "installation-source": "source",
             "autoload": {
                 "psr-4": {
                     "BaconQrCode\\": "src/"
@@ -53,7 +53,7 @@
             "homepage": "https://github.com/Bacon/BaconQrCode",
             "support": {
                 "issues": "https://github.com/Bacon/BaconQrCode/issues",
-                "source": "https://github.com/Bacon/BaconQrCode/tree/2.0.8"
+                "source": "https://github.com/Bacon/BaconQrCode/tree/v3.0.0"
             },
             "install-path": "../bacon/bacon-qr-code"
         },
@@ -540,30 +540,27 @@
         },
         {
             "name": "endroid/qr-code",
-            "version": "5.0.7",
-            "version_normalized": "5.0.7.0",
+            "version": "5.0.8",
+            "version_normalized": "5.0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/endroid/qr-code.git",
-                "reference": "0cc00f0626b73bc71a1ea17af01387d0ac75e046"
+                "reference": "cb6b31a7aa99df9c6c2dc09a5fa2aaa617f6e5bb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/endroid/qr-code/zipball/0cc00f0626b73bc71a1ea17af01387d0ac75e046",
-                "reference": "0cc00f0626b73bc71a1ea17af01387d0ac75e046",
+                "url": "https://api.github.com/repos/endroid/qr-code/zipball/cb6b31a7aa99df9c6c2dc09a5fa2aaa617f6e5bb",
+                "reference": "cb6b31a7aa99df9c6c2dc09a5fa2aaa617f6e5bb",
                 "shasum": ""
             },
             "require": {
-                "bacon/bacon-qr-code": "^2.0.5",
+                "bacon/bacon-qr-code": "^3.0",
                 "php": "^8.1"
-            },
-            "conflict": {
-                "khanamiryan/qrcode-detector-decoder": "^1.0.6"
             },
             "require-dev": {
                 "endroid/quality": "dev-main",
                 "ext-gd": "*",
-                "khanamiryan/qrcode-detector-decoder": "^1.0.4||^2.0.2",
+                "khanamiryan/qrcode-detector-decoder": "^2.0.2",
                 "setasign/fpdf": "^1.8.2"
             },
             "suggest": {
@@ -572,14 +569,14 @@
                 "roave/security-advisories": "Makes sure package versions with known security issues are not installed",
                 "setasign/fpdf": "Enables you to use the PDF writer"
             },
-            "time": "2024-03-08T11:24:40+00:00",
+            "time": "2024-04-19T08:36:52+00:00",
             "type": "library",
             "extra": {
                 "branch-alias": {
                     "dev-main": "5.x-dev"
                 }
             },
-            "installation-source": "dist",
+            "installation-source": "source",
             "autoload": {
                 "psr-4": {
                     "Endroid\\QrCode\\": "src/"
@@ -606,7 +603,7 @@
             ],
             "support": {
                 "issues": "https://github.com/endroid/qr-code/issues",
-                "source": "https://github.com/endroid/qr-code/tree/5.0.7"
+                "source": "https://github.com/endroid/qr-code/tree/5.0.8"
             },
             "funding": [
                 {
@@ -1974,17 +1971,17 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "10.5.13",
-            "version_normalized": "10.5.13.0",
+            "version": "10.5.20",
+            "version_normalized": "10.5.20.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "20a63fc1c6db29b15da3bd02d4b6cf59900088a7"
+                "reference": "547d314dc24ec1e177720d45c6263fb226cc2ae3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/20a63fc1c6db29b15da3bd02d4b6cf59900088a7",
-                "reference": "20a63fc1c6db29b15da3bd02d4b6cf59900088a7",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/547d314dc24ec1e177720d45c6263fb226cc2ae3",
+                "reference": "547d314dc24ec1e177720d45c6263fb226cc2ae3",
                 "shasum": ""
             },
             "require": {
@@ -2018,7 +2015,7 @@
             "suggest": {
                 "ext-soap": "To be able to generate mocks based on WSDL files"
             },
-            "time": "2024-03-12T15:37:41+00:00",
+            "time": "2024-04-24T06:32:35+00:00",
             "bin": [
                 "phpunit"
             ],
@@ -2028,7 +2025,7 @@
                     "dev-main": "10.5-dev"
                 }
             },
-            "installation-source": "dist",
+            "installation-source": "source",
             "autoload": {
                 "files": [
                     "src/Framework/Assert/Functions.php"
@@ -2058,7 +2055,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.13"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.20"
             },
             "funding": [
                 {
@@ -3217,26 +3214,22 @@
         },
         {
             "name": "setasign/fpdf",
-            "version": "1.8.6",
-            "version_normalized": "1.8.6.0",
+            "version": "1.8.2",
+            "version_normalized": "1.8.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Setasign/FPDF.git",
-                "reference": "0838e0ee4925716fcbbc50ad9e1799b5edfae0a0"
+                "reference": "d77904018090c17dc9f3ab6e944679a7a47e710a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Setasign/FPDF/zipball/0838e0ee4925716fcbbc50ad9e1799b5edfae0a0",
-                "reference": "0838e0ee4925716fcbbc50ad9e1799b5edfae0a0",
+                "url": "https://api.github.com/repos/Setasign/FPDF/zipball/d77904018090c17dc9f3ab6e944679a7a47e710a",
+                "reference": "d77904018090c17dc9f3ab6e944679a7a47e710a",
                 "shasum": ""
             },
-            "require": {
-                "ext-gd": "*",
-                "ext-zlib": "*"
-            },
-            "time": "2023-06-26T14:44:25+00:00",
+            "time": "2019-12-08T10:32:10+00:00",
             "type": "library",
-            "installation-source": "dist",
+            "installation-source": "source",
             "autoload": {
                 "classmap": [
                     "fpdf.php"
@@ -3260,23 +3253,23 @@
                 "pdf"
             ],
             "support": {
-                "source": "https://github.com/Setasign/FPDF/tree/1.8.6"
+                "source": "https://github.com/Setasign/FPDF/tree/1.8.2"
             },
             "install-path": "../setasign/fpdf"
         },
         {
             "name": "squizlabs/php_codesniffer",
-            "version": "3.9.0",
-            "version_normalized": "3.9.0.0",
+            "version": "3.9.2",
+            "version_normalized": "3.9.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPCSStandards/PHP_CodeSniffer.git",
-                "reference": "d63cee4890a8afaf86a22e51ad4d97c91dd4579b"
+                "reference": "aac1f6f347a5c5ac6bc98ad395007df00990f480"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/d63cee4890a8afaf86a22e51ad4d97c91dd4579b",
-                "reference": "d63cee4890a8afaf86a22e51ad4d97c91dd4579b",
+                "url": "https://api.github.com/repos/PHPCSStandards/PHP_CodeSniffer/zipball/aac1f6f347a5c5ac6bc98ad395007df00990f480",
+                "reference": "aac1f6f347a5c5ac6bc98ad395007df00990f480",
                 "shasum": ""
             },
             "require": {
@@ -3288,7 +3281,7 @@
             "require-dev": {
                 "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0 || ^8.0 || ^9.3.4"
             },
-            "time": "2024-02-16T15:06:51+00:00",
+            "time": "2024-04-23T20:25:34+00:00",
             "bin": [
                 "bin/phpcbf",
                 "bin/phpcs"
@@ -3299,7 +3292,7 @@
                     "dev-master": "3.x-dev"
                 }
             },
-            "installation-source": "dist",
+            "installation-source": "source",
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "BSD-3-Clause"
