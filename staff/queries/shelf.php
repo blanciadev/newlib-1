@@ -23,14 +23,17 @@ if (isset($_POST['sectionCode'])) {
 
     if ($result && mysqli_num_rows($result) > 0) {
         // Display shelf numbers as options
-        echo "<select id='shelf' name='shelf'>";
-        echo "<option value=''>Select Shelf </option>";
+        echo '<div class="form-group">';
+     
+        echo '<select id="shelf" name="shelf" class="form-select">';
+        echo '<option value="">Select Shelf</option>';
         while ($row = mysqli_fetch_assoc($result)) {
-            echo "<option value='" . $row['Category'] . "'>" . $row['Category'] . "</option>";
+            echo '<option value="' . $row['Category'] . '">' . $row['Category'] . '</option>';
         }
-        echo "</select>";
+        echo '</select>';
+        echo '</div>';
     } else {
-        echo "No shelf numbers found for the selected section.";
+        echo '<div class="alert alert-warning" role="alert">No shelf numbers found for the selected section.</div>';
     }
 } else {
     echo "Invalid request.";
