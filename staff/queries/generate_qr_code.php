@@ -113,7 +113,7 @@ if (mysqli_num_rows($result) > 0) {
             </div>
         </form>
         
-        <a href="staff_log.php" class="btn btn-primary">Go to Staff Log</a>
+        <a href="staff_log.php" class="btn btn-primary">Go to Log Record</a>
     </div>
 
 
