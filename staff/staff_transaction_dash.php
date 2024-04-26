@@ -51,17 +51,12 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 $userData = mysqli_fetch_assoc($result);
             }
             ?>
-            <?php if (!empty($userData['image_data'])) : ?>
-                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
+            <?php if (!empty($userData['image_data'])): ?>
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
-            <?php else : ?>
-                <!-- Change the path to your actual default image -->
+            <?php else: ?>
                 <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-            <strong><span><?php $fname = $userData["First_Name"];
-                            $lname = $userData["Last_Name"];
-                            $userName = $fname . " " . $lname;
-                            echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong>
+            <strong><span><?php $fname = $userData["First_Name"]; $lname = $userData["Last_Name"]; $userName = $fname." ". $lname;  echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong>
         </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
@@ -88,139 +83,145 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <div class="overview">
                 <h3>Overview</h3>
                 <div class="ovw-con">
-                    <div class="overview-item">
-                        <h3>Pending</h3>
+                    <div class="totalbooks">
                         <?php
-                        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
+                            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
 
-                        // Query to get the total quantity of borrowed books
-                        $borrowedQuery = "SELECT 
-                            COUNT(*) AS borrowed_count,
-                            SUM(Quantity) AS borrowed_quantity
-                        FROM 
-                            tbl_borrowdetails
-                        WHERE 
-                            tb_status = 'Pending'"; // Assuming 'Pending' status indicates borrowed books
-                        $borrowedResult = mysqli_query($conn, $borrowedQuery);
+                            // Query to get the total quantity of borrowed books
+                            $borrowedQuery = "SELECT 
+                                COUNT(*) AS borrowed_count,
+                                SUM(Quantity) AS borrowed_quantity
+                            FROM 
+                                tbl_borrowdetails
+                            WHERE 
+                                tb_status = 'Pending'"; // Assuming 'Pending' status indicates borrowed books
+                            $borrowedResult = mysqli_query($conn, $borrowedQuery);
 
-                        // Query to get the total quantity of returned books
-                        $returnedQuery = "SELECT 
-                            COUNT(*) AS returned_count,
-                            SUM(Quantity) AS returned_quantity
-                        FROM 
-                            tbl_borrowdetails
-                        WHERE 
-                            tb_status = 'Returned'";
-                        $returnedResult = mysqli_query($conn, $returnedQuery);
+                            // Query to get the total quantity of returned books
+                            $returnedQuery = "SELECT 
+                                COUNT(*) AS returned_count,
+                                SUM(Quantity) AS returned_quantity
+                            FROM 
+                                tbl_borrowdetails
+                            WHERE 
+                                tb_status = 'Returned'";
+                            $returnedResult = mysqli_query($conn, $returnedQuery);
 
-                        // Display the total quantity of borrowed books
-                        if ($borrowedResult && mysqli_num_rows($borrowedResult) > 0) {
-                            $borrowedData = mysqli_fetch_assoc($borrowedResult);
-                            $borrowedCount = $borrowedData['borrowed_count'];
-                            $borrowedQuantity = $borrowedData['borrowed_quantity'];
+                            // Display the total quantity of borrowed books
+                            if ($borrowedResult && mysqli_num_rows($borrowedResult) > 0) {
+                                $borrowedData = mysqli_fetch_assoc($borrowedResult);
+                                $borrowedCount = $borrowedData['borrowed_count'];
+                                $borrowedQuantity = $borrowedData['borrowed_quantity'];
 
-                            echo "<h4>Total Borrowed Books: $borrowedQuantity</h4>";
-                            echo "<p>Records: $borrowedCount</p>";
-                        } else {
-                            echo "<p>No borrowed books found</p>";
-                        }
+                                echo "<h3>$borrowedQuantity</h3>";
+                            } else{
+                                echo "<p>No borrowed books found</p>";
+                            }
                         ?>
+                        <div class="d-flex w-100 flex-wrap justify-content-start gap-2">
+                            <i class='bx bxs-book' style="font-size: 30pt;"></i>
+                            <p>Borrowed</p>
+                        </div>
                     </div>
-                    <div class="overview-item">
-                        <h3>Returned</h3>
+
+                    <div class="line"></div>
+                    
+                    <div class="totalvisits">
                         <?php
-                        // CHANGE THE PORT IF NEEDED
-                        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
+                            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
 
-                        // Query to get the total quantity of borrowed books
-                        $borrowedQuery = "SELECT 
-                            COUNT(*) AS borrowed_count,
-                            SUM(Quantity) AS borrowed_quantity
-                        FROM 
-                            tbl_borrowdetails
-                        WHERE 
-                            tb_status = 'Pending'"; // Assuming 'Pending' status indicates borrowed books
-                        $borrowedResult = mysqli_query($conn, $borrowedQuery);
+                            // Query to get the total quantity of borrowed books
+                            $borrowedQuery = "SELECT 
+                                COUNT(*) AS borrowed_count,
+                                SUM(Quantity) AS borrowed_quantity
+                            FROM 
+                                tbl_borrowdetails
+                            WHERE 
+                                tb_status = 'Pending'"; // Assuming 'Pending' status indicates borrowed books
+                            $borrowedResult = mysqli_query($conn, $borrowedQuery);
 
-                        // Query to get the total quantity of returned books
-                        $returnedQuery = "SELECT 
-                            COUNT(*) AS returned_count,
-                            SUM(Quantity) AS returned_quantity
-                        FROM 
-                            tbl_borrowdetails
-                        WHERE 
-                            tb_status = 'Returned'";
-                        $returnedResult = mysqli_query($conn, $returnedQuery);
+                            // Query to get the total quantity of returned books
+                            $returnedQuery = "SELECT 
+                                COUNT(*) AS returned_count,
+                                SUM(Quantity) AS returned_quantity
+                            FROM 
+                                tbl_borrowdetails
+                            WHERE 
+                                tb_status = 'Returned'";
+                            $returnedResult = mysqli_query($conn, $returnedQuery);
 
-                        // Display the total quantity of returned books
-                        if ($returnedResult && mysqli_num_rows($returnedResult) > 0) {
-                            $returnedData = mysqli_fetch_assoc($returnedResult);
-                            $returnedCount = $returnedData['returned_count'];
-                            $returnedQuantity = $returnedData['returned_quantity'];
+                            // Display the total quantity of returned books
+                            if ($returnedResult && mysqli_num_rows($returnedResult) > 0) {
+                                $returnedData = mysqli_fetch_assoc($returnedResult);
+                                $returnedCount = $returnedData['returned_count'];
+                                $returnedQuantity = $returnedData['returned_quantity'];
 
-                            echo "<h4>Total Returned Books:$returnedQuantity</h4>";
-                            echo "<p>Records: $returnedCount</p>";
-                        } else {
-                            echo "<p>No returned books found</p>";
-                        }
-
-
+                                echo "<h3>$returnedQuantity</h3>";
+                            } else {
+                                echo "<h3>0</h3>";
+                            }
                         ?>
+                        <div class="d-flex w-100 flex-wrap justify-content-start gap-2">
+                            <i class='bx bxs-book' style="font-size: 30pt;"></i>
+                            <p>Returned</p>
+                        </div>
                     </div>
                 </div>
             </div>
+
             <div class="duebooks">
                 <h3>Top Borrowers</h3>
                 <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 20px;">
                     <!--TOP BORROWERS - PLEASE MAKE IT TOP 3-->
                     <?php
-                    // Database connection
-                    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                        // Database connection
+                        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 
-                    // Query to get the top borrower based on Borrower_ID
-                    $topBorrowerQuery = "SELECT
-                        tbl_borrowdetails.Borrower_ID, 
-                        COUNT(*) AS borrow_count, 
-                        tbl_borrower.First_Name, 
-                        tbl_borrower.Middle_Name, 
-                        tbl_borrower.Last_Name
-                    FROM
-                        tbl_borrowdetails
-                    INNER JOIN
-                        tbl_borrower
-                    ON 
-                        tbl_borrowdetails.Borrower_ID = tbl_borrower.Borrower_ID
-                    GROUP BY
-                        tbl_borrowdetails.Borrower_ID
-                    ORDER BY
-                        borrow_count DESC
-                    LIMIT 3";
-                    $topBorrowerResult = mysqli_query($conn, $topBorrowerQuery);
+                        // Query to get the top borrower based on Borrower_ID
+                        $topBorrowerQuery = "SELECT
+                            tbl_borrowdetails.Borrower_ID, 
+                            COUNT(*) AS borrow_count, 
+                            tbl_borrower.First_Name, 
+                            tbl_borrower.Middle_Name, 
+                            tbl_borrower.Last_Name
+                        FROM
+                            tbl_borrowdetails
+                        INNER JOIN
+                            tbl_borrower
+                        ON 
+                            tbl_borrowdetails.Borrower_ID = tbl_borrower.Borrower_ID
+                        GROUP BY
+                            tbl_borrowdetails.Borrower_ID
+                        ORDER BY
+                            borrow_count DESC
+                        LIMIT 3";
+                        $topBorrowerResult = mysqli_query($conn, $topBorrowerQuery);
 
-                    // Display the top three borrowers
-                    if ($topBorrowerResult && mysqli_num_rows($topBorrowerResult) > 0) {
-                        echo "<ul class='list-group'>";
-                        while ($topBorrowerData = mysqli_fetch_assoc($topBorrowerResult)) {
-                            $topBorrowerID = $topBorrowerData['Borrower_ID'];
-                            $borrowCount = $topBorrowerData['borrow_count'];
-                            $name = $topBorrowerData['First_Name'];
-                            $lname = $topBorrowerData['Last_Name'];
+                        // Display the top three borrowers
+                        if ($topBorrowerResult && mysqli_num_rows($topBorrowerResult) > 0) {
+                            echo "<ul class='list-group'>";
+                            while ($topBorrowerData = mysqli_fetch_assoc($topBorrowerResult)) {
+                                $topBorrowerID = $topBorrowerData['Borrower_ID'];
+                                $borrowCount = $topBorrowerData['borrow_count'];
+                                $name = $topBorrowerData['First_Name'];
+                                $lname = $topBorrowerData['Last_Name'];
 
-                            echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px; width=360px'>";
-                            echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
-                            echo "<p style='font-size:12pt' class='fw-bold'>$topBorrowerID</p>";
-                            echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";
-                            echo "</div>";
-                            echo "<small style='font-size:12px'>$name, $lname</small>";
-                            echo "</li>";
+                                echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px; width:360px'>";
+                                echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
+                                echo "<p style='font-size:12pt' class='fw-bold'>$topBorrowerID</p>";
+                                echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";
+                                echo "</div>";
+                                echo "<small style='font-size:12px'>$name, $lname</small>";
+                                echo "</li>";
+                            }
+                            echo "</ul>";
+                        } else {
+                            echo "<p>No Borrower Found</p>";
                         }
-                        echo "</ul>";
-                    } else {
-                        echo "<p>No borrower found</p>";
-                    }
                     ?>
                 </div>
             </div>
+
             <div class="stats">
                 <h3>Borrow / Return</h3>
                 <div class="stats-con">
@@ -230,94 +231,62 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                     </div>
                 </div>
             </div>
-            <div class="newbooks"><!--books dont change class name-->
+
+            <div class="newbooks">
                 <h3>Most Borrowed Books</h3>
                 <div class="newbooks-con">
                     <?php
-                    // Check if $topBorrowerID is set and not empty
-                    if (isset($topBorrowerID) && !empty($topBorrowerID)) {
-                        // Execute the SQL query to retrieve the most borrowed books details
-                        $mostBorrowedBooksQuery = "SELECT
-            tbl_borrowdetails.Accession_Code,
-            COUNT(*) AS borrow_count,
-            tbl_books.Book_Title
-        FROM
-            tbl_borrowdetails
-        INNER JOIN
-            tbl_books
-        ON 
-            tbl_borrowdetails.Accession_Code = tbl_books.Accession_Code
-        WHERE
-            tbl_borrowdetails.Borrower_ID = $topBorrowerID
-        GROUP BY
-            tbl_borrowdetails.Accession_Code
-        ORDER BY
-            borrow_count DESC
-        LIMIT 3";
-                        $mostBorrowedBooksResult = mysqli_query($conn, $mostBorrowedBooksQuery);
+                        // Check if $topBorrowerID is set and not empty
+                        if(isset($topBorrowerID) && !empty($topBorrowerID)) {
+                            // Execute the SQL query to retrieve the most borrowed books details
+                            $mostBorrowedBooksQuery = "SELECT
+                                    tbl_borrowdetails.Accession_Code,
+                                    COUNT(*) AS borrow_count,
+                                    tbl_books.Book_Title
+                                FROM
+                                    tbl_borrowdetails
+                                INNER JOIN
+                                    tbl_books
+                                ON 
+                                    tbl_borrowdetails.Accession_Code = tbl_books.Accession_Code
+                                GROUP BY
+                                    tbl_borrowdetails.Accession_Code
+                                ORDER BY
+                                    borrow_count DESC
+                                LIMIT 3";
 
-                        if ($mostBorrowedBooksResult && mysqli_num_rows($mostBorrowedBooksResult) > 0) {
-                            echo "<ul class='list-group'>";
-                            while ($row = mysqli_fetch_assoc($mostBorrowedBooksResult)) {
-                                $accessionCode = $row['Accession_Code'];
-                                $bookTitle = $row['Book_Title'];
-                                $borrowCount = $row['borrow_count'];
+                            $mostBorrowedBooksResult = mysqli_query($conn, $mostBorrowedBooksQuery);
 
-                                echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px; width=360px'>";
-                                echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
-                                echo "<p style='font-size:12pt' class='fw-bold'>$accessionCode</p>";
-                                echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";
-                                echo "</div>";
-                                echo "<small style='font-size:12px'>$bookTitle</small>";
-                                echo "</li>";
-                            }
-                            echo "</ul>";
+                                if ($mostBorrowedBooksResult && mysqli_num_rows($mostBorrowedBooksResult) > 0) {
+                                    echo "<ul class='list-group'>";
+                                    while ($row = mysqli_fetch_assoc($mostBorrowedBooksResult)) {
+                                        $accessionCode = $row['Accession_Code'];
+                                        $bookTitle = $row['Book_Title'];
+                                        $borrowCount = $row['borrow_count'];
+
+                                        echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px; width:360px'>";
+                                        echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
+                                        echo "<p style='font-size:12pt' class='fw-bold'>$accessionCode</p>";
+                                        echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";
+                                        echo "</div>";
+                                        echo "<small style='font-size:12px'>$bookTitle</small>";
+                                        echo "</li>";
+                                    }
+                                    echo "</ul>";
+                                } else {
+                                    echo "<p>No Book Found</p>";
+                                }
                         } else {
-                            echo "<p>No most borrowed books found for the top borrower</p>";
+                            echo "<p>No Book Found</p>";
                         }
-                    } else {
-                        echo "<p>No top borrower Found</p>";
-                    }
                     ?>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
 
-
-    <style>
-        .overview {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .ovw-con {
-            display: flex;
-        }
-
-        .overview-item {
-            flex: 1;
-
-            padding: 20px;
-
-            margin-right: 10px;
-        }
-
-        .overview-item h3 {
-            margin-top: 0;
-        }
-
-        .buttons {
-            text-align: center;
-            margin-top: 20px;
-        }
-    </style>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+ 
 </body>
-
 </html>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>

@@ -66,44 +66,42 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
          
     </div>
     <div class="board container"><!--board container-->
-    <div class="header1">
-            <div class="text">
-                <div class="title">
-                    <h2>Books</h2>
+        <div class="header1">
+                <div class="text">
+                    <div class="title">
+                        <h2>Books</h2>
+                    </div>
                 </div>
-            </div>
-            <div class="searchbar">
-                <form action="">
-                    <input type="search" id="searchInput"  placeholder="Search..." required>
-                    <i class='bx bx-search' id="search-icon"></i>
-                </form>
-            </div>
-    </div>
-    <div class="books container">
-    <table class="table table-hover table-sm">
-        <thead class="bg-light sticky-top">
-            <tr>
-                <th>Accession Code</th>
-                <th>Book Title</th>
-                <th>Authors</th>
-                <th>Publisher</th>
-                <th>Section</th>
-                <th>Shelf #</th>
-                <th>Edition</th>
-                <th>Year Published</th>
-                <th>ISBN</th>
-                <th>Bibliography</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-                $conn =  mysqli_connect("localhost","root","root","db_library_2", 3308); 
-                if ($conn->connect_error) {
-                    die("Connection failed: " . $conn->connect_error);
-                }
+                <div class="searchbar">
+                    <form action="">
+                        <input type="search" id="searchInput"  placeholder="Search..." required>
+                        <i class='bx bx-search' id="search-icon"></i>
+                    </form>
+                </div>
+        </div>
+        <div class="books container">
+            <table class="table table-hover table-sm">
+                <thead class="bg-light sticky-top">
+                    <tr>
+                        <th>Accession Code</th>
+                        <th>Book Title</th>
+                        <th>Authors</th>
+                        <th>Publisher</th>
+                        <th>Section</th>
+                        <th>Shelf #</th>
+                        <th>Edition</th>
+                        <th>Year Published</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                        $conn =  mysqli_connect("localhost","root","root","db_library_2", 3308); 
+                        if ($conn->connect_error) {
+                            die("Connection failed: " . $conn->connect_error);
+                        }
 
                 // SQL query
                 $sql = "SELECT
@@ -142,33 +140,30 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 while($row = $result->fetch_assoc()) {
                     echo "<tr><td>".$row["Accession_Code"]."</td>
                     <td>".$row["Book_Title"]."</td>
-                    <td class='authorPop' data-bs-container='body' data-bs-toggle='popover' data-bs-placement='right' data-bs-content='Author Name'>".$row["Authors_Name"]."</td>
+                    <td>".$row["Authors_Name"]."</td>
                     <td>".$row["Publisher_Name"]."</td>
                     <td>".$row["Section_Code"]."</td>
                     <td>".$row["shelf"]."</td>
                     <td>".$row["tb_edition"]."</td>
                     <td>".$row["Year_Published"]."</td>
-                    <td>".$row["ISBN"]."</td>
-                    <td>".$row["Bibliography"]."</td>
                     <td>".$row["Quantity"]."</td>
                     <td>".$row["Price"]."</td>
                     <td>".$row["tb_status"]."</td></tr>";
                 }
                 echo "</table>";
 
-                // Close connection
-                $conn->close();
-            ?>
-        </tbody>
-    </table>
+                        // Close connection
+                        $conn->close();
+                    ?>
+                </tbody>
+            </table>
+        </div>
+        <div class="btn-con">
+            <button class="btn" id="requestButton">Request List</button>
+            <a href="./staff_bookCatalog.php" class="btn">Catalog</a>
+        </div>
     </div>
-    
-    <div class="btn-con">
-        <button class="btn" id="requestButton">Request List</button>
-        <a href="./staff_bookCatalog.php" class="btn">Catalog</a>
-    </div>
-</div>
-    
+
     <!--Logout Modal -->
     <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -187,12 +182,15 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         </div>
     </div>
     
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
         //popover
         const popover = new bootstrap.Popover('.authorPop', {
             container: 'body'
-            })
+        })
+
          // JavaScript code for search functionality
         document.getElementById("searchInput").addEventListener("input", function() {
             let searchValue = this.value.toLowerCase();
@@ -219,3 +217,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     </script>
 </body>
 </html>
+
+
+    

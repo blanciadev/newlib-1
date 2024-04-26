@@ -16,7 +16,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Log Record</title>
+    <title>VillaReadHub - Fines</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,72 +74,76 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             </div>
         </div>
     </div>
-    <div class="books container">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6"><br>
-                <h4>LOST Fines Summary:</h4>
-                <?php
-                // Query for LOST fines
-                $lostQuery = "SELECT 
-                                    COUNT(*) AS record_count,
-                                    SUM(Amount) AS total_amount
-                                FROM 
-                                    tbl_fines
-                                WHERE 
-                                    Reason = 'LOST';";
-                $lostResult = mysqli_query($conn, $lostQuery);
-                displayFinesSummary($lostResult);
-                ?>
+    <div class="content">
+            <div class="overview1">
+                <h3>Overview</h3>
+                <div class="ovw-con">
+                    <div class="overview-item">
+                        <div class="row">
+                            <div class="col-md-6"><br>
+                                <h4>LOST Fines Summary:</h4>
+                                <?php
+                                // Query for LOST fines
+                                $lostQuery = "SELECT 
+                                                    COUNT(*) AS record_count,
+                                                    SUM(Amount) AS total_amount
+                                                FROM 
+                                                    tbl_fines
+                                                WHERE 
+                                                    Reason = 'LOST';";
+                                $lostResult = mysqli_query($conn, $lostQuery);
+                                displayFinesSummary($lostResult);
+                                ?>
+                            </div>
+                            <div class="col-md-6"><br>
+                                <h4>DAMAGE Fines Summary:</h4>
+                                <?php
+                                // Query for DAMAGE fines
+                                $damageQuery = "SELECT 
+                                                    COUNT(*) AS record_count,
+                                                    SUM(Amount) AS total_amount
+                                                FROM 
+                                                    tbl_fines
+                                                WHERE 
+                                                    Reason = 'DAMAGE';";
+                                $damageResult = mysqli_query($conn, $damageQuery);
+                                displayFinesSummary($damageResult);
+                                ?>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Late Return:</h4>
+                                <?php
+                                // Query for GOOD CONDITION fines
+                                $goodConditionQuery = "SELECT 
+                                                    COUNT(*) AS record_count,
+                                                    SUM(Amount) AS total_amount
+                                                FROM 
+                                                    tbl_fines
+                                                WHERE 
+                                                    Reason = 'GOOD CONDITION';";
+                                $goodConditionResult = mysqli_query($conn, $goodConditionQuery);
+                                displayFinesSummary($goodConditionResult);
+                                ?>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>PARTIALLY DAMAGE F:</h4>
+                                <?php
+                                // Query for PARTIALLY DAMAGE fines
+                                $partiallyDamageQuery = "SELECT 
+                                                    COUNT(*) AS record_count,
+                                                    SUM(Amount) AS total_amount
+                                                FROM 
+                                                    tbl_fines
+                                                WHERE 
+                                                    Reason = 'PARTIALLY DAMAGE';";
+                                $partiallyDamageResult = mysqli_query($conn, $partiallyDamageQuery);
+                                displayFinesSummary($partiallyDamageResult);
+                                ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6"><br>
-                <h4>DAMAGE Fines Summary:</h4>
-                <?php
-                // Query for DAMAGE fines
-                $damageQuery = "SELECT 
-                                    COUNT(*) AS record_count,
-                                    SUM(Amount) AS total_amount
-                                FROM 
-                                    tbl_fines
-                                WHERE 
-                                    Reason = 'DAMAGE';";
-                $damageResult = mysqli_query($conn, $damageQuery);
-                displayFinesSummary($damageResult);
-                ?>
-            </div>
-            <div class="col-md-6">
-                <h4>GOOD CONDITION Fines Summary:</h4>
-                <?php
-                // Query for GOOD CONDITION fines
-                $goodConditionQuery = "SELECT 
-                                    COUNT(*) AS record_count,
-                                    SUM(Amount) AS total_amount
-                                FROM 
-                                    tbl_fines
-                                WHERE 
-                                    Reason = 'GOOD CONDITION';";
-                $goodConditionResult = mysqli_query($conn, $goodConditionQuery);
-                displayFinesSummary($goodConditionResult);
-                ?>
-            </div>
-            <div class="col-md-6">
-                <h4>PARTIALLY DAMAGE Fines Summary:</h4>
-                <?php
-                // Query for PARTIALLY DAMAGE fines
-                $partiallyDamageQuery = "SELECT 
-                                    COUNT(*) AS record_count,
-                                    SUM(Amount) AS total_amount
-                                FROM 
-                                    tbl_fines
-                                WHERE 
-                                    Reason = 'PARTIALLY DAMAGE';";
-                $partiallyDamageResult = mysqli_query($conn, $partiallyDamageQuery);
-                displayFinesSummary($partiallyDamageResult);
-                ?>
-        </div>
-    </div>
-</div>
-
 <?php
 // Function to display fines summary
 function displayFinesSummary($result)

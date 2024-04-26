@@ -1,5 +1,7 @@
 <?php
 
+use PhpParser\Node\Stmt\Echo_;
+
 include "../auth.php";
 // Check if the User_ID session variable is not set or empty
 if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
@@ -156,11 +158,10 @@ if (!$result) {
                         <i class='bx bxs-book' style="font-size: 30pt;"></i>
                         <p>Total Books</p>
                     </div>   
-                    
-                        
-
                     </div>
+
                     <div class="line"></div>
+                    
                     <div class="totalvisits">
                         <?php
                         $currentDate = date("Y-m-d");
@@ -190,7 +191,7 @@ if (!$result) {
 
             <div class="duebooks">
     <h3>Due Today</h3>
-    <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 20px;">
+    <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 10px;">
         <?php
         $totalVisits = "SELECT
         bd.BorrowDetails_ID, 
@@ -225,16 +226,23 @@ if (!$result) {
         $totalVisits_run = mysqli_query($conn, $totalVisits);
 
         if ($totalVisits_run && mysqli_num_rows($totalVisits_run) > 0) {
-            echo '<div class="table-responsive">';
-            echo '<table class="table table-striped">';
+
+            echo '<ol class="list-group list-group-numbered">';
             while ($row = mysqli_fetch_assoc($totalVisits_run)) {
-                echo '<tr><td><strong>' . $row['Book_Title'] . '</strong></td></tr>';
-                echo '<tr><td>' . $row['First_Name'] . ' ' . $row['Last_Name'] . '</td></tr>';
+            echo '<li class="list-group-item d-flex justify-content-between align-items-start">';
+            echo '<div class="ms-2 me-auto">';
+            echo '  <div class="fw-bold"><strong>' . $row['Book_Title'] . '</strong></div>
+                        ' . $row['First_Name'] . ' ' . $row['Last_Name'] . '
+                    </div>';
+            echo '  <div class="view-btn">
+                        <a href="#"><i class="bx bx-chevron-right"></i></a>
+                    </div>';
+            echo '</li>';
+            
             }
-            echo '</table>';
-            echo '</div>';
+            echo '</ol>';
         } else {
-            echo "<p>No books due today.</p>";
+            echo "<p>No Books Due Today.</p>";
         }
         ?>
     </div>
@@ -306,8 +314,27 @@ if (!$result) {
 
                             echo "</ul>";
                             echo "</div>";
-                        } else {
-                            echo "<p>No visits found for the current month</p>";
+                        } else {                            
+                            echo "<div class='visitorRanking container-sm' style='width: 30%;
+                                                                            height: 95%;
+                                                                            background-color: transparent;
+                                                                            border-radius: 10px;
+                                                                            padding: 5px;
+                                                                            display: flex;
+                                                                            flex-direction: column;
+                                                                            flex-wrap: wrap;
+                                                                            justify-content: center;
+                                                                            align-content: stretch;'>";
+                            echo "<ul class='list-group'>";
+
+                            echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:40px'>";
+                            echo "<div class='w-100 d-flex flex-row flex-wrap align-items-center justify-content-center' style='height: 20px; width:100%; text-align:center;'>";
+                            echo "<p>No Visits Found</p>";
+                            echo "</div>";
+                            echo "</li>";
+
+                            echo "</ul>";
+                            echo "</div>";
                         }
                     ?>
 

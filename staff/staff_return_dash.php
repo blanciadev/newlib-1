@@ -120,6 +120,7 @@ if ($conn->connect_error) {
                 <th>ID</th>
                 <th>Borrower's Name</th>
                 <th>Status</th>
+                <th>Contact Number</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -160,6 +161,7 @@ if ($conn->connect_error) {
                     echo "<td>" . $row["Borrower_ID"] . "</td>";
                     echo "<td>" . $row["First_Name"] ." ". $row["Middle_Name"] ." ". $row["Last_Name"] . "</td>";
                     echo "<td>" . $row["tb_status"] . "</td>";
+                    echo "<td> </td>";// insert borrower contact number please
 
                     echo "<td>";
                     // Conditionally render the button based on the status

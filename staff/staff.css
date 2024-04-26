@@ -229,6 +229,17 @@ li.nav-item.active {
     justify-content: space-evenly;
     align-content: space-around; 
 }
+.overview1{
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 1;
+    grid-row-end: 2;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-content: space-around; 
+}
 .ovw-con{
     width: 97%;
     height: 80%;
@@ -237,6 +248,7 @@ li.nav-item.active {
     justify-content: space-evenly;
     border-radius: 12px;
     background: linear-gradient(145deg, #90e685, #abff9e); 
+    padding: 10px;
 }
 .totalbooks, .totalvisits{
     width: 40%;
@@ -269,6 +281,8 @@ li.nav-item.active {
     width: 97%;
     height: 80%;
     display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-evenly;
     background-color: rgba(255, 255, 255, 0.849);
@@ -317,13 +331,15 @@ li.nav-item.active {
     height: 80%;
     padding: 10px;
     display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
     align-items: flex-start;
     justify-content: space-evenly;
     background-color: rgba(255, 255, 255, 0.849);
     border-radius: 10px;
     box-shadow: 5px 5px 10px #bababa, -5px -5px 10px #dfdfdf;
-    flex-direction: column;
-    flex-wrap: wrap
+    
 }
 .btn{
     width: 200px;
