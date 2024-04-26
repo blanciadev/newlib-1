@@ -74,10 +74,11 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             </div>
         </div>
     </div>
-    <div class="books container">
+    <div class="books container" style="max-width: 1500px;">
     <div class="container">
         <div class="row">
-            <div class="col-md-6"><br>
+            <div class="col-md-6">
+                <br>
                 <h4>LOST Fines Summary:</h4>
                 <?php
                 // Query for LOST fines
@@ -156,9 +157,6 @@ function displayFinesSummary($result)
 }
 ?>
 
-    <!-- 
- KURT PWEDE DIRETSO NGA NA SORT ANG MGA TABLE NA LATEST(DESCENDING), ALL TABLES PLEASE EXCEPT SA BOOKS AND CATALOG-->
-    
  <table class="table table-striped table-m" id="borrowerTable">
         <!-- Table header -->
         <thead class="bg-light sticky-top">
