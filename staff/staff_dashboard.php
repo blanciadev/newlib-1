@@ -189,12 +189,11 @@ if (!$result) {
                 </div>
             </div>
 
-            <div class="duebooks">
-    <h3>Due Today</h3>
-    <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 10px;">
+            <div class="due-books">
+    <h3 class="mb-3">Due Today</h3>
+    <div class="due-books-container" style="max-height: 200px; overflow-y: auto;">
         <?php
         $totalVisits = "SELECT
-        bd.BorrowDetails_ID, 
         b.User_ID, 
         b.Accession_Code, 
         bk.Book_Title, 
@@ -204,13 +203,15 @@ if (!$result) {
         br.Borrower_ID, 
         bd.tb_status, 
         br.First_Name, 
-        br.Last_Name
+        br.Last_Name, 
+        b.Borrow_ID
     FROM
         tbl_borrowdetails AS bd
         INNER JOIN
         tbl_borrow AS b
         ON 
-            bd.Borrower_ID = b.Borrower_ID
+            bd.Borrower_ID = b.Borrower_ID AND
+            bd.BorrowDetails_ID = b.Borrow_ID
         INNER JOIN
         tbl_books AS bk
         ON 
@@ -247,6 +248,19 @@ if (!$result) {
         ?>
     </div>
 </div>
+
+<script>
+    // Function to handle the update action and redirect to staff_return_transaction.php
+    function updateAndSetSession(borrowId) {
+        console.log("Borrow ID:", borrowId); // Debugging console log
+        // Redirect to staff_return_transaction.php with the borrowId parameter
+        window.location.href = "staff_return_transaction.php?borrowId=" + borrowId;
+    }
+</script>
+
+
+
+
 
 
             <div class="stats">

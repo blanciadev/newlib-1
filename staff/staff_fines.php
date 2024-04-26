@@ -160,9 +160,6 @@ function displayFinesSummary($result)
 }
 ?>
 
-    <!-- 
- KURT PWEDE DIRETSO NGA NA SORT ANG MGA TABLE NA LATEST(DESCENDING), ALL TABLES PLEASE EXCEPT SA BOOKS AND CATALOG-->
-    
  <table class="table table-striped table-m" id="borrowerTable">
         <!-- Table header -->
         <thead class="bg-light sticky-top">

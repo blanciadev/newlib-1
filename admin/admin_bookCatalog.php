@@ -19,6 +19,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VillaReadHub - Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
@@ -127,99 +128,111 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         </ul>
          
     </div>
-    <div class="board1 container"><!--board container-->
-    <div class="header1">
+
+    <div class="board1 container">
+        <div class="header1">
             <div class="text">
-                    <div class="back-btn">
-                        <a href="./staff_books.php"><i class='bx bx-arrow-back'></i></a>
-                    </div>
+                <div class="back-btn">
+                    <a href="./staff_books.php"><i class='bx bx-arrow-back'></i></a>
+                </div>
                 <div class="title">
                     <h2>Catalog</h2>
                 </div>
             </div>
             <div class="searchbar">
                 <form action="">
-                    <input type="search" id="searchInput"  placeholder="Search..." required>
+                    <input type="search" id="searchInput" placeholder="Search..." required>
                     <i class='bx bx-search' id="search-icon"></i>
                 </form>
             </div>
-    </div>
-    <div class="bookCatalog">
-        <div class="catalogOptions"> <!-- kurt di ko kakuha ani ay, dapat pag tuplok ani mag make syag list of categories nga example Fictional gi click, Fictional lang na category(dropdown ni sya) and then pag click niya na dadto ang list sa books  naka based sa shelf number ni sya but naa syay order ako lang isend sa gc -->
-            <div class="d-flex w-100">
+        </div>
+        <div class="bookCatalog">
             <div class="catalogOptions">
-            <form id="sectionForm">
-    <div class="d-flex w-100">
-    <button type="button" class="btn btn-primary btnOption" data-target="FIL" value="FIL">Filipiniana</button>
+                <div class="d-flex w-100">
+                    <div class="catalogOptions">
+                        <form id="sectionForm">
+                            <div class="d-flex w-100">
+                                <button type="button" class="btn btn-primary btnOption" data-target="FIL" value="FIL">Filipiniana</button>
+                                <button type="button" class="btn btn-primary btnOption" data-target="REF" value="REF">Reference</button>
+                                <button type="button" class="btn btn-primary btnOption" data-target="CIR" value="CIR">Circulation</button>
+                                <button type="button" class="btn btn-primary btnOption" data-target="FIC" value="FIC">Fiction</button>
+                                <button type="button" class="btn btn-primary btnOption" data-target="ASRTD" value="ASRTD">Assorted Books</button>
+                                <button type="button" class="btn btn-primary btnOption" data-target="Authors" value="Authors">Authors</button>
+                                <button type="button" class="btn btn-primary btnOption" data-target="Publishers" value="Publishers">Publishers</button>
 
-<button type="button" class="btn btn-primary btnOption" data-target="REF" value="REF">Reference</button>
-
-<button type="button" class="btn btn-primary btnOption" data-target="CIR" value="CIR">Circulation</button>
-
-<button type="button" class="btn btn-primary btnOption" data-target="FIC" value="FIC">Fiction</button>
-
-<button type="button" class="btn btn-primary btnOption" data-target="ASRTD" value="ASRTD">Assorted Books</button>
-
-<button type="button" class="btn btn-primary btnOption" data-target="Authors" value="Authors">Authors</button>
-
-<button type="button" class="btn btn-primary btnOption" data-target="Publishers" value="Publishers">Publishers</button>
-
-    </div>
-</form>
-
-</div>
-
-        </div>
-        <hr>
-        <div class="catalogCon container">
-            <br>
-            <div id="shelfDropdown">DropDown</div>
-          
-            <div class="bookDisplay container">
-   
-    <div id="bookList">
-        <!-- Fetched books will be displayed here -->
-    </div>
-</div>
-
-    
-    
-</div>
-    
-    <!--Logout Modal -->
-    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <hr>
+                <div class="catalogCon container">
+                    <br>
+                    <div id="shelfAccordion" class="accordion">
+                        <!-- Accordion items will be generated here -->
+                    </div>
+                    <div id="bookList">
+            <!-- Fetched books will be displayed here -->
             </div>
-            <div class="modal-body">
-                Do you want to log out?
-            </div>
-            <div class="modal-footer d-flex flex-row justify-content-center">
-                <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
-                <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
-            </div>
-            </div>
-        </div>
-    </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                </div>
+
+
+                <!--Logout Modal -->
+                <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+                            </div>
+                            <div class="modal-body">
+                                Do you want to log out?
+                            </div>
+                            <div class="modal-footer d-flex flex-row justify-content-center">
+                                <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                                <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+                <script>
+                    // Wait for the document to load
+                    document.addEventListener("DOMContentLoaded", function() {
+                        // Get all accordion buttons
+                        var accordionButtons = document.querySelectorAll('.accordion-button');
+
+                        // Add click event listener to each accordion button
+                        accordionButtons.forEach(function(button) {
+                            button.addEventListener('click', function() {
+                                // Toggle the 'collapsed' class on the button
+                                this.classList.toggle('collapsed');
+
+                                // Get the target collapse element
+                                var targetId = this.getAttribute('data-bs-target');
+                                var targetCollapse = document.querySelector(targetId);
+
+                                // Toggle the 'show' class on the target collapse element
+                                targetCollapse.classList.toggle('show');
+                            });
+                        });
+                    });
+                </script>
 
 
 
-    <script>
-  var sectionCode = ''; 
-  var selectedShelf = '';
-  $(document).ready(function() {
+                <script>
+                    var sectionCode = '';
+                    var selectedShelf = '';
+                    
+                    $(document).ready(function() {
     // Simulate click on Filipiniana button
     $('.btnOption[data-target="FIL"]').addClass('active'); // Add 'active' class to the Filipiniana button
     fetchShelfs('FIL'); // Fetch shelf categories for Filipiniana section initially
 
-    // Event listener for dropdown change
-    $('#shelfDropdown').on('change', '#shelf', function() {
-        var selectedShelf = $(this).val();
+    // Event listener for accordion button click
+    $('#shelfAccordion').on('click', '.accordion-button', function() {
+        var selectedShelf = $(this).text(); // Get the text of the clicked accordion button
         console.log("Selected shelf:", selectedShelf);
 
         // AJAX request to fetch books based on selected shelf
@@ -230,110 +243,115 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     $('.btnOption').click(function() {
         // Remove 'active' class from all buttons
         $('.btnOption').removeClass('active');
-        
+
         // Add 'active' class to the clicked button
         $(this).addClass('active');
-        
+
         var sectionCode = $(this).data('target');
         console.log("Selected section code:", sectionCode); // Log the sectionCode
-        
-        // Log the value of the clicked button
-        var buttonValue = $(this).attr('value');
-        console.log("Clicked button value:", buttonValue);
-        
+
         fetchShelfs(sectionCode); // Fetch shelf categories for the selected section code
     });
 });
 
-function fetchShelfs(sectionCode) {
-    // AJAX request to fetch shelf categories
-    $.ajax({
-        url: 'fetch_shelfs.php',
-        method: 'POST',
-        data: { sectionCode: sectionCode },
-        dataType: 'html',
-        success: function(response) {
-            console.log("Response:", response); // Log the response
-            // Update dropdown menu with fetched shelf categories
-            $('#shelfDropdown').html(response);
-        },
-        error: function(xhr, status, error) {
-            console.error('Error fetching shelf categories:', error);
-        }
-    });
-}
 
-function fetchBooks(selectedShelf) {
-    // AJAX request to fetch books based on selected shelf
-    $.ajax({
-        url: 'fetch_bookcatalog.php',
-        method: 'POST',
-        data: { selectedShelf: selectedShelf },
-        dataType: 'html',
-        success: function(response) {
-            console.log("Books Response:", response); // Log the response
-            // Display fetched books in the bookList div
-            $('#bookList').html(response);
-        },
-        error: function(xhr, status, error) {
-            console.error('Error fetching books:', error);
-        }
-    });
-}
+                    function fetchShelfs(sectionCode) {
+                        $.ajax({
+                            url: 'queries/fetch_shelfs.php',
+                            method: 'POST',
+                            data: {
+                                sectionCode: sectionCode
+                            },
+                            dataType: 'html',
+                            success: function(response) {
+                                $('#shelfAccordion').html(response);
+                                console.log(selectedShelf);
+                  
+                                // Initialize Bootstrap accordion after adding the content
+                                $('#shelfAccordion').find('.accordion-collapse').collapse('hide');
+                                $('#shelfAccordion').find('.accordion-button').removeClass('collapsed');
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error fetching shelf categories:', error);
+                            }
+                        });
+                    }
 
-// Event listener for Authors button click
-$('button[data-target="Authors"]').click(function() {
-    var target = $(this).data('target');
-    fetchData(target);
-});
+                    function fetchBooks(selectedShelf) {
+                        // AJAX request to fetch books based on selected shelf
+                        $.ajax({
+                            url: 'queries/fetch_bookcatalog.php',
+                            method: 'POST',
+                            data: {
+                                selectedShelf: selectedShelf
+                            },
+                            dataType: 'html',
+                            success: function(response) {
+                                console.log("Books Response:", response); // Log the response
+                                // Display fetched books in the bookList div
+                                $('#bookList').html(response);
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error fetching books:', error);
+                            }
+                        });
+                    }
 
-// Event listener for Publishers button click
-$('button[data-target="Publishers"]').click(function() {
-    var target = $(this).data('target');
-    fetchData(target);
-});
+                    // Event listener for Authors button click
+                    $('button[data-target="Authors"]').click(function() {
+                        var target = $(this).data('target');
+                        fetchData(target);
+                    });
 
-function fetchData(target) {
-    // AJAX request to fetch data based on the target
-    $.ajax({
-        url: 'fetch_auth.php', // Replace 'fetch_data.php' with the appropriate server-side script
-        method: 'POST',
-        data: { target: target }, // Send the target as data
-        dataType: 'html',
-        success: function(response) {
-    console.log(target + " Response:", response); // Log the response for Authors or Publishers
-    // Append the fetched data to the bookList div
-    $('#bookList').html(response);
-},
+                    // Event listener for Publishers button click
+                    $('button[data-target="Publishers"]').click(function() {
+                        var target = $(this).data('target');
+                        fetchData(target);
+                    });
 
-        error: function(xhr, status, error) {
-            console.error('Error fetching ' + target + ':', error);
-        }
-    });
-}
+                    function fetchData(target) {
+                        // AJAX request to fetch data based on the target
+                        $.ajax({
+                            url: 'queries/fetch_auth.php', 
+                            method: 'POST',
+                            data: {
+                                target: target
+                            }, // Send the target as data
+                            dataType: 'html',
+                            success: function(response) {
+                                console.log(target + " Response:", response); 
+                                // Append the fetched data to the bookList div
+                                $('#bookList').html(response);
+                               
+                            },
 
-
-// JavaScript code for search functionality
-document.getElementById("searchInput").addEventListener("input", function() {
-    let searchValue = this.value.toLowerCase();
-    let rows = document.querySelectorAll("tbody tr");
-    rows.forEach(row => {
-        let cells = row.querySelectorAll("td");
-        let found = false;
-        cells.forEach(cell => {
-            if (cell.textContent.toLowerCase().includes(searchValue)) {
-                found = true;
-            }
-        });
-        if (found) {
-            row.style.display = "";
-        } else {
-            row.style.display = "none";
-        }
-    });
-});
+                            error: function(xhr, status, error) {
+                                console.error('Error fetching ' + target + ':', error);
+                            }
+                        });
+                    }
 
 
-    </script>
+                    // JavaScript code for search functionality
+                    document.getElementById("searchInput").addEventListener("input", function() {
+                        let searchValue = this.value.toLowerCase();
+                        let rows = document.querySelectorAll("tbody tr");
+                        rows.forEach(row => {
+                            let cells = row.querySelectorAll("td");
+                            let found = false;
+                            cells.forEach(cell => {
+                                if (cell.textContent.toLowerCase().includes(searchValue)) {
+                                    found = true;
+                                }
+                            });
+                            if (found) {
+                                row.style.display = "";
+                            } else {
+                                row.style.display = "none";
+                            }
+                        });
+                    });
+                </script>
 </body>
+
 </html>

@@ -245,20 +245,25 @@ if (isset($_POST['submit'])) {
                     $result_sections = mysqli_query($conn, $sql_sections);
 
                     // Check if sections were fetched successfully
+                   
                     if ($result_sections && mysqli_num_rows($result_sections) > 0) {
-                        echo "<label for='section'>Section:</label>";
-                        echo "<select id='section' name='section' required>";
-                        echo "<option value=''>Select Section</option>";
-
+                        echo '<div class="form-group">';
+                        echo '<label for="section" class="form-label">Section:</label>';
+                        echo '<select id="section" name="section" class="form-select" required>';
+                        echo '<option value="">Select Section</option>';
+                    
                         // Display options for each section
                         while ($row = mysqli_fetch_assoc($result_sections)) {
-                            echo "<option value='" . $row['Section_Code'] . "'>" . $row['Section_Name'] . "</option>";
+                            echo '<option value="' . $row['Section_Code'] . '">' . $row['Section_Name'] . '</option>';
                         }
-
-                        echo "</select>";
+                    
+                        echo '</select>';
+                        echo '</div>';
                     } else {
-                        echo "No sections found";
+                        echo '<div class="alert alert-warning" role="alert">No sections found</div>';
                     }
+                   
+                    
 
                     // Close connection
                     mysqli_close($conn);
@@ -290,7 +295,7 @@ if (isset($_POST['submit'])) {
                 
                 // AJAX request to fetch shelf numbers
                 $.ajax({
-                    url: 'queries/fetch_shelfs.php', // Update the URL to your PHP script
+                    url: 'queries/shelf.php', // Update the URL to your PHP script
                     method: 'POST',
                     data: { sectionCode: sectionCode },
                     dataType: 'html',

@@ -15,7 +15,16 @@ if ($conn->connect_error) {
 // Get the selected status from the query string or set default to 'Available'
 $status = isset($_GET['status']) ? $_GET['status'] : 'Available';
 
-// SQL query
+// Get the current page number from the query string or set default to 1
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+// Number of records per page
+$recordsPerPage = 3;
+
+// Calculate the offset for pagination
+$offset = ($page - 1) * $recordsPerPage;
+
+// SQL query with pagination
 $sql = "SELECT
             tbl_books.Accession_Code, 
             tbl_books.Book_Title, 
@@ -41,7 +50,8 @@ $sql = "SELECT
         INNER JOIN
             tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID
         WHERE
-            tbl_books.tb_status = '$status';";
+            tbl_books.tb_status = '$status'
+        LIMIT $offset, $recordsPerPage";
 
 $result = $conn->query($sql);
 
@@ -62,15 +72,13 @@ while ($row = $result->fetch_assoc()) {
         <td>" . $row["tb_status"] . "</td>
         <td>";
 
-    
-        if ($row["tb_status"] != 'Archived') {
-            echo "<button class='btn btn-primary archive-btn' onclick='archiveBook(\"" . $row["Accession_Code"] . "\")'>Archive</button>";
-        } else {
-            echo "<button class='btn btn-primary' disabled>Archived</button>";
-        }
-        echo "</td></tr>";
+    if ($row["tb_status"] != 'Archived') {
+        echo "<button class='btn btn-primary archive-btn' onclick='archiveBook(\"" . $row["Accession_Code"] . "\")'>Archive</button>";
+    } else {
+        echo "<button class='btn btn-primary' disabled>Archived</button>";
+    }
+    echo "</td></tr>";
 }
-
 
 $conn->close();
 ?>

@@ -238,7 +238,7 @@ SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tb
     // Check each query execution status
     if ($status1 && $status2 && $status3 && $status4 && $status5) {
         // All queries executed successfully
-        echo '<script>alert("Record Updated successfully."); window.location.href = "print_return.php";</script>';
+        echo '<script>alert("Record Updated successfully."); window.location.href = "queries/print_return.php";</script>';
         exit();
     } else {
         // Error occurred while executing queries

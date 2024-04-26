@@ -102,59 +102,57 @@ if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
 
     </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-13">
-                <h2 class="mt-4 mb-3">Book Information</h2>
-                <div class="form-group">
-                    <select id="statusFilter" class="form-select mb-3">
-                        <option value="Available" selected>Available</option>
-                        <option value="Archived">Archived</option>
-                        <option value="Request">Request</option>
-                    </select>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="bg-light sticky-top">
-                            <tr>
-                                <th>Accession Code</th>
-                                <th>Book Title</th>
-                                <th>Authors</th>
-                                <th>Publisher</th>
-                                <th>Section</th>
-                                <th>Shelf #</th>
-                                <th>Edition</th>
-                                <th>Year Published</th>
-                                <th>ISBN</th>
-                                <th>Bibliography</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="bookTableBody">
-                            <!-- Book records will be dynamically loaded here -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="btn-group">
-               
-                    <a href="./admin_bookCatalog.php" class="btn btn-secondary">Catalog</a>
-                    <a href="./admin_addBook.php" class="btn btn-success">Add New Book</a>
-                </div>
+   
+    <div class="row">
+        <div class="col-md-13">
+            <h2 class="mt-4 mb-3">Book Information</h2>
+            <div class="form-group">
+                <select id="statusFilter" class="form-select mb-3">
+                    <option value="Available" selected>Available</option>
+                    <option value="Archived">Archived</option>
+                    <option value="Request">Request</option>
+                </select>
             </div>
 
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="bg-light sticky-top">
+                        <tr>
+                            <th style="width: 10%;">Accession Code</th>
+                            <th style="width: 15%;">Book Title</th>
+                            <th style="width: 10%;">Authors</th>
+                            <th style="width: 10%;">Publisher</th>
+                            <th style="width: 10%;">Section</th>
+                            <th style="width: 5%;">Shelf #</th>
+                            <th style="width: 5%;">Edition</th>
+                            <th style="width: 5%;">Year Published</th>
+                            <th style="width: 10%;">ISBN</th>
+                            <th style="width: 10%;">Bibliography</th>
+                            <th style="width: 5%;">Quantity</th>
+                            <th style="width: 5%;">Price</th>
+                            <th style="width: 5%;">Status</th>
+                            <th style="width: 5%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookTableBody">
+                        <!-- Book records will be dynamically loaded here -->
+                    </tbody>
+                  
+                </table>
+            </div>
 
+            <div class="btn-group">
+                <a href="./admin_bookCatalog.php" class="btn btn-secondary">Catalog</a>
+                <a href="./admin_addBook.php" class="btn btn-success">Add New Book</a>
+            </div>
         </div>
     </div>
+
 
     <script>
         // Function to fetch book information based on selected status
         function fetchBooksByStatus(status) {
-            fetch('fetch_books.php?status=' + status)
+            fetch('queries/fetch_books.php?status=' + status)
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('bookTableBody').innerHTML = data;
@@ -163,7 +161,7 @@ if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
 
         // Function to fetch requested books using AJAX
         function fetchRequests() {
-            fetch('fetch_book_request.php')
+            fetch('queries/fetch_book_request.php')
                 .then(response => response.text())
                 .then(data => {
                     document.getElementById('bookTableBody').innerHTML = data;
