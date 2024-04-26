@@ -230,16 +230,22 @@ if (!$result) {
 
             echo '<ol class="list-group list-group-numbered">';
             while ($row = mysqli_fetch_assoc($totalVisits_run)) {
+
             echo '<li class="list-group-item d-flex justify-content-between align-items-start">';
             echo '<div class="ms-2 me-auto">';
-            echo '  <div class="fw-bold"><strong>' . $row['Book_Title'] . '</strong></div>
+            echo '  <div class="fw"><strong>' . $row['Book_Title'] . '</strong></div>
                         ' . $row['First_Name'] . ' ' . $row['Last_Name'] . '
                     </div>';
-            echo '  <div class="view-btn">
-                        <a href="#"><i class="bx bxs-bell"></i></a> 
-                    </div>';
-            echo '</li>';
+                    echo '<div class="view-btn">
+                    <input type="hidden" id="borrowerId" value="' . $row['Borrower_ID'] . '">
+                    <a href="#" onclick="sendEmail()">
+                        <i class="bx bxs-bell"></i>
+                    </a>
+                  </div>';
             
+                
+            
+            echo '</li>';
             }
             echo '</ol>';
         } else {
@@ -248,15 +254,6 @@ if (!$result) {
         ?>
     </div>
 </div>
-
-<script>
-    // Function to handle the update action and redirect to staff_return_transaction.php
-    function updateAndSetSession(borrowId) {
-        console.log("Borrow ID:", borrowId); // Debugging console log
-        // Redirect to staff_return_transaction.php with the borrowId parameter
-        window.location.href = "staff_return_transaction.php?borrowId=" + borrowId;
-    }
-</script>
 
 
 
@@ -421,7 +418,42 @@ if (!$result) {
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    <script>
+   
+   <script>
+    
+    function sendEmail() {
+    // Get the Borrower_ID from the hidden input field
+    const borrowerId = document.getElementById('borrowerId').value;
+
+    // Encode the borrowerId
+    console.log("Borrow ID:", borrowerId);
+    const encodedBorrowerId = encodeURIComponent(borrowerId);
+    console.log("Borrow ID encoded:", encodedBorrowerId);
+
+    // Send an AJAX request to a PHP script
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "queries/send_email_due.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // Request was successful
+                console.log("Initializing Email");
+                // You can perform further actions here if needed
+            } else {
+                // Error handling
+                console.error("Error:", xhr.statusText);
+            }
+        }
+    };
+    // Send encoded Borrower_ID as data
+    xhr.send("borrower_id=" + borrowerId);
+}
+
+   </script>
+
+   
+   <script>
         let date = new Date().toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'long',
