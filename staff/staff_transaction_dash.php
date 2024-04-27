@@ -171,7 +171,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
             <div class="duebooks">
                 <h3>Top Borrowers</h3>
-                <div class="duebooks-con" style="max-height: 400px; overflow-y: auto; padding-top: 20px;">
+                <div class="duebooks-con">
                     <!--TOP BORROWERS - PLEASE MAKE IT TOP 3-->
                     <?php
                         // Database connection

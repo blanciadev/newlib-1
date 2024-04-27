@@ -221,20 +221,18 @@ if (isset($_POST['updatePassword'])) {
     <!-- Display user data -->
         
     <div class="settingForms">
-    <form id="imageUploadForm" action="" method="post" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label for="imageFile" class="form-label">
-                        <div class="upload d-flex justify-content-center align-items-center" style="width: 200px; height: 200px; background-color: lightgrey; border-radius:15px;">
-                            <p>Upload</p>
-                        </div>
-                    </label>
-                    <input type="file" class="form-control" id="imageFile" name="imageFile" style="display: none;" hidden>
-                </div>
-                <button type="submit" class="btn btn-primary" name="uploadImageBtn">Upload Image</button>
-            </form>
-    
+        <form id="imageUploadForm" action="" method="post" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="imageFile" class="form-label">
+                    <div class="upload d-flex justify-content-center align-items-center" style="width: 200px; height: 200px; background-color: lightgrey; border-radius:10px;">
+                        <p>Upload Image</p>
+                    </div>
+                </label>
+                <input type="file" class="form-control" id="imageFile" name="imageFile" style="display: none;" hidden>
+            </div>
+            <button type="submit" style="width: 180px;height: 55px;background-color: palegreen;border: none;border-radius: 5px;font-weight: 700;" name="uploadImageBtn">Change Profile Image</button>        </form>
+        </form>
         <form id="userProfileForm" action="" method="post">
-                   
                     <!-- Display user data -->
                     <h4>Account Settings</h4>
                     <div class="mb-3">
@@ -263,9 +261,10 @@ if (isset($_POST['updatePassword'])) {
                     </div>
                        <!-- Update button -->
                        <button type="submit" class="btn btn-primary" name="updateProfile" value="Update Profile">Update Profile</button>
-  
-              <br><br><br>
+                </form>
+                <form id="userPasswordForm" method="post">
                     <!-- Password Change Section --> 
+                    <h4>Change Password</h4>
                     <div class="mb-3">
                         <label for="oldPassword" class="form-label">Old Password</label>
                         <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>

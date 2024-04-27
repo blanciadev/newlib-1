@@ -155,7 +155,6 @@ $dataJSON = json_encode($data);
                         } else {
                             echo "No books found";
                         }
-
                         ?>
                         <div class="d-flex w-100 flex-wrap justify-content-around ">
                             <i class='bx bxs-book' style="font-size: 30pt;"></i>
@@ -187,7 +186,6 @@ $dataJSON = json_encode($data);
                             <i class='bx bxs-book-reader' style="font-size: 30pt;"></i>
                             <p>Total Visits</p>
                         </div>
-
                     </div>
                 </div>
             </div>
