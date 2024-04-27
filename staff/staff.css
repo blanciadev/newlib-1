@@ -83,18 +83,27 @@ li.nav-item.active {
 }
 .catalogCon{
     width: 1039px;
-    height: 32%; 
+    height: 32%;
+    max-height: 32%;
     overflow-y: auto;
     background-color: #f8f9fa;
-    box-shadow:  5px 5px 10px #bababa,
-                -5px -5px 10px #dfdfdf;
+    box-shadow: 5px 5px 10px #bababa, -5px -5px 10px #dfdfdf;
     padding: 2px;
     border-radius: 10px;
     display: flex;
     flex-wrap: wrap;
     align-content: flex-start;
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-start;
+}
+.accordion{
+    width: 35%;
+    height: 425px;
+    max-height: 425px;
+    overflow-y: auto;
+}
+#bookList{
+    width: 65%;
 }
 .books form{
     display: flex;
