@@ -17,11 +17,11 @@ if (isset($_POST['borrower_id'])) {
     $borrowerId = $_POST['borrower_id'];
 
     // Database connection
-    $conn_display_all = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
+    $conn_display_all = mysqli_connect("localhost", "root", "12345678", "db_library_2", 3306);
     if ($conn_display_all->connect_error) {
         die("Connection failed: " . $conn_display_all->connect_error);
     }
-    
+
     // SQL query to select specific record from tbl_borrower based on Borrower_ID
     $sql_display_all = "SELECT First_Name, Middle_Name, Last_Name, Contact_Number, Email, affiliation, image_file 
                         FROM tbl_borrower 
@@ -55,10 +55,10 @@ if (isset($_POST['borrower_id'])) {
                 $mail->isHTML(true); // Set email format to HTML
                 $mail->Subject = 'Borrower Details';
                 $mail->Body = '<h1>Borrower Details</h1>' .
-                              '<p>Name: ' . $borrowerData['First_Name'] . ' ' . $borrowerData['Middle_Name'] . ' ' . $borrowerData['Last_Name'] . '</p>' .
-                              '<p>Contact Number: ' . $borrowerData['Contact_Number'] . '</p>' .
-                              '<p>Email: ' . $borrowerData['Email'] . '</p>' .
-                              '<p>Affiliation: ' . $borrowerData['affiliation'] . '</p>';
+                    '<p>Name: ' . $borrowerData['First_Name'] . ' ' . $borrowerData['Middle_Name'] . ' ' . $borrowerData['Last_Name'] . '</p>' .
+                    '<p>Contact Number: ' . $borrowerData['Contact_Number'] . '</p>' .
+                    '<p>Email: ' . $borrowerData['Email'] . '</p>' .
+                    '<p>Affiliation: ' . $borrowerData['affiliation'] . '</p>';
 
                 // Attach image as an attachment
                 $mail->addStringAttachment($borrowerData['image_file'], 'borrower_image.png', 'base64', 'image/png');
@@ -92,4 +92,3 @@ if (isset($_POST['borrower_id'])) {
     // Close the database connection
     $conn_display_all->close();
 }
-?>

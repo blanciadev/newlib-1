@@ -11,7 +11,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 }
 
 
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
 
 $userID = $_SESSION["User_ID"];
 
@@ -83,27 +83,30 @@ $dataJSON = json_encode($data);
         </a><!--header container-->
 
         <div class="user-header d-flex flex-row flex-wrap align-content-center justify-content-evenly">
-        <?php
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-$userID = $_SESSION["User_ID"];
-$sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
+            <?php
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            $userID = $_SESSION["User_ID"];
+            $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
         FROM tbl_employee 
         WHERE User_ID = $userID";
-$result = mysqli_query($conn, $sql);
-if (!$result) {
-    echo "Error: " . mysqli_error($conn);
-} else {
-    $userData = mysqli_fetch_assoc($result);
-}
-?>
-<?php if (!empty($userData['image_data'])): ?>
-    <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
-    <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
-<?php else: ?>
-    <!--default image -->
-    <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
-<?php endif; ?>
-<strong><span><?php $fname = $userData["First_Name"]; $lname = $userData["Last_Name"]; $userName = $fname." ". $lname;  echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong>
+            $result = mysqli_query($conn, $sql);
+            if (!$result) {
+                echo "Error: " . mysqli_error($conn);
+            } else {
+                $userData = mysqli_fetch_assoc($result);
+            }
+            ?>
+            <?php if (!empty($userData['image_data'])) : ?>
+                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
+                <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
+            <?php else : ?>
+                <!--default image -->
+                <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+            <?php endif; ?>
+            <strong><span><?php $fname = $userData["First_Name"];
+                            $lname = $userData["Last_Name"];
+                            $userName = $fname . " " . $lname;
+                            echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong>
 
         </div>
         <hr>
@@ -154,14 +157,14 @@ if (!$result) {
                         }
 
                         ?>
-                    <div class="d-flex w-100 flex-wrap justify-content-around ">
-                        <i class='bx bxs-book' style="font-size: 30pt;"></i>
-                        <p>Total Books</p>
-                    </div>   
+                        <div class="d-flex w-100 flex-wrap justify-content-around ">
+                            <i class='bx bxs-book' style="font-size: 30pt;"></i>
+                            <p>Total Books</p>
+                        </div>
                     </div>
 
                     <div class="line"></div>
-                    
+
                     <div class="totalvisits">
                         <?php
                         $currentDate = date("Y-m-d");
@@ -190,10 +193,10 @@ if (!$result) {
             </div>
 
             <div class="due-books">
-    <h3 class="mb-3">Due Today</h3>
-    <div class="due-books-container" style="max-height: 200px; overflow-y: auto;">
-        <?php
-        $totalVisits = "SELECT
+                <h3 class="mb-3">Due Today</h3>
+                <div class="due-books-container" style="max-height: 200px; overflow-y: auto;">
+                    <?php
+                    $totalVisits = "SELECT
         b.User_ID, 
         b.Accession_Code, 
         bk.Book_Title, 
@@ -224,36 +227,36 @@ if (!$result) {
         b.Due_Date = CURDATE() AND
         bd.tb_status = 'Pending'";
 
-        $totalVisits_run = mysqli_query($conn, $totalVisits);
+                    $totalVisits_run = mysqli_query($conn, $totalVisits);
 
-        if ($totalVisits_run && mysqli_num_rows($totalVisits_run) > 0) {
+                    if ($totalVisits_run && mysqli_num_rows($totalVisits_run) > 0) {
 
-            echo '<ol class="list-group list-group-numbered">';
-            while ($row = mysqli_fetch_assoc($totalVisits_run)) {
+                        echo '<ol class="list-group list-group-numbered">';
+                        while ($row = mysqli_fetch_assoc($totalVisits_run)) {
 
-            echo '<li class="list-group-item d-flex justify-content-between align-items-start">';
-            echo '<div class="ms-2 me-auto">';
-            echo '  <div class="fw"><strong>' . $row['Book_Title'] . '</strong></div>
+                            echo '<li class="list-group-item d-flex justify-content-between align-items-start">';
+                            echo '<div class="ms-2 me-auto">';
+                            echo '  <div class="fw"><strong>' . $row['Book_Title'] . '</strong></div>
                         ' . $row['First_Name'] . ' ' . $row['Last_Name'] . '
                     </div>';
-                    echo '<div class="view-btn">
+                            echo '<div class="view-btn">
                     <input type="hidden" id="borrowerId" value="' . $row['Borrower_ID'] . '">
                     <a href="#" onclick="sendEmail()">
                         <i class="bx bxs-bell"></i>
                     </a>
                   </div>';
-            
-                
-            
-            echo '</li>';
-            }
-            echo '</ol>';
-        } else {
-            echo "<p>No Books Due Today.</p>";
-        }
-        ?>
-    </div>
-</div>
+
+
+
+                            echo '</li>';
+                        }
+                        echo '</ol>';
+                    } else {
+                        echo "<p>No Books Due Today.</p>";
+                    }
+                    ?>
+                </div>
+            </div>
             <div class="stats">
                 <h3>Statistics</h3>
                 <div class="stats-con">
@@ -261,10 +264,10 @@ if (!$result) {
                         <canvas id="myChart" width="450"></canvas>
                     </div>
                     <?php
-                        $currentMonth = date("Y-m");
+                    $currentMonth = date("Y-m");
 
-                        // Query to count visits for the current month and get the top 3 visitors
-                        $topVisitorsQuery = "
+                    // Query to count visits for the current month and get the top 3 visitors
+                    $topVisitorsQuery = "
                         SELECT
                             tbl_log.Borrower_ID, -- Specify the table for Borrower_ID
                             COUNT(*) AS visit_count,
@@ -287,11 +290,11 @@ if (!$result) {
                         LIMIT 3;
                         ";
 
-                        $topVisitorsResult = mysqli_query($conn, $topVisitorsQuery);
+                    $topVisitorsResult = mysqli_query($conn, $topVisitorsQuery);
 
-                        // Check if the query was successful and fetch the top visitors
-                        if ($topVisitorsResult && mysqli_num_rows($topVisitorsResult) > 0) {
-                            echo "<div class='visitorRanking container-sm' style='width: 30%;
+                    // Check if the query was successful and fetch the top visitors
+                    if ($topVisitorsResult && mysqli_num_rows($topVisitorsResult) > 0) {
+                        echo "<div class='visitorRanking container-sm' style='width: 30%;
                                                                                 height: 95%;
                                                                                 background-color: palegreen;
                                                                                 border-radius: 10px;
@@ -301,26 +304,26 @@ if (!$result) {
                                                                                 flex-wrap: wrap;
                                                                                 justify-content: center;
                                                                                 align-content: stretch;'>";
-                            echo "<ul class='list-group'>";
+                        echo "<ul class='list-group'>";
 
-                            // Loop through the top visitors
-                            while ($row = mysqli_fetch_assoc($topVisitorsResult)) {
-                                $visitorName = $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'];
-                                $visitCount = $row['visit_count'];
+                        // Loop through the top visitors
+                        while ($row = mysqli_fetch_assoc($topVisitorsResult)) {
+                            $visitorName = $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'];
+                            $visitCount = $row['visit_count'];
 
-                                echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px'>";
-                                echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
-                                echo "<p style='font-size:12pt' class='fw-bold'>Top Visitor</p>";
-                                echo "<span class='badge text-bg-primary rounded-pill'>$visitCount</span>";
-                                echo "</div>";
-                                echo "<small style='font-size:12px'>$visitorName</small>";
-                                echo "</li>";
-                            }
-
-                            echo "</ul>";
+                            echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px'>";
+                            echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
+                            echo "<p style='font-size:12pt' class='fw-bold'>Top Visitor</p>";
+                            echo "<span class='badge text-bg-primary rounded-pill'>$visitCount</span>";
                             echo "</div>";
-                        } else {                            
-                            echo "<div class='visitorRanking container-sm' style='width: 30%;
+                            echo "<small style='font-size:12px'>$visitorName</small>";
+                            echo "</li>";
+                        }
+
+                        echo "</ul>";
+                        echo "</div>";
+                    } else {
+                        echo "<div class='visitorRanking container-sm' style='width: 30%;
                                                                             height: 95%;
                                                                             background-color: transparent;
                                                                             border-radius: 10px;
@@ -330,60 +333,60 @@ if (!$result) {
                                                                             flex-wrap: wrap;
                                                                             justify-content: center;
                                                                             align-content: stretch;'>";
-                            echo "<ul class='list-group'>";
+                        echo "<ul class='list-group'>";
 
-                            echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:40px'>";
-                            echo "<div class='w-100 d-flex flex-row flex-wrap align-items-center justify-content-center' style='height: 20px; width:100%; text-align:center;'>";
-                            echo "<p>No Visits Found</p>";
-                            echo "</div>";
-                            echo "</li>";
+                        echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:40px'>";
+                        echo "<div class='w-100 d-flex flex-row flex-wrap align-items-center justify-content-center' style='height: 20px; width:100%; text-align:center;'>";
+                        echo "<p>No Visits Found</p>";
+                        echo "</div>";
+                        echo "</li>";
 
-                            echo "</ul>";
-                            echo "</div>";
-                        }
+                        echo "</ul>";
+                        echo "</div>";
+                    }
                     ?>
 
 
                 </div>
             </div>
             <div class="newbooks">
-    <h3>What's New?</h3>
-    <div class="newbooks-con">
-        <?php
+                <h3>What's New?</h3>
+                <div class="newbooks-con">
+                    <?php
 
-        // Calculate the date 3 days ago from today
-        $threeDaysAgo = date('Y-m-d H:i:s', strtotime('-3 days'));
+                    // Calculate the date 3 days ago from today
+                    $threeDaysAgo = date('Y-m-d H:i:s', strtotime('-3 days'));
 
-        // SQL query to fetch books inserted in the last 3 days or current along with author's name
-        $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
+                    // SQL query to fetch books inserted in the last 3 days or current along with author's name
+                    $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
                 FROM tbl_books 
                 INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
                 WHERE tbl_books.date_inserted >= '$threeDaysAgo'";
 
-        $result = mysqli_query($conn, $sql);
+                    $result = mysqli_query($conn, $sql);
 
-        if ($result) {
-            $totalBooksCount = mysqli_num_rows($result);
+                    if ($result) {
+                        $totalBooksCount = mysqli_num_rows($result);
 
-            // Display the books or process further as needed
-            echo '<div class="list-group">';
-            while ($row = mysqli_fetch_assoc($result)) {
-                // Display book details or perform actions
-                echo '<a href="#" class="list-group-item list-group-item-action">';
-                echo '<div class="d-flex w-100 justify-content-between">';
-                echo '<h5 class="mb-1">' . $row['Book_Title'] . '</h5>';
-                echo '</div>';
-                echo '<p class="mb-1">' . $row['Authors_Name'] . '</p>';
-                echo '<small>' . $row['date_inserted'] . '</small>';
-                echo '</a>';
-            }
-            echo '</div>';
-        } else {
-            echo "<p>No New Books</p>";
-        }
-        ?>
-    </div>
-</div>
+                        // Display the books or process further as needed
+                        echo '<div class="list-group">';
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            // Display book details or perform actions
+                            echo '<a href="#" class="list-group-item list-group-item-action">';
+                            echo '<div class="d-flex w-100 justify-content-between">';
+                            echo '<h5 class="mb-1">' . $row['Book_Title'] . '</h5>';
+                            echo '</div>';
+                            echo '<p class="mb-1">' . $row['Authors_Name'] . '</p>';
+                            echo '<small>' . $row['date_inserted'] . '</small>';
+                            echo '</a>';
+                        }
+                        echo '</div>';
+                    } else {
+                        echo "<p>No New Books</p>";
+                    }
+                    ?>
+                </div>
+            </div>
 
 
 
@@ -412,42 +415,40 @@ if (!$result) {
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-   
-   <script>
-    
-    function sendEmail() {
-    // Get the Borrower_ID from the hidden input field
-    const borrowerId = document.getElementById('borrowerId').value;
 
-    // Encode the borrowerId
-    console.log("Borrow ID:", borrowerId);
-    const encodedBorrowerId = encodeURIComponent(borrowerId);
-    console.log("Borrow ID encoded:", encodedBorrowerId);
+    <script>
+        function sendEmail() {
+            // Get the Borrower_ID from the hidden input field
+            const borrowerId = document.getElementById('borrowerId').value;
 
-    // Send an AJAX request to a PHP script
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "queries/send_email_due.php", true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) {
-                // Request was successful
-                console.log("Initializing Email");
-                // You can perform further actions here if needed
-            } else {
-                // Error handling
-                console.error("Error:", xhr.statusText);
-            }
+            // Encode the borrowerId
+            console.log("Borrow ID:", borrowerId);
+            const encodedBorrowerId = encodeURIComponent(borrowerId);
+            console.log("Borrow ID encoded:", encodedBorrowerId);
+
+            // Send an AJAX request to a PHP script
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "send_email_due.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // Request was successful
+                        console.log("Initializing Email");
+                        // You can perform further actions here if needed
+                    } else {
+                        // Error handling
+                        console.error("Error:", xhr.statusText);
+                    }
+                }
+            };
+            // Send encoded Borrower_ID as data
+            xhr.send("borrower_id=" + borrowerId);
         }
-    };
-    // Send encoded Borrower_ID as data
-    xhr.send("borrower_id=" + borrowerId);
-}
+    </script>
 
-   </script>
 
-   
-   <script>
+    <script>
         let date = new Date().toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'long',

@@ -74,7 +74,7 @@
 		"phan": "@php vendor/bin/phan"
 	},
 	"config": {
-		"lock": false,
+		"lock": true,
 		"sort-packages": true,
 		"platform-check": true
 	}

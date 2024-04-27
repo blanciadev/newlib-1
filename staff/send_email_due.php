@@ -6,24 +6,25 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 echo "<script>console.log('Send Email Function');</script>";
-              
+
 // Check if the User_ID session variable is not set or empty
 if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     // Redirect to index.php
     header("Location: ../index.php");
     exit(); // Ensure script execution stops after redirection
 }
+$borrower_id = 146;
 
 // Get the Borrower_ID from the AJAX request
 if (isset($_POST['borrower_id'])) {
     $borrowerId = urldecode($_POST['borrower_id']);
 
     // Database connection
-    $conn_display_all = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
+    $conn_display_all = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
     if ($conn_display_all->connect_error) {
         die("Connection failed: " . $conn_display_all->connect_error);
     }
-    
+
     // SQL query to select specific record from tbl_borrower based on Borrower_ID
     $sql_display_all = "SELECT
                             b.User_ID, 
@@ -80,11 +81,10 @@ if (isset($_POST['borrower_id'])) {
                 $mail->isHTML(true); // Set email format to HTML
                 $mail->Subject = 'Notification Of Book Due Date';
                 $mail->Body = '<h1>Hi! Its time to return the book!</h1>' .
-                              '<p>Book Title: ' . $borrowerData['Book_Title'] . ' ' . $borrowerData['Quantity'] . ' ' . $borrowerData['Accession_Code'] . '</p>' .
-                              '<p>Book Title: ' . $borrowerData['Date_Borrowed'] . ' ' . $borrowerData['Due_Date'].'</p>'.
-                              '<h1>Please Return it as soon as possible to avoid being Fined!</h1>' 
-                              ;
-                           
+                    '<p>Book Title: ' . $borrowerData['Book_Title'] . ' ' . $borrowerData['Quantity'] . ' ' . $borrowerData['Accession_Code'] . '</p>' .
+                    '<p>Book Title: ' . $borrowerData['Date_Borrowed'] . ' ' . $borrowerData['Due_Date'] . '</p>' .
+                    '<h1>Please Return it as soon as possible to avoid being Fined!</h1>';
+
                 // Send email
                 if ($mail->send()) {
                     echo json_encode(array('success' => 'Email sent successfully'));
@@ -116,4 +116,3 @@ if (isset($_POST['borrower_id'])) {
 } else {
     echo "<script>console.error('NO BORROWER ID FOUND');</script>";
 }
-?>
