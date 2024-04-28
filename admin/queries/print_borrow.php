@@ -129,7 +129,7 @@ v
     <!-- Bootstrap print button -->
     <button id="printButton" class="print-button btn btn-primary" onclick="printPage()">Print</button>
 
-    <a href="admin_transactions.php" id="goToStaffLogButton" class="go-to-staff-log-button btn btn-primary">Go to Admin Transaction</a>
+    <a href="../admin_transactions.php" id="goToStaffLogButton" class="go-to-staff-log-button btn btn-primary">Go to Admin Transaction</a>
     </div>
     <script>
     // Function to hide the button before printing starts

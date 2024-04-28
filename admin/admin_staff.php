@@ -29,10 +29,7 @@ if(isset($_GET['deactivated_id'])) {
     }
 }
 
-
-
-
-if(isset($_POST['submit'])) {
+if (isset($_POST['submit'])) {
     // Database connection
     $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
     if ($conn->connect_error) {
@@ -50,37 +47,30 @@ if(isset($_POST['submit'])) {
     $token = 0;
     $password = $lastName . '@' . $role;
 
-
-    // Hash the password for security
-    
-
     $sql = "INSERT INTO tbl_employee (tb_password, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, token ) 
             VALUES ('$password','$firstName', '$lastName','$midName', '$role', '$contactNumber', '$email', '$address', $token )";
 
-    // Debugging: output the SQL query for inspection
-    echo "SQL Query: $sql";
-
-    if (mysqli_query($conn, $sql)) {
-        // Display a banner for successful insertion
-        echo '<div id="successBanner" style="display: none; background-color: #4CAF50; color: white; padding: 10px; text-align: center;">';
-        echo 'defualt password will be your Lastname@role';
-        echo 'Insertion Successful!';
-        echo '</div>';
-        
-        // Show the banner and redirect after 3 seconds
-        echo '<script>';
-        echo 'document.getElementById("successBanner").style.display = "block";'; // Show the banner
-        echo 'setTimeout(function(){ window.location.href = "admin_staff.php"; }, 3000);'; // Redirect after 3 seconds
-        echo '</script>';
-        
-        exit();
-    } else {
-        // Debugging: output the error message
-        echo "Error: " . mysqli_error($conn);
+    try {
+        if (mysqli_query($conn, $sql)) {
+            // Display a banner for successful insertion
+            echo '<script>alert("Default password will be your Lastname@role. Insertion Successful!");</script>';
+            // Redirect the user back to the same page
+            echo '<script>window.location.href = "admin_staff.php";</script>';
+            exit();
+        }
+        else {
+            // Handle other errors
+            throw new Exception(mysqli_error($conn));
+        }
+    } catch (Exception $e) {
+        // Handle the exception gracefully
+        echo '<script>alert("Error: ' . $e->getMessage() . '");</script>';
     }
 
     mysqli_close($conn);
 }
+
+
 ?>
 
 
@@ -150,10 +140,17 @@ if(isset($_POST['submit'])) {
         </ul>
 
 
-        <!-- Add New Employee Button -->
-        <button id="addEmployeeBtn" class="btn btn-primary">Add New Employee</button>
-    </div>
-
+  
+<!-- Button to trigger modal -->
+<button type="button" class="btn btn-primary" onclick="openEmployeeModal()">Add Employee</button>
+  </div>
+   
+   
+   
+    <h2>Staff Management</h2>
+  
+  
+  
     <div class="board container"><!--board container-->
 
 <?php
@@ -211,70 +208,95 @@ mysqli_close($conn);
 
 </div>
 
-
-        <form id="addEmployeeForm" method="POST" action="">
-            <!-- Hidden container for adding a new employee -->
-            <div id="addEmployeeContainer" class="container-fluid mt-3" style="display: none;">
-                <br><br><br>
-                <h4>Add New Employee</h4>
-
-                <!-- Add input fields for employee details -->
-                <div class="mb-3">
-                    <label for="empFirstName" class="form-label">First Name</label>
-                    <input type="text" class="form-control" id="empFirstName" name="empFirstName" required>
-                </div>
-                <div class="mb-3">
-                    <label for="empLastName" class="form-label">Last Name</label>
-                    <input type="text" class="form-control" id="empLastName" name="empLastName" required>
-                </div>
-                <div class="mb-3">
-                    <label for="midName" class="form-label">Middle Name</label>
-                    <input type="text" class="form-control" id="midName" name="midName" required>
-                </div>
-                <div class="mb-3">
-                    <label for="empRole" class="form-label">Role</label>
-                    <select class="form-control" id="empRole" name="empRole" required>
-                        <option value="Admin">Admin</option>
-                        <option value="Staff">Staff</option>
-                    </select>
-                </div>
-                <!-- <div class="mb-3">
-                    <label for="empPassword" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="empPassword" name="empPassword" value="auto-generated" readonly>
-                </div> -->
-
-                <div class="mb-3">
-                    <label for="empContactNumber" class="form-label">Contact Number</label>
-                    <input type="text" class="form-control" id="empContactNumber" name="empContactNumber" required>
-                </div>
-                <div class="mb-3">
-                    <label for="empEmail" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="empEmail" name="empEmail" required>
-                </div>
-                <div class="mb-3">
-                    <label for="empAddress" class="form-label">Address</label>
-                    <textarea class="form-control" id="empAddress" name="empAddress" rows="3" required></textarea>
-                </div>
-
-                <button type="submit" class="btn btn-primary" name="submit">Submit</button>
-
+<!-- Modal -->
+<div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        </form>
-        
-   
+            <div class="modal-body">
+                <!-- Form to input employee data -->
+                <form id="addEmployeeForm" method="POST" action="">
+                    <!-- Add input fields for employee details -->
+                    <div class="mb-3">
+                        <label for="empFirstName" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="empFirstName" name="empFirstName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="empLastName" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="empLastName" name="empLastName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="midName" class="form-label">Middle Name</label>
+                        <input type="text" class="form-control" id="midName" name="midName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="empRole" class="form-label">Role</label>
+                        <select class="form-control" id="empRole" name="empRole" required>
+                            <option value="Admin">Admin</option>
+                            <option value="Staff">Staff</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="empContactNumber" class="form-label">Contact Number</label>
+                        <input type="text" class="form-control" id="empContactNumber" name="empContactNumber" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="empEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="empEmail" name="empEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="empAddress" class="form-label">Address</label>
+                        <textarea class="form-control" id="empAddress" name="empAddress" rows="3" required></textarea>
+                    </div>
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-primary" name="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+                <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+
 <script>
 
-
-
-
-
-    // Function to show the add employee container
-    function showAddEmployeeContainer() {
-        document.getElementById('addEmployeeContainer').style.display = 'block';
+ function openEmployeeModal() {
+        $('#employeeModal').modal('show');
     }
- // Event listener for the Add New Employee button
- document.getElementById('addEmployeeBtn').addEventListener('click', showAddEmployeeContainer);
 
+
+    function submitEmployeeForm() {
+        // Serialize form data
+        var formData = $('#addEmployeeForm').serialize();
+
+        // Send form data via AJAX
+        $.ajax({
+            type: 'POST',
+            url: 'admin_staff.php',
+            data: formData,
+            success: function(response) {
+                // Handle success response
+                console.log('Form submitted successfully:', response);
+                // Optionally, close the modal or perform any other actions
+                $('#employeeModal').modal('hide');
+            },
+            error: function(xhr, status, error) {
+                // Handle error response
+                console.error('Error submitting form:', error);
+            }
+        });
+    }
+
+
+
+
+ 
    
 </script>
 

@@ -23,6 +23,10 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VillaReadHub - Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+ 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
@@ -75,15 +79,19 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
-            <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis "> <i class='bx bxs-home'></i>Dashboard </a> </li>
-            <li class="nav-item"> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
-            <li class="nav-item"> <a href="./staff_transaction_dash.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>
-            <li class="nav-item active"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
-            <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
+            <li class="nav-item "> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis "> <i class='bx bxs-home'></i>Dashboard </a> </li>
+            <li class="nav-item "> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
+            <li class="nav-item"> <a href="./admin_transactions.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transactions</a> </li>
+            <li class="nav-item"> <a href="./admin_staff.php" class="nav-link link-body-emphasis"><i class='bx bxs-user'></i>Manage Staff</a> </li>
+            <li class="nav-item active"> <a href="./admin_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
+            <li class="nav-item"> <a href="./admin_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
+            <li class="nav-item"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-cloud'></i>Generate Report</a> </li>
             <hr>
-            <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
+            <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
+         
             <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
-        </ul>
+  
+          </ul>
     </div>
     <div class="board container"><!--board container-->
         <div class="header1">
@@ -245,7 +253,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
 
                     // Send AJAX request to update.php to fetch and populate data
-                    fetch('displaymodal.php', {
+                    fetch('queries/displaymodal.php', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -270,17 +278,19 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         });
 
 
-        document.addEventListener("DOMContentLoaded", function() {
-            const borrowerEditButtons = document.querySelectorAll(".borrower-edit-btn");
-            borrowerEditButtons.forEach(button => {
-                button.addEventListener("click", function() {
-                    // Get the Borrower_ID from the data attribute
-                    const borrowerID = this.getAttribute("data-borrower-id");
-                    console.log("Borrower_ID:", borrowerID);
-                    // You can now use borrowerID as needed, such as sending it to the server via AJAX
-                });
-            });
+        let globalBorrowerID;
+
+document.addEventListener("DOMContentLoaded", function() {
+    const borrowerEditButtons = document.querySelectorAll(".borrower-edit-btn");
+    borrowerEditButtons.forEach(button => {
+        button.addEventListener("click", function() {
+            // Get the Borrower_ID from the data attribute
+              globalBorrowerID = this.getAttribute("data-borrower-id");
+              console.log("Borrower_ID To send:", globalBorrowerID);
+            // You can now use borrowerID as needed, such as sending it to the server via AJAX
         });
+    });
+});
 
 
 
@@ -321,7 +331,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
             // Send an AJAX request to update.php
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "update.php", true);
+            xhr.open("POST", "queries/update.php", true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.onreadystatechange = function() {
                 if (xhr.readyState === XMLHttpRequest.DONE) {
@@ -342,29 +352,30 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
 
 
-        function sendEmail(borrowerID) {
-            // Encode the borrowerId
-            const encodedBorrowerId = encodeURIComponent(borrowerID);
+        function sendEmail() {
+    // Retrieve the borrowerID from the global variable
+    const borrowerID = globalBorrowerID;
 
-            // Send an AJAX request to a PHP script
-            let xhr = new XMLHttpRequest();
-            xhr.open("POST", "send_email.php", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        // Request was successful
-                        console.log("Email sent successfully.");
-                        // You can perform further actions here if needed
-                    } else {
-                        // Error handling
-                        console.error("Error:", xhr.statusText);
-                    }
-                }
-            };
-            // Send encoded Borrower_ID as data
-            xhr.send("borrower_id=" + encodedBorrowerId);
+    // Send an AJAX request to a PHP script with the borrowerID directly in the URL
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "send_email.php?borrower_id=" + encodeURIComponent(borrowerID), true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // Request was successful
+                console.log("Email sent successfully. Borrower ID: " + borrowerID);
+                // You can perform further actions here if needed
+            } else {
+                // Error handling
+                console.error("Error:", xhr.statusText);
+            }
         }
+    };
+    // Send an empty body as the data since the borrowerID is included in the URL
+    xhr.send();
+}
+
 
 
 
