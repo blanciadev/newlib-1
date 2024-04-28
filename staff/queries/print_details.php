@@ -1,10 +1,5 @@
 <?php
 session_start();
-require "../vendor/autoload.php";
-
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 
 
 // Check if the User_ID session variable is not set or empty

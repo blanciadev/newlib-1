@@ -1,8 +1,7 @@
 <?php
-
-use PhpParser\Node\Stmt\Echo_;
-
+ 
 include "../auth.php";
+
 // Check if the User_ID session variable is not set or empty
 if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     // Redirect to index.php
@@ -11,7 +10,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 }
 
 
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 
 $userID = $_SESSION["User_ID"];
 
@@ -237,12 +236,13 @@ $dataJSON = json_encode($data);
                             echo '  <div class="fw"><strong>' . $row['Book_Title'] . '</strong></div>
                         ' . $row['First_Name'] . ' ' . $row['Last_Name'] . '
                     </div>';
-                            echo '<div class="view-btn">
-                    <input type="hidden" id="borrowerId" value="' . $row['Borrower_ID'] . '">
-                    <a href="#" onclick="sendEmail()">
+                    echo '<div class="view-btn">
+                    <input type="hidden" class="borrowerId" value="' . $row['Borrower_ID'] . '">
+                    <a href="#" onclick="sendEmail(' . $row['Borrower_ID'] . ')">
                         <i class="bx bxs-bell"></i>
                     </a>
-                  </div>';
+                </div>';
+            
 
 
 
@@ -413,37 +413,36 @@ $dataJSON = json_encode($data);
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <script>
-        function sendEmail() {
-            // Get the Borrower_ID from the hidden input field
-            const borrowerId = document.getElementById('borrowerId').value;
+    function sendEmail(borrowerId) {
+        // Encode the borrowerId
+        console.log("Borrow ID:", borrowerId);
+        const encodedBorrowerId = encodeURIComponent(borrowerId);
+        console.log("Borrow ID encoded:", encodedBorrowerId);
 
-            // Encode the borrowerId
-            console.log("Borrow ID:", borrowerId);
-            const encodedBorrowerId = encodeURIComponent(borrowerId);
-            console.log("Borrow ID encoded:", encodedBorrowerId);
-
-            // Send an AJAX request to a PHP script
-            let xhr = new XMLHttpRequest();
-            xhr.open("POST", "send_email_due.php", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        // Request was successful
-                        console.log("Initializing Email");
-                        // You can perform further actions here if needed
-                    } else {
-                        // Error handling
-                        console.error("Error:", xhr.statusText);
-                    }
+        // Send an AJAX request to a PHP script
+        let xhr = new XMLHttpRequest();
+        xhr.open("POST", "send_email_due.php?borrower_id=" + encodedBorrowerId, true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    // Request was successful
+                    console.log("Email sent successfully");
+                    // You can perform further actions here if needed
+                } else {
+                    // Error handling
+                    console.error("Error:", xhr.statusText);
                 }
-            };
-            // Send encoded Borrower_ID as data
-            xhr.send("borrower_id=" + borrowerId);
-        }
-    </script>
+            }
+        };
+        // No need to send data in the body since we're passing it as a URL parameter
+        xhr.send();
+    }
+</script>
+
 
 
     <script>

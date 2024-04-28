@@ -3,7 +3,7 @@
         'name' => 'chillerlan/php-qrcode',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '57a7dae696f9211619af69f9c8c01728be7c9ba4',
+        'reference' => 'ea429a5b951dcf4b05151f85643cab6a91a0ddf2',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -31,7 +31,7 @@
         'chillerlan/php-qrcode' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '57a7dae696f9211619af69f9c8c01728be7c9ba4',
+            'reference' => 'ea429a5b951dcf4b05151f85643cab6a91a0ddf2',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

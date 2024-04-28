@@ -342,9 +342,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
 
 
-
-
-
         function sendEmail(borrowerID) {
             // Encode the borrowerId
             const encodedBorrowerId = encodeURIComponent(borrowerID);

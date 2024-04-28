@@ -228,6 +228,9 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
 
     <script>
+
+
+
         function BorrowerModal(id) {
             console.log(id);
             $('#BorrowerModal').modal({
@@ -270,14 +273,15 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             });
         });
 
+        let globalBorrowerID;
 
         document.addEventListener("DOMContentLoaded", function() {
             const borrowerEditButtons = document.querySelectorAll(".borrower-edit-btn");
             borrowerEditButtons.forEach(button => {
                 button.addEventListener("click", function() {
                     // Get the Borrower_ID from the data attribute
-                    const borrowerID = this.getAttribute("data-borrower-id");
-                    console.log("Borrower_ID:", borrowerID);
+                      globalBorrowerID = this.getAttribute("data-borrower-id");
+                      console.log("Borrower_ID To send:", globalBorrowerID);
                     // You can now use borrowerID as needed, such as sending it to the server via AJAX
                 });
             });
@@ -341,35 +345,29 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             xhr.send("borrowerID=" + encodeURIComponent(borrowerID) + "&firstName=" + encodeURIComponent(firstName) + "&middleName=" + encodeURIComponent(middleName) + "&lastName=" + encodeURIComponent(lastName) + "&contactNumber=" + encodeURIComponent(contactNumber) + "&email=" + encodeURIComponent(email) + "&affiliation=" + encodeURIComponent(affiliation));
         }
 
+        function sendEmail() {
+    // Retrieve the borrowerID from the global variable
+    const borrowerID = globalBorrowerID;
 
-
-
-
-
-        function sendEmail(borrowerID) {
-            // Encode the borrowerId
-            const encodedBorrowerId = encodeURIComponent(borrowerID);
-
-            // Send an AJAX request to a PHP script
-            let xhr = new XMLHttpRequest();
-            xhr.open("POST", "queries/send_email.php", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === XMLHttpRequest.DONE) {
-                    if (xhr.status === 200) {
-                        // Request was successful
-                        console.log("Email sent successfully.");
-                        // You can perform further actions here if needed
-                    } else {
-                        // Error handling
-                        console.error("Error:", xhr.statusText);
-                    }
-                }
-            };
-            // Send encoded Borrower_ID as data
-            xhr.send("borrower_id=" + encodedBorrowerId);
+    // Send an AJAX request to a PHP script with the borrowerID directly in the URL
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", "send_email.php?borrower_id=" + encodeURIComponent(borrowerID), true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // Request was successful
+                console.log("Email sent successfully. Borrower ID: " + borrowerID);
+                // You can perform further actions here if needed
+            } else {
+                // Error handling
+                console.error("Error:", xhr.statusText);
+            }
         }
-
+    };
+    // Send an empty body as the data since the borrowerID is included in the URL
+    xhr.send();
+}
 
 
 

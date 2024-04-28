@@ -5,19 +5,22 @@ require "../vendor/autoload.php";
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// Check if the User_ID session variable is not set or empty
-if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
-    // Redirect to index.php
-    header("Location: ../index.php");
-    exit(); // Ensure script execution stops after redirection
-}
+// // Check if the User_ID session variable is not set or empty
+// if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
+//     // Redirect to index.php
+//     header("Location: ../index.php");
+//     exit(); // Ensure script execution stops after redirection
+// }
 
-// Get the Borrower_ID from the AJAX request
-if (isset($_POST['borrower_id'])) {
-    $borrowerId = $_POST['borrower_id'];
+// Get the Borrower_ID from the URL parameters
+if (isset($_GET['borrower_id'])) {
+    $borrowerId = $_GET['borrower_id'];
+
+    // Log the borrower ID
+    echo "<script>console.log('Retrieved Borrower ID FROM URL: " . $borrowerId . "');</script>";
 
     // Database connection
-    $conn_display_all = mysqli_connect("localhost", "root", "12345678", "db_library_2", 3306);
+    $conn_display_all = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
     if ($conn_display_all->connect_error) {
         die("Connection failed: " . $conn_display_all->connect_error);
     }
@@ -50,7 +53,7 @@ if (isset($_POST['borrower_id'])) {
                 $mail->Port = 587;
 
                 // Email content
-                $mail->setFrom('villareadhub@gmail.com', 'ADMIN'); // Set sender email and name
+                $mail->setFrom('villareadhub@gmail.com', 'Administrator'); // Set sender email and name
                 $mail->addAddress($borrowerData['Email']); // Add recipient email
                 $mail->isHTML(true); // Set email format to HTML
                 $mail->Subject = 'Borrower Details';
@@ -91,4 +94,7 @@ if (isset($_POST['borrower_id'])) {
 
     // Close the database connection
     $conn_display_all->close();
+} else {
+    echo json_encode(array('error' => 'Borrower ID not provided'));
 }
+?>
