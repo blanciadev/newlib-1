@@ -11,7 +11,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 // Initialize $result variable
 $result = null;
 $bookDetails = [];
-
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Sanitize input to prevent SQL injection
@@ -19,16 +18,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Initialize an empty array to store book details
     $bookDetails = [];
+
     // Retrieve all Accession Codes from the form
     $accessionCodes = $_POST['Accession_Code'];
+    // Retrieve Book Title from the form
+    $Book_Title = $_POST['Book_Title'];
 
     // Ensure $accessionCodes is treated as an array
     if (!is_array($accessionCodes)) {
         $accessionCodes = [$accessionCodes];
     }
 
-    // Loop through each Accession Code
-    foreach ($accessionCodes as $Accession_Code) {
+   // Loop through each Accession Code
+foreach ($accessionCodes as $Accession_Code) {
+    // Check if Accession Code is provided
+    if (!empty($Accession_Code) || $Accession_Code === '0') {
         // Query to retrieve book details based on Accession Code
         $sql = "SELECT
                     tbl_books.*, 
@@ -40,18 +44,59 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ON 
                     tbl_books.Authors_ID = tbl_authors.Authors_ID
                 WHERE
-                    Accession_Code = '$Accession_Code'";
+                    Accession_Code = ?";
+    } elseif (!empty($Book_Title)) {
+        // Query to retrieve book details based on Book Title
+        $sql = "SELECT
+                    tbl_books.*, 
+                    tbl_authors.Authors_Name
+                FROM
+                    tbl_books
+                INNER JOIN
+                    tbl_authors
+                ON 
+                    tbl_books.Authors_ID = tbl_authors.Authors_ID
+                WHERE
+                    Book_Title LIKE ?";
+    } else {
+        // Display an alert if neither Accession Code nor Book Title is provided
+        echo '<script>alert("Please enter either Accession Code or Book Title.");</script>';
+        continue; // Skip to the next iteration of the loop
+    }
 
-        $result = $conn->query($sql);
+    // Prepare the statement
+    $stmt = $conn->prepare($sql);
+
+    // Bind parameters and execute the query
+    if ($stmt) {
+        if (!empty($Accession_Code) || $Accession_Code === '0') {
+            $stmt->bind_param("s", $Accession_Code);
+        } else {
+            $Book_Title = "%" . $Book_Title . "%";
+            $stmt->bind_param("s", $Book_Title);
+        }
+        
+        $stmt->execute();
+
+        // Get the result set
+        $result = $stmt->get_result();
 
         // Check if the query returned any rows
         if ($result && $result->num_rows > 0) {
-            $bookDetails[] = $result->fetch_assoc();
+            while ($row = $result->fetch_assoc()) {
+                $bookDetails[] = $row;
+            }
         } else {
-            // Display an alert for invalid Accession Code
-            echo '<script>alert("Invalid Accession Code: ' . $Accession_Code . '");</script>';
+            // Display an alert for invalid Accession Code or Book Title
+            echo '<script>alert("Invalid Accession Code or Book Title: ' . $Accession_Code . ' - ' . $Book_Title . '");</script>';
         }
+        
+        // Close the statement
+        $stmt->close();
     }
+}
+
+
 
     // Close the database connection
     $conn->close();
@@ -144,12 +189,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class='books-container'>
 
             <form id="dataform" method="POST">
-                <label for="Accession_Code">Accession Code:</label>
-                <!-- Allow multiple Accession Codes -->
-                <input type="text" id="Accession_Code" name="Accession_Code[]" placeholder="Enter Accession Code" required onkeydown="return (event.keyCode !== 13);">
 
-                <!-- <button type="button" class="btn btn-primary" id="book_borrow">Retrieve Book</button> -->
-             
+            <label for="Accession_Code">Accession Code:</label>
+            <input type="text" id="Accession_Code" name="Accession_Code[]" placeholder="Enter Accession Code">
+
+            <label for="Book_Title">Book Title:</label>
+            <input type="text" id="Book_Title" name="Book_Title" placeholder="Enter Book Title">
+            
 
         
 
@@ -163,8 +209,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                </div> <a id="checkoutBtn" class="btn btn-primary">Checkout</a> 
     </div>
     </form>
-    <script>
-     document.addEventListener('DOMContentLoaded', function() {
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
     // Define the bookDetails array
     let bookDetails = [];
 
@@ -175,71 +222,83 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     const checkoutBtn = document.getElementById('checkoutBtn');
     checkoutBtn.style.display = 'none';
 
-    // Add event listener to "Retrieve Book" button
-    document.getElementById('Accession_Code').addEventListener('input', function() {
-        // Get the form data
-        const formData = new FormData(document.getElementById('dataform'));
+    // Add event listener to search input fields
+    const accessionCodeInput = document.getElementById('Accession_Code');
+    const bookTitleInput = document.getElementById('Book_Title');
 
-        // Send an AJAX request
-        fetch('staff_book_borrow_find.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Display book details dynamically
-                const bookDetailsContainer = document.getElementById('bookDetailsContainer');
-                bookDetailsContainer.innerHTML = '';
-                data.forEach(book => {
-                    const bookDiv = document.createElement('div');
-                    bookDiv.classList.add('book');
-                    bookDiv.innerHTML = `
-                        <p><strong>Accession Code:</strong> ${book['Accession_Code']}</p>
-                        <p><strong>Title:</strong> ${book['Book_Title']}</p>
-                        <p><strong>Author:</strong> ${book['Authors_Name']}</p>
-                        <p><strong>Availability:</strong> ${book['Quantity']}</p>
-                        <button type="button" class="btn btn-secondary add-book-btn" data-accession="${book['Accession_Code']}">Add Book</button>
-                        <hr>
-                    `;
-                    const quantity = book['Quantity'];
+    // Add event listener to both input fields
+    [accessionCodeInput, bookTitleInput].forEach(input => {
+        input.addEventListener('input', function() {
+            // Get the form data
+            const formData = new FormData(document.getElementById('dataform'));
+            console.log('Form data:', formData);
 
-                    // Add event listener to "Add Book" button
-                    const addBookBtn = bookDiv.querySelector('.add-book-btn');
-                    if (quantity == 0) {
-                        addBookBtn.disabled = true; // Disable button if quantity is 0
-                    } else {
-                        addBookBtn.addEventListener('click', function() {
-                            // Add or remove the book from the bookDetails array
-                            const accessionCode = this.getAttribute('data-accession');
-                            const index = bookDetails.indexOf(accessionCode);
-                            if (index === -1) {
-                                bookDetails.push(accessionCode);
-                            } else {
-                                bookDetails.splice(index, 1);
-                            }
+            // Send an AJAX request
+            fetch('staff_book_borrow_find.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Response:', data);
+                    // Display book details dynamically
+                    const bookDetailsContainer = document.getElementById('bookDetailsContainer');
+                    bookDetailsContainer.innerHTML = '';
+                    data.forEach(book => {
+                        const bookDiv = document.createElement('div');
+                        bookDiv.classList.add('book');
+                        bookDiv.innerHTML = `
+                            <p><strong>Accession Code:</strong> ${book['Accession_Code']}</p>
+                            <p><strong>Title:</strong> ${book['Book_Title']}</p>
+                            <p><strong>Author:</strong> ${book['Authors_Name']}</p>
+                            <p><strong>Edition:</strong> ${book['tb_edition']}</p>
+                            <p><strong>Availability:</strong> ${book['Quantity']}</p>
+                            <button type="button" class="btn btn-secondary add-book-btn" data-accession="${book['Accession_Code']}">Add Book</button>
+                            <hr>
+                        `;
+                        const quantity = book['Quantity'];
 
-                            // Update the book cart badge count
-                            bookCartBadge.textContent = bookDetails.length;
+                        // Add event listener to "Add Book" button
+                        const addBookBtn = bookDiv.querySelector('.add-book-btn');
+                        if (quantity == 0) {
+                            addBookBtn.disabled = true; // Disable button if quantity is 0
+                        } else {
+                            addBookBtn.addEventListener('click', function() {
+                                // Add or remove the book from the bookDetails array
+                                const accessionCode = this.getAttribute('data-accession');
+                                const index = bookDetails.indexOf(accessionCode);
+                                if (index === -1) {
+                                    bookDetails.push(accessionCode);
+                                } else {
+                                    bookDetails.splice(index, 1);
+                                }
 
-                            // Show or hide the "Checkout" button based on the bookDetails array length
-                            checkoutBtn.style.display = bookDetails.length > 0 ? 'block' : 'none';
-                        });
-                    }
+                                // Update the book cart badge count
+                                bookCartBadge.textContent = bookDetails.length;
+                                console.log('Book details:', bookDetails);
 
-                    bookDetailsContainer.appendChild(bookDiv);
-                });
-            })
-            .catch(error => console.error('Error:', error));
+                                // Show or hide the "Checkout" button based on the bookDetails array length
+                                checkoutBtn.style.display = bookDetails.length > 0 ? 'block' : 'none';
+                            });
+                        }
+
+                        bookDetailsContainer.appendChild(bookDiv);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        });
     });
 
     // Add event listener to "Checkout" button
     checkoutBtn.addEventListener('click', function() {
         // Construct the URL with the bookDetails array values
         const url = 'staff_book_borrow_process.php?bookDetails=' + JSON.stringify(bookDetails);
+        console.log('Checkout URL:', url);
         // Redirect to the checkout page with the bookDetails in the URL
         window.location.href = url;
     });
 });
+
 
     </script>
 

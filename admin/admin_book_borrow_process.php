@@ -292,7 +292,7 @@ $conn->close();
                     <div class="mb-3" style="width: 200px;">
                         <label for="due_date" class="form-label">Date Return:</label>
                         <!-- Datepicker input field -->
-                        <input type="text" name="due_date" id="due_date" class="form-control">
+                        <input type="text" name="due_date" id="due_date" class="form-control" required>
                     </div>
 
                 <?php
