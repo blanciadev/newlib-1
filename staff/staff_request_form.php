@@ -27,10 +27,28 @@ if (isset($_POST['submit'])) {
     $selectedSection = $_POST['selectedSection'];
     $selectedShelf = $_POST['selectedShelf'];
 
-    // Validate form data (you may need more robust validation)
-    if (empty($bookTitle) || empty($author) || empty($publisher) || empty($quantity) || empty($status)) {
-        $errorMessage = "Please fill in all fields.";
+
+
+    // Handle author input
+    if ($_POST['author'] === 'Other') {
+        // Use the value from the "New Author" input field
+        $author = $_POST['newAuthor'];
     } else {
+        // Use the selected author from the dropdown
+        $author = $_POST['author'];
+    }
+
+
+    // Validate form data (you may need more robust validation)
+    if (empty($bookTitle) || empty($author) || empty($publisher) || empty($quantity)) {
+        $errorMessage = "Please fill in all fields.";
+        ?>
+        <script>
+            console.log("Missing fields: <?php echo empty($bookTitle) ? 'Book Title, ' : '' ?><?php echo empty($author) ? 'Author, ' : '' ?><?php echo empty($publisher) ? 'Publisher, ' : '' ?><?php echo empty($quantity) ? 'Quantity' : '' ?>");
+        </script>
+        <?php
+    }
+     else {
         // Handle "Other Edition" input
         if ($edition === "Other") {
             // Check if the 'otherEdition' input is set and not empty
@@ -149,7 +167,7 @@ if (isset($_POST['submit'])) {
                 <?php endif; ?>
             </div>
 
-            <form method="POST" action="staff_request_form.php">
+            <form method="POST" action="">
 
                 <input type="hidden" name="userID" value="<?php echo $_SESSION['User_ID']; ?>">
 
@@ -178,18 +196,21 @@ if (isset($_POST['submit'])) {
                 $existingAuthors[] = "Other";
                 ?>
 
-                <div class="mb-3">
-                    <label for="authorSelect" class="form-label">Author</label>
-                    <select class="form-select" id="authorSelect" name="author" required>
-                        <option value="" disabled selected>Select an author</option>
-                        <?php foreach ($existingAuthors as $author) : ?>
-                            <option value="<?php echo $author; ?>"><?php echo $author; ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+<div class="mb-3">
+    <label for="authorSelect" class="form-label">Author</label>
+    <select class="form-select" id="author" name="author" required>
+    <option value="" disabled selected>Select an author</option>
+    <?php foreach ($existingAuthors as $authorOption) : ?>
+        <option value="<?php echo $authorOption; ?>"><?php echo $authorOption; ?></option>
+    <?php endforeach; ?>
+   
+</select>
+</div>
+
+
                 <div class="mb-3" id="newAuthorInput" style="display: none;">
-                    <label for="newAuthor" class="form-label">New Author</label>
-                    <input type="text" class="form-control" id="newAuthor" name="author">
+                <label for="newAuthor" class="form-label">New Author</label>
+    <input type="text" class="form-control" id="newAuthor" name="newAuthor">
 
                     <label for="country" class="form-label">Country</label>
                     <input type="text" class="form-control" id="country" name="country">
@@ -218,9 +239,10 @@ if (isset($_POST['submit'])) {
                     </select>
 
                     <div id="otherEditionContainer" class="mb-3" style="display: none;">
-                        <label for="otherEdition" class="form-label">Other Edition</label>
-                        <input type="text" class="form-control" id="otherEdition" name="otherEdition">
-                    </div>
+    <label for="otherEdition" class="form-label">Other Edition</label>
+    <input type="text" class="form-control" id="otherEdition" name="otherEdition">
+</div>
+
 
 
                     <div class="mb-3">
@@ -233,13 +255,7 @@ if (isset($_POST['submit'])) {
                     </div>
 
                     <?php
-                    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-
-                    // Check connection
-                    if (!$conn) {
-                        die("Connection failed: " . mysqli_connect_error());
-                    }
-
+             
                     // Fetch sections from tbl_section
                     $sql_sections = "SELECT Section_Code, Section_Name FROM tbl_section";
                     $result_sections = mysqli_query($conn, $sql_sections);
@@ -309,16 +325,17 @@ if (isset($_POST['submit'])) {
                 });
             });
 
-            // Event listener for form submission
-            $('form').submit(function() {
-                // Get selected section and shelf number
-                var selectedSection = $('#section').val();
-                var selectedShelf = $('#shelf').val();
+          // Event listener for form submission
+$('form').submit(function() {
+    // Get selected section and shelf number
+    var selectedSection = $('#section').val();
+    var selectedShelf = $('#shelf').val(); // Corrected variable name
 
-                // Set hidden input values
-                $('#selectedSection').val(selectedSection);
-                $('#selectedShelf').val(selectedShelf);
-            });
+    // Set hidden input values
+    $('#selectedSection').val(selectedSection);
+    $('#selectedShelf').val(selectedShelf);
+});
+
         });
     </script>
 
@@ -326,28 +343,30 @@ if (isset($_POST['submit'])) {
 
     <!-- JavaScript to toggle input field -->
     <script>
-        document.getElementById("authorSelect").addEventListener("change", function() {
-            const newAuthorInput = document.getElementById("newAuthorInput");
-            newAuthorInput.style.display = (this.value === "Other") ? "block" : "none";
-        });
+    document.getElementById("author").addEventListener("change", function() {
+    const newAuthorInput = document.getElementById("newAuthorInput");
+    newAuthorInput.style.display = (this.value === "Other") ? "block" : "none";
+});
+
     </script>
 
 
     <script>
-        function toggleOtherEdition() {
-            const editionSelect = document.getElementById('edition');
-            const otherEditionContainer = document.getElementById('otherEditionContainer');
-            const otherEditionInput = document.getElementById('otherEdition');
+      function toggleOtherEdition() {
+    const editionSelect = document.getElementById('edition');
+    const otherEditionContainer = document.getElementById('otherEditionContainer');
+    const otherEditionInput = document.getElementById('otherEdition');
 
-            if (editionSelect.value === 'Other') {
-                otherEditionContainer.style.display = 'block'; // Show the input field
-                otherEditionInput.required = true; // Make the input field required
-            } else {
-                otherEditionContainer.style.display = 'none'; // Hide the input field
-                otherEditionInput.required = false; // Make the input field optional
-                otherEditionInput.value = ''; // Clear the input field value
-            }
-        }
+    if (editionSelect.value === 'Other') {
+        otherEditionContainer.style.display = 'block'; // Show the input field
+        otherEditionInput.required = true; // Make the input field required
+    } else {
+        otherEditionContainer.style.display = 'none'; // Hide the input field
+        otherEditionInput.required = false; // Make the input field optional
+        otherEditionInput.value = ''; // Clear the input field value
+    }
+}
+
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>

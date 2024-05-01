@@ -33,6 +33,16 @@ if (isset($_POST['submit'])) {
     $isbn = 1;
     $bib = "N/A";
 
+
+    // Handle author input
+    if ($_POST['author'] === 'Other') {
+        // Use the value from the "New Author" input field
+        $author = $_POST['newAuthor'];
+    } else {
+        // Use the selected author from the dropdown
+        $author = $_POST['author'];
+    }
+
     // Validate form data (you may need more robust validation)
     if (empty($bookTitle) || empty($author) || empty($publisher) || empty($quantity)) {
         $errorMessage = "Please fill in all required fields.";
@@ -192,20 +202,23 @@ $existingAuthors[] = "Other";
 
 <div class="mb-3">
     <label for="authorSelect" class="form-label">Author</label>
-    <select class="form-select" id="authorSelect" name="author" required>
-        <option value="" disabled selected>Select an author</option>
-        <?php foreach ($existingAuthors as $author) : ?>
-            <option value="<?php echo $author; ?>"><?php echo $author; ?></option>
-        <?php endforeach; ?>
-    </select>
+    <select class="form-select" id="author" name="author" required>
+    <option value="" disabled selected>Select an author</option>
+    <?php foreach ($existingAuthors as $authorOption) : ?>
+        <option value="<?php echo $authorOption; ?>"><?php echo $authorOption; ?></option>
+    <?php endforeach; ?>
+   
+</select>
 </div>
-<div class="mb-3" id="newAuthorInput" style="display: none;">
-    <label for="newAuthor" class="form-label">New Author</label>
-    <input type="text" class="form-control" id="newAuthor" name="author">
 
-    <label for="country" class="form-label">Country</label>
-    <input type="text" class="form-control" id="country" name="country">
-</div>
+<div class="mb-3" id="newAuthorInput" style="display: none;">
+                <label for="newAuthor" class="form-label">New Author</label>
+    <input type="text" class="form-control" id="newAuthor" name="newAuthor">
+
+                    <label for="country" class="form-label">Country</label>
+                    <input type="text" class="form-control" id="country" name="country">
+                </div>
+
 
 
 
@@ -335,13 +348,13 @@ $(document).ready(function() {
 });
 </script>
 
+  <!-- JavaScript to toggle input field -->
+  <script>
+    document.getElementById("author").addEventListener("change", function() {
+    const newAuthorInput = document.getElementById("newAuthorInput");
+    newAuthorInput.style.display = (this.value === "Other") ? "block" : "none";
+});
 
-    <!-- JavaScript to toggle input field -->
-    <script>
-        document.getElementById("authorSelect").addEventListener("change", function() {
-            const newAuthorInput = document.getElementById("newAuthorInput");
-            newAuthorInput.style.display = (this.value === "Other") ? "block" : "none";
-        });
     </script>
 
 

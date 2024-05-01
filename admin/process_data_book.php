@@ -32,85 +32,98 @@ if (isset($_GET['id'])) {
     echo "No ID parameter found in the URL.";
 }
 
+if (isset($_POST['submit'])) {
+    try {
+        // Retrieve the custom Accession Code
+        $customAccessionCode = $_POST['accessionCode'];
 
-if(isset($_POST['submit'])) {
-    $requestID = $_GET['id'];
-    $authorsName = $_POST['Authors_ID'];
-
-    echo "<br>Authors ID: " . $authorsName . "<br>";
-
-    $authorsID = substr(uniqid('A_', true), -6);
-    $pubID = substr(uniqid('P_', true), -6);
-
-    $bookTitle = $_POST['Book_Title'];
-    $pubname = $_POST['Publisher_Name'];
-    $edition = $_POST['tb_edition'];
-    $yr = $_POST['Year_Published'];
-    $qty = $_POST['Quantity'];
-    $price = $_POST['price'];
-    $stat = $_POST['tb_status'];
-    $country = $_POST['country'];
-    $bibliography = "NA";
-    $isbn = 1; // Assuming ISBN is always 1
-    $sectionCode = $_POST["section"];
-    $shelfNumber = $_POST["shelf"];
-  
-
-    echo "<br>" . $bookTitle;
-    echo "<br>" . $pubname;
-    echo "<br>" . $edition;
-    echo "<br>" . $yr;
-    echo "<br>" . $qty;
-    echo "<br>" . $price;
-    echo "<br>" . $stat;
-
-    // Check if the book already exists based on title and edition
-    $checkDuplicateBookSql = "SELECT * FROM tbl_books WHERE Book_Title = '$bookTitle' AND tb_edition = '$edition'";
-    $result = $conn->query($checkDuplicateBookSql);
-
-    if ($result->num_rows > 0) {
-        // Book already exists, update the quantity
-        $row = $result->fetch_assoc();
-        $existingQty = $row['Quantity'];
-        $newQty = $existingQty + $qty;
-        
-        $updateQuantitySql = "UPDATE tbl_books SET Quantity = '$newQty' WHERE Book_Title = '$bookTitle' AND tb_edition = '$edition'";
-        if ($conn->query($updateQuantitySql) !== TRUE) {
-            echo "Error updating quantity: " . $conn->error;
-            exit(); // Stop execution if an error occurs
-        }
-        
-       
-    } else {
-        // Book doesn't exist, proceed with insertion
-        // Insert the new author into tbl_authors
-        $sql = "INSERT INTO tbl_authors (Authors_ID, Authors_Name, Nationality) 
-            VALUES ('$authorsID', '$authorsName', '$country')";
-
-        if ($conn->query($sql) !== TRUE) {
-            echo "Error inserting author: " . $conn->error;
-            exit(); // Stop execution if an error occurs
+        // Check if custom Accession Code is provided
+        if (!empty($customAccessionCode)) {
+            // Use the provided custom Accession Code
+            $customAccessionCode = floatval($customAccessionCode);
+        } else {
+            // Generate a new random 6-digit value
+            $randomValue = rand(100000, 999999); // Generate random value between 100000 and 999999
+            $customAccessionCode = floatval($randomValue . '.2');
         }
 
-        // Insert the new book into tbl_books
-        $booksql = "INSERT INTO tbl_books (Book_Title, Authors_ID, Publisher_Name, Section_Code, shelf, tb_edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status) 
-        VALUES ('$bookTitle', '$authorsID', '$pubname', '$sectionCode', '$shelfNumber', '$edition', '$yr', '$isbn', '$bibliography', '$qty', '$price', 'Available')";
+        $requestID = $_GET['id'];
+        $authorsName = $_POST['Authors_ID'];
 
-        if ($conn->query($booksql) !== TRUE) {
-            echo "Error inserting book: " . $conn->error;
-            exit(); // Stop execution if an error occurs
+        $authorsID = substr(uniqid('A_', true), -6);
+        $pubID = substr(uniqid('P_', true), -6);
+
+        $bookTitle = $_POST['Book_Title'];
+        $pubname = $_POST['Publisher_Name'];
+        $edition = $_POST['tb_edition'];
+        $yr = $_POST['Year_Published'];
+        $qty = $_POST['Quantity'];
+        $price = $_POST['price'];
+        $stat = "Pending";
+        $country = $_POST['country'];
+        $bibliography = "NA";
+        $isbn = 1; // Assuming ISBN is always 1
+        $sectionCode = $_POST["section"];
+        $shelfNumber = $_POST["shelf"];
+
+        // Check if the book already exists based on title and edition
+        $checkDuplicateBookSql = "SELECT * FROM tbl_books WHERE Book_Title = '$bookTitle' AND tb_edition = '$edition'";
+        $result = $conn->query($checkDuplicateBookSql);
+
+        if ($result->num_rows > 0) {
+            // Book already exists, update the quantity
+            $row = $result->fetch_assoc();
+            $existingQty = $row['Quantity'];
+            $newQty = $existingQty + $qty;
+
+            $updateQuantitySql = "UPDATE tbl_books SET Quantity = '$newQty' WHERE Book_Title = '$bookTitle' AND tb_edition = '$edition'";
+            if ($conn->query($updateQuantitySql) !== TRUE) {
+                throw new Exception("Error updating book quantity: " . $conn->error);
+            }
+        } else {
+            // Insert the new author into tbl_authors
+            $sql = "INSERT INTO tbl_authors (Authors_ID, Authors_Name, Nationality) 
+                    VALUES ('$authorsID', '$authorsName', '$country')";
+
+            if ($conn->query($sql) !== TRUE) {
+                throw new Exception("Error inserting author: " . $conn->error);
+            }
+
+            // Check if the book already exists based on accession code
+            $checkDuplicateAccessionCodeSql = "SELECT * FROM tbl_books WHERE Accession_Code = '$customAccessionCode'";
+            $result = $conn->query($checkDuplicateAccessionCodeSql);
+
+            if ($result->num_rows > 0) {
+                // Accession Code duplicate detected, display message
+                echo '<script>alert("Accession Code Duplicate Detected");</script>';
+                echo '<script>window.location.href = "process_data_book.php?id=' . $id . '";</script>';
+
+                exit(); // Stop execution
+            } else {
+                // Insert the new book into tbl_books
+                $booksql = "INSERT INTO tbl_books (Accession_Code ,Book_Title, Authors_ID, Publisher_Name, Section_Code, shelf, tb_edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status) 
+                            VALUES ('$customAccessionCode','$bookTitle', '$authorsID', '$pubname', '$sectionCode', '$shelfNumber', '$edition', '$yr', '$isbn', '$bibliography', '$qty', '$price', 'Available')";
+
+                if ($conn->query($booksql) !== TRUE) {
+                    echo '<script>window.location.href = "process_data_book.php?id=' . $id . '";</script>';
+
+                }
+
+                // Update tb_status based on Request_ID
+                $updateStatusSql = "UPDATE tbl_requestbooks SET tb_status = 'Approved' WHERE Request_ID = '$requestID'";
+                if ($conn->query($updateStatusSql) === TRUE) {
+                    echo '<script>alert("Record Updated Successfully!");</script>';
+                    echo '<script>window.location.href = "admin_books.php";</script>';
+                } else {
+                    throw new Exception("Error updating request status: " . $conn->error);
+                }
+            }
         }
+    } catch (Exception $e) {
+        // Display an alert or message for unexpected errors
+        echo '<script>alert("Accession Code Duplicate Detected");</script>';
+        echo '<script>window.location.href = "process_data_book.php?id=' . $id . '";</script>';
 
-        // echo '<script>alert("New book added successfully.");</script>';
-    }
-
-    // Update tb_status based on Request_ID
-    $updateStatusSql = "UPDATE tbl_requestbooks SET tb_status = 'Approved' WHERE Request_ID = '$requestID'";
-    if ($conn->query($updateStatusSql) === TRUE) {
-        echo '<script>alert("Record Updated Successfully!");</script>';
-        echo '<script>window.location.href = "admin_books.php";</script>';
-    } else {
-        echo "Error updating record: " . $conn->error;
     }
 }
 
@@ -125,6 +138,8 @@ if(isset($_POST['submit'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VillaReadHub - Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -161,8 +176,13 @@ if(isset($_POST['submit'])) {
 
     <h2>Book Request Information</h2>
 
+
     <div class="board container">
         <form method="POST" action="">
+            <div class="mb-3">
+                <label for="accessionCode" class="form-label">Custom Accession Code</label>
+                <input type="text" class="form-control" id="accessionCode" name="accessionCode">
+            </div>
 
             <?php
 
@@ -191,8 +211,6 @@ if(isset($_POST['submit'])) {
                 echo "<input type='hidden' name='price' value='" . $row["price"] . "'>";
                 echo "<input type='hidden' name='section' value='" . $row["Section_Code"] . "'>";
                 echo "<input type='hidden' name='shelf' value='" . $row["shelf"] . "'>";
-
-
             }
 
 
@@ -205,35 +223,6 @@ if(isset($_POST['submit'])) {
     </div>
 
 
-
-    <script>
-        document.getElementById('submit').addEventListener('click', function() {
-            // Collect any necessary data from the page
-            var bookId = "123"; // Example data, replace with actual data collection logic
-
-            // Make an asynchronous request to a PHP script
-            fetch('insert_data.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        bookId: bookId // Pass any data you collected to the server
-                    })
-                })
-                .then(response => {
-                    if (response.ok) {
-                        console.log('Data inserted successfully');
-                        // Optionally, perform any additional actions after successful insertion
-                    } else {
-                        console.error('Failed to insert data');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        });
-    </script>
 
 
 

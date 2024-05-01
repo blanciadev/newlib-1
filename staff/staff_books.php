@@ -159,7 +159,8 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             </table>
         </div>
         <div class="btn-con">
-            <button class="btn" id="requestButton">Request List</button>
+        <a href="./staff_request_list.php" class="btn">Request List</a>
+          
             <a href="./staff_bookCatalog.php" class="btn">Catalog</a>
         </div>
     </div>
