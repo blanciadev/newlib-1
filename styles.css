@@ -168,8 +168,9 @@ body{
 }
 .error-con{
     color: red; 
-    font-size: 19px;
-    height: 20px;
+    font-size: 1px;
+    text-align: center;
+    height: 45px;
 }
 .btn-container{ 
     flex-direction: column;

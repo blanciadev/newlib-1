@@ -14,7 +14,7 @@ body{
     display: none;
 }
 .bg-body-tertiary{ 
-    width: 275px;
+    width: 20%;
     height: 95%; 
     margin: 12px;
     border-radius: 10px; 
@@ -24,7 +24,10 @@ body{
 .bg-body-tertiary >a{  
     flex-wrap:wrap;
     justify-content: center;
-    width: 250px;
+    width: 100%;
+}
+body > div.d-flex.flex-column.flex-shrink-0.p-3.bg-body-tertiary > a > h2 > span{
+    color: palegreen;
 }
 h2{ 
     font-size: 20pt;
@@ -47,15 +50,15 @@ li.nav-item.active {
 }
 .board{  
     width: 78%;
-    height: 95%;  
+    height: 97%;  
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 100%;
     grid-template-rows: 72px 1fr 50px; 
     gap: 2px;
 }
 .board1{  
     width: 78%;
-    height: 93%;  
+    height: 97%;  
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 72px 1fr; 
@@ -67,7 +70,7 @@ li.nav-item.active {
     font-weight: 800; 
 }
 .books{
-    /* width: 1039px; */
+    width: 99%;
     height: 99%; 
     overflow-y: auto;
     background-color: #f8f9fa;
@@ -82,7 +85,7 @@ li.nav-item.active {
     justify-content: center;
 }
 .catalogCon{
-    width: 1039px;
+    width: 99%;
     height: 32%;
     max-height: 32%;
     overflow-y: auto;
@@ -153,6 +156,7 @@ li.nav-item.active {
     align-content: center;
     align-items: center;
     gap:5px;
+    padding: 2px 0px;
 }
 .searchbar form input{
     width: 90%;
@@ -214,7 +218,8 @@ li.nav-item.active {
     gap: 5px;
 }
 .user-header{ 
-    width: 240px;
+    width: 260px;
+    height: 70px;
     padding: 10px;
 }
 .content{
@@ -254,7 +259,15 @@ li.nav-item.active {
     background: linear-gradient(145deg, #90e685, #abff9e); 
     padding: 10px;
 }
-.totalbooks, .totalvisits{
+.ovw-con > .overview-item{
+    width: 99%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.totalbooks, .totalvisits,.borrowed,.returned{
     width: 40%;
     display: flex;
     flex-direction: column;
@@ -263,14 +276,14 @@ li.nav-item.active {
     font-weight: 600;
     gap: 50px;
 }
-.totalbooks h3, .totalvisits h3{
+.totalbooks h3, .totalvisits h3,.borrowed h3,.returned h3{
     font-size: 25pt;
 }
 .line{
     border-left: 2px solid rgba(122, 122, 122, 0.39) ;
     height: 95%;
 }
-.duebooks{
+.duebooks, .topBorrowers{
     grid-column-start: -1;
     grid-column-end: -2;
     grid-row-start: 1;
@@ -281,7 +294,7 @@ li.nav-item.active {
     justify-content: space-evenly;
     align-content: space-around; 
 }
-.duebooks-con{
+.duebooks-con,.topBorrowers-con{
     width: 97%;
     height: 80%;
     display: flex;
@@ -305,7 +318,7 @@ li.nav-item.active {
     justify-content: space-evenly;
     align-content: space-around; 
 }
-.stats-con{
+.stats-con {
     width: 97%;
     height: 80%;
     display: flex;
@@ -319,7 +332,32 @@ li.nav-item.active {
     align-content: space-around;
     flex-direction: row;
 }
-.newbooks{
+.fines{
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    grid-row-end: 3; 
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    align-content: space-around; 
+}
+.fines-con{
+    width: 97%;
+    height: 80%;
+    display: flex;
+    padding: 10px;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, 0.849);
+    border-radius: 10px;
+    box-shadow: 5px 5px 10px #bababa, -5px -5px 10px #dfdfdf;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    flex-direction: row;
+}
+.newbooks, .mostbooks{
     grid-column-start: -2;
     grid-column-end: -2;
     grid-row-start: 2;
@@ -330,7 +368,7 @@ li.nav-item.active {
     justify-content: space-evenly;
     align-content: space-around; 
 }
-.newbooks-con{
+.newbooks-con, .mostbooks-con{
     width: 97%;
     height: 80%;
     padding: 10px;

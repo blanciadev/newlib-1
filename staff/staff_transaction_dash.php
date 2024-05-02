@@ -169,10 +169,9 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 </div>
             </div>
 
-            <div class="duebooks">
+            <div class="topBorrowers">
                 <h3>Top Borrowers</h3>
-                <div class="duebooks-con">
-                    <!--TOP BORROWERS - PLEASE MAKE IT TOP 3-->
+                <div class="topBorrowers-con">  
                     <?php
                         // Database connection
                         $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
@@ -211,7 +210,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                                 echo "<p style='font-size:12pt' class='fw-bold'>$topBorrowerID</p>";
                                 echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";
                                 echo "</div>";
-                                echo "<small style='font-size:12px'>$name, $lname</small>";
+                                echo "<small style='font-size:12px'>$name $lname</small>";
                                 echo "</li>";
                             }
                             echo "</ul>";
@@ -232,9 +231,9 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 </div>
             </div>
 
-            <div class="newbooks">
+            <div class="mostbooks">
                 <h3>Most Borrowed Books</h3>
-                <div class="newbooks-con">
+                <div class="mostbooks-con">
                     <?php
                         // Check if $topBorrowerID is set and not empty
                         if(isset($topBorrowerID) && !empty($topBorrowerID)) {

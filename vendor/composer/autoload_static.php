@@ -52,6 +52,7 @@ class ComposerStaticInit2de82f7989b7317091bfb2630b1bfc5b
             'Symfony\\Contracts\\Service\\' => 26,
             'Symfony\\Component\\VarExporter\\' => 30,
             'Symfony\\Component\\String\\' => 25,
+            'Symfony\\Component\\Process\\' => 26,
             'Symfony\\Component\\Filesystem\\' => 29,
             'Symfony\\Component\\DependencyInjection\\' => 38,
             'Symfony\\Component\\Console\\' => 26,
@@ -161,6 +162,10 @@ class ComposerStaticInit2de82f7989b7317091bfb2630b1bfc5b
         'Symfony\\Component\\String\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/string',
+        ),
+        'Symfony\\Component\\Process\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/process',
         ),
         'Symfony\\Component\\Filesystem\\' => 
         array (

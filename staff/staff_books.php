@@ -158,9 +158,8 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 </tbody>
             </table>
         </div>
-        <div class="btn-con">
-        <a href="./staff_request_list.php" class="btn">Request List</a>
-          
+        <div class="btn-con"> 
+            <a href="./staff_request_list.php" class="btn">Request List</a> 
             <a href="./staff_bookCatalog.php" class="btn">Catalog</a>
         </div>
     </div>
@@ -210,10 +209,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                     row.style.display = "none";
                 }
             });
-        });
-
-        document.getElementById("requestButton").addEventListener("click", function() {
-        window.location.href = "staff_request_list.php";
         });
     </script>
 </body>
