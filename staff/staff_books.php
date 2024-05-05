@@ -7,6 +7,21 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+$sql ="UPDATE tbl_books
+SET tb_status = 'Unavailable'
+WHERE Quantity = 0;
+";
+
+if ($conn->query($sql) === TRUE) {
+ 
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
