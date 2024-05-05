@@ -18,8 +18,17 @@ WHERE Quantity = 0;
 ";
 
 if ($conn->query($sql) === TRUE) {
- 
+    echo '<script>console.log("Quantity update of 0 Record to Unavailable ");</script>';
 }
+
+$sqlUpdate = "UPDATE tbl_books
+        SET tb_status = 'Available'
+        WHERE Quantity > 0 AND tb_status != 'Archived' AND tb_status = 'Unavailable'";
+
+if ($conn->query($sqlUpdate) === TRUE) {
+    echo '<script>console.log("Update to status to Avaialble");</script>';
+}
+
 
 
 ?>

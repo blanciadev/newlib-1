@@ -17,8 +17,17 @@ WHERE Quantity = 0;
 ";
 
 if ($conn->query($sql) === TRUE) {
- 
+    echo '<script>console.log("Quantity update to 0 ");</script>';
 }
+
+$sqlUpdate = "UPDATE tbl_books
+        SET tb_status = 'Available'
+        WHERE Quantity > 0 AND tb_status != 'Archived' AND tb_status = 'Unavailable'";
+
+if ($conn->query($sqlUpdate) === TRUE) {
+    echo '<script>console.log("Update to status to Avaialble");</script>';
+}
+
 // Check if the accession code is set in the POST request
 if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
     // Handle archiving the book
