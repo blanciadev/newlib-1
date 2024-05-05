@@ -104,84 +104,121 @@ if ($conn->query($sqlUpdate) === TRUE) {
                 </div>
         </div>
         <div class="books container">
-            <table class="table table-hover table-sm">
-                <thead class="bg-light sticky-top">
-                    <tr>
-                        <th>Accession Code</th>
-                        <th>Book Title</th>
-                        <th>Authors</th>
-                        <th>Publisher</th>
-                        <th>Section</th>
-                        <th>Shelf #</th>
-                        <th>Edition</th>
-                        <th>Year Published</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                        $conn =  mysqli_connect("localhost","root","root","db_library_2", 3308); 
-                        if ($conn->connect_error) {
-                            die("Connection failed: " . $conn->connect_error);
-                        }
+    <table class="table table-hover table-sm">
+        <!-- Table header -->
+        <thead class="bg-light sticky-top">
+            <!-- Header row -->
+            <tr>
+                <th>Accession Code</th>
+                <th>Book Title</th>
+                <th>Authors</th>
+                <th>Publisher</th>
+                <th>Section</th>
+                <th>Shelf #</th>
+                <th>Edition</th>
+                <th>Year Published</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <!-- Table body -->
+        <tbody>
+            <?php
+            // Establish database connection
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            if ($conn->connect_error) {
+                die("Connection failed: " . $conn->connect_error);
+            }
 
-                // SQL query
-                $sql = "SELECT
-                tbl_books.Accession_Code, 
-                tbl_books.Book_Title, 
-                tbl_books.Authors_ID, 
-                tbl_books.Publisher_Name, 
-                tbl_books.Section_Code, 
-                tbl_books.shelf, 
-                tbl_books.tb_edition, 
-                tbl_books.Year_Published, 
-                tbl_books.ISBN, 
-                tbl_books.Bibliography, 
-                tbl_books.Quantity, 
-                tbl_books.tb_status, 
-                tbl_books.Price, 
-                tbl_section.Section_uid, 
-                tbl_section.Section_Name, 
-                tbl_section.Section_Code, 
-                tbl_authors.Authors_Name
-            FROM
-                tbl_books
-                INNER JOIN
-                tbl_section
-                ON 
-                    tbl_books.Section_Code = tbl_section.Section_uid
-                INNER JOIN
-                tbl_authors
-                ON 
-                    tbl_books.Authors_ID = tbl_authors.Authors_ID";
-    
-                $result = $conn->query($sql);
-    
+            // Number of records per page
+            $recordsPerPage = 8;
 
-                // Output data of each row
-                while($row = $result->fetch_assoc()) {
-                    echo "<tr><td>".$row["Accession_Code"]."</td>
-                    <td>".$row["Book_Title"]."</td>
-                    <td>".$row["Authors_Name"]."</td>
-                    <td>".$row["Publisher_Name"]."</td>
-                    <td>".$row["Section_Code"]."</td>
-                    <td>".$row["shelf"]."</td>
-                    <td>".$row["tb_edition"]."</td>
-                    <td>".$row["Year_Published"]."</td>
-                    <td>".$row["Quantity"]."</td>
-                    <td>".$row["Price"]."</td>
-                    <td>".$row["tb_status"]."</td></tr>";
-                }
-                echo "</table>";
+            // Determine current page number
+            $page = isset($_GET['page']) ? $_GET['page'] : 1;
 
-                        // Close connection
-                        $conn->close();
-                    ?>
-                </tbody>
-            </table>
-        </div>
+            // Calculate the offset
+            $offset = ($page - 1) * $recordsPerPage;
+
+            // SQL query to count total records
+            $countSql = "SELECT COUNT(*) AS total FROM tbl_books";
+            $countResult = $conn->query($countSql);
+            $totalRecords = $countResult->fetch_assoc()['total'];
+
+            // SQL query with pagination
+            $sql = "SELECT
+                        tbl_books.Accession_Code, 
+                        tbl_books.Book_Title, 
+                        tbl_books.Authors_ID, 
+                        tbl_books.Publisher_Name, 
+                        tbl_books.Section_Code, 
+                        tbl_books.shelf, 
+                        tbl_books.tb_edition, 
+                        tbl_books.Year_Published, 
+                        tbl_books.ISBN, 
+                        tbl_books.Bibliography, 
+                        tbl_books.Quantity, 
+                        tbl_books.tb_status, 
+                        tbl_books.Price, 
+                        tbl_section.Section_uid, 
+                        tbl_section.Section_Name, 
+                        tbl_section.Section_Code, 
+                        tbl_authors.Authors_Name
+                    FROM
+                        tbl_books
+                    INNER JOIN
+                        tbl_section ON tbl_books.Section_Code = tbl_section.Section_uid
+                    INNER JOIN
+                        tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID
+                    WHERE tb_status = 'Available'
+                    LIMIT $offset, $recordsPerPage";
+
+            $result = $conn->query($sql);
+
+            while ($row = $result->fetch_assoc()) {
+                echo "<tr><td>" . $row["Accession_Code"] . "</td>
+                    <td>" . $row["Book_Title"] . "</td>
+                    <td>" . $row["Authors_Name"] . "</td>
+                    <td>" . $row["Publisher_Name"] . "</td>
+                    <td>" . $row["Section_Code"] . "</td>
+                    <td>" . $row["shelf"] . "</td>
+                    <td>" . $row["tb_edition"] . "</td>
+                    <td>" . $row["Year_Published"] . "</td>
+                    <td>" . $row["Quantity"] . "</td>
+                    <td>" . $row["Price"] . "</td>
+                    <td>" . $row["tb_status"] . "</td></tr>";
+            }
+
+            // Close connection
+            $conn->close();
+            ?>
+        </tbody>
+    </table>
+    <!-- Pagination links -->
+    <ul class="pagination justify-content-center">
+        <?php
+        // Calculate total number of pages
+        $totalPages = ceil($totalRecords / $recordsPerPage);
+
+        // Previous page link
+        if ($page > 1) {
+            echo '<li class="page-item"><a class="page-link" href="?page=' . ($page - 1) . '">Previous</a></li>';
+        }
+
+        // Page numbers
+        for ($i = 1; $i <= $totalPages; $i++) {
+            echo '<li class="page-item ' . ($i == $page ? 'active' : '') . '"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
+        }
+
+        // Next page link
+        if ($page < $totalPages) {
+            echo '<li class="page-item"><a class="page-link" href="?page=' . ($page + 1) . '">Next</a></li>';
+        }
+        ?>
+    </ul>
+</div>
+
+
         <div class="btn-con">
         <a href="./staff_request_list.php" class="btn">Request List</a>
           
