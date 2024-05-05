@@ -4,6 +4,7 @@ body{
     zoom: 100%;
     background-color: #e0e0e0;
     font-family: "Poppins";
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: space-evenly;
