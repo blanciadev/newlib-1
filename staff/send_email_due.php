@@ -79,16 +79,25 @@ if (isset($_GET['borrower_id'])) {
                 $mail->addAddress($borrowerData['Email']); // Add recipient email
                 $mail->isHTML(true); // Set email format to HTML
                 $mail->Subject = 'Notification Of Book Due Date';
-                $mail->Body = '<h1>Hi! Its time to return the book!</h1>' .
-                    '<p>Book Title: ' . $borrowerData['Book_Title'] . ' ' . $borrowerData['Quantity'] . ' ' . $borrowerData['Accession_Code'] . '</p>' .
-                    '<p>Book Title: ' . $borrowerData['Date_Borrowed'] . ' ' . $borrowerData['Due_Date'] . '</p>' .
-                    '<h1>Please Return it as soon as possible to avoid being Fined!</h1>';
+                $mail->Body = '<h3>Hi! Its time to return the book!</h3><hr>' .
+                    '<p>Dear Borrower,</p>'.
+                    '<p>We hope this message finds you well. 
+                        We wanted to remind you that today is the due date for the book you borrowed from our library. 
+                        We greatly appreciate your patronage and trust that the book has been a valuable resource for you.</p>'.
+                    '<p><strong>Book: </strong>' . $borrowerData['Book_Title'] . ' - ' . $borrowerData['Quantity'] . ' </p>' . 
+                    "<p>To avoid any late fees or penalties, please return the book to the library by the end of the day. 
+                    If you need to renew the book or require any assistance, please don't hesitate to reach out to us. <br>
+
+                    Thank you for your cooperation, and we look forward to continuing to serve you in the future.</p>";
 
                 // Send email
                 if ($mail->send()) {
                     echo json_encode(array('success' => 'Email sent successfully'));
+                    $message = "Email sent successfully";
                     // Log success
-                    echo "<script>console.log('Email sent successfully');</script>";
+                    echo "<script>  
+                            console.log(".$message."); 
+                          </script>";
                 } else {
                     echo json_encode(array('error' => 'Error sending email'));
                     // Log error
@@ -115,4 +124,4 @@ if (isset($_GET['borrower_id'])) {
 } else {
     echo "<script>console.error('NO BORROWER ID FOUND');</script>";
 }
-?>
+?> 

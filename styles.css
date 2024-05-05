@@ -168,7 +168,7 @@ body{
 }
 .error-con{
     color: red; 
-    font-size: 1px;
+    font-size: 12px;
     text-align: center;
     height: 45px;
 }

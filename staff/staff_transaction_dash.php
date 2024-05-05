@@ -56,7 +56,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <?php else: ?>
                 <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-            <strong><span><?php $fname = $userData["First_Name"]; $lname = $userData["Last_Name"]; $userName = $fname." ". $lname;  echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong>
+            <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong>
         </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
@@ -72,10 +72,14 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
     </div>
     <div class="board1 container"><!--board container-->
-        <div class="header1">
+    <div class="header">
             <div class="text">
                 <div class="title">
                     <h2>Transactions</h2>
+                </div>
+                <div class="datetime">
+                    <p id="currentDate"></p>
+                    <p id="currentTime"></p>
                 </div>
             </div>
         </div>
@@ -284,8 +288,26 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         </div>
     </div>
 
- 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+    <script>
+        let date = new Date().toLocaleDateString('en-US', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            weekday: 'long',
+        });
+        document.getElementById("currentDate").innerText = date;
+
+        setInterval(() => {
+            let time = new Date().toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: 'true',
+            })
+            document.getElementById("currentTime").innerText = time;
+
+        }, 1000)  
+    </script>
 </body>
 </html>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>

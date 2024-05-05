@@ -64,11 +64,10 @@ if (mysqli_num_rows($result) > 0) {
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Register User</title>
+    <title>Library Card</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -92,8 +91,7 @@ if (mysqli_num_rows($result) > 0) {
                         </div>
                     </div>
                     <div class="row mt-3">
-                        <div class="col-md-12">
-
+                        <div class="col-md-12"> 
                             <p class="card-text"><strong>First Name:</strong> <?php echo $first_name; ?></p>
                             <p class="card-text"><strong>Middle Name:</strong> <?php echo $middle_name; ?></p>
                             <p class="card-text"><strong>Last Name:</strong> <?php echo $last_name; ?></p>
@@ -106,19 +104,19 @@ if (mysqli_num_rows($result) > 0) {
             </div>
         </div>
         <div class="form-con">
-        <form action="" method="POST">
-            <div class="btn-container row">
-                <button class="button" name="sendCode" type="submit">Send QR Code</button> <!-- Button to send QR code -->
-                <a href="../index.php">Cancel</a>
-            </div>
-        </form>
-        
-        <a href="staff_log.php" class="btn btn-primary">Go to Log Record</a>
+            <form action="" method="POST">
+                <div class="btn-container row">
+                    <button class="button" name="sendCode" type="submit">Send QR Code</button> <!-- Button to send QR code -->
+                    <a href="../index.php">Cancel</a>
+                </div>
+            </form> 
+            <a href="staff_log.php" class="btn btn-primary">Go to Log Record</a>
+        </div>
     </div>
 
-
-    </div>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             let qrCodeContainer = document.getElementById("qrcode-container");
@@ -134,27 +132,26 @@ if (mysqli_num_rows($result) > 0) {
                 height: 200, // Custom height in pixels
                 colorDark: "#000000", // QR code color
                 colorLight: "#ffffff" // Background color
-            };
+                };
 
                 // Generate QR Code using QRCode.js with custom options
                 new QRCode(qrCodeContainer, qrOptions);
-
-
+ 
                 // Wait for the QR code image to be generated
                 setTimeout(function() {
                     // Convert QR code to data URL
                     let dataURL = qrCodeContainer.getElementsByTagName('img')[0].src;
 
                    // Send the data URL and lastInsertedID to a PHP script using AJAX
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", "save_qr_code.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                console.log(this.responseText); // Log the server response to the console
-            }
-        };
-        xhr.send("dataURL=" + encodeURIComponent(dataURL) + "&lastInsertedID=" + encodeURIComponent(lastInsertedID)  + "&email=" + encodeURIComponent(email));
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("POST", "save_qr_code.php", true);
+                    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                    xhr.onreadystatechange = function() {
+                        if (this.readyState == 4 && this.status == 200) {
+                            console.log(this.responseText); // Log the server response to the console
+                        }
+                    };
+                    xhr.send("dataURL=" + encodeURIComponent(dataURL) + "&lastInsertedID=" + encodeURIComponent(lastInsertedID)  + "&email=" + encodeURIComponent(email));
 
                 }, 500); // Adjust the timeout if needed
 
@@ -164,13 +161,7 @@ if (mysqli_num_rows($result) > 0) {
             }
         });
 
-
-
-       
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     
 </body>
 
