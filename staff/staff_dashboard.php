@@ -96,31 +96,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
             <strong><span><?php $fname = $userData["First_Name"]; $lname = $userData["Last_Name"]; $userName = $fname." ". $lname;  echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong>
-            <?php
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-            $userID = $_SESSION["User_ID"];
-            $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
-        FROM tbl_employee 
-        WHERE User_ID = $userID";
-            $result = mysqli_query($conn, $sql);
-            if (!$result) {
-                echo "Error: " . mysqli_error($conn);
-            } else {
-                $userData = mysqli_fetch_assoc($result);
-            }
-            ?>
-            <?php if (!empty($userData['image_data'])) : ?>
-                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
-                <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
-            <?php else : ?>
-                <!--default image -->
-                <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
-            <?php endif; ?>
-            <strong><span><?php $fname = $userData["First_Name"];
-                            $lname = $userData["Last_Name"];
-                            $userName = $fname . " " . $lname;
-                            echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong>
-
         </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
@@ -239,10 +214,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         bd.tb_status = 'Pending'";
 
                     $totalVisits_run = mysqli_query($conn, $totalVisits);
-
-                        if ($totalVisits_run && mysqli_num_rows($totalVisits_run) > 0) { 
-                            echo '<ol class="list-group list-group-numbered">';
-                            while ($row = mysqli_fetch_assoc($totalVisits_run)) {
+ 
                     if ($totalVisits_run && mysqli_num_rows($totalVisits_run) > 0) {
 
                         echo '<ol class="list-group list-group-numbered">';
@@ -268,31 +240,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                     ?>
                 </div>
             </div>
-
-                            echo '<li class="list-group-item d-flex justify-content-between align-items-start">';
-                            echo '<div class="ms-2 me-auto">';
-                            echo '  <div class="fw"><strong>' . $row['Book_Title'] . '</strong></div>
-                        ' . $row['First_Name'] . ' ' . $row['Last_Name'] . '
-                    </div>';
-                    echo '<div class="view-btn">
-                    <input type="hidden" class="borrowerId" value="' . $row['Borrower_ID'] . '">
-                    <a href="#" onclick="sendEmail(' . $row['Borrower_ID'] . ')">
-                        <i class="bx bxs-bell"></i>
-                    </a>
-                </div>';
-            
-
-
-
-                            echo '</li>';
-                        }
-                        echo '</ol>';
-                    } else {
-                        echo "<p>No Books Due Today.</p>";
-                    }
-                    ?>
-                </div>
-            </div>
+  
             <div class="stats">
                 <h3>Statistics</h3>
                 <div class="stats-con">
@@ -380,11 +328,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                             echo "</ul>";
                             echo "</div>";
                         }
-                    ?> 
-                        echo "</ul>";
-                        echo "</div>";
-                    }
-                    ?>
+                    ?>  
 
 
                 </div>
@@ -395,30 +339,14 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 <div class="newbooks-con">
                     <?php
                         // Calculate the date 3 days ago from today
-                        $threeDaysAgo = date('Y-m-d H:i:s', strtotime('-3 days'));
-                <h3>What's New?</h3>
-                <div class="newbooks-con">
-                    <?php
-
-                    // Calculate the date 3 days ago from today
-                    $threeDaysAgo = date('Y-m-d H:i:s', strtotime('-3 days'));
-
-                        // SQL query to fetch books inserted in the last 3 days or current along with author's name
-                        $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
-                                FROM tbl_books 
-                                INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
-                                WHERE tbl_books.date_inserted >= '$threeDaysAgo'";
+                        $threeDaysAgo = date('Y-m-d H:i:s', strtotime('-3 days')); 
                     // SQL query to fetch books inserted in the last 3 days or current along with author's name
                     $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
                 FROM tbl_books 
                 INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
                 WHERE tbl_books.date_inserted >= '$threeDaysAgo'";
 
-                        $result = mysqli_query($conn, $sql);
-                    $result = mysqli_query($conn, $sql);
-
-                        if ($result) {
-                            $totalBooksCount = mysqli_num_rows($result);
+                        $result = mysqli_query($conn, $sql); 
                     if ($result) {
                         $totalBooksCount = mysqli_num_rows($result);
 
@@ -440,29 +368,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                         }
                     ?>
                 </div>
-            </div>
-                        // Display the books or process further as needed
-                        echo '<div class="list-group">';
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            // Display book details or perform actions
-                            echo '<a href="#" class="list-group-item list-group-item-action">';
-                            echo '<div class="d-flex w-100 justify-content-between">';
-                            echo '<h5 class="mb-1">' . $row['Book_Title'] . '</h5>';
-                            echo '</div>';
-                            echo '<p class="mb-1">' . $row['Authors_Name'] . '</p>';
-                            echo '<small>' . $row['date_inserted'] . '</small>';
-                            echo '</a>';
-                        }
-                        echo '</div>';
-                    } else {
-                        echo "<p>No New Books</p>";
-                    }
-                    ?>
-                </div>
-            </div>
-
-
-
+            </div> 
         </div>
     </div> 
     <!--Logout Modal -->
@@ -481,12 +387,12 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 </div>
             </div>
         </div>
-    </div>
+    </div> 
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-   <script> 
+    <script> 
         let date = new Date().toLocaleDateString('en-US', {
             day: 'numeric',
             month: 'long',
@@ -513,15 +419,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         // Encode the borrowerId
         console.log("Borrow ID:", borrowerId);
         const encodedBorrowerId = encodeURIComponent(borrowerId);
-        console.log("Borrow ID encoded:", encodedBorrowerId);
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-
-    <script>
-    function sendEmail(borrowerId) {
-        // Encode the borrowerId
-        console.log("Borrow ID:", borrowerId);
-        const encodedBorrowerId = encodeURIComponent(borrowerId);
-        console.log("Borrow ID encoded:", encodedBorrowerId);
+        console.log("Borrow ID encoded:", encodedBorrowerId); 
 
         // Send an AJAX request to a PHP script
         let xhr = new XMLHttpRequest();
@@ -541,42 +439,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         };
         // No need to send data in the body since we're passing it as a URL parameter
         xhr.send();
-    }
-</script>
-
-
-
-    <script>
-        let date = new Date().toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-            weekday: 'long',
-        });
-        document.getElementById("currentDate").innerText = date;
-
-        setInterval(() => {
-            let time = new Date().toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: 'numeric',
-                second: 'numeric',
-                hour12: 'true',
-            })
-            document.getElementById("currentTime").innerText = time;
-
-        }, 1000)
-
-
-        let navItems = document.querySelectorAll(".nav-item"); //adding .active class to navitems 
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                document.querySelector('.active')?.classList.remove('active');
-                item.classList.add('active');
-            })
-        })
-    </script>
-
-    <script>
+    } 
         // Access PHP-generated JSON data
         const labels = <?php echo $labelsJSON; ?>;
         const data = <?php echo $dataJSON; ?>;
@@ -601,6 +464,5 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             }
         });
    </script>  
-</body>
-
+</body> 
 </html>
