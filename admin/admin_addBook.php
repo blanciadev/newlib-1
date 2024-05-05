@@ -13,105 +13,138 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     header("Location: ../index.php");
     exit(); // Ensure script execution stops after redirection
 }
-
-// Check if the form is submitted
 if (isset($_POST['submit'])) {
-    // Retrieve form data
-    $bookTitle = $_POST['bookTitle'];
-    $author = $_POST['author'];
-    $publisher = $_POST['publisher'];
-    $edition = $_POST['edition'];
-    $year = $_POST['year'];
-    $quantity = $_POST['quantity'];
-    $price = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
-    $country = $_POST['country'];
-     
-    // Retrieve selected section and shelf number from hidden input fields
-      $selectedSection = $_POST['selectedSection'];
-      $selectedShelf = $_POST['selectedShelf'];
-  
-    $isbn = 1;
-    $bib = "N/A";
-
-
-    // Handle author input
-    if ($_POST['author'] === 'Other') {
-        // Use the value from the "New Author" input field
-        $author = $_POST['newAuthor'];
-    } else {
-        // Use the selected author from the dropdown
+    try {
+        // Retrieve form data
+        $bookTitle = $_POST['bookTitle'];
         $author = $_POST['author'];
-    }
+        $publisher = $_POST['publisher'];
+        $edition = $_POST['edition'];
+        $year = $_POST['year'];
+        $quantity = $_POST['quantity'];
+        $price = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
+        $country = $_POST['country'];
 
-    // Validate form data (you may need more robust validation)
-    if (empty($bookTitle) || empty($author) || empty($publisher) || empty($quantity)) {
-        $errorMessage = "Please fill in all required fields.";
-    } else {
-        // Handle "Other Edition" input
-        if ($edition === "Other") {
-            // Check if the 'otherEdition' input is set and not empty
-            if (isset($_POST['otherEdition']) && !empty($_POST['otherEdition'])) {
-                $edition = $_POST['otherEdition']; // Use the input value for edition
+        // Retrieve selected section and shelf number from hidden input fields
+        $selectedSection = $_POST['selectedSection'];
+        $selectedShelf = $_POST['selectedShelf'];
+
+        $isbn = 1;
+        $bib = "N/A";
+
+        // Retrieve the custom Accession Code
+        $customAccessionCode = $_POST['accessionCode'];
+
+        // Check if custom Accession Code is provided
+        if (!empty($customAccessionCode)) {
+            // Use the provided custom Accession Code
+            $customAccessionCode = floatval($customAccessionCode);
+        } else {
+            // Generate a new random 6-digit value
+            $randomValue = rand(100000, 999999); // Generate random value between 100000 and 999999
+            $customAccessionCode = floatval($randomValue . '.2');
+        }
+
+        // Handle author input
+        if ($_POST['author'] === 'Other') {
+            // Use the value from the "New Author" input field
+            $author = $_POST['newAuthor'];
+        } else {
+            // Use the selected author from the dropdown
+            $author = $_POST['author'];
+        }
+
+        if (empty($bookTitle) || empty($author) || empty($publisher) || empty($quantity) || empty($edition) || empty($year) || empty($price) || !is_numeric($year) || $year < 0 || !is_numeric($price) || $price < 0 || !is_numeric($quantity) || $quantity < 0 || empty($selectedSection) || empty($selectedShelf)) {
+            $errorMessage = "Please fill in all required fields with valid data.";
+        
+            // Log validation failure
+            error_log("Validation failed: $errorMessage");
+        
+            // Log individual data for debugging
+            error_log("Book Title: " . $bookTitle);
+            error_log("Author: " . $author);
+            error_log("Publisher: " . $publisher);
+            error_log("Quantity: " . $quantity);
+            error_log("Edition: " . $edition);
+            error_log("Year: " . $year);
+            error_log("Price: " . $price);
+            error_log("Country: " . $country);
+            error_log("Selected Section: " . $selectedSection);
+            error_log("Selected Shelf: " . $selectedShelf);
+        } else {
+            // Handle "Other Edition" input
+            if ($edition === "Other") {
+                // Check if the 'otherEdition' input is set and not empty
+                if (isset($_POST['otherEdition']) && !empty($_POST['otherEdition'])) {
+                    $edition = $_POST['otherEdition']; // Use the input value for edition
+                } else {
+                    $errorMessage = "Please provide a value for Other Edition.";
+                }
+            }
+
+            // Check if the book already exists based on title and edition
+            $checkDuplicateBookSql = "SELECT * FROM tbl_books WHERE Book_Title = '$bookTitle' AND tb_edition = '$edition'";
+            $result = $conn->query($checkDuplicateBookSql);
+
+            if ($result->num_rows > 0) {
+                // Book already exists, update the quantity
+                $row = $result->fetch_assoc();
+                $existingQty = $row['Quantity'];
+                $newQty = $existingQty + $quantity;
+
+                $updateQuantitySql = "UPDATE tbl_books SET Quantity = '$newQty' WHERE Book_Title = '$bookTitle' AND tb_edition = '$edition'";
+                if ($conn->query($updateQuantitySql) !== TRUE) {
+                    throw new Exception("Error updating quantity: " . $conn->error);
+                }
             } else {
-                $errorMessage = "Please provide a value for Other Edition.";
+                // Check if the author already exists in tbl_authors
+                $checkAuthorSql = "SELECT Authors_ID FROM tbl_authors WHERE Authors_Name = '$author'";
+                $authorResult = $conn->query($checkAuthorSql);
+
+                if ($authorResult->num_rows > 0) {
+                    // Author already exists, retrieve their ID
+                    $authorRow = $authorResult->fetch_assoc();
+                    $authorsID = $authorRow['Authors_ID'];
+                } else {
+                    // Author doesn't exist, insert the new author into tbl_authors
+                    $authorsID = substr(uniqid('A_', true), -6); // Generate Authors_ID
+                    $insertAuthorSql = "INSERT INTO tbl_authors (Authors_ID, Authors_Name, Nationality) 
+                                        VALUES ('$authorsID', '$author', '$country')";
+
+                    if ($conn->query($insertAuthorSql) !== TRUE) {
+                        throw new Exception("Error inserting author: " . $conn->error);
+                    }
+                }
+
+                // Proceed with insertion
+                $insertBookSql = "INSERT INTO tbl_books (Accession_Code, Book_Title, Authors_ID, Publisher_Name, Section_Code, shelf, tb_edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status) 
+                VALUES ('$customAccessionCode','$bookTitle', '$authorsID', '$publisher', '$selectedSection', '$selectedShelf', '$edition', '$year', '$isbn', '$bib', '$quantity', '$price', 'Available')";
+              
+                if ($conn->query($insertBookSql) !== TRUE) {
+                    throw new Exception("Error inserting book: " . $conn->error);
+                }
             }
+
+            // Display success message
+            echo '<script>alert("Book Added Successfully!");</script>';
+            echo '<script>window.location.href = "admin_books.php";</script>';
         }
-
-        // Check if the author already exists in tbl_authors
-        $checkAuthorSql = "SELECT Authors_ID FROM tbl_authors WHERE Authors_Name = '$author'";
-        $authorResult = $conn->query($checkAuthorSql);
-
-        if ($authorResult->num_rows > 0) {
-            // Author already exists, retrieve their ID
-            $authorRow = $authorResult->fetch_assoc();
-            $authorsID = $authorRow['Authors_ID'];
-        } else {
-            // Author doesn't exist, insert the new author into tbl_authors
-            $authorsID = substr(uniqid('A_', true), -6); // Generate Authors_ID
-            $insertAuthorSql = "INSERT INTO tbl_authors (Authors_ID, Authors_Name, Nationality) 
-                                VALUES ('$authorsID', '$author', '$country')";
-
-            if ($conn->query($insertAuthorSql) !== TRUE) {
-                $errorMessage = "Error inserting author: " . $conn->error;
-                exit(); // Stop execution if an error occurs
-            }
-        }
-
-        // Check if the book already exists based on title and edition
-        $checkDuplicateBookSql = "SELECT * FROM tbl_books WHERE Book_Title = '$bookTitle' AND tb_edition = '$edition'";
-        $result = $conn->query($checkDuplicateBookSql);
-
-        if ($result->num_rows > 0) {
-            // Book already exists, update the quantity
-            $row = $result->fetch_assoc();
-            $existingQty = $row['Quantity'];
-            $newQty = $existingQty + $quantity;
-
-            $updateQuantitySql = "UPDATE tbl_books SET Quantity = '$newQty' WHERE Book_Title = '$bookTitle' AND tb_edition = '$edition'";
-            if ($conn->query($updateQuantitySql) !== TRUE) {
-                $errorMessage = "Error updating quantity: " . $conn->error;
-                exit(); // Stop execution if an error occurs
-            }
-        } else {
-            // Book doesn't exist, proceed with insertion
-            $insertBookSql = "INSERT INTO tbl_books (Book_Title, Authors_ID, Publisher_Name, Section_Code, shelf, tb_edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status) 
-                              VALUES ('$bookTitle', '$authorsID', '$publisher', '$selectedSection', '$selectedShelf', '$edition', '$year', '$isbn', '$bib', '$quantity', '$price', 'Available')";
-
-            if ($conn->query($insertBookSql) !== TRUE) {
-                $errorMessage = "Error inserting book: " . $conn->error;
-                exit(); // Stop execution if an error occurs
-            }
-        }
-
-        // Display success message
-        $successMessage = "Book added successfully.";
+    } catch (Exception $e) {
+        $errorMessage = "An error occurred: " . $e->getMessage();
+        
+        // Log error message
+        error_log($errorMessage);
     }
 }
+
+
+
 ?>
 
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -124,15 +157,16 @@ if (isset($_POST['submit'])) {
     <link href="./admin.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
+
 <body>
-    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
+    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary"><!--sidenav container-->
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-            <h2>Villa<span>Read</span>Hub</h2> 
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
+            <h2>Villa<span>Read</span>Hub</h2>
+            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon" />
         </a><!--header container-->
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
-            <li class="nav-item "> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
+            <li class="nav-item "> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis "> <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item active"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
             <li class="nav-item"> <a href="./admin_transactions.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transactions</a> </li>
             <li class="nav-item"> <a href="./admin_staff.php" class="nav-link link-body-emphasis"><i class='bx bxs-user'></i>Manage Staff</a> </li>
@@ -171,190 +205,197 @@ if (isset($_POST['submit'])) {
                 <?php endif; ?>
             </div>
 
-            <form method="POST" action="">
+            <form id="bookForm" method="POST" action="">
+                <div class="mb-3">
+                    <label for="accessionCode" class="form-label">Custom Accession Code</label>
+                    <input type="text" class="form-control" id="accessionCode" name="accessionCode" placeholder="You Can leave this field empty to generate unqiue Accession Code">
+                </div>
 
-<input type="hidden" name="userID" value="<?php echo $_SESSION['User_ID']; ?>">
+                <input type="hidden" name="userID" value="<?php echo $_SESSION['User_ID']; ?>">
 
-<div class="mb-3">
-    <label for="bookTitle" class="form-label">Book Title</label>
-    <input type="text" class="form-control" id="bookTitle" name="bookTitle" required>
-</div>
+                <div class="mb-3">
+                    <label for="bookTitle" class="form-label">Book Title</label>
+                    <input type="text" class="form-control" id="bookTitle" name="bookTitle" required>
+                </div>
 
 
-<?php
-// Database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+                <?php
+                // Database connection
+                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                if ($conn->connect_error) {
+                    die("Connection failed: " . $conn->connect_error);
+                }
 
-$query = "SELECT Authors_Name, Authors_ID FROM tbl_authors";
-$result = mysqli_query($conn, $query);
+                $query = "SELECT Authors_Name, Authors_ID FROM tbl_authors";
+                $result = mysqli_query($conn, $query);
 
-$existingAuthors = [];
-while ($row = mysqli_fetch_assoc($result)) {
-    $existingAuthors[] = $row['Authors_Name'];
-}
+                $existingAuthors = [];
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $existingAuthors[] = $row['Authors_Name'];
+                }
 
-// Add an "Other" option to the existing authors
-$existingAuthors[] = "Other";
-?>
+                // Add an "Other" option to the existing authors
+                $existingAuthors[] = "Other";
+                ?>
 
-<div class="mb-3">
-    <label for="authorSelect" class="form-label">Author</label>
-    <select class="form-select" id="author" name="author" required>
-    <option value="" disabled selected>Select an author</option>
-    <?php foreach ($existingAuthors as $authorOption) : ?>
-        <option value="<?php echo $authorOption; ?>"><?php echo $authorOption; ?></option>
-    <?php endforeach; ?>
-   
-</select>
-</div>
+                <div class="mb-3">
+                    <label for="authorSelect" class="form-label">Author</label>
+                    <select class="form-select" id="author" name="author" required>
+                        <option value="" disabled selected>Select an author</option>
+                        <?php foreach ($existingAuthors as $authorOption) : ?>
+                            <option value="<?php echo $authorOption; ?>"><?php echo $authorOption; ?></option>
+                        <?php endforeach; ?>
 
-<div class="mb-3" id="newAuthorInput" style="display: none;">
-                <label for="newAuthor" class="form-label">New Author</label>
-    <input type="text" class="form-control" id="newAuthor" name="newAuthor">
+                    </select>
+                </div>
+
+                <div class="mb-3" id="newAuthorInput" style="display: none;">
+                    <label for="newAuthor" class="form-label">New Author</label>
+                    <input type="text" class="form-control" id="newAuthor" name="newAuthor">
 
                     <label for="country" class="form-label">Country</label>
                     <input type="text" class="form-control" id="country" name="country">
                 </div>
 
+                <div class="mb-3">
+                    <label for="publisher" class="form-label">Publisher</label>
+                    <input type="text" class="form-control" id="publisher" name="publisher" required>
+                </div>
+                <div class="mb-3">
+                    <label for="year" class="form-label">Year Published</label>
+                    <input type="text" class="form-control" id="year" name="year" required>
+                </div>
+                <div class="mb-3">
+
+                    <label for="edition" class="form-label">Edition</label>
+                    <select class="form-select" id="edition" name="edition" onchange="toggleOtherEdition()" required>
+                        <option value="First Edition">First Edition</option>
+                        <option value="Second Edition">Second Edition</option>
+                        <option value="Third Edition">Third Edition</option>
+                        <option value="Fourth Edition">Fourth Edition</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <div id="otherEditionContainer" class="mb-3" style="display: none;">
+                        <label for="otherEdition" class="form-label">Other Edition</label>
+                        <input type="text" class="form-control" id="otherEdition" name="otherEdition">
+                    </div>
 
 
+                    <div class="mb-3">
+                        <label for="year" class="form-label">Price</label>
+                        <input type="text" class="form-control" id="price" name="price" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity</label>
+                        <input type="number" class="form-control" id="quantity" name="quantity" required>
+                    </div>
+
+                    <?php
+                    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+
+                    // Check connection
+                    if (!$conn) {
+                        die("Connection failed: " . mysqli_connect_error());
+                    }
+
+                    // Fetch sections from tbl_section
+                    $sql_sections = "SELECT Section_Code, Section_Name FROM tbl_section";
+                    $result_sections = mysqli_query($conn, $sql_sections);
+
+                    // Check if sections were fetched successfully
+                    if ($result_sections && mysqli_num_rows($result_sections) > 0) {
+                        echo '<div class="form-group">';
+                        echo '<label for="section" class="form-label">Section:</label>';
+                        echo '<select id="section" name="section" class="form-select" required>';
+                        echo '<option value="">Select Section</option>';
+
+                        // Display options for each section
+                        while ($row = mysqli_fetch_assoc($result_sections)) {
+                            echo '<option value="' . $row['Section_Code'] . '">' . $row['Section_Name'] . '</option>';
+                        }
+
+                        echo '</select>';
+                        echo '</div>';
+                    } else {
+                        echo '<div class="alert alert-warning" role="alert">No sections found</div>';
+                    }
+                    // Close connection
+                    mysqli_close($conn);
+                    ?>
 
 
-<div class="mb-3">
-    <label for="publisher" class="form-label">Publisher</label>
-    <input type="text" class="form-control" id="publisher" name="publisher" required>
-</div>
-<div class="mb-3">
-    <label for="year" class="form-label">Year Published</label>
-    <input type="text" class="form-control" id="year" name="year" required>
-</div>
-<div class="mb-3">
+                    <br>
+                    <div class="form-group">
+                        <label for='shelf' class="form-label">Shelf Number:</label>
+                        <div id="shelfContainer" class="input-group"></div>
 
-    <label for="edition" class="form-label">Edition</label>
-    <select class="form-select" id="edition" name="edition" onchange="toggleOtherEdition()" required>
-        <option value="First Edition">First Edition</option>
-        <option value="Second Edition">Second Edition</option>
-        <option value="Third Edition">Third Edition</option>
-        <option value="Fourth Edition">Fourth Edition</option>
-        <option value="Other">Other</option>
-    </select>
+                        <input type="hidden" id="selectedSection" name="selectedSection">
+                        <input type="hidden" id="selectedShelf" name="selectedShelf">
+                    </div>
+                    <br>
+                    <button type="submit" class="btn btn-primary" name="submit">Submit</button>
+            </form>
 
-    <div id="otherEditionContainer" class="mb-3" style="display: none;">
-        <label for="otherEdition" class="form-label">Other Edition</label>
-        <input type="text" class="form-control" id="otherEdition" name="otherEdition">
+        </div>
+
     </div>
 
-
-    <div class="mb-3">
-        <label for="year" class="form-label">Price</label>
-        <input type="text" class="form-control" id="price" name="price" required>
-    </div>
-    <div class="mb-3">
-        <label for="quantity" class="form-label">Quantity</label>
-        <input type="number" class="form-control" id="quantity" name="quantity" required>
-    </div>
-
-    <?php
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-
-    // Check connection
-    if (!$conn) {
-        die("Connection failed: " . mysqli_connect_error());
-    }
-
-    // Fetch sections from tbl_section
-    $sql_sections = "SELECT Section_Code, Section_Name FROM tbl_section";
-    $result_sections = mysqli_query($conn, $sql_sections);
-
-    // Check if sections were fetched successfully
-    if ($result_sections && mysqli_num_rows($result_sections) > 0) {
-        echo '<div class="form-group">';
-        echo '<label for="section" class="form-label">Section:</label>';
-        echo '<select id="section" name="section" class="form-select" required>';
-        echo '<option value="">Select Section</option>';
-    
-        // Display options for each section
-        while ($row = mysqli_fetch_assoc($result_sections)) {
-            echo '<option value="' . $row['Section_Code'] . '">' . $row['Section_Name'] . '</option>';
-        }
-    
-        echo '</select>';
-        echo '</div>';
-    } else {
-        echo '<div class="alert alert-warning" role="alert">No sections found</div>';
-    }
-    // Close connection
-    mysqli_close($conn);
-    ?>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 
-    <br>
-    <div class="form-group">
-    <label for='shelf' class="form-label">Shelf Number:</label>
-    <div id="shelfContainer" class="input-group"></div>
 
-    <input type="hidden" id="selectedSection" name="selectedSection">
-    <input type="hidden" id="selectedShelf" name="selectedShelf">
-    </div>
-    <br>
-    <button type="submit" class="btn btn-primary" name="submit">Submit</button>
-</form>
 
-</div>
 
-</div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script>
-$(document).ready(function() {
-    // Event listener for section dropdown change
-    $('#section').change(function() {
-        var sectionCode = $(this).val();
-        console.log('Selected Section Code:', sectionCode); // Log the selected section code
+    <script>
+        $(document).ready(function() {
+            // Event listener for section dropdown change
+            $('#section').change(function() {
+                var sectionCode = $(this).val();
+                console.log('Selected Section Code:', sectionCode); // Log the selected section code
 
-        // AJAX request to fetch shelf numbers
-        $.ajax({
-            url: 'queries/shelfs.php', // Update the URL to your PHP script
-            method: 'POST',
-            data: { sectionCode: sectionCode },
-            dataType: 'html',
-            success: function(response) {
-                console.log('Shelf Numbers Response:', response); // Log the response from the server
-                // Update shelf container with fetched shelf numbers
-                $('#shelfContainer').html(response);
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching shelf numbers:', error);
-            }
+                // AJAX request to fetch shelf numbers
+                $.ajax({
+                    url: 'queries/shelfs.php', // Update the URL to your PHP script
+                    method: 'POST',
+                    data: {
+                        sectionCode: sectionCode
+                    },
+                    dataType: 'html',
+                    success: function(response) {
+                        console.log('Shelf Numbers Response:', response); // Log the response from the server
+                        // Update shelf container with fetched shelf numbers
+                        $('#shelfContainer').html(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching shelf numbers:', error);
+                    }
+                });
+            });
+
+            // Event listener for form submission
+            $('form').submit(function() {
+                // Get selected section and shelf number
+                var selectedSection = $('#section').val();
+                var selectedShelf = $('#shelf').val();
+
+                console.log('Selected Section:', selectedSection); // Log the selected section
+                console.log('Selected Shelf:', selectedShelf); // Log the selected shelf number
+
+                // Set hidden input values
+                $('#selectedSection').val(selectedSection);
+                $('#selectedShelf').val(selectedShelf);
+            });
         });
-    });
+    </script>
 
-    // Event listener for form submission
-    $('form').submit(function() {
-        // Get selected section and shelf number
-        var selectedSection = $('#section').val();
-        var selectedShelf = $('#shelf').val();
-
-        console.log('Selected Section:', selectedSection); // Log the selected section
-        console.log('Selected Shelf:', selectedShelf); // Log the selected shelf number
-
-        // Set hidden input values
-        $('#selectedSection').val(selectedSection);
-        $('#selectedShelf').val(selectedShelf);
-    });
-});
-</script>
-
-  <!-- JavaScript to toggle input field -->
-  <script>
-    document.getElementById("author").addEventListener("change", function() {
-    const newAuthorInput = document.getElementById("newAuthorInput");
-    newAuthorInput.style.display = (this.value === "Other") ? "block" : "none";
-});
-
+    <!-- JavaScript to toggle input field -->
+    <script>
+        document.getElementById("author").addEventListener("change", function() {
+            const newAuthorInput = document.getElementById("newAuthorInput");
+            newAuthorInput.style.display = (this.value === "Other") ? "block" : "none";
+        });
     </script>
 
 

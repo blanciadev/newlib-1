@@ -14,7 +14,7 @@ if (isset($_GET['id'])) {
     // Get the ID value from the URL
     $id = $_GET['id'];
 
-
+    $_SESSION['reqID'] = $id;
     // Database connection
     $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
     if ($conn->connect_error) {
@@ -26,106 +26,12 @@ if (isset($_GET['id'])) {
     $result = $conn->query($sql);
 
 
-    //  echo "ID received from previous page: " . $id;
+    echo '<script>console.log("ID RETRIEVED '.$id.'");</script>';
 } else {
     // If the ID parameter is not set in the URL
     echo "No ID parameter found in the URL.";
 }
 
-if (isset($_POST['submit'])) {
-    try {
-        // Retrieve the custom Accession Code
-        $customAccessionCode = $_POST['accessionCode'];
-
-        // Check if custom Accession Code is provided
-        if (!empty($customAccessionCode)) {
-            // Use the provided custom Accession Code
-            $customAccessionCode = floatval($customAccessionCode);
-        } else {
-            // Generate a new random 6-digit value
-            $randomValue = rand(100000, 999999); // Generate random value between 100000 and 999999
-            $customAccessionCode = floatval($randomValue . '.2');
-        }
-
-        $requestID = $_GET['id'];
-        $authorsName = $_POST['Authors_ID'];
-
-        $authorsID = substr(uniqid('A_', true), -6);
-        $pubID = substr(uniqid('P_', true), -6);
-
-        $bookTitle = $_POST['Book_Title'];
-        $pubname = $_POST['Publisher_Name'];
-        $edition = $_POST['tb_edition'];
-        $yr = $_POST['Year_Published'];
-        $qty = $_POST['Quantity'];
-        $price = $_POST['price'];
-        $stat = "Pending";
-        $country = $_POST['country'];
-        $bibliography = "NA";
-        $isbn = 1; // Assuming ISBN is always 1
-        $sectionCode = $_POST["section"];
-        $shelfNumber = $_POST["shelf"];
-
-        // Check if the book already exists based on title and edition
-        $checkDuplicateBookSql = "SELECT * FROM tbl_books WHERE Book_Title = '$bookTitle' AND tb_edition = '$edition'";
-        $result = $conn->query($checkDuplicateBookSql);
-
-        if ($result->num_rows > 0) {
-            // Book already exists, update the quantity
-            $row = $result->fetch_assoc();
-            $existingQty = $row['Quantity'];
-            $newQty = $existingQty + $qty;
-
-            $updateQuantitySql = "UPDATE tbl_books SET Quantity = '$newQty' WHERE Book_Title = '$bookTitle' AND tb_edition = '$edition'";
-            if ($conn->query($updateQuantitySql) !== TRUE) {
-                throw new Exception("Error updating book quantity: " . $conn->error);
-            }
-        } else {
-            // Insert the new author into tbl_authors
-            $sql = "INSERT INTO tbl_authors (Authors_ID, Authors_Name, Nationality) 
-                    VALUES ('$authorsID', '$authorsName', '$country')";
-
-            if ($conn->query($sql) !== TRUE) {
-                throw new Exception("Error inserting author: " . $conn->error);
-            }
-
-            // Check if the book already exists based on accession code
-            $checkDuplicateAccessionCodeSql = "SELECT * FROM tbl_books WHERE Accession_Code = '$customAccessionCode'";
-            $result = $conn->query($checkDuplicateAccessionCodeSql);
-
-            if ($result->num_rows > 0) {
-                // Accession Code duplicate detected, display message
-                echo '<script>alert("Accession Code Duplicate Detected");</script>';
-                echo '<script>window.location.href = "process_data_book.php?id=' . $id . '";</script>';
-
-                exit(); // Stop execution
-            } else {
-                // Insert the new book into tbl_books
-                $booksql = "INSERT INTO tbl_books (Accession_Code ,Book_Title, Authors_ID, Publisher_Name, Section_Code, shelf, tb_edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status) 
-                            VALUES ('$customAccessionCode','$bookTitle', '$authorsID', '$pubname', '$sectionCode', '$shelfNumber', '$edition', '$yr', '$isbn', '$bibliography', '$qty', '$price', 'Available')";
-
-                if ($conn->query($booksql) !== TRUE) {
-                    echo '<script>window.location.href = "process_data_book.php?id=' . $id . '";</script>';
-
-                }
-
-                // Update tb_status based on Request_ID
-                $updateStatusSql = "UPDATE tbl_requestbooks SET tb_status = 'Approved' WHERE Request_ID = '$requestID'";
-                if ($conn->query($updateStatusSql) === TRUE) {
-                    echo '<script>alert("Record Updated Successfully!");</script>';
-                    echo '<script>window.location.href = "admin_books.php";</script>';
-                } else {
-                    throw new Exception("Error updating request status: " . $conn->error);
-                }
-            }
-        }
-    } catch (Exception $e) {
-        // Display an alert or message for unexpected errors
-        echo '<script>alert("Accession Code Duplicate Detected");</script>';
-        echo '<script>window.location.href = "process_data_book.php?id=' . $id . '";</script>';
-
-    }
-}
 
 ?>
 
@@ -178,15 +84,14 @@ if (isset($_POST['submit'])) {
 
 
     <div class="board container">
-        <form method="POST" action="">
-            <div class="mb-3">
+        <form id="myForm" method="POST" action="">
+            
+        <div class="mb-3">
                 <label for="accessionCode" class="form-label">Custom Accession Code</label>
                 <input type="text" class="form-control" id="accessionCode" name="accessionCode">
             </div>
-
+            
             <?php
-
-
 
             // Output data of each row
             while ($row = $result->fetch_assoc()) {
@@ -202,6 +107,7 @@ if (isset($_POST['submit'])) {
                 echo "<p><strong>Status:</strong> " . $row["tb_status"] . "</p>";
 
                 echo "<input type='hidden' id='Authors_ID' name='Authors_ID' value='" . $row["Authors_Name"] . "'>";
+        
                 echo "<input type='hidden' name='Book_Title' value='" . $row["Book_Title"] . "'>";
                 echo "<input type='hidden' name='Publisher_Name' value='" . $row["Publisher_Name"] . "'>";
                 echo "<input type='hidden' name='tb_edition' value='" . $row["tb_edition"] . "'>";
@@ -213,52 +119,63 @@ if (isset($_POST['submit'])) {
                 echo "<input type='hidden' name='shelf' value='" . $row["shelf"] . "'>";
             }
 
-
-
             ?>
             <button type="submit" class="btn btn-primary" id="submit" name="submit">Procure Book</button>
             <a href="admin_books.php" class="btn btn-primary">Cancel</a>
-        </form>
+       
 
     </div>
-
+    </form>
 
 
 
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+
     <script>
-        let date = new Date().toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-            weekday: 'long',
-        });
-        document.getElementById("currentDate").innerText = date;
+// Assuming you have a form with id 'myForm' and an AJAX endpoint 'process_data_ajax.php'
+var form = document.getElementById('myForm');
 
-        setInterval(() => {
-            let time = new Date().toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: 'numeric',
-                second: 'numeric',
-                hour12: 'true',
-            })
-            document.getElementById("currentTime").innerText = time;
+form.addEventListener('submit', function(event) {
+    // Prevent the default form submission behavior
+    event.preventDefault();
 
-        }, 1000)
+    // Gather the form data
+    var formData = new FormData(form);
 
+    // Add the 'submit' parameter to the form data
+    formData.append('submit', true);
 
-        let navItems = document.querySelectorAll(".nav-item"); //adding .active class to navitems 
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                document.querySelector('.active')?.classList.remove('active');
-                item.classList.add('active');
+    // Create and configure the AJAX request
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'process_data_ajax.php', true);
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); // Add this line to identify AJAX requests
 
+    // Define the callback function to handle the AJAX response
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                // Successful AJAX request
+                if (xhr.responseText.includes('Update Quantity Success') || xhr.responseText.includes('Insert New Book Success') || xhr.responseText.includes('Update Success')) {
+                    // Display alert for successful operation
+                    alert('Operation successful!');
+                    window.location.href = "admin_books.php";
+                } else {
+                    // Display alert for other messages or errors
+                    alert(xhr.responseText);
+                }
+            } else {
+                // Error handling for failed AJAX request
+                console.error('AJAX request failed:', xhr.status, xhr.statusText);
+            }
+        }
+    };
 
-            })
+    // Send the AJAX request with form data
+    xhr.send(formData);
+});
 
-        })
     </script>
 </body>
 

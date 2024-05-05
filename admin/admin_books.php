@@ -6,15 +6,32 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     header("Location: ../index.php");
     exit(); // Ensure script execution stops after redirection
 }
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
+$sql ="UPDATE tbl_books
+SET tb_status = 'Unavailable'
+WHERE Quantity = 0;
+";
+
+if ($conn->query($sql) === TRUE) {
+    echo '<script>console.log("Quantity update to 0 ");</script>';
+}
+
+$sqlUpdate = "UPDATE tbl_books
+        SET tb_status = 'Available'
+        WHERE Quantity > 0 AND tb_status != 'Archived' AND tb_status = 'Unavailable'";
+
+if ($conn->query($sqlUpdate) === TRUE) {
+    echo '<script>console.log("Update to status to Avaialble");</script>';
+}
 
 // Check if the accession code is set in the POST request
 if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
     // Handle archiving the book
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+  
 
     // Sanitize the accession code to prevent SQL injection
     $accessionCode = mysqli_real_escape_string($conn, $_POST['accessionCode']);
@@ -114,32 +131,32 @@ if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
                 </select>
             </div>
 
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="bg-light sticky-top">
-                        <tr>
-                            <th style="width: 10%;">Accession Code</th>
-                            <th style="width: 15%;">Book Title</th>
-                            <th style="width: 10%;">Authors</th>
-                            <th style="width: 10%;">Publisher</th>
-                            <th style="width: 10%;">Section</th>
-                            <th style="width: 5%;">Shelf #</th>
-                            <th style="width: 5%;">Edition</th>
-                            <th style="width: 5%;">Year Published</th>
-                            <th style="width: 10%;">ISBN</th>
-                            <th style="width: 10%;">Bibliography</th>
-                            <th style="width: 5%;">Quantity</th>
-                            <th style="width: 5%;">Price</th>
-                            <th style="width: 5%;">Status</th>
-                            <th style="width: 5%;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="bookTableBody">
-                        <!-- Book records will be dynamically loaded here -->
-                    </tbody>
-                  
-                </table>
-            </div>
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+    <table class="table table-hover">
+        <thead class="bg-light sticky-top">
+            <tr>
+                <th style="width: 10%;">Accession Code</th>
+                <th style="width: 15%;">Book Title</th>
+                <th style="width: 10%;">Authors</th>
+                <th style="width: 10%;">Publisher</th>
+                <th style="width: 10%;">Section</th>
+                <th style="width: 5%;">Shelf #</th>
+                <th style="width: 5%;">Edition</th>
+                <th style="width: 5%;">Year Published</th>
+                <th style="width: 10%;">ISBN</th>
+                <th style="width: 10%;">Bibliography</th>
+                <th style="width: 5%;">Quantity</th>
+                <th style="width: 5%;">Price</th>
+                <th style="width: 5%;">Status</th>
+                <th style="width: 5%;">Action</th>
+            </tr>
+        </thead>
+        <tbody id="bookTableBody">
+            <!-- Book records will be dynamically loaded here -->
+        </tbody>
+    </table>
+</div>
+
 
             <div class="btn-group">
                 <a href="./admin_bookCatalog.php" class="btn btn-secondary">Catalog</a>
@@ -158,8 +175,7 @@ if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
                     document.getElementById('bookTableBody').innerHTML = data;
                 });
         }
-
-        // Function to fetch requested books using AJAX
+        
         function fetchRequests() {
             fetch('queries/fetch_book_request.php')
                 .then(response => response.text())
@@ -223,7 +239,7 @@ function archiveBook(accessionCode) {
 
 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script>
         let date = new Date().toLocaleDateString('en-US', {
             day: 'numeric',
@@ -255,7 +271,7 @@ function archiveBook(accessionCode) {
             })
 
         })
-    </script>
+    </script> -->
 </body>
 
 </html>

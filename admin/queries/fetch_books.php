@@ -51,7 +51,8 @@ $sql = "SELECT
             tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID
         WHERE
             tbl_books.tb_status = '$status'
-        LIMIT $offset, $recordsPerPage";
+            
+       ";
 
 $result = $conn->query($sql);
 
