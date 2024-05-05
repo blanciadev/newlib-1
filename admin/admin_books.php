@@ -122,32 +122,32 @@ if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
                 </select>
             </div>
 
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="bg-light sticky-top">
-                        <tr>
-                            <th style="width: 10%;">Accession Code</th>
-                            <th style="width: 15%;">Book Title</th>
-                            <th style="width: 10%;">Authors</th>
-                            <th style="width: 10%;">Publisher</th>
-                            <th style="width: 10%;">Section</th>
-                            <th style="width: 5%;">Shelf #</th>
-                            <th style="width: 5%;">Edition</th>
-                            <th style="width: 5%;">Year Published</th>
-                            <th style="width: 10%;">ISBN</th>
-                            <th style="width: 10%;">Bibliography</th>
-                            <th style="width: 5%;">Quantity</th>
-                            <th style="width: 5%;">Price</th>
-                            <th style="width: 5%;">Status</th>
-                            <th style="width: 5%;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="bookTableBody">
-                        <!-- Book records will be dynamically loaded here -->
-                    </tbody>
-                  
-                </table>
-            </div>
+            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+    <table class="table table-hover">
+        <thead class="bg-light sticky-top">
+            <tr>
+                <th style="width: 10%;">Accession Code</th>
+                <th style="width: 15%;">Book Title</th>
+                <th style="width: 10%;">Authors</th>
+                <th style="width: 10%;">Publisher</th>
+                <th style="width: 10%;">Section</th>
+                <th style="width: 5%;">Shelf #</th>
+                <th style="width: 5%;">Edition</th>
+                <th style="width: 5%;">Year Published</th>
+                <th style="width: 10%;">ISBN</th>
+                <th style="width: 10%;">Bibliography</th>
+                <th style="width: 5%;">Quantity</th>
+                <th style="width: 5%;">Price</th>
+                <th style="width: 5%;">Status</th>
+                <th style="width: 5%;">Action</th>
+            </tr>
+        </thead>
+        <tbody id="bookTableBody">
+            <!-- Book records will be dynamically loaded here -->
+        </tbody>
+    </table>
+</div>
+
 
             <div class="btn-group">
                 <a href="./admin_bookCatalog.php" class="btn btn-secondary">Catalog</a>
@@ -166,8 +166,7 @@ if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
                     document.getElementById('bookTableBody').innerHTML = data;
                 });
         }
-
-        // Function to fetch requested books using AJAX
+        
         function fetchRequests() {
             fetch('queries/fetch_book_request.php')
                 .then(response => response.text())

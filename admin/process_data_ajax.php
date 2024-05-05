@@ -31,11 +31,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     // Check if custom Accession Code is provided
     if (!empty($customAccessionCode)) {
         // Use the provided custom Accession Code
-        $customAccessionCode = floatval($customAccessionCode);
+        $customAccessionCode = doubleval($customAccessionCode);
     } else {
         // Generate a new random 6-digit value
         $randomValue = rand(100000, 999999); // Generate random value between 100000 and 999999
-        $customAccessionCode = floatval($randomValue . '.2');
+        $customAccessionCode = doubleval($randomValue . '.2');
     }
 
      // Check if the author already exists in tbl_authors
