@@ -452,6 +452,7 @@ $dataJSON = json_encode($data);
             margin: 0 20px;
         }
 
+
         .message .text {
             font-size: 16px;
             font-weight: 400;
@@ -497,7 +498,48 @@ $dataJSON = json_encode($data);
         }
 
         .progress.showing::before {
-            /* progress bar counting down 5seconds not working */
+
+        }
+         
+		.message .text{
+			font-size: 16px;
+			font-weight: 400;
+			color: gray;
+		}
+		.message .text.text-1{
+			font-weight: 600;
+			color: black;
+		}
+		.toastNotif .close{
+			position: absolute;
+			font-weight: 600;
+			top:10px;
+			right: 15px;
+			padding: 5px;
+			cursor: pointer;
+			opacity: 0.7;
+		}
+		.toastNotif .close:hover{
+			opacity: 1;
+		}
+		.toastNotif .progress{
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			height: 3px;
+			width: 100%;
+			background-color: #ddd;
+		}
+		.toastNotif .progress::before{
+			content:'';
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			height: 100%;
+			width: 100%;
+			background-color: rgb(89, 252, 89);
+		}
+        .progress.showing::before{ 
             animation: progress 5s linear forwards;
         }
 
@@ -505,6 +547,9 @@ $dataJSON = json_encode($data);
             100% {
                 right: 100%;
             }
+            100%{
+                left: 100%;
+            } 
         }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -518,10 +563,15 @@ $dataJSON = json_encode($data);
             close = document.querySelector(".close"),
             progress = document.querySelector(".progress");
 
+           
+  
+
+
 
 
         close.addEventListener("click", () => { // closing toast
             toast.classList.remove("showing");
+            progress.classList.remove("showing");
         });
 
         let date = new Date().toLocaleDateString('en-US', {
