@@ -8,7 +8,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 }
 
 // Establish database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
 
 // Check connection
 if (!$conn) {

@@ -7,7 +7,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
