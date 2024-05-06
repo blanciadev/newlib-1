@@ -51,18 +51,18 @@ li.nav-item.active {
 }
 .board{  
     width: 78%;
-    height: 97%;  
+    height: 95%;  
     display: grid;
     grid-template-columns: 100%;
-    grid-template-rows: 72px 1fr 50px; 
+    grid-template-rows: 10% 1fr 50px; 
     gap: 2px;
 }
-.board1{  
+.board1{   
     width: 78%;
-    height: 97%;  
+    height: 95%;
     display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 72px 1fr; 
+    grid-template-columns: 100%;
+    grid-template-rows: 10% 1fr;
     gap: 2px;
 }
 .board h3,

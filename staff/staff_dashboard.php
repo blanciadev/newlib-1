@@ -479,12 +479,12 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 			width: 100%;
 			background-color: rgb(89, 252, 89);
 		}
-        .progress.showing::before{ /* progress bar counting down 5seconds not working */
+        .progress.showing::before{ 
             animation: progress 5s linear forwards;
         }
         @keyframes progress {
             100%{
-                right: 100%;
+                left: 100%;
             } 
         }
     </style>
@@ -504,11 +504,13 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             progress.classList.add("showing");
             setTimeout(() =>{
                 toast.classList.remove("showing");
+                progress.classList.remove("showing");
             }, 5000);
         });
 
         close.addEventListener("click",() =>{// closing toast
             toast.classList.remove("showing");
+            progress.classList.remove("showing");
         });
               
         let date = new Date().toLocaleDateString('en-US', {
