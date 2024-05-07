@@ -273,8 +273,6 @@ if (isset($_POST['submit'])) {
                 <div class="mb-3">
                     <label for='shelf'>Shelf Number:</label>
                     <div id="shelfContainer"></div>
-                </div>
-                <div class="mb-3">
                     <input type="hidden" id="selectedSection" name="selectedSection">
                     <input type="hidden" id="selectedShelf" name="selectedShelf">
                 </div>

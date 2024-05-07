@@ -514,9 +514,21 @@ li.nav-item.active {
     align-items: center;
     justify-content: center;
 }
-.toast-content .xmark, .xmark {
+.toast-content .xmark {
     width: 35px;
     height: 35px;
+    background-color: red;
+    border: none;
+    color: white;
+    font-size: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.xmark{
+    width: 25px;
+    height: 25px;
     background-color: red;
     border: none;
     color: white;
