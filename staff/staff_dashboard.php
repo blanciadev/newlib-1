@@ -181,7 +181,7 @@ $dataJSON = json_encode($data);
                 </div>
             </div>
 
-            <div class="due-books">
+            <div class="duebooks">
                 <h3 class="mb-3">Due Today</h3>
                 <div class="duebooks-con" style="max-height: 200px; overflow-y:auto;">
                     <?php
@@ -395,7 +395,7 @@ $dataJSON = json_encode($data);
 
             <div class="message">
                 <span class="text text-1">Success</span><!-- this message can be changed to "Success" and "Error"-->
-                <span class="text text-2">Email sent successfully</span> <!-- specify based on the if-else statements -->
+                <span class="text text-2"></span> <!-- specify based on the if-else statements -->
             </div>
 
 
@@ -403,155 +403,6 @@ $dataJSON = json_encode($data);
         <i class='bx bx-x close'></i>
         <div class="progress"></div>
     </div>
-
-    <style>
-        body {
-            overflow: hidden;
-        }
-
-        .toastNotif {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            border-radius: 12px;
-            padding: 15px 35px 15px 25px;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-            border-left: 6px solid rgb(89, 252, 89);
-            background-color: white;
-            transition: opacity 0.5s ease-in-out;
-            overflow: hidden;
-            transform: translateX(calc(100% + 20px));
-            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
-        }
-
-        .toastNotif.showing {
-            transform: translateX(0%);
-        }
-
-        .toastNotif .toast-content {
-            display: flex;
-            align-items: center;
-
-        }
-
-        .toast-content .check {
-            width: 35px;
-            height: 35px;
-            background-color: rgb(89, 252, 89);
-            color: white;
-            font-size: 20px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .toast-content .message {
-            display: flex;
-            flex-direction: column;
-            margin: 0 20px;
-        }
-
-
-        .message .text {
-            font-size: 16px;
-            font-weight: 400;
-            color: gray;
-        }
-
-        .message .text.text-1 {
-            font-weight: 600;
-            color: black;
-        }
-
-        .toastNotif .close {
-            position: absolute;
-            font-weight: 600;
-            top: 10px;
-            right: 15px;
-            padding: 5px;
-            cursor: pointer;
-            opacity: 0.7;
-        }
-
-        .toastNotif .close:hover {
-            opacity: 1;
-        }
-
-        .toastNotif .progress {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 3px;
-            width: 100%;
-            background-color: #ddd;
-        }
-
-        .toastNotif .progress::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            height: 100%;
-            width: 100%;
-            background-color: rgb(89, 252, 89);
-        }
-
-        .progress.showing::before {
-
-        }
-         
-		.message .text{
-			font-size: 16px;
-			font-weight: 400;
-			color: gray;
-		}
-		.message .text.text-1{
-			font-weight: 600;
-			color: black;
-		}
-		.toastNotif .close{
-			position: absolute;
-			font-weight: 600;
-			top:10px;
-			right: 15px;
-			padding: 5px;
-			cursor: pointer;
-			opacity: 0.7;
-		}
-		.toastNotif .close:hover{
-			opacity: 1;
-		}
-		.toastNotif .progress{
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			height: 3px;
-			width: 100%;
-			background-color: #ddd;
-		}
-		.toastNotif .progress::before{
-			content:'';
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			height: 100%;
-			width: 100%;
-			background-color: rgb(89, 252, 89);
-		}
-        .progress.showing::before{ 
-            animation: progress 5s linear forwards;
-        }
-
-        @keyframes progress {
-            100% {
-                right: 100%;
-            }
-            100%{
-                left: 100%;
-            } 
-        }
-    </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
@@ -562,12 +413,6 @@ $dataJSON = json_encode($data);
             toast = document.querySelector(".toastNotif"),
             close = document.querySelector(".close"),
             progress = document.querySelector(".progress");
-
-           
-  
-
-
-
 
         close.addEventListener("click", () => { // closing toast
             toast.classList.remove("showing");
@@ -608,6 +453,8 @@ $dataJSON = json_encode($data);
                 if (xhr.status === 200) {
                     // Request was successful
                     console.log("Email sent successfully");
+                    var successMessageHeader = document.querySelector(".toastNotif .message .text-1");
+                    successMessageHeader.textContent = "Success!";
                     var successMessageElement = document.querySelector(".toastNotif .message .text-2");
                     successMessageElement.textContent = "Email sent successfully";
                     var toast = document.querySelector(".toastNotif");
@@ -620,14 +467,32 @@ $dataJSON = json_encode($data);
                 } else {
                     // Error handling
                     console.error("Error:", xhr.statusText);
+                    var successMessageHeader = document.querySelector(".toastNotif .message .text-1");
+                    successMessageHeader.textContent = "Error!";
                     var errorMessageElement = document.querySelector(".toastNotif .message .text-2");
                     errorMessageElement.textContent = "Failed to send email";
                     var toast = document.querySelector(".toastNotif");
                     var progress = document.querySelector(".toastNotif .progress");
+                    var icon = document.querySelector(".bx-check")
+                    icon.classList.remove("check");
+                    icon.classList.remove("bx-check");
+                    icon.classList.add("bx-x");
+                    icon.classList.add("xmark");
                     toast.classList.add("showing");
+                    toast.classList.add("error");
                     progress.classList.add("showing");
+                    progress.classList.add("error");
                     setTimeout(() => {
                         toast.classList.remove("showing");
+                        setTimeout(() => {
+                            toast.classList.remove("error");
+                            progress.classList.remove("error");
+                            progress.classList.remove("showing");
+                            icon.classList.remove("bx-x");
+                            icon.classList.remove("xmark");
+                            icon.classList.add("bx-check");
+                            icon.classList.add("check");
+                        }, 3000)
                     }, 5000);
                 }
 

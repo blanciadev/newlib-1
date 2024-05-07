@@ -200,107 +200,154 @@ if (isset($_POST['updatePassword'])) {
             <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item"> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
             <li class="nav-item"> <a href="./staff_transaction_dash.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>
-          <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
+            <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
             <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li> <hr>
             <li class="nav-item active"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
 
     <div class=" board1 container"><!--board container-->
-    <div class="header1">
-        <div class="text">
-            <div class="title">
-                <h2>Settings</h2>
+        <div class="header1">
+            <div class="text">
+                <div class="title">
+                    <h2>Settings</h2>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="books container">
-    <!-- Display user data -->
-        
-    <div class="settingForms">
-        <form id="imageUploadForm" action="" method="post" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="imageFile" class="form-label">
-                    <div class="upload d-flex justify-content-center align-items-center" style="width: 200px; height: 200px; background-color: lightgrey; border-radius:10px;">
-                        <p>Upload Image</p>
-                    </div>
-                </label>
-                <input type="file" class="form-control" id="imageFile" name="imageFile" style="display: none;" hidden>
-            </div>
-            <button type="submit" style="width: 180px;height: 55px;background-color: palegreen;border: none;border-radius: 5px;font-weight: 700;" name="uploadImageBtn">Change Profile Image</button>        </form>
-        </form>
-        <form id="userProfileForm" action="" method="post">
-                    <!-- Display user data -->
-                    <h4>Account Settings</h4>
+        <div class="books container">
+            <!-- Display user data -->
+            <div class="settingForms">
+                <form id="imageUploadForm" action="" method="post" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <label for="firstName" class="form-label">First Name</label>
-                        <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $userData['First_Name']; ?>" >
+                        <label for="imageFile" class="form-label">
+                            <div class="upload d-flex justify-content-center align-items-center" style="width: 200px; height: 200px; background-color: lightgrey; border-radius:10px;">
+                                <p>Upload Image</p>
+                            </div>
+                        </label>
+                        <input type="file" class="form-control" id="imageFile" name="imageFile" style="display: none;" hidden>
                     </div>
-                    <div class="mb-3">
-                        <label for="middleName" class="form-label">Middle Name</label>
-                        <input type="text" class="form-control" id="middleName" name="middleName" value="<?php echo $userData['Middle_Name']; ?>">
-                    </div>
-                    <div class="mb-3">
-                        <label for="lastName" class="form-label">Last Name</label>
-                        <input type="text" class="form-control" id="lastName" name="lastName" value="<?php echo $userData['Last_Name']; ?>" >
-                    </div> 
-                    <div class="mb-3">
-                        <label for="contactNumber" class="form-label">Contact Number</label>
-                        <input type="tel" class="form-control" id="contactNumber" name="contactNumber" value="<?php echo $userData['Contact_Number']; ?>" >
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" value="<?php echo $userData['E_mail']; ?>" >
-                    </div>
-                    <div class="mb-3">
-                        <label for="address" class="form-label">Address</label>
-                        <input type="text" class="form-control" id="address" name="address" value="<?php echo $userData['tb_address']; ?>" >
-                    </div>
-                       <!-- Update button -->
-                       <button type="submit" class="btn btn-primary" name="updateProfile" value="Update Profile">Update Profile</button>
+                    <button type="submit" style="width: 180px;height: 55px;background-color: palegreen;border: none;border-radius: 5px;font-weight: 700;" name="uploadImageBtn">Change Profile Image</button>        </form>
+                </form>
+                <form id="userProfileForm" action="" method="post">
+                        <!-- Display user data -->
+                        <h4>Account Settings</h4>
+                        <div class="mb-3">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $userData['First_Name']; ?>" >
+                        </div>
+                        <div class="mb-3">
+                            <label for="middleName" class="form-label">Middle Name</label>
+                            <input type="text" class="form-control" id="middleName" name="middleName" value="<?php echo $userData['Middle_Name']; ?>">
+                        </div>
+                        <div class="mb-3">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" name="lastName" value="<?php echo $userData['Last_Name']; ?>" >
+                        </div> 
+                        <div class="mb-3">
+                            <label for="contactNumber" class="form-label">Contact Number</label>
+                            <input type="tel" class="form-control" id="contactNumber" name="contactNumber" value="<?php echo $userData['Contact_Number']; ?>" >
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="<?php echo $userData['E_mail']; ?>" >
+                        </div>
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <input type="text" class="form-control" id="address" name="address" value="<?php echo $userData['tb_address']; ?>" >
+                        </div>
+                        <!-- Update button -->
+                        <button type="submit" class="btn btn-primary" name="updateProfile" value="Update Profile">Update Profile</button>
                 </form>
                 <form id="userPasswordForm" method="post">
-                    <!-- Password Change Section --> 
-                    <h4>Change Password</h4>
-                    <div class="mb-3">
-                        <label for="oldPassword" class="form-label">Old Password</label>
-                        <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="newPassword" class="form-label">New Password</label>
-                        <input type="password" class="form-control" id="newPassword" name="newPassword" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirmPassword" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
-                    </div>
+                        <!-- Password Change Section --> 
+                        <h4>Change Password</h4>
+                        <div class="mb-3">
+                            <label for="oldPassword" class="form-label">Old Password</label>
+                            <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                        </div>
 
-                    <!-- Update button -->
-                    <button type="submit" class="btn btn-primary" name="updatePassword" value="Update Password">Update Password</button>
-
+                        <!-- Update button -->
+                        <button type="submit" class="btn btn-primary" name="updatePassword" value="Update Password">Update Password</button>
                 </form>
             </div>
         </div>
-
-        
-
+        <button class="btn btn-success showToast">Show Toast</button>
     </div>
-</div>
-        
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelector('[name="updateProfile"]').addEventListener('click', function() {
-        // Remove the 'required' attribute from password fields
-        document.getElementById('oldPassword').removeAttribute('required');
-        document.getElementById('newPassword').removeAttribute('required');
-        document.getElementById('confirmPassword').removeAttribute('required');
-    });
-});
-</script>
 
+    <!--Logout Modal -->
+    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+            </div>
+            <div class="modal-body">
+                Do you want to log out?
+            </div>
+            <div class="modal-footer d-flex flex-row justify-content-center">
+                <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+            </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toastNotif" class="hide">
+        <div class="toast-content">
+            <i class='bx bx-check check'></i>
+
+            <div class="message">
+                <span class="text text-1">Success</span><!-- this message can be changed to "Success" and "Error"-->
+                <span class="text text-2"></span> <!-- specify based on the if-else statements -->
+            </div>
+        </div>
+        <i class='bx bx-x close'></i>
+        <div class="progress"></div>
+    </div>
+
+        
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
+        //Toast Notification 
+        const btn = document.querySelector(".showToast"),
+            toast = document.querySelector(".toastNotif"),
+            close = document.querySelector(".close"),
+            progress = document.querySelector(".progress");
+
+        btn.addEventListener("click", () => { // showing toast
+            console.log("showing toast")
+            toast.classList.add("showing");
+            progress.classList.add("showing");
+            setTimeout(() => {
+                toast.classList.remove("showing");
+                progress.classList.remove("showing");
+                console.log("hide toast after 5s")
+            }, 5000);
+        });
+
+        close.addEventListener("click", () => { // closing toast
+            toast.classList.remove("showing");
+            progress.classList.remove("showing");
+        });
+
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('[name="updateProfile"]').addEventListener('click', function() {
+                // Remove the 'required' attribute from password fields
+                document.getElementById('oldPassword').removeAttribute('required');
+                document.getElementById('newPassword').removeAttribute('required');
+                document.getElementById('confirmPassword').removeAttribute('required');
+            });
+        });
         let date = new Date().toLocaleDateString('en-US', {  
             day:   'numeric',
             month: 'long',

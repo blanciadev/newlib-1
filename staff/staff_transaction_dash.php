@@ -20,7 +20,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Transactions</title>
+    <title>Transactions</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -202,14 +202,14 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
                         // Display the top three borrowers
                         if ($topBorrowerResult && mysqli_num_rows($topBorrowerResult) > 0) {
-                            echo "<ul class='list-group'>";
+                            echo "<ul class='list-group' style='width:98%'>";
                             while ($topBorrowerData = mysqli_fetch_assoc($topBorrowerResult)) {
                                 $topBorrowerID = $topBorrowerData['Borrower_ID'];
                                 $borrowCount = $topBorrowerData['borrow_count'];
                                 $name = $topBorrowerData['First_Name'];
                                 $lname = $topBorrowerData['Last_Name'];
 
-                                echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px; width:360px'>";
+                                echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:40%; width:100%'>";
                                 echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
                                 echo "<p style='font-size:12pt' class='fw-bold'>$topBorrowerID</p>";
                                 echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";
@@ -261,13 +261,13 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                             $mostBorrowedBooksResult = mysqli_query($conn, $mostBorrowedBooksQuery);
 
                                 if ($mostBorrowedBooksResult && mysqli_num_rows($mostBorrowedBooksResult) > 0) {
-                                    echo "<ul class='list-group'>";
+                                    echo "<ul class='list-group' style='width:98%'>";
                                     while ($row = mysqli_fetch_assoc($mostBorrowedBooksResult)) {
                                         $accessionCode = $row['Accession_Code'];
                                         $bookTitle = $row['Book_Title'];
                                         $borrowCount = $row['borrow_count'];
 
-                                        echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px; width:360px'>";
+                                        echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:50%; width:100%'>";
                                         echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
                                         echo "<p style='font-size:12pt' class='fw-bold'>$accessionCode</p>";
                                         echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";

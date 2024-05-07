@@ -83,7 +83,7 @@ if (isset($_POST['submit'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Request New Book</title>
+    <title>Requesting New Book</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -173,48 +173,41 @@ if (isset($_POST['submit'])) {
                     <input type="text" class="form-control" id="bookTitle" name="bookTitle" required>
                 </div>
 
-
                 <?php
-                // Database connection
-                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-                if ($conn->connect_error) {
-                    die("Connection failed: " . $conn->connect_error);
-                }
+                    // Database connection
+                    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                    if ($conn->connect_error) {
+                        die("Connection failed: " . $conn->connect_error);
+                    }
 
-                $query = "SELECT Authors_Name, Authors_ID FROM tbl_authors";
-                $result = mysqli_query($conn, $query);
+                    $query = "SELECT Authors_Name, Authors_ID FROM tbl_authors";
+                    $result = mysqli_query($conn, $query);
 
-                $existingAuthors = [];
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $existingAuthors[] = $row['Authors_Name'];
-                }
+                    $existingAuthors = [];
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $existingAuthors[] = $row['Authors_Name'];
+                    }
 
-                // Add an "Other" option to the existing authors
-                $existingAuthors[] = "Other";
+                    // Add an "Other" option to the existing authors
+                    $existingAuthors[] = "Other";
                 ?>
 
-<div class="mb-3">
-    <label for="authorSelect" class="form-label">Author</label>
-    <select class="form-select" id="author" name="author" required>
-    <option value="" disabled selected>Select an author</option>
-    <?php foreach ($existingAuthors as $authorOption) : ?>
-        <option value="<?php echo $authorOption; ?>"><?php echo $authorOption; ?></option>
-    <?php endforeach; ?>
-   
-</select>
-</div>
-
+                <div class="mb-3">
+                    <label for="authorSelect" class="form-label">Author</label>
+                    <select class="form-select" id="author" name="author" required>
+                        <option value="" disabled selected>Select an author</option>
+                        <?php foreach ($existingAuthors as $authorOption) : ?>
+                        <option value="<?php echo $authorOption; ?>"><?php echo $authorOption; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
 
                 <div class="mb-3" id="newAuthorInput" style="display: none;">
                 <label for="newAuthor" class="form-label">New Author</label>
-    <input type="text" class="form-control" id="newAuthor" name="newAuthor">
-
+                    <input type="text" class="form-control" id="newAuthor" name="newAuthor">
                     <label for="country" class="form-label">Country</label>
                     <input type="text" class="form-control" id="country" name="country">
                 </div>
-
-
-
 
                 <div class="mb-3">
                     <label for="publisher" class="form-label">Publisher</label>
@@ -225,7 +218,6 @@ if (isset($_POST['submit'])) {
                     <input type="text" class="form-control" id="year" name="year" required>
                 </div>
                 <div class="mb-3">
-
                     <label for="edition" class="form-label">Edition</label>
                     <select class="form-select" id="edition" name="edition" onchange="toggleOtherEdition()" required>
                         <option value="First Edition">First Edition</option>
@@ -234,78 +226,129 @@ if (isset($_POST['submit'])) {
                         <option value="Fourth Edition">Fourth Edition</option>
                         <option value="Other">Other</option>
                     </select>
-
+                </div>
+                <div class="mb-3">
                     <div id="otherEditionContainer" class="mb-3" style="display: none;">
-    <label for="otherEdition" class="form-label">Other Edition</label>
-    <input type="text" class="form-control" id="otherEdition" name="otherEdition">
-</div>
-
-
-
-                    <div class="mb-3">
-                        <label for="year" class="form-label">Price</label>
-                        <input type="text" class="form-control" id="price" name="price" required>
+                        <label for="otherEdition" class="form-label">Other Edition</label>
+                        <input type="text" class="form-control" id="otherEdition" name="otherEdition">
                     </div>
-                    <div class="mb-3">
-                        <label for="quantity" class="form-label">Quantity</label>
-                        <input type="number" class="form-control" id="quantity" name="quantity" required>
-                    </div>
+                </div>
 
-                    <?php
-             
+                <div class="mb-3">
+                    <label for="year" class="form-label">Price</label>
+                    <input type="text" class="form-control" id="price" name="price" required>
+                </div>
+                <div class="mb-3">
+                    <label for="quantity" class="form-label">Quantity</label>
+                    <input type="number" class="form-control" id="quantity" name="quantity" required>
+                </div>
+
+                <?php
                     // Fetch sections from tbl_section
                     $sql_sections = "SELECT Section_Code, Section_Name FROM tbl_section";
                     $result_sections = mysqli_query($conn, $sql_sections);
 
                     // Check if sections were fetched successfully
-                   
+                    
                     if ($result_sections && mysqli_num_rows($result_sections) > 0) {
                         echo '<div class="form-group">';
                         echo '<label for="section" class="form-label">Section:</label>';
                         echo '<select id="section" name="section" class="form-select" required>';
                         echo '<option value="">Select Section</option>';
-                    
+                        
                         // Display options for each section
                         while ($row = mysqli_fetch_assoc($result_sections)) {
                             echo '<option value="' . $row['Section_Code'] . '">' . $row['Section_Name'] . '</option>';
                         }
-                    
+                        
                         echo '</select>';
                         echo '</div>';
                     } else {
                         echo '<div class="alert alert-warning" role="alert">No sections found</div>';
                     }
-                   
-                    
-
                     // Close connection
                     mysqli_close($conn);
-                    ?>
-
-
-                    <br>
+                ?>
+                <br>
+                <div class="mb-3">
                     <label for='shelf'>Shelf Number:</label>
                     <div id="shelfContainer"></div>
-
+                </div>
+                <div class="mb-3">
                     <input type="hidden" id="selectedSection" name="selectedSection">
                     <input type="hidden" id="selectedShelf" name="selectedShelf">
-
+                </div>
                     <br>
                     <button type="submit" class="btn btn-primary" name="submit">Submit Request</button>
             </form>
-
         </div>
+
+        <button class="btn btn-success showToast">Show Toast</button>
 
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!--Logout Modal -->
+    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+                </div>
+                <div class="modal-body">
+                    Do you want to log out?
+                </div>
+                <div class="modal-footer d-flex flex-row justify-content-center">
+                    <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                    <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
 
- <script>
+    <div class="toastNotif" class="hide">
+        <div class="toast-content">
+            <i class='bx bx-check check'></i>
+
+            <div class="message">
+                <span class="text text-1">Success</span><!-- this message can be changed to "Success" and "Error"-->
+                <span class="text text-2"></span> <!-- specify based on the if-else statements -->
+            </div>
+        </div>
+        <i class='bx bx-x close'></i>
+        <div class="progress"></div>
+    </div>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+    <script>
+        //Toast Notification 
+        const btn = document.querySelector(".showToast"),
+            toast = document.querySelector(".toastNotif"),
+            close = document.querySelector(".close"),
+            progress = document.querySelector(".progress");
+
+        btn.addEventListener("click", () => { // showing toast
+            console.log("showing toast")
+            toast.classList.add("showing");
+            progress.classList.add("showing");
+            setTimeout(() => {
+                toast.classList.remove("showing");
+                progress.classList.remove("showing");
+                console.log("hide toast after 5s")
+            }, 5000);
+        });
+
+        close.addEventListener("click", () => { // closing toast
+            toast.classList.remove("showing");
+            progress.classList.remove("showing");
+        });
+
+
         $(document).ready(function() {
             // Event listener for section dropdown change
             $('#section').change(function() {
                 var sectionCode = $(this).val();
-                
+                    
                 // AJAX request to fetch shelf numbers
                 $.ajax({
                     url: 'queries/shelf.php', // Update the URL to your PHP script
@@ -321,52 +364,39 @@ if (isset($_POST['submit'])) {
                     }
                 });
             });
+            // Event listener for form submission
+            $('form').submit(function() {
+                // Get selected section and shelf number
+                var selectedSection = $('#section').val();
+                var selectedShelf = $('#shelf').val(); // Corrected variable name
 
-          // Event listener for form submission
-$('form').submit(function() {
-    // Get selected section and shelf number
-    var selectedSection = $('#section').val();
-    var selectedShelf = $('#shelf').val(); // Corrected variable name
-
-    // Set hidden input values
-    $('#selectedSection').val(selectedSection);
-    $('#selectedShelf').val(selectedShelf);
-});
+                // Set hidden input values
+                $('#selectedSection').val(selectedSection);
+                $('#selectedShelf').val(selectedShelf);
+            });
 
         });
+
+        //JavaScript to toggle input field
+        document.getElementById("author").addEventListener("change", function() {
+            const newAuthorInput = document.getElementById("newAuthorInput");
+            newAuthorInput.style.display = (this.value === "Other") ? "block" : "none";
+        });
+
+        function toggleOtherEdition() {
+            const editionSelect = document.getElementById('edition');
+            const otherEditionContainer = document.getElementById('otherEditionContainer');
+            const otherEditionInput = document.getElementById('otherEdition');
+
+            if (editionSelect.value === 'Other') {
+                otherEditionContainer.style.display = 'block'; // Show the input field
+                otherEditionInput.required = true; // Make the input field required
+            } else {
+                otherEditionContainer.style.display = 'none'; // Hide the input field
+                otherEditionInput.required = false; // Make the input field optional
+                otherEditionInput.value = ''; // Clear the input field value
+            }
+        }
     </script>
-
-
-
-    <!-- JavaScript to toggle input field -->
-    <script>
-    document.getElementById("author").addEventListener("change", function() {
-    const newAuthorInput = document.getElementById("newAuthorInput");
-    newAuthorInput.style.display = (this.value === "Other") ? "block" : "none";
-});
-
-    </script>
-
-
-    <script>
-      function toggleOtherEdition() {
-    const editionSelect = document.getElementById('edition');
-    const otherEditionContainer = document.getElementById('otherEditionContainer');
-    const otherEditionInput = document.getElementById('otherEdition');
-
-    if (editionSelect.value === 'Other') {
-        otherEditionContainer.style.display = 'block'; // Show the input field
-        otherEditionInput.required = true; // Make the input field required
-    } else {
-        otherEditionContainer.style.display = 'none'; // Hide the input field
-        otherEditionInput.required = false; // Make the input field optional
-        otherEditionInput.value = ''; // Clear the input field value
-    }
-}
-
-    </script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
 </body>
-
 </html>
