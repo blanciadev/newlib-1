@@ -23,7 +23,7 @@ echo "<script>console.log('FETCH: " . $borrowerID . "');</script>";
         $affiliation = $_POST['affiliation'];
 
         // Database connection
-        $conn_update = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+        $conn_update = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
         if ($conn_update->connect_error) {
             die("Connection failed: " . $conn_update->connect_error);
         }

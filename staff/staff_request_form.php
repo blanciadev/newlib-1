@@ -60,7 +60,7 @@ if (isset($_POST['submit'])) {
         }
 
         // Insert data into the database
-        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); //database connection
+        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); //database connection
 
         // Assuming you have a database connection named $conn
         $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Authors_Name, Publisher_Name, price, tb_edition, Year_Published, Quantity, country, tb_status, Section_Code, shelf) 
@@ -102,7 +102,7 @@ if (isset($_POST['submit'])) {
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
             <!-- Display user image -->
             <?php
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
             $userID = $_SESSION["User_ID"];
             $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
                     FROM tbl_employee 

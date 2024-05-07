@@ -59,7 +59,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <div class="ovw-con">
             <?php
             // Database connection
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
 
             // Check connection
             if (!$conn) {
@@ -104,7 +104,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
             <?php
             // Database connection
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
 
             // Check connection
             if (!$conn) {
@@ -146,7 +146,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             ?>
          <?php
         // Database connection
-        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
 
         // Check connection
         if (!$conn) {

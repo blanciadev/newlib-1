@@ -17,7 +17,7 @@ $bookAccessionCodes = $_SESSION['bookAccessionCodesStr'];
 echo "<script>console.log('Book CODES:', " . json_encode( $bookAccessionCodes) . ");</script>";
 
   // Include database connection
-  $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
+  $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
 
   // Retrieve book details from the database
   $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 

@@ -8,7 +8,7 @@ session_start();
 require '../vendor/autoload.php'; // Include PHPMailer autoload file
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["sendCode"])) {
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // Database connection
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); // Database connection
 
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
