@@ -19,7 +19,7 @@ if (isset($_GET['borrower_id'])) {
     $borrowerId = $_GET['borrower_id'];
 
     // Database connection
-    $conn_display_all = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+    $conn_display_all = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
     if ($conn_display_all->connect_error) {
         die("Connection failed: " . $conn_display_all->connect_error);
     }

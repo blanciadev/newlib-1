@@ -16,7 +16,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 // Check if the form is submitted and Borrower ID is provided
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     // Database connection
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
@@ -75,7 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - LOGS</title>
+    <title>Log Record</title>
     <script src="../node_modules/html5-qrcode/html5-qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
       <!-- Display user image -->
       <?php
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
             $userID = $_SESSION["User_ID"];
             $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
                     FROM tbl_employee 
@@ -162,7 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             </thead>
             <?php
 // Database connection
-$conn_display_today = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
+$conn_display_today = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
 if ($conn_display_today->connect_error) {
     die("Connection failed: " . $conn_display_today->connect_error);
 }
@@ -171,7 +171,15 @@ if ($conn_display_today->connect_error) {
 $currentDate = date('Y-m-d');
 
 // SQL query to select records for the current date from tbl_borrower and tbl_log
-$sql_display_today = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID WHERE DATE(tbl_log.Date_Time) = '$currentDate'";
+$sql_display_today = "SELECT 
+                            tbl_borrower.*, tbl_log.* 
+                      FROM 
+                            tbl_borrower
+                      INNER JOIN 
+                            tbl_log 
+                      ON 
+                            tbl_borrower.Borrower_ID = tbl_log.Borrower_ID
+                    ORDER BY Date_Time DESC"; //WHERE DATE(tbl_log.Date_Time) = '$currentDate'";
 $result_display_today = $conn_display_today->query($sql_display_today);
 
 // Close display connection
@@ -186,7 +194,6 @@ $conn_display_today->close();
             echo "<td>" . $row['Borrower_ID'] . "</td>";
             echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
             echo "<td>" . $row['Date_Time'] . "</td>";
-            // Add more columns as needed
             echo "</tr>";
         }
     } else {

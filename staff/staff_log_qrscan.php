@@ -15,7 +15,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 // Check if the form is submitted and Borrower ID is provided
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     // Database connection
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
@@ -74,10 +74,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - LOGS</title>
-    <script src="../node_modules/html5-qrcode/html5-qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
+    <title>Scan Visitor Card</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -94,29 +91,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container-->
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-      <!-- Display user image -->
-      <?php
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
-            $userID = $_SESSION["User_ID"];
-            $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
-                    FROM tbl_employee 
-                    WHERE User_ID = $userID";
-            $result = mysqli_query($conn, $sql);
-            if (!$result) {
-                echo "Error: " . mysqli_error($conn);
-            } else {
-                $userData = mysqli_fetch_assoc($result);
-            }
+            <?php
+                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                $userID = $_SESSION["User_ID"];
+                $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
+                        FROM tbl_employee 
+                        WHERE User_ID = $userID";
+                $result = mysqli_query($conn, $sql);
+                if (!$result) {
+                    echo "Error: " . mysqli_error($conn);
+                } else {
+                    $userData = mysqli_fetch_assoc($result);
+                }
             ?>
             <?php if (!empty($userData['image_data'])): ?>
-                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else: ?>
-                <!--default image -->
                 <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-       <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong></div> 
-   
+            <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong>
+        </div> 
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
@@ -129,7 +123,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-
     <style>
         main {
             display: flex;
@@ -146,14 +139,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     </style>
     <div class="board1 container"><!--board container-->
         <div class="header1">
-                <div class="text">
-                    <div class="back-btn">
-                        <a href="./staff_log.php"><i class='bx bx-arrow-back'></i></a>
-                    </div>
-                    <div class="title">
-                        <h2>Scan Card</h2>
-                    </div>
+            <div class="text">
+                <div class="back-btn">
+                    <a href="./staff_log.php"><i class='bx bx-arrow-back'></i></a>
                 </div>
+                <div class="title">
+                    <h2>Scan Visitor Card</h2>
+                </div>
+            </div>
         </div>
         <div class="books container">
             <main>
@@ -166,11 +159,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
                 <label for="borrower_id">Or Enter Borrower ID:</label>
                   <!-- Bootstrap input field -->
-            <input type="text" class="form-control" id="borrower_id" name="borrower_id" placeholder="Enter Borrower ID">
-         
-          <button type="submit" class="btn btn-primary">Submit</button>
-    
-                
+                <input type="text" class="form-control" id="borrower_id" name="borrower_id" placeholder="Enter Borrower ID">
+                <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
             </form>
 
             <?php if (!empty($errorMessage)): ?>
@@ -179,11 +169,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
                 </div>
             <?php endif; ?>
         </div>
+        <button class="btn btn-success showToast">Show Toast</button>
+    </div>
 
-        <!--Logout Modal -->
-        <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
+    <!--Logout Modal -->
+    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
                 </div>
@@ -194,84 +186,103 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
                     <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
                     <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
                 </div>
-                </div>
             </div>
         </div>
+    </div>
+        
+    <div class="toastNotif" class="hide">
+        <div class="toast-content">
+            <i class='bx bx-check check'></i>
 
-<script>
+            <div class="message">
+                <span class="text text-1">Success</span><!-- this message can be changed to "Success" and "Error"-->
+                <span class="text text-2"></span> <!-- specify based on the if-else statements -->
+            </div>
+        </div>
+        <i class='bx bx-x close'></i>
+        <div class="progress"></div>
+    </div>
+    
+    <script src="../node_modules/html5-qrcode/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+    <script>
+        //Toast Notification 
+        const btn = document.querySelector(".showToast"),
+            toast = document.querySelector(".toastNotif"),
+            close = document.querySelector(".close"),
+            progress = document.querySelector(".progress");
 
-    const scanner = new Html5QrcodeScanner('reader', { 
-        // Scanner will be initialized in DOM inside element with id of 'reader'
-        qrbox: {
-            width: 250,
-            height: 250,
-        },  // Sets dimensions of scanning box (set relative to reader element width)
-        fps: 20, // Frames per second to attempt a scan
-    });
+        btn.addEventListener("click", () => { // showing toast
+            console.log("showing toast")
+            toast.classList.add("showing");
+            progress.classList.add("showing");
+            setTimeout(() => {
+                toast.classList.remove("showing");
+                progress.classList.remove("showing");
+                console.log("hide toast after 5s")
+            }, 5000);
+        });
+
+        close.addEventListener("click", () => { // closing toast
+            toast.classList.remove("showing");
+            progress.classList.remove("showing");
+        });
+
+        const scanner = new Html5QrcodeScanner('reader', { 
+            // Scanner will be initialized in DOM inside element with id of 'reader'
+            qrbox: {
+                width: 250,
+                height: 250,
+            },  // Sets dimensions of scanning box (set relative to reader element width)
+            fps: 20, // Frames per second to attempt a scan
+        });
 
 
-    scanner.render(success, error);
-    // Starts scanner
+        scanner.render(success, error);
+        // Starts scanner
 
-    function success(result) {
-    // Set the scanned result as the value of the input field
-    document.getElementById('borrower_id').value = result;
+        function success(result) {
+            // Set the scanned result as the value of the input field
+            document.getElementById('borrower_id').value = result;
 
-    // Clear the scanning instance
-    scanner.clear();
+            // Clear the scanning instance
+            scanner.clear();
 
-    // Remove the reader element from the DOM since it's no longer needed
-    document.getElementById('reader').remove();
-}
-
-
-    function error(err) {
-        // console.error(err);
-        // Prints any errors to the console
-    }
-
-</script>
-
-
-
-
-<script>
-    function redirectToBorrowDetails(borrowId) {
-        window.location.href = "staff_borrow_find.php?borrowId=" + borrowId;
-    }
-</script>
-
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    console.log("DOMContentLoaded event fired.");
-
-    var borrowerIdInput = document.getElementById("borrower_id");
-    var borrowForm = document.querySelector('form'); // Get the form element
-
-    // Function to submit the form if the borrower ID input field has a value
-    function checkAndSubmitForm() {
-        // Check if the input field has a value
-        if (borrowerIdInput.value.trim() !== "") {
-            console.log("Input field has a value. Submitting form.");
-            borrowForm.submit(); // Submit the form
-        } else {
-            console.log("Input field is empty.");
+            // Remove the reader element from the DOM since it's no longer needed
+            document.getElementById('reader').remove();
         }
-    }
-
-    // Check and submit the form every 2 seconds
-    setInterval(checkAndSubmitForm, 5000);
-});
-</script>
 
 
+        function error(err) {
+            // console.error(err);
+            // Prints any errors to the console
+        }
 
+        function redirectToBorrowDetails(borrowId) {
+            window.location.href = "staff_borrow_find.php?borrowId=" + borrowId;
+        }
 
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("DOMContentLoaded event fired.");
 
+            var borrowerIdInput = document.getElementById("borrower_id");
+            var borrowForm = document.querySelector('form'); // Get the form element
 
+            // Function to submit the form if the borrower ID input field has a value
+            function checkAndSubmitForm() {
+                // Check if the input field has a value
+                if (borrowerIdInput.value.trim() !== "") {
+                    console.log("Input field has a value. Submitting form.");
+                    borrowForm.submit(); // Submit the form
+                } else {
+                    console.log("Input field is empty.");
+                }
+            }
 
-
-
+            // Check and submit the form every 2 seconds
+            setInterval(checkAndSubmitForm, 5000);
+        });
+    </script>
 </body>
 </html>

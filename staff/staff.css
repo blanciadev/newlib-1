@@ -54,7 +54,7 @@ li.nav-item.active {
     height: 95%;  
     display: grid;
     grid-template-columns: 100%;
-    grid-template-rows: 10% 1fr 50px; 
+    grid-template-rows: 11% 1fr 50px; 
     gap: 2px;
 }
 .board1{   
@@ -62,7 +62,7 @@ li.nav-item.active {
     height: 95%;
     display: grid;
     grid-template-columns: 100%;
-    grid-template-rows: 10% 1fr;
+    grid-template-rows: 11% 1fr;
     gap: 2px;
 }
 .board h3,
@@ -73,6 +73,21 @@ li.nav-item.active {
 .books{
     width: 99%;
     height: 99%; 
+    overflow-y: auto;
+    background-color: #f8f9fa;
+    box-shadow:  5px 5px 10px #bababa,
+                -5px -5px 10px #dfdfdf;
+    padding: 2px;
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    flex-direction: row;
+    justify-content: center;
+}
+.bookSearchResult{
+    width: 99%;
+    height: 85%; 
     overflow-y: auto;
     background-color: #f8f9fa;
     box-shadow:  5px 5px 10px #bababa,
@@ -295,6 +310,16 @@ li.nav-item.active {
     justify-content: space-evenly;
     align-content: space-around; 
 }
+.bellIcon{
+    width: 35px;
+    height: 35px;
+    background-color: #2472f3;
+    color: white;
+    font-size: 18pt;
+    text-align: center;
+    padding: 5px;
+    border-radius: 50%;
+}
 .duebooks-con,.topBorrowers-con, .newbooks-con, .mostbooks-con{
     width: 97%;
     height: 80%;
@@ -451,11 +476,9 @@ li.nav-item.active {
     grid-row-start: 1;
     grid-row-end: 2;
 }
-
-
 .toastNotif {
     position: absolute;
-    top: 20px;
+    top: 10px;
     right: 20px;
     border-radius: 12px;
     padding: 15px 35px 15px 25px;
@@ -480,7 +503,6 @@ li.nav-item.active {
     align-items: center;
 
 }
-
 .toast-content .check {
     width: 35px;
     height: 35px;
@@ -492,10 +514,11 @@ li.nav-item.active {
     align-items: center;
     justify-content: center;
 }
-.toast-content .xmark {
+.toast-content .xmark, .xmark {
     width: 35px;
     height: 35px;
     background-color: red;
+    border: none;
     color: white;
     font-size: 20px;
     border-radius: 50%;
@@ -503,25 +526,20 @@ li.nav-item.active {
     align-items: center;
     justify-content: center;
 }
-
 .toast-content .message {
     display: flex;
     flex-direction: column;
     margin: 0 20px;
 }
-
-
 .message .text {
     font-size: 16px;
     font-weight: 400;
     color: gray;
 }
-
 .message .text.text-1 {
     font-weight: 600;
     color: black;
 }
-
 .toastNotif .close {
     position: absolute;
     font-weight: 600;
@@ -531,11 +549,9 @@ li.nav-item.active {
     cursor: pointer;
     opacity: 0.7;
 }
-
 .toastNotif .close:hover {
     opacity: 1;
 }
-
 .toastNotif .progress {
     position: absolute;
     bottom: 0;
@@ -544,48 +560,8 @@ li.nav-item.active {
     width: 100%;
     background-color: #ddd;
 }
-
 .toastNotif .progress::before {
     content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background-color: rgb(89, 252, 89);
-}
- 
-.message .text{
-    font-size: 16px;
-    font-weight: 400;
-    color: gray;
-}
-.message .text.text-1{
-    font-weight: 600;
-    color: black;
-}
-.toastNotif .close{
-    position: absolute;
-    font-weight: 600;
-    top:10px;
-    right: 15px;
-    padding: 5px;
-    cursor: pointer;
-    opacity: 0.7;
-}
-.toastNotif .close:hover{
-    opacity: 1;
-}
-.toastNotif .progress{
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 3px;
-    width: 100%;
-    background-color: #ddd;
-}
-.toastNotif .progress::before{
-    content:'';
     position: absolute;
     bottom: 0;
     left: 0;

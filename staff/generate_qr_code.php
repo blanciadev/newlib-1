@@ -22,7 +22,7 @@ $contact_number = $_SESSION['contact_number'];
 $email = $_SESSION['email'];
 $affiliation = $_SESSION['affiliation']; 
 
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 
 // Check if the email already exists in the database
 $checkEmailQuery = "SELECT * FROM tbl_borrower WHERE Email = '$email'";

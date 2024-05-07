@@ -12,7 +12,7 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
     $requestID = $_POST['requestID']; // Get the request ID from the form
 
     // Perform the database update operation
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
@@ -54,7 +54,7 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
         <!-- Display user image -->
         <?php
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
             $userID = $_SESSION["User_ID"];
             $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
                     FROM tbl_employee 
@@ -123,7 +123,7 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
         </thead>
         <tbody>
                 <?php
-        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
         if ($conn->connect_error) {
             die("Connection failed: " . $conn->connect_error);
         }
@@ -149,15 +149,17 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
                 if ($_SESSION["User_ID"] == $row["User_ID"] && $row["tb_status"] != "Approved") {
                     if ($row["tb_status"] != "Cancelled") {
                         echo "<td>
-                            <form id='cancelForm' method='POST' action=''>
+                            <form id='cancelForm' method='POST' action='' style='width:70px'>
                                 <input type=\"hidden\" name=\"cancelButton\" value=\"1\"> 
                                 <input type='hidden' name='requestID' value='" . $row["Request_ID"] . "'>
-                                <input type='submit' value='Cancel'>
+                                <button type='submit' class='xmark'><i class='bx bx-x'></i></button>
                             </form>
                         </td>";
                     } 
                 } else {
-                    echo "<td></td>"; // Empty cell if the condition is not met
+                    echo "<td>
+                    
+                    </td>"; // Empty cell if the condition is not met
                 } 
                 // CAN YOU ALSO CHANGE THIS TO EDIT BUTTON NALANG DAW? THEN NAAY OPTION FOR CANCEL TRANSACTION DADTO?
                 
@@ -178,6 +180,7 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
     </div>
     <div class="btn-con">
         <button class="btn" id="requestButton">Request New Book</button>
+        <button class="btn btn-success showToast">Show Toast</button>
     </div>
         
     </div>
@@ -200,9 +203,44 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
         </div>
     </div>
 
+    <div class="toastNotif" class="hide">
+        <div class="toast-content">
+            <i class='bx bx-check check'></i>
+
+            <div class="message">
+                <span class="text text-1">Success</span><!-- this message can be changed to "Success" and "Error"-->
+                <span class="text text-2"></span> <!-- specify based on the if-else statements -->
+            </div>
+        </div>
+        <i class='bx bx-x close'></i>
+        <div class="progress"></div>
+    </div>
+    
 
 
     <script>
+         //Toast Notification 
+         const btn = document.querySelector(".showToast"),
+            toast = document.querySelector(".toastNotif"),
+            close = document.querySelector(".close"),
+            progress = document.querySelector(".progress");
+
+        btn.addEventListener("click", () => { // showing toast
+            console.log("showing toast")
+            toast.classList.add("showing");
+            progress.classList.add("showing");
+            setTimeout(() => {
+                toast.classList.remove("showing");
+                progress.classList.remove("showing");
+                console.log("hide toast after 5s")
+            }, 5000);
+        });
+
+        close.addEventListener("click", () => { // closing toast
+            toast.classList.remove("showing");
+            progress.classList.remove("showing");
+        });
+
         // JavaScript code for search functionality
         document.getElementById("searchInput").addEventListener("input", function() {
             let searchValue = this.value.toLowerCase();

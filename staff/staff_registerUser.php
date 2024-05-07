@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Fines</title>
+    <title>Register Borrower</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
          <!-- Display user image -->
          <?php
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
             $userID = $_SESSION["User_ID"];
             $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
                     FROM tbl_employee 
@@ -73,10 +73,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             ?>
             <?php if (!empty($userData['image_data'])): ?>
-                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else: ?>
-                <!--default image -->
                 <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
        <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong></div> 

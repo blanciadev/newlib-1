@@ -10,7 +10,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 }
 
 
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 
 $userID = $_SESSION["User_ID"];
 
@@ -80,7 +80,7 @@ $dataJSON = json_encode($data);
         </a><!--header container-->
         <div class="user-header d-flex flex-row flex-wrap align-content-center justify-content-evenly">
             <?php
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
             $userID = $_SESSION["User_ID"];
             $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
                         FROM tbl_employee 
@@ -130,7 +130,7 @@ $dataJSON = json_encode($data);
                 <div class="ovw-con">
                     <div class="totalbooks">
                         <?php
-                        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); // database connection
+                        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308 ); // database connection
 
                         // Query to get the total quantity of all books
                         $totalQuantityQuery = "SELECT SUM(Quantity) AS total_quantity FROM tbl_books";
@@ -219,9 +219,9 @@ $dataJSON = json_encode($data);
                     $totalVisits_run = mysqli_query($conn, $totalVisits);
 
                     if ($totalVisits_run && mysqli_num_rows($totalVisits_run) > 0) {
-                        echo '<ol class="list-group list-group-numbered">';
+                        echo '<ol class="list-group list-group-numbered" style="height:40%; width:100%">';
                         while ($row = mysqli_fetch_assoc($totalVisits_run)) {
-                            echo '<li class="list-group-item d-flex justify-content-between align-items-start" style="height:60px; width:360px">';
+                            echo '<li class="list-group-item d-flex justify-content-between align-items-start">';
                             echo '<div class="ms-2 me-auto">';
                             echo '  <div class="fw"><strong>' . $row['Book_Title'] . '</strong></div>
                                             ' . $row['First_Name'] . ' ' . $row['Last_Name'] . '
@@ -229,7 +229,7 @@ $dataJSON = json_encode($data);
                             echo '<div class="view-btn">
                                         <input type="hidden" class="borrowerId" value="' . $row['Borrower_ID'] . '">
                                         <a href="#" onclick="sendEmail(' . $row['Borrower_ID'] . ')">
-                                        <i class="bx bxs-bell"></i>
+                                        <i class="bx bxs-bell bellIcon"></i>
                                     </a>
                                     </div>';
                             echo '</li>';
@@ -292,7 +292,7 @@ $dataJSON = json_encode($data);
 
                         // Loop through the top visitors
                         while ($row = mysqli_fetch_assoc($topVisitorsResult)) {
-                            $visitorName = $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'];
+                            $visitorName = $row['First_Name'] . " " . $row['Last_Name'];
                             $visitCount = $row['visit_count'];
 
                             echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px'>";
@@ -346,7 +346,7 @@ $dataJSON = json_encode($data);
 
                     $result = mysqli_query($conn, $sql);
 
-                    if ($result) {
+                    if ($result && mysqli_num_rows($result) > 0) {
                         $totalBooksCount = mysqli_num_rows($result);
 
                         // Display the books or process further as needed
@@ -446,7 +446,7 @@ $dataJSON = json_encode($data);
 
             // Send an AJAX request to a PHP script
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "send_email_dueawd.php?borrower_id=" + encodedBorrowerId, true);
+            xhr.open("POST", "send_email_due.php?borrower_id=" + encodedBorrowerId, true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.onreadystatechange = function() {
 

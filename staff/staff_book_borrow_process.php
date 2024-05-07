@@ -236,7 +236,7 @@
         <div class="header1">
             <div class="text">
                 <div class="back-btn">
-                    <a href="./staff_request_list.php"><i class='bx bx-arrow-back'></i></a>
+                    <a href="./staff_book_borrow_find.php"><i class='bx bx-arrow-back'></i></a>
                 </div>
                 <div class="title">
                     <h2>Borrow Process</h2>
@@ -269,9 +269,9 @@
                                     <p class="card-text"><strong>Author:</strong> <?php echo $row['Authors_Name']; ?></p>
                                     <p class="card-text"><strong>Availability:</strong> <?php echo $row['Quantity']; ?></p>
                                     <div class="mb-3">
-                                        <label for="quantity" class="form-label">Quantity:</label>
+                                        <label for="quantity" class="form-label"><strong>Quantity:</strong></label>
                                         <!-- Input field for quantity with max attribute set to available quantity -->
-                                        <input type="number" id="quantity" name="quantity[]" min="1" max="<?php echo $row['Quantity']; ?>" value="1" readonly class="form-control form-control-sm">
+                                        <input type="number" id="quantity" name="quantity[]" min="1" max="<?php echo $row['Quantity']; ?>" value="1" readonly>
                                         <!-- Hidden input field to store the book ID or accession code for processing -->
                                         <input type="hidden" name="accession_code[]" value="<?php echo $row['Accession_Code']; ?>">
                                     </div>

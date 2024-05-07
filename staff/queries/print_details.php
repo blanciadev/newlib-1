@@ -12,7 +12,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 $borrowerID = $_SESSION['bID'];
 
 
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 
 // Check if the email already exists in the database
 $checkEmailQuery = "SELECT * FROM tbl_borrower WHERE Borrower_ID = '$borrowerID'";
