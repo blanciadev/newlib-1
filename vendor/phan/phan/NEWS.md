@@ -1678,7 +1678,7 @@ New features(Analysis):
   Assume that constants defined with `define(...)` can have any non-object as its real type,
   to avoid false positives in redundant condition detection.
 + Properly infer that parameter defaults and global constants will resolve to `null` in some edge cases.
-+ Emit `PhanCompatibleDefaultEqualsNull` when using a different constant that resolves to null as the default of a non-nullable parameter. (#3307)
++ Emit `PhanCompatibleDefaultEqualsNull` when using a different constant that resolves to null as the default of a non-nullable parameter. (#3308)
 + Emit `PhanPossiblyInfiniteRecursionSameParams` when a function or method calls itself with the same parameter values it was declared with (in a branch). (#2893)
   (This requires unused variable detection to be enabled, when there are 1 or more parameters)
 + Analyze complex conditions such as `switch (true)`, `if (($x instanceof stdClass) == false)`, etc. (#3315)

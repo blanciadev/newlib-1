@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $confirmPassword = $_POST['confirmPassword'];
 
     // Database connection
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
     if (!$conn) {
         die("Connection failed: " . mysqli_connect_error());
     }

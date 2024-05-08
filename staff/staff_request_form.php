@@ -8,73 +8,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
-// Check if the form is submitted
-if (isset($_POST['submit'])) {
-
-    $_SESSION['User_ID'];
-    $userID = $_SESSION['User_ID'];
-    $bookTitle = $_POST['bookTitle'];
-    $author = $_POST['author'];
-    $publisher = $_POST['publisher'];
-    $edition = $_POST['edition'];
-    $year = $_POST['year'];
-    $quantity = $_POST['quantity'];
-    $status = "Pending";
-    $price = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
-    $country = $_POST['country'];
-    
-    // Retrieve selected section and shelf number from hidden input fields
-    $selectedSection = $_POST['selectedSection'];
-    $selectedShelf = $_POST['selectedShelf'];
-
-
-
-    // Handle author input
-    if ($_POST['author'] === 'Other') {
-        // Use the value from the "New Author" input field
-        $author = $_POST['newAuthor'];
-    } else {
-        // Use the selected author from the dropdown
-        $author = $_POST['author'];
-    }
-
-
-    // Validate form data (you may need more robust validation)
-    if (empty($bookTitle) || empty($author) || empty($publisher) || empty($quantity)) {
-        $errorMessage = "Please fill in all fields.";
-        ?>
-        <script>
-            console.log("Missing fields: <?php echo empty($bookTitle) ? 'Book Title, ' : '' ?><?php echo empty($author) ? 'Author, ' : '' ?><?php echo empty($publisher) ? 'Publisher, ' : '' ?><?php echo empty($quantity) ? 'Quantity' : '' ?>");
-        </script>
-        <?php
-    }
-     else {
-        // Handle "Other Edition" input
-        if ($edition === "Other") {
-            // Check if the 'otherEdition' input is set and not empty
-            if (isset($_POST['otherEdition']) && !empty($_POST['otherEdition'])) {
-                $edition = $_POST['otherEdition']; // Use the input value for edition
-            } else {
-                $errorMessage = "Please provide a value for Other Edition.";
-            }
-        }
-
-        // Insert data into the database
-        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); //database connection
-
-        // Assuming you have a database connection named $conn
-        $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Authors_Name, Publisher_Name, price, tb_edition, Year_Published, Quantity, country, tb_status, Section_Code, shelf) 
-        VALUES ('$userID', '$bookTitle', '$author', '$publisher', '$price', '$edition', '$year', '$quantity', '$country', '$status', '$selectedSection', '$selectedShelf')";
-
-        $result = mysqli_query($conn, $query);
-
-        if ($result) {
-            $successMessage = "Request submitted successfully.";
-        } else {
-            $errorMessage = "Error: " . mysqli_error($conn);
-        }
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -164,7 +97,7 @@ if (isset($_POST['submit'])) {
                 <?php endif; ?>
             </div>
 
-            <form method="POST" action="">
+            <form id="requestForm" method="POST" action="">
 
                 <input type="hidden" name="userID" value="<?php echo $_SESSION['User_ID']; ?>">
 
@@ -174,22 +107,22 @@ if (isset($_POST['submit'])) {
                 </div>
 
                 <?php
-                    // Database connection
-                    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-                    if ($conn->connect_error) {
-                        die("Connection failed: " . $conn->connect_error);
-                    }
+                // Database connection
+                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                if ($conn->connect_error) {
+                    die("Connection failed: " . $conn->connect_error);
+                }
 
-                    $query = "SELECT Authors_Name, Authors_ID FROM tbl_authors";
-                    $result = mysqli_query($conn, $query);
+                $query = "SELECT Authors_Name, Authors_ID FROM tbl_authors";
+                $result = mysqli_query($conn, $query);
 
-                    $existingAuthors = [];
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        $existingAuthors[] = $row['Authors_Name'];
-                    }
+                $existingAuthors = [];
+                while ($row = mysqli_fetch_assoc($result)) {
+                    $existingAuthors[] = $row['Authors_Name'];
+                }
 
-                    // Add an "Other" option to the existing authors
-                    $existingAuthors[] = "Other";
+                // Add an "Other" option to the existing authors
+                $existingAuthors[] = "Other";
                 ?>
 
                 <div class="mb-3">
@@ -197,13 +130,13 @@ if (isset($_POST['submit'])) {
                     <select class="form-select" id="author" name="author" required>
                         <option value="" disabled selected>Select an author</option>
                         <?php foreach ($existingAuthors as $authorOption) : ?>
-                        <option value="<?php echo $authorOption; ?>"><?php echo $authorOption; ?></option>
+                            <option value="<?php echo $authorOption; ?>"><?php echo $authorOption; ?></option>
                         <?php endforeach; ?>
                     </select>
                 </div>
 
                 <div class="mb-3" id="newAuthorInput" style="display: none;">
-                <label for="newAuthor" class="form-label">New Author</label>
+                    <label for="newAuthor" class="form-label">New Author</label>
                     <input type="text" class="form-control" id="newAuthor" name="newAuthor">
                     <label for="country" class="form-label">Country</label>
                     <input type="text" class="form-control" id="country" name="country">
@@ -244,40 +177,44 @@ if (isset($_POST['submit'])) {
                 </div>
 
                 <?php
-                    // Fetch sections from tbl_section
-                    $sql_sections = "SELECT Section_Code, Section_Name FROM tbl_section";
-                    $result_sections = mysqli_query($conn, $sql_sections);
+                // Fetch sections from tbl_section
+                $sql_sections = "SELECT Section_Code, Section_Name FROM tbl_section";
+                $result_sections = mysqli_query($conn, $sql_sections);
 
-                    // Check if sections were fetched successfully
-                    
-                    if ($result_sections && mysqli_num_rows($result_sections) > 0) {
-                        echo '<div class="form-group">';
-                        echo '<label for="section" class="form-label">Section:</label>';
-                        echo '<select id="section" name="section" class="form-select" required>';
-                        echo '<option value="">Select Section</option>';
-                        
-                        // Display options for each section
-                        while ($row = mysqli_fetch_assoc($result_sections)) {
-                            echo '<option value="' . $row['Section_Code'] . '">' . $row['Section_Name'] . '</option>';
-                        }
-                        
-                        echo '</select>';
-                        echo '</div>';
-                    } else {
-                        echo '<div class="alert alert-warning" role="alert">No sections found</div>';
+                // Check if sections were fetched successfully
+
+                if ($result_sections && mysqli_num_rows($result_sections) > 0) {
+                    echo '<div class="form-group">';
+                    echo '<label for="section" class="form-label">Section:</label>';
+                    echo '<select id="section" name="section" class="form-select" required>';
+                    echo '<option value="">Select Section</option>';
+
+                    // Display options for each section
+                    while ($row = mysqli_fetch_assoc($result_sections)) {
+                        echo '<option value="' . $row['Section_Code'] . '">' . $row['Section_Name'] . '</option>';
                     }
-                    // Close connection
-                    mysqli_close($conn);
+
+                    echo '</select>';
+                    echo '</div>';
+                } else {
+                    echo '<div class="alert alert-warning" role="alert">No sections found</div>';
+                }
+                // Close connection
+                mysqli_close($conn);
                 ?>
                 <br>
+             
+                    
                 <div class="mb-3">
                     <label for='shelf'>Shelf Number:</label>
                     <div id="shelfContainer"></div>
                     <input type="hidden" id="selectedSection" name="selectedSection">
                     <input type="hidden" id="selectedShelf" name="selectedShelf">
+                 
                 </div>
-                    <br>
-                    <button type="submit" class="btn btn-primary" name="submit">Submit Request</button>
+                <br>
+                <button type="submit" class="btn btn-primary">Submit Request</button>
+
             </form>
         </div>
 
@@ -303,7 +240,7 @@ if (isset($_POST['submit'])) {
         </div>
     </div>
 
-    <div class="toastNotif" class="hide">
+    <div class="toastNotif hide">
         <div class="toast-content">
             <i class='bx bx-check check'></i>
 
@@ -315,55 +252,15 @@ if (isset($_POST['submit'])) {
         <i class='bx bx-x close'></i>
         <div class="progress"></div>
     </div>
-    
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+
     <script>
-        //Toast Notification 
-        const btn = document.querySelector(".showToast"),
-            toast = document.querySelector(".toastNotif"),
-            close = document.querySelector(".close"),
-            progress = document.querySelector(".progress");
+      document.addEventListener("DOMContentLoaded", function() {
 
-        btn.addEventListener("click", () => { // showing toast
-            console.log("showing toast")
-            toast.classList.add("showing");
-            progress.classList.add("showing");
-            setTimeout(() => {
-                toast.classList.remove("showing");
-                progress.classList.remove("showing");
-                console.log("hide toast after 5s")
-            }, 5000);
-        });
-
-        close.addEventListener("click", () => { // closing toast
-            toast.classList.remove("showing");
-            progress.classList.remove("showing");
-        });
-
-
-        $(document).ready(function() {
-            // Event listener for section dropdown change
-            $('#section').change(function() {
-                var sectionCode = $(this).val();
-                    
-                // AJAX request to fetch shelf numbers
-                $.ajax({
-                    url: 'queries/shelf.php', // Update the URL to your PHP script
-                    method: 'POST',
-                    data: { sectionCode: sectionCode },
-                    dataType: 'html',
-                    success: function(response) {
-                        // Update shelf container with fetched shelf numbers
-                        $('#shelfContainer').html(response);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error fetching shelf numbers:', error);
-                    }
-                });
-            });
-            // Event listener for form submission
-            $('form').submit(function() {
+             // Event listener for form submission
+             $('form').submit(function() {
                 // Get selected section and shelf number
                 var selectedSection = $('#section').val();
                 var selectedShelf = $('#shelf').val(); // Corrected variable name
@@ -372,29 +269,231 @@ if (isset($_POST['submit'])) {
                 $('#selectedSection').val(selectedSection);
                 $('#selectedShelf').val(selectedShelf);
             });
+      
 
-        });
+    // Get the form element
+    const form = document.getElementById("requestForm");
+    // Get the progress element
+    const progress = document.querySelector(".progress");
 
-        //JavaScript to toggle input field
-        document.getElementById("author").addEventListener("change", function() {
-            const newAuthorInput = document.getElementById("newAuthorInput");
-            newAuthorInput.style.display = (this.value === "Other") ? "block" : "none";
-        });
+    
+    // Function to show toast notification
+    function showToast(type, message) {
+        const toast = document.querySelector(".toastNotif");
+        const messageElement = toast.querySelector(".message .text-2");
+        const checkIcon = toast.querySelector(".check");
 
-        function toggleOtherEdition() {
-            const editionSelect = document.getElementById('edition');
-            const otherEditionContainer = document.getElementById('otherEditionContainer');
-            const otherEditionInput = document.getElementById('otherEdition');
-
-            if (editionSelect.value === 'Other') {
-                otherEditionContainer.style.display = 'block'; // Show the input field
-                otherEditionInput.required = true; // Make the input field required
-            } else {
-                otherEditionContainer.style.display = 'none'; // Hide the input field
-                otherEditionInput.required = false; // Make the input field optional
-                otherEditionInput.value = ''; // Clear the input field value
-            }
+        // Set toast message and icon based on type
+        messageElement.textContent = message;
+        if (type === "Success") {
+            checkIcon.classList.remove("bx-x");
+            checkIcon.classList.add("bx-check");
+            toast.classList.add("success");
+        } else {
+            checkIcon.classList.remove("bx-check");
+            checkIcon.classList.add("bx-x");
+            toast.classList.remove("success");
         }
+
+        // Show toast notification
+        toast.classList.add("showing");
+        setTimeout(() => {
+            toast.classList.remove("showing");
+            window.location.href = "staff_books.php";
+        }, 5000);
+    }
+
+
+// Add submit event listener to the form
+form.addEventListener("submit", function(event) {
+    event.preventDefault(); // Prevent form submission
+// Event listener for form submission using jQuery
+$('form').submit(function(event) {
+    event.preventDefault(); // Prevent form submission
+
+    // Get selected section and shelf number
+    var selectedSection = $('#section').val();
+    var selectedShelf = $('#selectedShelf').val(); // Corrected variable name
+
+    // Set hidden input values
+    $('#selectedSection').val(selectedSection);
+    $('#selectedShelf').val(selectedShelf);
+
+    // Create FormData object to send form data
+    var formData = new FormData($(this)[0]);
+
+    // Log all data being sent
+    for (var pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+    }
+
+    // Create a new XMLHttpRequest object
+    var xhr = new XMLHttpRequest();
+
+    // Define the request parameters
+    xhr.open("POST", "queries/req_form.php", true);
+
+    // Set up event listeners for the request
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            console.log(xhr.responseText);
+            if (xhr.status === 200) {
+                // Request successful, handle response
+
+                // Show toast notification for success
+                showToast("Success", "Form submitted successfully.");
+            } else {
+                // Show toast notification for error
+                showToast("Error", "An error occurred while submitting the form.");
+                console.log(xhr.responseText);
+            }
+            // Hide progress bar after request completes
+            progress.classList.remove("showing");
+        }
+    };
+
+    // Show progress bar while waiting for response
+    progress.classList.add("showing");
+
+    // Send the request with form data
+    xhr.send(formData);
+});
+});
+      
+
+
+
+
+});
+document.addEventListener("DOMContentLoaded", function() {
+    // Get the form element
+    const form = document.getElementById("requestForm");
+    // Get the progress element
+    const progress = document.querySelector(".progress");
+
+    // Function to show toast notification
+    function showToast(type, message) {
+        const toast = document.querySelector(".toastNotif");
+        const messageElement = toast.querySelector(".message .text-2");
+        const checkIcon = toast.querySelector(".check");
+
+        // Set toast message and icon based on type
+        messageElement.textContent = message;
+        if (type === "Success") {
+            checkIcon.classList.remove("bx-x");
+            checkIcon.classList.add("bx-check");
+            toast.classList.add("success");
+        } else {
+            checkIcon.classList.remove("bx-check");
+            checkIcon.classList.add("bx-x");
+            toast.classList.remove("success");
+        }
+
+        // Show toast notification
+        toast.classList.add("showing");
+        setTimeout(() => {
+            toast.classList.remove("showing");
+            window.location.href = "staff_books.php";
+        }, 5000);
+    }
+
+    // Event listener for form submission using jQuery
+    $('form').submit(function(event) {
+        event.preventDefault(); // Prevent form submission
+
+        // Get selected section and shelf number
+        var selectedSection = $('#section').val();
+        var selectedShelf = $('#selectedShelf').val(); // Corrected variable name
+
+        // Set hidden input values
+        $('#selectedSection').val(selectedSection);
+        $('#selectedShelf').val(selectedShelf);
+
+        // Create FormData object to send form data
+        var formData = new FormData($(this)[0]);
+
+        // Log all data being sent
+        for (var pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+
+        // Create a new XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+
+        // Define the request parameters
+        xhr.open("POST", "queries/req_form.php", true);
+
+        // Set up event listeners for the request
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                console.log(xhr.responseText);
+                if (xhr.status === 200) {
+                    // Request successful, handle response
+
+                    // Show toast notification for success
+                    showToast("Success", "Form submitted successfully.");
+                } else {
+                    // Show toast notification for error
+                    showToast("Error", "An error occurred while submitting the form.");
+                    console.log(xhr.responseText);
+                }
+                // Hide progress bar after request completes
+                progress.classList.remove("showing");
+            }
+        };
+
+        // Show progress bar while waiting for response
+        progress.classList.add("showing");
+
+        // Send the request with form data
+        xhr.send(formData);
+    });
+
+    // Event listener for section dropdown change
+    $('#section').change(function() {
+        var sectionCode = $(this).val();
+
+        // AJAX request to fetch shelf numbers
+        $.ajax({
+            url: 'queries/shelf.php', // Update the URL to your PHP script
+            method: 'POST',
+            data: {
+                sectionCode: sectionCode
+            },
+            dataType: 'html',
+            success: function(response) {
+                // Update shelf container with fetched shelf numbers
+                $('#shelfContainer').html(response);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching shelf numbers:', error);
+            }
+        });
+    });
+
+    // Event listener for author dropdown change
+    $('#author').change(function() {
+        const newAuthorInput = $('#newAuthorInput');
+        newAuthorInput.toggle($(this).val() === "Other");
+    });
+
+    // Event listener for edition select change
+    $('#edition').change(function() {
+        const otherEditionContainer = $('#otherEditionContainer');
+        const otherEditionInput = $('#otherEdition');
+
+        if ($(this).val() === 'Other') {
+            otherEditionContainer.show(); // Show the input field
+            otherEditionInput.prop('required', true); // Make the input field required
+        } else {
+            otherEditionContainer.hide(); // Hide the input field
+            otherEditionInput.prop('required', false); // Make the input field optional
+            otherEditionInput.val(''); // Clear the input field value
+        }
+    });
+});
+
     </script>
 </body>
+
 </html>
