@@ -13,6 +13,51 @@
     $bookDetails = isset($_GET['bookDetails']) ? json_decode($_GET['bookDetails']) : [];
     echo "<script>console.log('Book Details:', " . json_encode($bookDetails) . ");</script>";
 
+// Define showToast() function
+// Output the HTML code for the toast element
+echo '<div class="toastNotif hide">
+    <div class="toast-content">
+        <i class="bx bx-check check"></i>
+        <div class="message">
+            <span class="text text-1">Success</span>
+            <!-- this message can be changed to "Success" and "Error"-->
+            <span class="text text-2"></span>
+            <!-- specify based on the if-else statements -->
+        </div>
+    </div>
+    <i class="bx bx-x close"></i>
+    <div class="progress"></div>
+</div>';
+
+// Define JavaScript functions to handle the toast
+echo '<script>
+    function showToast() {
+        var toast = document.querySelector(".toastNotif");
+        var progress = document.querySelector(".progress");
+        
+        if (toast && progress) {
+            toast.classList.add("showing");
+            progress.classList.add("showing");
+            setTimeout(() => {
+                toast.classList.remove("showing");
+                progress.classList.remove("showing");
+                window.location.href = "queries/print_borrow.php";
+            }, 5000);
+        } else {
+            console.error("Toast elements not found");
+        }
+    }
+
+    function closeToast() {
+        var toast = document.querySelector(".toastNotif");
+        var progress = document.querySelector(".progress");
+        toast.classList.remove("showing");
+        progress.classList.remove("showing");
+    }
+</script>';
+
+
+
     // Check if the borrower_id session variable is set
     if (isset($_SESSION['borrower_id'])) {
         // Retrieve the borrower_id from the session
@@ -94,20 +139,20 @@
         $_SESSION["due"] = $dueDate;
         // Check if $bookAccessionCodesStr is set
         if (isset($_SESSION['bookAccessionCodesStr']) && !empty($_SESSION['bookAccessionCodesStr'])) {
-            echo "<script>console.log('Page Submit');</script>";
+            // echo "<script>console.log('Page Submit');</script>";
 
             // Split the string of Accession Codes into an array
             $bookAccessionCodes = explode(",", $_SESSION['bookAccessionCodesStr']);
 
             // Prepare and execute the INSERT statement for tbl_borrow for each book
             foreach ($bookAccessionCodes as $accessionCode) {
-                echo "<script>console.log('Book Accession Code:', '" . $accessionCode . "');</script>"; // Debugging
+                // echo "<script>console.log('Book Accession Code:', '" . $accessionCode . "');</script>"; // Debugging
 
                 // Update the quantity in the database
                 $sql_update_quantity = "UPDATE tbl_books SET Quantity = Quantity - 1 WHERE Accession_Code = $accessionCode";
 
                 if ($conn->query($sql_update_quantity) === TRUE) {
-                    echo "<script>console.log('Quantity updated for Accession Code: $accessionCode');</script>";
+                    // echo "<script>console.log('Quantity updated for Accession Code: $accessionCode');</script>";
 
                     // Prepare and execute the INSERT statement for tbl_borrow
                     $sql_borrow = "INSERT INTO tbl_borrow (User_ID, Borrower_ID, Accession_Code, Date_Borrowed, Due_Date, tb_status) 
@@ -122,7 +167,7 @@
                     $sql_borrow .= ", '$Status')";
 
                     if ($conn->query($sql_borrow) === TRUE) {
-                        echo "<script>console.log('Inserted into  for Accession Code: $accessionCode');</script>";
+                        // echo "<script>console.log('Inserted into  for Accession Code: $accessionCode');</script>";
 
                         // Prepare and execute the INSERT statement for tbl_borrowdetails
                         $sql_borrowdetails = "INSERT INTO tbl_borrowdetails (Borrower_ID, Accession_Code, Quantity, tb_status) 
@@ -130,7 +175,7 @@
 
                         if ($conn->query($sql_borrowdetails) === TRUE) {
                             // Insertion successful
-                            echo "<script>console.log('Inserted into  for Accession Code: $accessionCode');</script>";
+                            // echo "<script>console.log('Inserted into  for Accession Code: $accessionCode');</script>";
                         } else {
                             echo "Error inserting into : " . $conn->error;
                         }
@@ -141,7 +186,7 @@
 
                         if ($conn->query($sql_returndetails) === TRUE) {
                             // Insertion successful
-                            echo "<script>console.log('Returning Details done');</script>";
+                            // echo "<script>console.log('Returning Details done');</script>";
                         } else {
                             echo "Error inserting into : " . $conn->error;
                         }
@@ -152,7 +197,7 @@
 
                         if ($conn->query($sql_return) === TRUE) {
                             // Insertion successful
-                            echo "<script>console.log('Returning Details done');</script>";
+                            // echo "<script>console.log('Returning Details done');</script>";
                         } else {
                             echo "Error inserting into : " . $conn->error;
                         }
@@ -165,8 +210,9 @@
                 }
             }
 
-            // Redirect user or display success message after borrowing all books
-            echo '<script>alert("All selected books have been borrowed successfully."); window.location.href = "queries/print_borrow.php";</script>';
+            echo '<script>showToast();</script>';
+            // echo '<script>alert("All selected books have been borrowed successfully."); window.location.href = "queries/print_borrow.php";</script>';
+       
         } else {
             echo "No book details available";
         }
@@ -189,6 +235,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./staff.css" rel="stylesheet">
+
+
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
 <body>
@@ -356,38 +408,51 @@
     <!-- jQuery UI library -->
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+   
     <script>
-        //Toast Notification 
-        const btn = document.querySelector(".showToast"),
-            toast = document.querySelector(".toastNotif"),
-            close = document.querySelector(".close"),
-            progress = document.querySelector(".progress");
+      
+    // function showToast() {
+    //     toast.classList.add("showing");
+    //     progress.classList.add("showing");
+    //     setTimeout(() => {
+    //         toast.classList.remove("showing");
+    //         progress.classList.remove("showing");
+    //     }, 5000);
+    // }
 
-        btn.addEventListener("click", () => { // showing toast
-            console.log("showing toast")
-            toast.classList.add("showing");
-            progress.classList.add("showing");
-            setTimeout(() => {
-                toast.classList.remove("showing");
-                progress.classList.remove("showing");
-                console.log("hide toast after 5s")
-            }, 5000);
-        });
+    //Toast Notification 
+    const btn = document.querySelector(".showToast"),
+        toast = document.querySelector(".toastNotif"),
+        close = document.querySelector(".close"),
+        progress = document.querySelector(".progress");
 
-        close.addEventListener("click", () => { // closing toast
+    btn.addEventListener("click", () => { // showing toast
+        console.log("showing toast")
+        toast.classList.add("showing");
+        progress.classList.add("showing");
+        setTimeout(() => {
             toast.classList.remove("showing");
             progress.classList.remove("showing");
-        });
+            console.log("hide toast after 5s")
+        }, 5000);
+    });
 
-        $(function() {
-            // Initialize datepicker
-            $("#due_date").datepicker();
-        });
+    close.addEventListener("click", () => { // closing toast
+        toast.classList.remove("showing");
+        progress.classList.remove("showing");
+    });
 
-        document.getElementById("cancelButton").addEventListener("click", function() {
-            window.location.href = "staff_return.php";
-        });
-    </script>
+    $(function() {
+        // Initialize datepicker
+        $("#due_date").datepicker();
+    });
+
+    // document.getElementById("cancelButton").addEventListener("click", function() {
+    //     window.location.href = "staff_return.php";
+    // });
+
+</script>
+
 </body>
 
 </html>

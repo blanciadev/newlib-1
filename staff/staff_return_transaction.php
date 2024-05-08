@@ -21,12 +21,15 @@ if (isset($_GET['borrowId'])) {
 
     // Set the session variable
     $_SESSION['BorrowDetails_ID'] = $borrowId;
+    
 } else {
     // Handle the case when borrowId is not provided in the URL
     // For example, redirect back or show an error message
     echo "Borrow ID not provided.";
     exit; // Stop script execution if necessary
 }
+
+
 
 
 // Initialize $bd_Id to an empty string
@@ -118,6 +121,53 @@ function calculateFine($dueDate, $dateBorrowed)
 
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+ 
+   
+// Define showToast() function
+// Output the HTML code for the toast element
+echo '<div class="toastNotif hide">
+<div class="toast-content">
+    <i class="bx bx-check check"></i>
+    <div class="message">
+        <span class="text text-1">Success</span>
+        <!-- this message can be changed to "Success" and "Error"-->
+        <span class="text text-2"></span>
+        <!-- specify based on the if-else statements -->
+    </div>
+</div>
+<i class="bx bx-x close"></i>
+<div class="progress"></div>
+</div>';
+
+// Define JavaScript functions to handle the toast
+echo '<script>
+function showToast() {
+    console.log("Toast Called");
+    var toast = document.querySelector(".toastNotif");
+    var progress = document.querySelector(".progress");
+    
+    if (toast && progress) {
+        toast.classList.add("showing");
+        progress.classList.add("showing");
+        setTimeout(() => {
+            toast.classList.remove("showing");
+            progress.classList.remove("showing");
+            window.location.href = "queries/print_return.php";
+        }, 5000);
+    } else {
+        console.error("Toast elements not found");
+    }
+}
+
+function closeToast() {
+    var toast = document.querySelector(".toastNotif");
+    var progress = document.querySelector(".progress");
+    toast.classList.remove("showing");
+    progress.classList.remove("showing");
+}
+</script>';
+
 
 // Check if $_SESSION['fine'] is set before using it
 if(isset($_SESSION['fine'])) {
@@ -255,7 +305,8 @@ $fine += $_SESSION['fine'];
     // Check each query execution status
     if ($status1 && $status2 && $status3  && $status5) {
         // All queries executed successfully
-        echo '<script>alert("Record Updated successfully."); window.location.href = "queries/print_return.php";</script>';
+        echo '<script>showToast();</script>';
+        // echo '<script>alert("Record Updated successfully."); window.location.href = "queries/print_return.php";</script>';
         exit();
     } else {
         // Error occurred while executing queries
@@ -300,7 +351,7 @@ $fine += $_SESSION['fine'];
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link href="./staff.css" rel="stylesheet">
+    <link href="staff.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
 
@@ -461,6 +512,19 @@ $fine += $_SESSION['fine'];
     ?>
 </div>
 
+<div class="toastNotif hide">
+    <div class="toast-content">
+        <i class="bx bx-check check"></i>
+        <div class="message">
+            <span class="text text-1">Success</span>
+            <!-- this message can be changed to "Success" and "Error"-->
+            <span class="text text-2"></span>
+            <!-- specify based on the if-else statements -->
+        </div>
+    </div>
+    <i class="bx bx-x close"></i>
+    <div class="progress"></div>
+</div>
 
 
                 <script>
@@ -490,9 +554,9 @@ $fine += $_SESSION['fine'];
 
 
 
+<!--  THIS CODE IS REDUNDANT NOO NEED FOR SEARCH FUNCTIONALITY  -->
 
-
-            <script>
+            <!-- <script>
                 // Get the search input field
                 const searchInput = document.getElementById("searchInput");
 
@@ -514,15 +578,15 @@ $fine += $_SESSION['fine'];
                     };
                     xhr.send();
                 });
-            </script>
+            </script> -->
 
 
 
-            <script>
+            <!-- <script>
                 document.getElementById("requestButton").addEventListener("click", function() {
                     window.location.href = "staff_request_form.php";
                 });
-            </script>
+            </script> -->
 
 
 
