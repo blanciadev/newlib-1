@@ -8,6 +8,54 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
+// Define showToast() function
+// Output the HTML code for the toast element
+echo '<div class="toastNotif hide">
+<div class="toast-content">
+    <i class="bx bx-check check"></i>
+    <div class="message">
+        <span class="text text-1">Success</span>
+        <!-- this message can be changed to "Success" and "Error"-->
+        <span class="text text-2"></span>
+        <!-- specify based on the if-else statements -->
+    </div>
+</div>
+<i class="bx bx-x close"></i>
+<div class="progress"></div>
+</div>';
+
+echo '<script>
+function showToast(messageType, message) {
+    console.log("Toast Called");
+    var toast = document.querySelector(".toastNotif");
+    var progress = document.querySelector(".progress");
+    
+    // Set the message type and text
+    toast.querySelector(".text-1").textContent = messageType;
+    toast.querySelector(".text-2").textContent = message;
+    
+    if (toast && progress) {
+        toast.classList.add("showing");
+        progress.classList.add("showing");
+        setTimeout(() => {
+            toast.classList.remove("showing");
+            progress.classList.remove("showing");
+            window.location.href = "queries/print_return.php";
+        }, 5000);
+    } else {
+        console.error("Toast elements not found");
+    }
+}
+
+function closeToast() {
+    var toast = document.querySelector(".toastNotif");
+    var progress = document.querySelector(".progress");
+    toast.classList.remove("showing");
+    progress.classList.remove("showing");
+}
+</script>';
+
+
 if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
     $requestID = $_POST['requestID']; // Get the request ID from the form
 
@@ -20,7 +68,17 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
     // Update the status to "Canceled" for the specific request ID
     $updateSql = "UPDATE tbl_requestbooks SET tb_status = 'Cancelled' WHERE Request_ID = $requestID";
     if ($conn->query($updateSql) === TRUE) {
-        echo "<script>alert('Record updated successfully'); window.location.href = 'staff_request_list.php';</script>";
+        // echo "<script>alert('Record updated successfully'); window.location.href = 'staff_request_list.php';</script>";
+        echo '<script>
+            // Call showToast with "success" message type after successful insertion
+            showToast("success", "Request Cancellation Success");
+            
+            // Redirect to the specified page with the borrower ID in the URL after a delay
+            setTimeout(function() {
+                window.location.href = "staff_request_list.php";
+            }, 3000); // Delay in milliseconds
+        </script>';
+
     } else {
         echo "Error updating record: " . $conn->error;
     }
@@ -28,7 +86,7 @@ if (isset($_POST['cancelButton']) && $_POST['cancelButton'] == 1) {
     
 
     $conn->close(); // Close the database connection
-    exit(); // Stop further execution
+    // exit(); // Stop further execution
 }
 ?>
 <!DOCTYPE html>
