@@ -24,7 +24,7 @@ if (isset($_POST['dataURL'])) {
         echo json_encode(["status" => "success", "message" => "QR code saved to " . $filePath]);
             
         // CHANGE THE PORT IF NEEDED
-        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 
 
        // Read the image file into a PHP variable

@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrowerID'])) {
     $borrowerID = $_POST['borrowerID'];
     $_SESSION['bID'] = $borrowerID;
     // Database connection
-    $conn_display_all = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+    $conn_display_all = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
     if ($conn_display_all->connect_error) {
         die("Connection failed: " . $conn_display_all->connect_error);
     }

@@ -20,7 +20,7 @@ if (isset($_GET['borrower_id'])) {
     echo "<script>console.log('Retrieved Borrower ID FROM URL: " . $borrowerId . "');</script>";
 
     // Database connection
-    $conn_display_all = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+    $conn_display_all = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
     if ($conn_display_all->connect_error) {
         die("Connection failed: " . $conn_display_all->connect_error);
     }

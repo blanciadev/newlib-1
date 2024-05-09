@@ -80,7 +80,7 @@ echo '<script>
 // Check if the form is submitted and Borrower ID is provided
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     // Database connection
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); 
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
@@ -180,7 +180,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
         </a><!--header container-->
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
             <?php
-                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
+                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
                 $userID = $_SESSION["User_ID"];
                 $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
                         FROM tbl_employee 
