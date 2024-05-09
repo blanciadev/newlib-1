@@ -13,6 +13,80 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
+
+
+
+ // Define the HTML code for the toast element
+echo '<div class="toastNotif hide">
+    <div class="toast-content">
+        <i class="bx bx-check check"></i>
+        <div class="message">
+            <span class="text text-1"></span>
+            <!-- this message can be changed to "Success" and "Error"-->
+            <span class="text text-2"></span>
+            <!-- specify based on the if-else statements -->
+        </div>
+    </div>
+    <i class="bx bx-x close"></i>
+    <div class="progress"></div>
+</div>';
+
+// Define JavaScript functions to handle the toast
+echo '<script>
+    function showToast(type, message) {
+        var toast = document.querySelector(".toastNotif");
+        var progress = document.querySelector(".progress");
+        var text1 = toast.querySelector(".text-1");
+        var text2 = toast.querySelector(".text-2");
+        
+        if (toast && progress && text1 && text2) {
+            // Update the toast content based on the message type
+            if (type === "success") {
+                text1.textContent = "Success";
+                toast.classList.remove("error");
+            } else if (type === "error") {
+                text1.textContent = "Error";
+                toast.classList.add("error");
+            } else {
+                console.error("Invalid message type");
+                return;
+            }
+            
+            // Set the message content
+            text2.textContent = message;
+            
+            // Show the toast and progress
+            toast.classList.add("showing");
+            progress.classList.add("showing");
+            
+            // Hide the toast and progress after 5 seconds
+            setTimeout(() => {
+                toast.classList.remove("showing");
+                progress.classList.remove("showing");
+                 window.location.href = "staff_log.php";
+            }, 5000);
+        } else {
+            console.error("Toast elements not found");
+        }
+    }
+
+    function closeToast() {
+        var toast = document.querySelector(".toastNotif");
+        var progress = document.querySelector(".progress");
+        toast.classList.remove("showing");
+        progress.classList.remove("showing");
+    }
+
+     function redirectToPage(url, delay) {
+        setTimeout(() => {
+            window.location.href = url;
+        }, delay);
+    }
+
+
+</script>';
+
+
 // Check if the form is submitted and Borrower ID is provided
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     // Database connection
@@ -25,7 +99,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     $borrower_id = $_POST['borrower_id'];
     if (substr($borrower_id, 0, 1) === '0') {
         // Borrower_ID starts with '0', flag as error
-        $errorMessage = "Borrower ID cannot start with '0'.";
+        // $errorMessage = "Borrower ID cannot start with '0'.";
+           
+    echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Borrower ID cannot start with Zero");
+        </script>';
+
     } else {
         // Check if a log entry already exists for the specified Borrower ID and the current date
         $currentDate = date("Y-m-d");
@@ -34,7 +114,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 
         if ($result_check_log->num_rows > 0) {
             // Log entry already exists for the current date, display error message
-            $errorMessage = "A log entry for this borrower already exists for today.";
+            // $errorMessage = "A log entry for this borrower already exists for today.";
+       
+    echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "A log entry for this borrower already exists for today.");
+        </script>';
+
+
         } else {
             // Validate Borrower_ID against tbl_borrower table
             $sql_validate_borrower = "SELECT * FROM tbl_borrower WHERE Borrower_ID = '$borrower_id'";
@@ -50,14 +137,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
                 VALUES ($borrower_id, NOW())";
 
                 if ($conn->query($sql) === TRUE) {
-                    echo '<script>alert("Record inserted successfully."); window.location.href = "staff_log.php";</script>';
+                    // echo '<script>alert("Record inserted successfully."); window.location.href = "staff_log.php";</script>';
+                             echo '<script>
+                        // Call showToast with "success" message type after successful insertion
+                        showToast("success", "Image Updated successfully.");
+                        // Redirect to this page after 3 seconds
+                        redirectToPage("admin_log.php", 3000);
+                    </script>';
+
                     exit();
                 } else {
                     echo "Error: " . $sql . "<br>" . $conn->error;
                 }
             } else {
                 // Borrower_ID is invalid
-                $errorMessage = "Invalid Borrower ID.";
+                // $errorMessage = "Invalid Borrower ID.";
+                   echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Invalid Borrower ID");
+        </script>';
+
             }
         }
     }
@@ -83,6 +182,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./admin.css" rel="stylesheet">
+    <link href="./toast.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
 
     <script src="../node_modules/html5-qrcode/html5-qrcode.min.js"></script>
