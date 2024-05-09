@@ -85,8 +85,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
         die("Connection failed: " . $conn->connect_error);
     }
 
-   
-
 
     // Retrieve Borrower_ID from the form
     $borrower_id = $_POST['borrower_id'];
@@ -133,7 +131,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
         showToast("success", "Record inserted successfully.");
     </script>';
 
-                    exit();
+                 
                 } else {
                     echo "Error: " . $sql . "<br>" . $conn->error;
                 }

@@ -7,6 +7,58 @@
         exit(); // Ensure script execution stops after redirection
     }
 
+
+    
+// Define showToast() function
+// Output the HTML code for the toast element
+echo '<div class="toastNotif hide">
+<div class="toast-content">
+    <i class="bx bx-check check"></i>
+    <div class="message">
+        <span class="text text-1">Success</span>
+        <!-- this message can be changed to "Success" and "Error"-->
+        <span class="text text-2"></span>
+        <!-- specify based on the if-else statements -->
+    </div>
+</div>
+<i class="bx bx-x close"></i>
+<div class="progress"></div>
+</div>';
+
+// Define JavaScript functions to handle the toast
+echo '<script>
+function showToast(messageType, message) {
+    console.log("Toast Called");
+    var toast = document.querySelector(".toastNotif");
+    var progress = document.querySelector(".progress");
+    
+    // Set the message type and text
+    toast.querySelector(".text-1").textContent = messageType;
+    toast.querySelector(".text-2").textContent = message;
+    
+    if (toast && progress) {
+        toast.classList.add("showing");
+        progress.classList.add("showing");
+        setTimeout(() => {
+            toast.classList.remove("showing");
+            progress.classList.remove("showing");
+        }, 5000);
+    } else {
+        console.error("Toast elements not found");
+    }
+}
+
+function closeToast() {
+    var toast = document.querySelector(".toastNotif");
+    var progress = document.querySelector(".progress");
+    toast.classList.remove("showing");
+    progress.classList.remove("showing");
+}
+</script>';
+
+
+
+
     // Initialize variables
     $isBorrowerIdValid = false;
     $errorMessage = "";
@@ -25,7 +77,14 @@
         // Check if Borrower_ID starts with '0'
         if (substr($borrower_id, 0, 1) === '0') {
             // Borrower_ID starts with '0', flag as error
-            echo '<script>alert("ID cannot start with 0");</script>';
+            // echo '<script>alert("ID cannot start with 0");</script>';
+            echo '<script>
+            // Call showToast with "success" message type after successful insertion
+            showToast("error", "ID cannot start with 0");
+            </script>';
+    
+
+            
         } else {
             // Validate Borrower_ID against tbl_borrower table
             $sql_validate_borrower = "SELECT * FROM tbl_borrower WHERE Borrower_ID = '$borrower_id'";
@@ -37,7 +96,12 @@
                 $_SESSION['borrower_id'] = $borrower_id;
             } else {
                 // Borrower_ID is invalid
-                echo '<script>alert("Invalid ID");</script>';
+                echo '<script>
+                // Call showToast with "success" message type after successful insertion
+                showToast("error", "Invalid ID");
+                </script>';
+        
+    
             }
         }
 
@@ -48,8 +112,18 @@
     // If Borrower ID is valid, redirect to the next page
     if ($isBorrowerIdValid) {
         $borrower_id = $_SESSION['borrower_id']; // Retrieve from session
-        header("Location: staff_book_borrow_find.php?borrower_id=$borrower_id");
-        exit(); // Make sure to exit after redirecting
+        echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("success", "Valid ID.");
+        
+        // Redirect to the specified page with the borrower ID in the URL after a delay
+        setTimeout(function() {
+            window.location.href = "staff_book_borrow_find.php?borrower_id=' . $borrower_id . '";
+        }, 3000); // Delay in milliseconds
+    </script>';
+
+        // header("Location: staff_book_borrow_find.php?borrower_id=$borrower_id");
+        // exit(); // Make sure to exit after redirecting
     }
 ?>
 

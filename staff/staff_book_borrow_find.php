@@ -8,6 +8,59 @@
         exit(); // Ensure script execution stops after redirection
     }
 
+    
+    
+// Define showToast() function
+// Output the HTML code for the toast element
+echo '<div class="toastNotif hide">
+<div class="toast-content">
+    <i class="bx bx-check check"></i>
+    <div class="message">
+        <span class="text text-1">Success</span>
+        <!-- this message can be changed to "Success" and "Error"-->
+        <span class="text text-2"></span>
+        <!-- specify based on the if-else statements -->
+    </div>
+</div>
+<i class="bx bx-x close"></i>
+<div class="progress"></div>
+</div>';
+
+// Define JavaScript functions to handle the toast
+echo '<script>
+function showToast(messageType, message) {
+    console.log("Toast Called");
+    var toast = document.querySelector(".toastNotif");
+    var progress = document.querySelector(".progress");
+    
+    // Set the message type and text
+    toast.querySelector(".text-1").textContent = messageType;
+    toast.querySelector(".text-2").textContent = message;
+    
+    if (toast && progress) {
+        toast.classList.add("showing");
+        progress.classList.add("showing");
+        setTimeout(() => {
+            toast.classList.remove("showing");
+            progress.classList.remove("showing");
+        }, 5000);
+    } else {
+        console.error("Toast elements not found");
+    }
+}
+
+function closeToast() {
+    var toast = document.querySelector(".toastNotif");
+    var progress = document.querySelector(".progress");
+    toast.classList.remove("showing");
+    progress.classList.remove("showing");
+}
+</script>';
+
+
+
+
+
     // Initialize $result variable
     $result = null;
     $bookDetails = [];
@@ -61,7 +114,13 @@
                             Book_Title LIKE ?";
             } else {
                 // Display an alert if neither Accession Code nor Book Title is provided
-                echo '<script>alert("Please enter either Accession Code or Book Title.");</script>';
+                // echo '<script>alert("Please enter either Accession Code or Book Title.");</script>';
+                echo '<script>
+                // Call showToast with "success" message type after successful insertion
+                showToast("error", "Please enter either Accession Code or Book Title.");
+                </script>';
+        
+    
                 continue; // Skip to the next iteration of the loop
             }
 
@@ -89,7 +148,11 @@
                 }
             } else {
                 // Display an alert for invalid Accession Code or Book Title
-                echo '<script>alert("Invalid Accession Code or Book Title: ' . $Accession_Code . ' - ' . $Book_Title . '");</script>';
+                // echo '<script>alert("Invalid Accession Code or Book Title: ' . $Accession_Code . ' - ' . $Book_Title . '");</script>';
+                echo '<script>
+                // Call showToast with "success" message type after successful insertion
+                showToast("error", "Invalid Accession Code or Book Title");
+                </script>';
             }
             
             // Close the statement

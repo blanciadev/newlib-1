@@ -140,12 +140,15 @@ echo '<div class="toastNotif hide">
 <div class="progress"></div>
 </div>';
 
-// Define JavaScript functions to handle the toast
 echo '<script>
-function showToast() {
+function showToast(messageType, message) {
     console.log("Toast Called");
     var toast = document.querySelector(".toastNotif");
     var progress = document.querySelector(".progress");
+    
+    // Set the message type and text
+    toast.querySelector(".text-1").textContent = messageType;
+    toast.querySelector(".text-2").textContent = message;
     
     if (toast && progress) {
         toast.classList.add("showing");
@@ -167,6 +170,7 @@ function closeToast() {
     progress.classList.remove("showing");
 }
 </script>';
+
 
 
 // Check if $_SESSION['fine'] is set before using it
@@ -308,7 +312,7 @@ $fine += $_SESSION['fine'];
         echo '<script>showToast();</script>';
 
         // echo '<script>alert("Record Updated successfully."); window.location.href = "queries/print_return.php";</script>';
-        exit();
+    
     } else {
         // Error occurred while executing queries
         echo "Error updating status:";

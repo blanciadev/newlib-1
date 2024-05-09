@@ -13,47 +13,53 @@
     $bookDetails = isset($_GET['bookDetails']) ? json_decode($_GET['bookDetails']) : [];
     echo "<script>console.log('Book Details:', " . json_encode($bookDetails) . ");</script>";
 
+
+    
 // Define showToast() function
 // Output the HTML code for the toast element
 echo '<div class="toastNotif hide">
-    <div class="toast-content">
-        <i class="bx bx-check check"></i>
-        <div class="message">
-            <span class="text text-1">Success</span>
-            <!-- this message can be changed to "Success" and "Error"-->
-            <span class="text text-2"></span>
-            <!-- specify based on the if-else statements -->
-        </div>
+<div class="toast-content">
+    <i class="bx bx-check check"></i>
+    <div class="message">
+        <span class="text text-1">Success</span>
+        <!-- this message can be changed to "Success" and "Error"-->
+        <span class="text text-2"></span>
+        <!-- specify based on the if-else statements -->
     </div>
-    <i class="bx bx-x close"></i>
-    <div class="progress"></div>
+</div>
+<i class="bx bx-x close"></i>
+<div class="progress"></div>
 </div>';
 
 // Define JavaScript functions to handle the toast
 echo '<script>
-    function showToast() {
-        var toast = document.querySelector(".toastNotif");
-        var progress = document.querySelector(".progress");
-        
-        if (toast && progress) {
-            toast.classList.add("showing");
-            progress.classList.add("showing");
-            setTimeout(() => {
-                toast.classList.remove("showing");
-                progress.classList.remove("showing");
-                window.location.href = "queries/print_borrow.php";
-            }, 5000);
-        } else {
-            console.error("Toast elements not found");
-        }
+function showToast(messageType, message) {
+    console.log("Toast Called");
+    var toast = document.querySelector(".toastNotif");
+    var progress = document.querySelector(".progress");
+    
+    // Set the message type and text
+    toast.querySelector(".text-1").textContent = messageType;
+    toast.querySelector(".text-2").textContent = message;
+    
+    if (toast && progress) {
+        toast.classList.add("showing");
+        progress.classList.add("showing");
+        setTimeout(() => {
+            toast.classList.remove("showing");
+            progress.classList.remove("showing");
+        }, 5000);
+    } else {
+        console.error("Toast elements not found");
     }
+}
 
-    function closeToast() {
-        var toast = document.querySelector(".toastNotif");
-        var progress = document.querySelector(".progress");
-        toast.classList.remove("showing");
-        progress.classList.remove("showing");
-    }
+function closeToast() {
+    var toast = document.querySelector(".toastNotif");
+    var progress = document.querySelector(".progress");
+    toast.classList.remove("showing");
+    progress.classList.remove("showing");
+}
 </script>';
 
 
@@ -67,7 +73,18 @@ echo '<script>
         // Now you can use $borrower_id in your code as needed
     } else {
         // Handle the case where the session variable is not set
-        echo '<script>alert("Borrower ID unavailable"); window.location.href = "staff_borrow_dash.php";</script>';
+        // echo '<script>alert("Borrower ID unavailable"); window.location.href = "staff_borrow_dash.php";</script>';
+      
+        echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Invalid Borrower ID");
+        setTimeout(function() {
+            window.location.href = "staff_borrow_dash.php";
+        }, 3000); // Delay in milliseconds
+    </script>';
+
+      
+
     }
 
     // Check if $bookDetails is not empty before proceeding
@@ -112,11 +129,20 @@ echo '<script>
             $currentDate = date('Y-m-d');
         } else {
             // $bookAccessionCodesStr is empty, handle accordingly
-            echo "No book Accession Codes available";
+            // echo "No book Accession Codes available";
+            echo '<script>
+            // Call showToast with "success" message type after successful insertion
+            showToast("error", "No book Accession Codes available");
+            </script>';
         }
     } else {
         // $bookDetails is empty, handle accordingly
-        echo "No book details available";
+        // echo "No book details available";
+        echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "No book details available");
+        </script>';
+
     }
 
 
@@ -210,11 +236,25 @@ echo '<script>
                 }
             }
 
-            echo '<script>showToast();</script>';
+            echo '<script>
+            // Call showToast with "success" message type after successful insertion
+            showToast("success", "All selected books have been borrowed successfully");
+            
+            // Redirect to the specified page with the borrower ID in the URL after a delay
+            setTimeout(function() {
+                window.location.href = "queries/print_borrow.php";
+            }, 3000); // Delay in milliseconds
+        </script>';
+    
             // echo '<script>alert("All selected books have been borrowed successfully."); window.location.href = "queries/print_borrow.php";</script>';
        
         } else {
-            echo "No book details available";
+            // echo "No book details available";
+            echo '<script>
+            // Call showToast with "success" message type after successful insertion
+            showToast("error", "No book details available");
+            </script>';
+    
         }
     }
     $conn->close();

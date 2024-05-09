@@ -108,6 +108,81 @@ function calculateFine($dueDate, $dateBorrowed, $bookStatus)
 }
 
 
+
+
+
+ // Define the HTML code for the toast element
+ echo '<div class="toastNotif hide">
+ <div class="toast-content">
+     <i class="bx bx-check check"></i>
+     <div class="message">
+         <span class="text text-1"></span>
+         <!-- this message can be changed to "Success" and "Error"-->
+         <span class="text text-2"></span>
+         <!-- specify based on the if-else statements -->
+     </div>
+ </div>
+ <i class="bx bx-x close"></i>
+ <div class="progress"></div>
+</div>';
+
+// Define JavaScript functions to handle the toast
+echo '<script>
+ function showToast(type, message) {
+     var toast = document.querySelector(".toastNotif");
+     var progress = document.querySelector(".progress");
+     var text1 = toast.querySelector(".text-1");
+     var text2 = toast.querySelector(".text-2");
+     
+     if (toast && progress && text1 && text2) {
+         // Update the toast content based on the message type
+         if (type === "success") {
+             text1.textContent = "Success";
+             toast.classList.remove("error");
+         } else if (type === "error") {
+             text1.textContent = "Error";
+             toast.classList.add("error");
+         } else {
+             console.error("Invalid message type");
+             return;
+         }
+         
+         // Set the message content
+         text2.textContent = message;
+         
+         // Show the toast and progress
+         toast.classList.add("showing");
+         progress.classList.add("showing");
+         
+         // Hide the toast and progress after 5 seconds
+         setTimeout(() => {
+             toast.classList.remove("showing");
+             progress.classList.remove("showing");
+              window.location.href = "staff_log.php";
+         }, 5000);
+     } else {
+         console.error("Toast elements not found");
+     }
+ }
+
+ function closeToast() {
+     var toast = document.querySelector(".toastNotif");
+     var progress = document.querySelector(".progress");
+     toast.classList.remove("showing");
+     progress.classList.remove("showing");
+ }
+
+  function redirectToPage(url, delay) {
+     setTimeout(() => {
+         window.location.href = url;
+     }, delay);
+ }
+
+
+</script>';
+
+
+
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -238,11 +313,26 @@ SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tb
     // Check each query execution status
     if ($status1 && $status2 && $status3 && $status4 && $status5) {
         // All queries executed successfully
-        echo '<script>alert("Record Updated successfully."); window.location.href = "queries/print_return.php";</script>';
-        exit();
+        echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("success", "Image Updated successfully.");
+        // Redirect to this page after 3 seconds
+        redirectToPage("queries/print_return.php", 3000);
+    </script>';
+
+
+        // echo '<script>alert("Record Updated successfully."); window.location.href = "queries/print_return.php";</script>';
+        // exit();
     } else {
         // Error occurred while executing queries
-        echo "Error updating status:";
+      
+ echo '<script>
+ // Call showToast with "success" message type after successful insertion
+ showToast("error", "Process Failed");
+ </script>';
+
+
+
         if (!$status1) {
             echo " Error in statement 1: " . $stmt1->error;
         }
