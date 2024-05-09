@@ -7,6 +7,70 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
+
+ // Define the HTML code for the toast element
+echo '<div class="toastNotif hide">
+    <div class="toast-content">
+        <i class="bx bx-check check"></i>
+        <div class="message">
+            <span class="text text-1"></span>
+            <!-- this message can be changed to "Success" and "Error"-->
+            <span class="text text-2"></span>
+            <!-- specify based on the if-else statements -->
+        </div>
+    </div>
+    <i class="bx bx-x close"></i>
+    <div class="progress"></div>
+</div>';
+
+// Define JavaScript functions to handle the toast
+echo '<script>
+    function showToast(type, message) {
+        var toast = document.querySelector(".toastNotif");
+        var progress = document.querySelector(".progress");
+        var text1 = toast.querySelector(".text-1");
+        var text2 = toast.querySelector(".text-2");
+        
+        if (toast && progress && text1 && text2) {
+            // Update the toast content based on the message type
+            if (type === "success") {
+                text1.textContent = "Success";
+                toast.classList.remove("error");
+            } else if (type === "error") {
+                text1.textContent = "Error";
+                toast.classList.add("error");
+            } else {
+                console.error("Invalid message type");
+                return;
+            }
+            
+            // Set the message content
+            text2.textContent = message;
+            
+            // Show the toast and progress
+            toast.classList.add("showing");
+            progress.classList.add("showing");
+            
+            // Hide the toast and progress after 5 seconds
+            setTimeout(() => {
+                toast.classList.remove("showing");
+                progress.classList.remove("showing");
+                //  window.location.href = "staff_log.php";
+            }, 5000);
+        } else {
+            console.error("Toast elements not found");
+        }
+    }
+
+    function closeToast() {
+        var toast = document.querySelector(".toastNotif");
+        var progress = document.querySelector(".progress");
+        toast.classList.remove("showing");
+        progress.classList.remove("showing");
+    }
+</script>';
+
+
 $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); // Database connection
 
 // Retrieve User_ID from session
@@ -52,9 +116,18 @@ if (!mysqli_ping($conn)) {
                 $stmt = mysqli_prepare($conn, $sql);
                 mysqli_stmt_bind_param($stmt, "si", $imageData, $userID);
                 if (mysqli_stmt_execute($stmt)) {
-                    echo '<script>alert("Image Updated successfully."); window.location.href = "staff_dashboard.php";</script>';
+                    // echo '<script>alert("Image Updated successfully."); window.location.href = "staff_dashboard.php";</script>';
+                   echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("success", "Image Updated successfully.");
+    </script>';
+               
                 } else {
-                    echo '<script>alert("Error updating image data.");</script>';
+              echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Image Updated Error.");
+    </script>';
+               
                 }
                 mysqli_stmt_close($stmt);
             }
@@ -86,7 +159,12 @@ if (isset($_POST['updateProfile'])) {
     mysqli_stmt_bind_param($stmt, "ssssssi", $firstName, $middleName, $lastName, 
         $contactNumber, $email, $address, $userID);
     if (mysqli_stmt_execute($stmt)) {
-        echo '<script>alert("Profile Updated successfully."); window.location.href = "staff_dashboard.php";</script>';
+        // echo '<script>alert("Profile Updated successfully."); window.location.href = "staff_dashboard.php";</script>';
+      echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("success", "Profile Updated successfully.");
+    </script>';
+               
     } else {
         echo '<script>alert("Error updating profile: ' . mysqli_error($conn) . '");</script>';
     }
@@ -127,19 +205,41 @@ if (isset($_POST['updatePassword'])) {
 
                 mysqli_stmt_bind_param($stmtUpdatePassword, "si", $newPassword, $userID);
                 if (mysqli_stmt_execute($stmtUpdatePassword)) {
-                    echo '<script>alert("Password Updated successfully."); window.location.href = "staff_dashboard.php";</script>';
+                    // echo '<script>alert("Password Updated successfully."); window.location.href = "staff_dashboard.php";</script>';
+                   echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("success", "Password Updated successfully.");
+    </script>';
+               
                 } else {
-                    echo '<script>alert("Error updating password: ' . mysqli_error($conn) . '");</script>';
+                    // echo '<script>alert("Error updating password: ' . mysqli_error($conn) . '");</script>';
+                 echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Error updating password");
+    </script>';
                 }
                 mysqli_stmt_close($stmtUpdatePassword); // Close the statement
             } else {
-                echo '<script>alert("Old and new passwords cannot be the same.");</script>';
+                // echo '<script>alert("Old and new passwords cannot be the same.");</script>';
+                echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Old and new passwords cannot be the same.");
+    </script>';
+               
             }
         } else {
-            echo '<script>alert("Old password does not match!");</script>';
+            // echo '<script>alert("Old password does not match!");</script>';
+           echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Old password does not match!");
+    </script>';
         }
     } else {
-        echo '<script>alert("New password and confirm password do not match!");</script>';
+        // echo '<script>alert("New password and confirm password do not match!");</script>';
+      echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "New password and confirm password do not match!");
+    </script>';
     }
 }
 }
