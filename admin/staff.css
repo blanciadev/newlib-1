@@ -1,0 +1,118 @@
+
+.toastNotif {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    border-radius: 12px;
+    padding: 15px 35px 15px 25px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    border-left: 6px solid rgb(89, 252, 89);
+    background-color: white;
+    transition: opacity 0.5s ease-in-out;
+    overflow: hidden;
+    transform: translateX(calc(100% + 20px));
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.35);
+}
+.toastNotif.error{
+    border-left: 6px solid red;
+}
+
+.toastNotif.showing {
+    transform: translateX(0%);
+}
+
+.toastNotif .toast-content {
+    display: flex;
+    align-items: center;
+
+}
+.toast-content .check {
+    width: 35px;
+    height: 35px;
+    background-color: rgb(89, 252, 89);
+    color: white;
+    font-size: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.toast-content .xmark {
+    width: 35px;
+    height: 35px;
+    background-color: red;
+    border: none;
+    color: white;
+    font-size: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.xmark{
+    width: 25px;
+    height: 25px;
+    background-color: red;
+    border: none;
+    color: white;
+    font-size: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.toast-content .message {
+    display: flex;
+    flex-direction: column;
+    margin: 0 20px;
+}
+.message .text {
+    font-size: 16px;
+    font-weight: 400;
+    color: gray;
+}
+.message .text.text-1 {
+    font-weight: 600;
+    color: black;
+}
+.toastNotif .close {
+    position: absolute;
+    font-weight: 600;
+    top: 10px;
+    right: 15px;
+    padding: 5px;
+    cursor: pointer;
+    opacity: 0.7;
+}
+.toastNotif .close:hover {
+    opacity: 1;
+}
+.toastNotif .progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background-color: #ddd;
+}
+.toastNotif .progress::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgb(89, 252, 89);
+}
+.progress.error::before {
+    background-color: red;
+}
+.progress.showing::before{ 
+    animation: progress 5s linear forwards;
+}
+
+@keyframes progress {
+    100%{
+        left: 100%;
+    } 
+}

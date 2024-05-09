@@ -28,6 +28,80 @@ if (!$result) {
     $userData = mysqli_fetch_assoc($result);
 }
 
+
+
+ // Define the HTML code for the toast element
+echo '<div class="toastNotif hide">
+    <div class="toast-content">
+        <i class="bx bx-check check"></i>
+        <div class="message">
+            <span class="text text-1"></span>
+            <!-- this message can be changed to "Success" and "Error"-->
+            <span class="text text-2"></span>
+            <!-- specify based on the if-else statements -->
+        </div>
+    </div>
+    <i class="bx bx-x close"></i>
+    <div class="progress"></div>
+</div>';
+
+// Define JavaScript functions to handle the toast
+echo '<script>
+    function showToast(type, message) {
+        var toast = document.querySelector(".toastNotif");
+        var progress = document.querySelector(".progress");
+        var text1 = toast.querySelector(".text-1");
+        var text2 = toast.querySelector(".text-2");
+        
+        if (toast && progress && text1 && text2) {
+            // Update the toast content based on the message type
+            if (type === "success") {
+                text1.textContent = "Success";
+                toast.classList.remove("error");
+            } else if (type === "error") {
+                text1.textContent = "Error";
+                toast.classList.add("error");
+            } else {
+                console.error("Invalid message type");
+                return;
+            }
+            
+            // Set the message content
+            text2.textContent = message;
+            
+            // Show the toast and progress
+            toast.classList.add("showing");
+            progress.classList.add("showing");
+            
+            // Hide the toast and progress after 5 seconds
+            setTimeout(() => {
+                toast.classList.remove("showing");
+                progress.classList.remove("showing");
+                 window.location.href = "staff_log.php";
+            }, 5000);
+        } else {
+            console.error("Toast elements not found");
+        }
+    }
+
+    function closeToast() {
+        var toast = document.querySelector(".toastNotif");
+        var progress = document.querySelector(".progress");
+        toast.classList.remove("showing");
+        progress.classList.remove("showing");
+    }
+
+     function redirectToPage(url, delay) {
+        setTimeout(() => {
+            window.location.href = url;
+        }, delay);
+    }
+
+
+</script>';
+
+
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if the connection is still alive, reconnect if needed
 if (!mysqli_ping($conn)) {
@@ -44,9 +118,17 @@ if (!mysqli_ping($conn)) {
 
             // Restrict file types to PNG and JPEG
             if ($fileType != 'image/png' && $fileType != 'image/jpeg') {
-                echo '<script>alert("Error: Only PNG and JPEG files are allowed.");</script>';
+                // echo '<script>alert("Error: Only PNG and JPEG files are allowed.");</script>';
+                 echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Error: Only PNG and JPEG files are allowed.");
+    </script>';
             } elseif ($fileSize > 5242880) { // 5MB (in bytes)
-                echo '<script>alert("Error: The file size exceeds the limit (5MB).");</script>';
+                // echo '<script>alert("Error: The file size exceeds the limit (5MB).");</script>';
+                 echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Error: The file size exceeds the limit (5MB)");
+    </script>';
             } else {
                 // Read the file data
                 $imageData = file_get_contents($imageFile['tmp_name']);
@@ -56,14 +138,29 @@ if (!mysqli_ping($conn)) {
                 $stmt = mysqli_prepare($conn, $sql);
                 mysqli_stmt_bind_param($stmt, "si", $imageData, $userID);
                 if (mysqli_stmt_execute($stmt)) {
-                    echo '<script>alert("Image Updated successfully."); window.location.href = "staff_dashboard.php";</script>';
+                    // echo '<script>alert("Image Updated successfully."); window.location.href = "staff_dashboard.php";</script>';
+                         echo '<script>
+                        // Call showToast with "success" message type after successful insertion
+                        showToast("success", "Image Updated successfully.");
+                        // Redirect to this page after 3 seconds
+                        redirectToPage("admin_dashboard.php", 3000);
+                    </script>';
+
                 } else {
                     echo '<script>alert("Error updating image data.");</script>';
+                     echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Error updating image data.");
+    </script>';
                 }
                 mysqli_stmt_close($stmt);
             }
         } else {
-            echo '<script>alert("Error uploading file: ' . $imageFile['error'] . '");</script>';
+            // echo '<script>alert("Error uploading file: ' . $imageFile['error'] . '");</script>';
+                 echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Error: The file size exceeds the limit (5MB)");
+    </script>';
         }
     } 
  
@@ -90,7 +187,13 @@ if (isset($_POST['updateProfile'])) {
     mysqli_stmt_bind_param($stmt, "ssssssi", $firstName, $middleName, $lastName, 
         $contactNumber, $email, $address, $userID);
     if (mysqli_stmt_execute($stmt)) {
-        echo '<script>alert("Profile Updated successfully."); window.location.href = "admin_dashboard.php";</script>';
+        // echo '<script>alert("Profile Updated successfully."); window.location.href = "admin_dashboard.php";</script>';
+     echo '<script>
+                        // Call showToast with "success" message type after successful insertion
+                        showToast("success", "Image Updated successfully.");
+                        // Redirect to this page after 3 seconds
+                        redirectToPage("admin_dashboard.php", 3000);
+                    </script>';
     } else {
         echo '<script>alert("Error updating profile: ' . mysqli_error($conn) . '");</script>';
     }
@@ -131,20 +234,41 @@ if (isset($_POST['updatePassword'])) {
 
                 mysqli_stmt_bind_param($stmtUpdatePassword, "si", $newPassword, $userID);
                 if (mysqli_stmt_execute($stmtUpdatePassword)) {
-                    echo '<script>alert("Profile Updated successfully."); window.location.href = "admin_dashboard.php";</script>';
-          
+                    // echo '<script>alert("Profile Updated successfully."); window.location.href = "admin_dashboard.php";</script>';
+           echo '<script>
+                        // Call showToast with "success" message type after successful insertion
+                        showToast("success", "Image Updated successfully.");
+                        // Redirect to this page after 3 seconds
+                        redirectToPage("admin_dashboard.php", 3000);
+                    </script>';
                 } else {
-                    echo '<script>alert("Error updating password: ' . mysqli_error($conn) . '");</script>';
+                    // echo '<script>alert("Error updating password: ' . mysqli_error($conn) . '");</script>';
+                 echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Error updating password");
+    </script>';
                 }
                 mysqli_stmt_close($stmtUpdatePassword); // Close the statement
             } else {
-                echo '<script>alert("Old and new passwords cannot be the same.");</script>';
+                // echo '<script>alert("Old and new passwords cannot be the same.");</script>';
+              echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Old and new passwords cannot be the same.");
+    </script>';
             }
         } else {
-            echo '<script>alert("Old password does not match!");</script>';
+            // echo '<script>alert("Old password does not match!");</script>';
+      echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Old password does not match!");
+    </script>';
         }
     } else {
-        echo '<script>alert("New password and confirm password do not match!");</script>';
+        // echo '<script>alert("New password and confirm password do not match!");</script>';
+      echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "New password and confirm password do not match!");
+    </script>';
     }
 }
 }
@@ -163,6 +287,7 @@ if (isset($_POST['updatePassword'])) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./admin.css" rel="stylesheet">
+     <link href="./staff.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
 <body>
@@ -277,10 +402,48 @@ if (isset($_POST['updatePassword'])) {
         </div>
 
         
+   <div class="toastNotif" class="hide">
+        <div class="toast-content">
+            <i class='bx bx-check check'></i>
 
+            <div class="message">
+                <span class="text text-1">Success</span><!-- this message can be changed to "Success" and "Error"-->
+                <span class="text text-2"></span> <!-- specify based on the if-else statements -->
+            </div>
+        </div>
+        <i class='bx bx-x close'></i>
+        <div class="progress"></div>
+    </div>
     </div>
 </div>
         
+
+   
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+    <script> 
+        //Toast Notification 
+        const btn = document.querySelector(".showToast"),
+            toast = document.querySelector(".toastNotif"),
+            close = document.querySelector(".close"),
+            progress = document.querySelector(".progress");
+
+        btn.addEventListener("click", () => { // showing toast
+            console.log("showing toast")
+            toast.classList.add("showing");
+            progress.classList.add("showing");
+            setTimeout(() => {
+                toast.classList.remove("showing");
+                progress.classList.remove("showing");
+                console.log("hide toast after 5s")
+            }, 5000);
+        });
+
+        close.addEventListener("click", () => { // closing toast
+            toast.classList.remove("showing");
+            progress.classList.remove("showing");
+        });
+</script>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('[name="updateProfile"]').addEventListener('click', function() {

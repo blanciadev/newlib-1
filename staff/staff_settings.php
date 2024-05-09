@@ -104,9 +104,18 @@ if (!mysqli_ping($conn)) {
 
             // Restrict file types to PNG and JPEG
             if ($fileType != 'image/png' && $fileType != 'image/jpeg') {
-                echo '<script>alert("Error: Only PNG and JPEG files are allowed.");</script>';
+                // echo '<script>alert("Error: Only PNG and JPEG files are allowed.");</script>';
+                 echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Error: Only PNG and JPEG files are allowed.");
+    </script>';
+                
             } elseif ($fileSize > 5242880) { // 5MB (in bytes)
-                echo '<script>alert("Error: The file size exceeds the limit (5MB).");</script>';
+                // echo '<script>alert("Error: The file size exceeds the limit (5MB).");</script>';
+                      echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "The file size exceeds the limit (5MB)..");
+    </script>';
             } else {
                 // Read the file data
                 $imageData = file_get_contents($imageFile['tmp_name']);
