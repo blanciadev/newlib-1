@@ -7,12 +7,12 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // Database connection
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); // Database connection
 
 // Retrieve User_ID from session
 $userID = $_SESSION["User_ID"];
 
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
 
 $userID = $_SESSION["User_ID"];
 
@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Check if the connection is still alive, reconnect if needed
 if (!mysqli_ping($conn)) {
     mysqli_close($conn);
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
 }else{
     if (isset($_POST['uploadImageBtn'])) {
         $imageFile = $_FILES['imageFile'];
@@ -174,7 +174,7 @@ if (isset($_POST['updatePassword'])) {
        
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
         <?php
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
             $userID = $_SESSION["User_ID"];
             $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
                     FROM tbl_employee 

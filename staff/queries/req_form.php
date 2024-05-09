@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
 
         // Insert data into the database
-        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); //database connection
+        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307); //database connection
 
         // Assuming you have a database connection named $conn
         $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Authors_Name, Publisher_Name, price, tb_edition, Year_Published, Quantity, country, tb_status, Section_Code, shelf) 

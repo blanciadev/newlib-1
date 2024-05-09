@@ -8,7 +8,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 }
 
 // Database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
@@ -206,7 +206,7 @@ $fine += $_SESSION['fine'];
     }
 
     // Database connection
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
@@ -306,6 +306,7 @@ $fine += $_SESSION['fine'];
     if ($status1 && $status2 && $status3  && $status5) {
         // All queries executed successfully
         echo '<script>showToast();</script>';
+
         // echo '<script>alert("Record Updated successfully."); window.location.href = "queries/print_return.php";</script>';
         exit();
     } else {
@@ -364,7 +365,7 @@ $fine += $_SESSION['fine'];
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
             <!-- Display user image -->
             <?php
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
             $userID = $_SESSION["User_ID"];
             $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
                     FROM tbl_employee 
@@ -512,19 +513,20 @@ $fine += $_SESSION['fine'];
     ?>
 </div>
 
-<div class="toastNotif hide">
-    <div class="toast-content">
-        <i class="bx bx-check check"></i>
-        <div class="message">
-            <span class="text text-1">Success</span>
-            <!-- this message can be changed to "Success" and "Error"-->
-            <span class="text text-2"></span>
-            <!-- specify based on the if-else statements -->
+ <div class="toastNotif" class="hide">
+        <div class="toast-content">
+            <i class='bx bx-check check'></i>
+
+            <div class="message">
+                <span class="text text-1">Success</span><!-- this message can be changed to "Success" and "Error"-->
+                <span class="text text-2"></span> <!-- specify based on the if-else statements -->
+            </div>
+
+
         </div>
+        <i class='bx bx-x close'></i>
+        <div class="progress"></div>
     </div>
-    <i class="bx bx-x close"></i>
-    <div class="progress"></div>
-</div>
 
 
                 <script>

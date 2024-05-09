@@ -13,7 +13,7 @@ if (isset($_SESSION['_email'])) {
         $enteredCode = $_POST['code'];
 
         // Database connection and prepare the SQL query
-        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
         $stmt = $conn->prepare("SELECT E_mail, token FROM tbl_employee WHERE E_mail = ?");
         $stmt->bind_param("s", $resetEmail);
         $stmt->execute();

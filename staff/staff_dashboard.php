@@ -10,7 +10,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 }
 
 
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
 
 $userID = $_SESSION["User_ID"];
 
@@ -80,7 +80,7 @@ $dataJSON = json_encode($data);
         </a><!--header container-->
         <div class="user-header d-flex flex-row flex-wrap align-content-center justify-content-evenly">
             <?php
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307);
             $userID = $_SESSION["User_ID"];
             $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
                         FROM tbl_employee 
@@ -130,7 +130,7 @@ $dataJSON = json_encode($data);
                 <div class="ovw-con">
                     <div class="totalbooks">
                         <?php
-                        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308 ); // database connection
+                        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3307 ); // database connection
 
                         // Query to get the total quantity of all books
                         $totalQuantityQuery = "SELECT SUM(Quantity) AS total_quantity FROM tbl_books";
