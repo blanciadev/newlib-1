@@ -105,7 +105,7 @@
                         <th>Authors</th>
                         <th>Publisher</th>
                         <th>Section</th>
-                        <th>Shelf #</th>
+                        <th>Shelf</th>
                         <th>Edition</th>
                         <th>Year Published</th>
                         <th>Quantity</th>
@@ -185,7 +185,8 @@
                 </tbody>
             </table>
             
-            <ul class="pagination justify-content-center"><!-- Pagination links -->
+            <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-end"><!-- Pagination links -->
                 <?php
                     // Calculate total number of pages
                     $totalPages = ceil($totalRecords / $recordsPerPage);
@@ -206,6 +207,7 @@
                     }
                 ?>
             </ul>
+            </nav>
         </div>
         <div class="btn-con">
             <a href="./staff_request_list.php" class="btn">Request List</a>

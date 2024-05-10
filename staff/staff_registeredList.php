@@ -195,7 +195,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
                 <div class="modal-footer d-flex flex-row justify-content-center">
                     <a href="#"><button type="button" class="btn" onclick="sendEmail()">Send to Email</button></a>
-                    <a href="queries/print_details.php"><button id="print" type="button" class="btn">Print</button></a>
+                    <a href="queries/print_details.php"><button id="print" type="button" class="btn"><i class='bx bx-printer'></i></button></a>
                     <a href="#"><button id="saveButton" type="button" class="btn">Save</button></a>
 
 
