@@ -29,6 +29,22 @@ if(isset($_GET['deactivated_id'])) {
     }
 }
 
+if(isset($_GET['reactivate_id'])) {
+    $reactivateId = $_GET['reactivate_id'];
+    // Construct the SQL query to reactivate the record
+    $updateSql = "UPDATE tbl_employee SET Status = 'Active' WHERE User_ID = $reactivateId";
+
+    if (mysqli_query($conn, $updateSql)) {
+        // Reactivation successful, redirect to the same page to refresh the data
+        echo '<script>alert("Record reactivated successfully.");</script>';
+        echo '<script>window.location.href = "admin_staff.php";</script>';
+        exit(); // Ensure to exit after header redirection
+    } else {
+        echo "Error reactivating record: " . mysqli_error($conn);
+    }
+}
+
+
 if (isset($_POST['submit'])) {
     // Database connection
     $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
@@ -166,7 +182,7 @@ $result = mysqli_query($conn, $sql);
 
 if ($result) {
     echo '<table class="table table-bordered">';
-    echo '<thead><tr><th>User ID</th><th>First Name</th><th>Middle Name</th><th>Last Name</th><th>Role</th><th>Contact Number</th><th>Email</th><th>Address</th><th>Action</th></tr></thead>';
+    echo '<thead><tr><th>User ID</th><th>First Name</th><th>Middle Name</th><th>Last Name</th><th>Role</th><th>Contact Number</th><th>Email</th><th>Address</th><th>Action</th><th></th></tr></thead>';
     echo '<tbody>';
 
     while ($row = mysqli_fetch_assoc($result)) {
@@ -179,25 +195,39 @@ if ($result) {
         echo '<td>' . $row['Contact_Number'] . '</td>';
         echo '<td>' . $row['E_mail'] . '</td>';
         echo '<td>' . $row['tb_address'] . '</td>';
-
-        // Add a button for rows where Role is 'Staff'
+    
+        // Add buttons for rows where Role is 'Staff'
         if ($row['tb_role'] === 'Staff') {
             // Check if the user status is "Deactivated"
             $status = $row['status'];
             
             // Check if the status is "Deactivated" and disable the button accordingly
             $disabled = ($status === 'Deactivated') ? 'disabled' : '';
-        
+    
+            // Form for deactivation
             echo "<td><form class='deactivated-form' method='GET' action='admin_staff.php'>";
             echo "<input type='hidden' name='deactivated_id' value='" . $row['User_ID'] . "'>";
             // Add the $disabled variable to the button
-            echo "<button type='submit' class='btn btn-danger btn-sm deactivated-btn' $disabled onclick='return confirmdeactivated(" . $row['User_ID'] . ")'>Deactivate</button>";
+            echo "<button type='submit' class='btn btn-danger btn-sm deactivated-btn' $disabled onclick='return confirmDeactivate(" . $row['User_ID'] . ")'>Deactivate</button>";
+            echo "</form></td>";
+    
+            // Form for reactivation
+            echo "<td><form class='reactivate-form' method='GET' action='admin_staff.php'>";
+            echo "<input type='hidden' name='reactivate_id' value='" . $row['User_ID'] . "'>";
+            // Add condition to show the button only if the status is "Deactivated"
+            if ($status === 'Deactivated') {
+                echo "<button type='submit' class='btn btn-success btn-sm reactivate-btn' onclick='return confirmReactivate(" . $row['User_ID'] . ")'>Reactivate</button>";
+            } else {
+                echo "<button type='submit' class='btn btn-success btn-sm reactivate-btn' disabled>Reactivate</button>";
+            }
             echo "</form></td>";
         } else {
+            echo '<td></td>'; // Empty cell for other roles
             echo '<td></td>'; // Empty cell for other roles
         }
         echo '</tr>';
     }
+    
     echo '</tbody>';
     echo '</table>';
 }
