@@ -141,7 +141,6 @@ if (mysqli_num_rows($result) > 0) {
 
 
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -154,6 +153,7 @@ if (mysqli_num_rows($result) > 0) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./staff.css" rel="stylesheet">
+    <link href="toast.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
 
@@ -189,7 +189,7 @@ if (mysqli_num_rows($result) > 0) {
             <form action="" method="POST">
                 <div class="btn-container row">
                     <button class="button" name="sendCode" type="submit">Send QR Code</button> <!-- Button to send QR code -->
-                    <a href="../index.php">Cancel</a>
+                    <a href="admin_dashboard.php">Cancel</a>
                 </div>
             </form> 
             <a href="staff_log.php" class="btn btn-primary">Go to Log Record</a>
