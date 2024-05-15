@@ -67,45 +67,45 @@ $stmt->execute();
 // Get the result
 $result = $stmt->get_result();
 // Function to calculate fine based on due date and book status
-function calculateFine($dueDate, $dateBorrowed, $bookStatus)
-{
-    // Get current timestamp
-    $currentTimestamp = time();
+// function calculateFine($dueDate, $dateBorrowed, $bookStatus)
+// {
+//     // Get current timestamp
+//     $currentTimestamp = time();
 
-    // Calculate number of days since borrowed
-    $daysSinceBorrowed = floor(($currentTimestamp - strtotime($dateBorrowed)) / (60 * 60 * 24));
+//     // Calculate number of days since borrowed
+//     $daysSinceBorrowed = floor(($currentTimestamp - strtotime($dateBorrowed)) / (60 * 60 * 24));
 
-    // Subtract 3 days to account for the rental time valid only
-    $daysOverdue = max(0, $daysSinceBorrowed - 3); // Ensure it's non-negative
+//     // Subtract 3 days to account for the rental time valid only
+//     $daysOverdue = max(0, $daysSinceBorrowed - 3); // Ensure it's non-negative
 
-    // Initialize fine
-    $fine = 0;
-    define('RETURNED_ON_TIME', 0);
-    echo "Due Date: " . $dueDate . "<br>";
-    echo "Days Overdue: " . $daysOverdue . "<br>";
-    echo "Days Since Borrowed: " . $daysSinceBorrowed . "<br>";
+//     // Initialize fine
+//     $fine = 0;
+//     define('RETURNED_ON_TIME', 0);
+//     echo "Due Date: " . $dueDate . "<br>";
+//     echo "Days Overdue: " . $daysOverdue . "<br>";
+//     echo "Days Since Borrowed: " . $daysSinceBorrowed . "<br>";
 
-    // Calculate the fine based on overdue status and book status
-    switch (true) {
-        case $daysOverdue > 0:
-            // Add default penalty fine of 30 pesos
-            $fine += 0;
-            // Add per-day fine of 15 pesos for each subsequent day of overdue
-            $fine += ($daysOverdue - 1) * 5;
-            break;
-        default:
-            // No additional fine for books in GOOD CONDITION or if none of the expected statuses are selected
-            break;
-    }
+//     // Calculate the fine based on overdue status and book status
+//     switch (true) {
+//         case $daysOverdue > 0:
+//             // Add default penalty fine of 30 pesos
+//             $fine += 0;
+//             // Add per-day fine of 15 pesos for each subsequent day of overdue
+//             $fine += ($daysOverdue - 1) * 5;
+//             break;
+//         default:
+//             // No additional fine for books in GOOD CONDITION or if none of the expected statuses are selected
+//             break;
+//     }
 
 
-    // Output the total fine after all calculations
-    echo "Total Fine: " . $fine . "<br>";
+//     // Output the total fine after all calculations
+//     echo "Total Fine: " . $fine . "<br>";
 
-    // Store the fine in session or database, if needed
-    $_SESSION['fine'] = $fine;
-    return $fine;
-}
+//     // Store the fine in session or database, if needed
+//     $_SESSION['fine'] = $fine;
+//     return $fine;
+// }
 
 
 
@@ -158,7 +158,7 @@ echo '<script>
          setTimeout(() => {
              toast.classList.remove("showing");
              progress.classList.remove("showing");
-              window.location.href = "staff_log.php";
+            
          }, 5000);
      } else {
          console.error("Toast elements not found");
@@ -186,30 +186,67 @@ echo '<script>
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $fine = $_SESSION['fine'];
-    $Reason = $_POST['paymentStatus']; // Get the selected payment status
+    // Get current timestamp
+$currentTimestamp = time();
+$dateBorrowed = $_SESSION['Due_Date'];
 
-    switch ($Reason) {
-        case 'DAMAGE':
-            $value = 1000;
-            $fine += $value;
-            $_SESSION['fine'] += $fine;  // Update fine directly in the session
-            break;
-        case 'GOOD CONDITION':
-            $value = 0;
-            $fine += $value;
-            $_SESSION['fine'] += $fine;
-            break;
-        case 'LOST':
-            $value = 2000;
-            $fine += $value;
-            $_SESSION['fine'] += $fine;
-            break;
-        default:
-            // Handle the case where the payment status is not recognized
-            echo "Invalid payment status selected.";
-            break;
-    }
+// Calculate number of days since borrowed
+$daysSinceBorrowed = floor(($currentTimestamp - strtotime($dateBorrowed)) / (60 * 60 * 24));
+
+// Subtract 3 days to account for the rental time valid only
+$daysOverdue = max(0, $daysSinceBorrowed - 3); // Ensure it's non-negative
+
+// Initialize fine
+$fine = 0;
+define('RETURNED_ON_TIME', 0);
+echo '<script>';
+echo 'console.log("Due Date: ' . $dateBorrowed . '");'; // Output the Due Date for logging
+echo 'console.log("Days Overdue: ' . $daysOverdue . '");';
+echo 'console.log("Days Since Borrowed: ' . $daysSinceBorrowed . '");';
+echo '</script>';
+
+// Calculate the fine based on overdue status and book status
+switch (true) {
+    case $daysOverdue > 0:
+        // Add default penalty fine of 30 pesos
+        $fine += 0;
+        // Add per-day fine of 15 pesos for each subsequent day of overdue
+        $fine += ($daysOverdue - 1) * 5;
+        break;
+    default:
+        // No additional fine for books in GOOD CONDITION or if none of the expected statuses are selected
+        break;
+}
+
+
+   // Output the total fine after all calculations
+//    echo "Total Fine: " . $fine . "<br>";
+
+   // Get the payment status
+   $Reason = $_POST['paymentStatus'];
+
+   // Handle different payment status options
+   switch ($Reason) {
+       case 'DAMAGE':
+           $value = 1000;
+           $fine += $value;
+           $_SESSION['fine'] += $fine;  // Update fine directly in the session
+           break;
+       case 'GOOD CONDITION':
+           $value = 0;
+           $fine += $value;
+           $_SESSION['fine'] += $fine;
+           break;
+       case 'LOST':
+           $value = 2000;
+           $fine += $value;
+           $_SESSION['fine'] += $fine;
+           break;
+       default:
+           // Handle the case where the payment status is not recognized
+           echo "Invalid payment status selected.";
+           break;
+   }
 
 
     // Database connection
@@ -279,6 +316,7 @@ SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tb
         die("Error in preparing statement 5: " . $conn->error);
     }
     $paymentStatus = "Paid";
+    $_SESSION['stat'] =  $paymentStatus;
      // Bind parameters and execute statement
      $stmt5->bind_param("iiissss", $borrowerId, $bd_Id, $fine, $Reason, $paymentStatus, $currentDate, $currentDateTime);
      $status5 = $stmt5->execute();
@@ -289,7 +327,7 @@ echo 'console.log("Fine is 0");';
 echo '</script>';
     }
 
-    $_SESSION['stat'] =  $paymentStatus;
+  
     $accessionCode = $_SESSION['Accession_Code'];
     $qtyb = $_SESSION['qty'];
     $sqlUpdateQuantity = "UPDATE tbl_books SET Quantity = Quantity + ? WHERE Accession_Code = ?";
@@ -327,7 +365,7 @@ echo '</script>';
         // Call showToast with "success" message type after successful insertion
         showToast("success", "Transaction Complete");
         // Redirect to print_return.php after 3 seconds with fine as a query parameter
-        redirectToPage("queries/print_return.php?fine=' . urlencode($fine) . '", 1500);
+         redirectToPage("queries/print_return.php?fine=' . urlencode($fine) . '", 1500);
       </script>';
       
 
@@ -385,6 +423,7 @@ echo '</script>';
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./admin.css" rel="stylesheet">
+    <link href="toast.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
 
@@ -519,11 +558,11 @@ echo '</script>';
 
                         echo "<p>Book Title: " . $row["Book_Title"] . "</p>";
                         echo "<p>Quantity: " . $row["Quantity"] . "</p>";
+                        echo "<p>Date Borrowed : " . $row["Date_Borrowed"] . "</p>";
+                        echo "<p>Due Date: " . $row["Due_Date"] . "</p>";
 
-                        $bookStatus = "LOST"; // Example status, replace with actual logic
-                        $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"], $bookStatus);
-                        echo "Fine: " . $fine . "<br>";
-                        $_SESSION['fine'] = $fine;
+                    //    echo "Fine: " . $fine . "<br>";
+                        // $_SESSION['fine'] = $fine;
 
                         // Radio buttons for selecting book status within the same form
                         echo '<form class="update-form" method="POST" action="">';

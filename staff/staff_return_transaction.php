@@ -75,46 +75,6 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 
-// Function to calculate fine based on due date and book status
-function calculateFine($dueDate, $dateBorrowed)
-{
-    // Get current timestamp
-    $currentTimestamp = time();
-
-    // Calculate number of days since borrowed
-    $daysSinceBorrowed = floor(($currentTimestamp - strtotime($dateBorrowed)) / (60 * 60 * 24));
-
-    // Subtract 3 days to account for the rental time valid only
-    $daysOverdue = max(0, $daysSinceBorrowed - 3); // Ensure it's non-negative
-
-    // Initialize fine
-    $fine = 0;
-    define('RETURNED_ON_TIME', 0);
-    echo "Due Date: " . $dueDate . "<br>";
-    echo "Days Overdue: " . $daysOverdue . "<br>";
-    echo "Days Since Borrowed: " . $daysSinceBorrowed . "<br>";
-
-    // Calculate the fine based on overdue status and book status
-    switch (true) {
-        case $daysOverdue > 0:
-            // Add default penalty fine of 30 pesos
-            $fine += 0;
-            // Add per-day fine of 15 pesos for each subsequent day of overdue
-            $fine += ($daysOverdue - 1) * 5;
-            break;
-        default:
-            // No additional fine for books in GOOD CONDITION or if none of the expected statuses are selected
-            break;
-    }
-
-
-    // Output the total fine after all calculations
-    echo "Total Fine: " . $fine . "<br>";
-
-    // Store the fine in session or database, if needed
-    $_SESSION['fine'] = $fine;
-    return $fine;
-}
 
 
  
@@ -202,40 +162,120 @@ if(isset($_SESSION['fine'])) {
 }
 
 
+// Function to calculate fine based on due date and book status
+// function calculateFine($dueDate, $dateBorrowed)
+// {
+//     // Get current timestamp
+//     $currentTimestamp = time();
+
+//     // Calculate number of days since borrowed
+//     $daysSinceBorrowed = floor(($currentTimestamp - strtotime($dateBorrowed)) / (60 * 60 * 24));
+
+//     // Subtract 3 days to account for the rental time valid only
+//     $daysOverdue = max(0, $daysSinceBorrowed - 3); // Ensure it's non-negative
+
+//     // Initialize fine
+//     $fine = 0;
+//     define('RETURNED_ON_TIME', 0);
+//     echo '<script>';
+//     echo 'console.log("Due Date: ' . $dueDate . '");';
+//     echo 'console.log("Days Overdue: ' . $daysOverdue . '");';
+//     echo 'console.log("Days Since Borrowed: ' . $daysSinceBorrowed . '");';
+//     echo '</script>';
+    
+
+//     // Calculate the fine based on overdue status and book status
+//     switch (true) {
+//         case $daysOverdue > 0:
+//             // Add default penalty fine of 30 pesos
+//             $fine += 0;
+//             // Add per-day fine of 15 pesos for each subsequent day of overdue
+//             $fine += ($daysOverdue - 1) * 5;
+//             break;
+//         default:
+//             // No additional fine for books in GOOD CONDITION or if none of the expected statuses are selected
+//             break;
+//     }
+
+
+//     // Output the total fine after all calculations
+//     echo "Total Fine: " . $fine . "<br>";
+
+//     // Store the fine in session or database, if needed
+//     $_SESSION['fine'] = $fine;
+//     return $fine;
+// }
+
+
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  // Get current timestamp
+$currentTimestamp = time();
+$dateBorrowed = $_SESSION['Due_Date'];
+
+// Calculate number of days since borrowed
+$daysSinceBorrowed = floor(($currentTimestamp - strtotime($dateBorrowed)) / (60 * 60 * 24));
+
+// Subtract 3 days to account for the rental time valid only
+$daysOverdue = max(0, $daysSinceBorrowed - 3); // Ensure it's non-negative
+
+// Initialize fine
+$fine = 0;
+define('RETURNED_ON_TIME', 0);
+echo '<script>';
+echo 'console.log("Due Date: ' . $dateBorrowed . '");'; // Output the Due Date for logging
+echo 'console.log("Days Overdue: ' . $daysOverdue . '");';
+echo 'console.log("Days Since Borrowed: ' . $daysSinceBorrowed . '");';
+echo '</script>';
+
+// Calculate the fine based on overdue status and book status
+switch (true) {
+    case $daysOverdue > 0:
+        // Add default penalty fine of 30 pesos
+        $fine += 0;
+        // Add per-day fine of 15 pesos for each subsequent day of overdue
+        $fine += ($daysOverdue - 1) * 5;
+        break;
+    default:
+        // No additional fine for books in GOOD CONDITION or if none of the expected statuses are selected
+        break;
+}
 
 
-$fine += $_SESSION['fine'];
+   // Output the total fine after all calculations
+   echo "Total Fine: " . $fine . "<br>";
 
-    $Reason = $_POST['paymentStatus']; // Get the selected payment status
+   // Get the payment status
+   $Reason = $_POST['paymentStatus'];
 
-    switch ($Reason) {
-        case 'DAMAGE':
-            $value = 1000;
-            $fine += $value;
-            $_SESSION['fine'] += $fine;  // Update fine directly in the session
-            break;
-        case 'GOOD CONDITION':
-            $value = 0;
-            $fine += $value;
-            $_SESSION['fine'] += $fine;
-            break;
-        case 'LOST':
-            $value = 2000;
-            $fine += $value;
-            $_SESSION['fine'] += $fine;
-            break;
-        default:
-            // Handle the case where the payment status is not recognized
-            echo "Invalid payment status selected.";
-            break;
-    }
+   // Handle different payment status options
+   switch ($Reason) {
+       case 'DAMAGE':
+           $value = 1000;
+           $fine += $value;
+           $_SESSION['fine'] += $fine;  // Update fine directly in the session
+           break;
+       case 'GOOD CONDITION':
+           $value = 0;
+           $fine += $value;
+           $_SESSION['fine'] += $fine;
+           break;
+       case 'LOST':
+           $value = 2000;
+           $fine += $value;
+           $_SESSION['fine'] += $fine;
+           break;
+       default:
+           // Handle the case where the payment status is not recognized
+           echo "Invalid payment status selected.";
+           break;
+   }
 
-
-    $_SESSION['fine'] += $value;
-
-  
+   
+   // Output session fine for debugging
+   echo '<script>';
+   echo 'console.log("Session Fine is IN Staff' . $fine. '");';
+   echo '</script>';
 
     // Database connection
     $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
@@ -365,7 +405,7 @@ echo '</script>';
         // Call showToast with "success" message type after successful insertion
         showToast("success", "Transaction Complete");
         // Redirect to print_return.php after 3 seconds with fine as a query parameter
-        redirectToPage("queries/print_return.php?fine=' . urlencode($fine) . '", 1500);
+         redirectToPage("queries/print_return.php?fine=' . urlencode($fine) . '", 1500);
       </script>';
       
 
@@ -537,10 +577,11 @@ echo '</script>';
                     <p class="card-text"><strong>Accession Code:</strong> <?php echo $row["Accession_Code"]; ?></p>
                     <p class="card-text"><strong>Book Title:</strong> <?php echo $row["Book_Title"]; ?></p>
                     <p class="card-text"><strong>Quantity:</strong> <?php echo $row["Quantity"]; ?></p>
-
-                    <?php
+                    <p class="card-text"><strong>Date Borrowed:</strong> <?php echo $row["Date_Borrowed"]; ?></p>
+                    <p class="card-text"><strong>Due Date:</strong> <?php echo $row["Due_Date"]; ?></p>
+                   <?php
                     $bookStatus = "LOST"; // Example status, replace with actual logic
-                    $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"]);
+                    // $fine = calculateFine($row["Due_Date"], $row["Date_Borrowed"]);
                     ?>
                     <p class="card-text"><strong>Fine:</strong> <?php echo $fine; ?></p>
 
