@@ -14,6 +14,71 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
+
+
+ // Define the HTML code for the toast element
+ echo '<div class="toastNotif hide">
+ <div class="toast-content">
+     <i class="bx bx-check check"></i>
+     <div class="message">
+         <span class="text text-1"></span>
+         <!-- this message can be changed to "Success" and "Error"-->
+         <span class="text text-2"></span>
+         <!-- specify based on the if-else statements -->
+     </div>
+ </div>
+ <i class="bx bx-x close"></i>
+ <div class="progress"></div>
+</div>';
+
+// Define JavaScript functions to handle the toast
+echo '<script>
+ function showToast(type, message) {
+     var toast = document.querySelector(".toastNotif");
+     var progress = document.querySelector(".progress");
+     var text1 = toast.querySelector(".text-1");
+     var text2 = toast.querySelector(".text-2");
+     
+     if (toast && progress && text1 && text2) {
+         // Update the toast content based on the message type
+         if (type === "success") {
+             text1.textContent = "Success";
+             toast.classList.remove("error");
+         } else if (type === "error") {
+             text1.textContent = "Error";
+             toast.classList.add("error");
+         } else {
+             console.error("Invalid message type");
+             return;
+         }
+         
+         // Set the message content
+         text2.textContent = message;
+         
+         // Show the toast and progress
+         toast.classList.add("showing");
+         progress.classList.add("showing");
+         
+         // Hide the toast and progress after 5 seconds
+         setTimeout(() => {
+             toast.classList.remove("showing");
+             progress.classList.remove("showing");
+             //  window.location.href = "admin_staff.php";
+         }, 5000);
+     } else {
+         console.error("Toast elements not found");
+     }
+ }
+
+ function closeToast() {
+     var toast = document.querySelector(".toastNotif");
+     var progress = document.querySelector(".progress");
+     toast.classList.remove("showing");
+     progress.classList.remove("showing");
+ }
+</script>';
+
+
 // Retrieve session data
 $first_name = $_SESSION['first_name'];
 $middle_name = $_SESSION['middle_name'];
@@ -21,6 +86,8 @@ $last_name = $_SESSION['last_name'];
 $contact_number = $_SESSION['contact_number'];
 $email = $_SESSION['email'];
 $affiliation = $_SESSION['affiliation']; 
+$age = $_SESSION['age'];
+$gender = $_SESSION['Gender'];
 
 $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 
@@ -29,14 +96,17 @@ $checkEmailQuery = "SELECT * FROM tbl_borrower WHERE Email = '$email'";
 $result = mysqli_query($conn, $checkEmailQuery);
 if (mysqli_num_rows($result) > 0) {
     // Email already exists, handle accordingly (e.g., show error message or update existing record)
-    echo "Email address already exists in the database.";
-
+    // echo "Email address already exists in the database.";
+    echo '<script>
+    // Call showToast with "success" message type after successful insertion
+    showToast("error", "Email address already exists in the database.");
+</script>';
    
 } else {
 
     // Email does not exist, proceed with insertion
-    $insertQuery = "INSERT INTO tbl_borrower (First_Name, Middle_Name, Last_Name, Contact_Number, Email, Affiliation) 
-                    VALUES ('$first_name', '$middle_name', '$last_name', '$contact_number', '$email', '$affiliation')";
+    $insertQuery = "INSERT INTO tbl_borrower (First_Name, Middle_Name, Last_Name, Age, Gender, Contact_Number, Email, Affiliation) 
+                    VALUES ('$first_name', '$middle_name', '$last_name', '$age', '$gender', '$contact_number', '$email', '$affiliation')";
 
     // Execute the insertion query
     $insertResult = mysqli_query($conn, $insertQuery);
@@ -46,10 +116,19 @@ if (mysqli_num_rows($result) > 0) {
         $lastInsertedID = mysqli_insert_id($conn);
         $_SESSION['lastInsertedID'] = $lastInsertedID;
       
-        echo json_encode(['lastInsertedID' => $lastInsertedID]);
+        // echo json_encode(['lastInsertedID' => $lastInsertedID]);
         
+        echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("success", "Data Inserted Succesfully");
+    </script>';
+   
+    
     } else {
-        echo "Error: " . mysqli_error($conn);
+        echo '<script>
+    // Call showToast with "success" message type after successful insertion
+    showToast("error", "Error");
+</script>';
     }
 
     
@@ -59,6 +138,7 @@ if (mysqli_num_rows($result) > 0) {
 
 
 ?>
+
 
 
 
@@ -95,6 +175,8 @@ if (mysqli_num_rows($result) > 0) {
                             <p class="card-text"><strong>First Name:</strong> <?php echo $first_name; ?></p>
                             <p class="card-text"><strong>Middle Name:</strong> <?php echo $middle_name; ?></p>
                             <p class="card-text"><strong>Last Name:</strong> <?php echo $last_name; ?></p>
+                            <p class="card-text"><strong>Age: </strong> <?php echo $age; ?></p>
+                            <p class="card-text"><strong>Gender: </strong> <?php echo $gender; ?></p>
                             <p class="card-text"><strong>Contact Number:</strong> <?php echo $contact_number; ?></p>
                             <p class="card-text"><strong>Email:</strong> <?php echo $email; ?></p>
                             <p class="card-text"><strong>Affiliation:</strong> <?php echo $affiliation; ?></p>

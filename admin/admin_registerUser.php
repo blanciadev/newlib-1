@@ -18,6 +18,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $contact_number = $_POST['contact_number'];
     $email = $_POST['email'];
     $affiliation = $_POST['affiliation'];
+    $age = $_POST['Age'];
+    $gender = $_POST['Gender'];
 
     // Store form data in session variables
     $_SESSION['first_name'] = $first_name;
@@ -26,6 +28,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $_SESSION['contact_number'] = $contact_number;
     $_SESSION['email'] = $email;
     $_SESSION['affiliation'] = $affiliation;
+    $_SESSION['age'] = $age;
+    $_SESSION['Gender'] = $gender;
 
     // Redirect to another page or perform other actions
     header("Location: generate_qr_code.php");
@@ -119,6 +123,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label for="last_name" class="form-label">Last Name:</label>
                     <input type="text" id="last_name" name="last_name" class="form-control" required>
                 </div>
+                <div class="col-md-6">
+                    <label for="Age" class="form-label">Age : </label>
+                    <input type="text" id="Age" name="Age" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+    <label class="form-label">Gender</label>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="Gender" id="maleGender" value="Male" required>
+        <label class="form-check-label" for="maleGender">
+            Male
+        </label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="Gender" id="femaleGender" value="Female" required>
+        <label class="form-check-label" for="femaleGender">
+            Female
+        </label>
+    </div>
+   
+</div>
+
+
                 <div class="col-md-6">
                     <label for="contact_number" class="form-label">Contact Number:</label>
                     <input type="text" id="contact_number" name="contact_number" class="form-control" required>

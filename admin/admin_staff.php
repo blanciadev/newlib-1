@@ -7,6 +7,67 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
+ // Define the HTML code for the toast element
+ echo '<div class="toastNotif hide">
+ <div class="toast-content">
+     <i class="bx bx-check check"></i>
+     <div class="message">
+         <span class="text text-1"></span>
+         <!-- this message can be changed to "Success" and "Error"-->
+         <span class="text text-2"></span>
+         <!-- specify based on the if-else statements -->
+     </div>
+ </div>
+ <i class="bx bx-x close"></i>
+ <div class="progress"></div>
+</div>';
+
+// Define JavaScript functions to handle the toast
+echo '<script>
+ function showToast(type, message) {
+     var toast = document.querySelector(".toastNotif");
+     var progress = document.querySelector(".progress");
+     var text1 = toast.querySelector(".text-1");
+     var text2 = toast.querySelector(".text-2");
+     
+     if (toast && progress && text1 && text2) {
+         // Update the toast content based on the message type
+         if (type === "success") {
+             text1.textContent = "Success";
+             toast.classList.remove("error");
+         } else if (type === "error") {
+             text1.textContent = "Error";
+             toast.classList.add("error");
+         } else {
+             console.error("Invalid message type");
+             return;
+         }
+         
+         // Set the message content
+         text2.textContent = message;
+         
+         // Show the toast and progress
+         toast.classList.add("showing");
+         progress.classList.add("showing");
+         
+         // Hide the toast and progress after 5 seconds
+         setTimeout(() => {
+             toast.classList.remove("showing");
+             progress.classList.remove("showing");
+             //  window.location.href = "admin_staff.php";
+         }, 5000);
+     } else {
+         console.error("Toast elements not found");
+     }
+ }
+
+ function closeToast() {
+     var toast = document.querySelector(".toastNotif");
+     var progress = document.querySelector(".progress");
+     toast.classList.remove("showing");
+     progress.classList.remove("showing");
+ }
+</script>';
 
 // Database connection
 $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
@@ -21,13 +82,38 @@ if(isset($_GET['deactivated_id'])) {
 
     if (mysqli_query($conn, $updateSql)) {
         // Deletion successful, redirect to the same page to refresh the data
-        echo '<script>alert("Record deactivatedd successfully.");</script>';
-        echo '<script>window.location.href = "admin_staff.php";</script>';
-        exit(); // Ensure to exit after header redirection
+        // echo '<script>alert("Record deactivatedd successfully.");</script>';
+        // echo '<script>window.location.href = "admin_staff.php";</script>';
+     
+        echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("success", "Record deactivated successfully");
+    </script>';
+        // exit(); // Ensure to exit after header redirection
     } else {
         echo "Error deleting record: " . mysqli_error($conn);
     }
 }
+
+if(isset($_GET['reactivate_id'])) {
+    $reactivateId = $_GET['reactivate_id'];
+    // Construct the SQL query to reactivate the record
+    $updateSql = "UPDATE tbl_employee SET Status = 'Active' WHERE User_ID = $reactivateId";
+
+    if (mysqli_query($conn, $updateSql)) {
+        // Reactivation successful, redirect to the same page to refresh the data
+       
+        echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("success", "Record Reactivated successfully");
+    </script>';
+
+        // exit(); // Ensure to exit after header redirection
+    } else {
+        echo "Error reactivating record: " . mysqli_error($conn);
+    }
+}
+
 
 if (isset($_POST['submit'])) {
     // Database connection
@@ -53,10 +139,16 @@ if (isset($_POST['submit'])) {
     try {
         if (mysqli_query($conn, $sql)) {
             // Display a banner for successful insertion
-            echo '<script>alert("Default password will be your Lastname@role. Insertion Successful!");</script>';
+            // echo '<script>alert("Default password will be your Lastname@role. Insertion Successful!");</script>';
+            
+        echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("success", "Default password will be your Lastname@role. Insertion Successful!");
+    </script>';
+
             // Redirect the user back to the same page
-            echo '<script>window.location.href = "admin_staff.php";</script>';
-            exit();
+            // echo '<script>window.location.href = "admin_staff.php";</script>';
+            // exit();
         }
         else {
             // Handle other errors
@@ -64,7 +156,11 @@ if (isset($_POST['submit'])) {
         }
     } catch (Exception $e) {
         // Handle the exception gracefully
-        echo '<script>alert("Error: ' . $e->getMessage() . '");</script>';
+        // echo '<script>alert("Error: ' . $e->getMessage() . '");</script>';
+        echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Error");
+    </script>';
     }
 
     mysqli_close($conn);
@@ -88,6 +184,7 @@ if (isset($_POST['submit'])) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./admin.css" rel="stylesheet">
+    <link href="toast.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
 
@@ -166,7 +263,7 @@ $result = mysqli_query($conn, $sql);
 
 if ($result) {
     echo '<table class="table table-bordered">';
-    echo '<thead><tr><th>User ID</th><th>First Name</th><th>Middle Name</th><th>Last Name</th><th>Role</th><th>Contact Number</th><th>Email</th><th>Address</th><th>Action</th></tr></thead>';
+    echo '<thead><tr><th>User ID</th><th>First Name</th><th>Middle Name</th><th>Last Name</th><th>Role</th><th>Contact Number</th><th>Email</th><th>Address</th><th>Action</th><th></th></tr></thead>';
     echo '<tbody>';
 
     while ($row = mysqli_fetch_assoc($result)) {
@@ -179,25 +276,39 @@ if ($result) {
         echo '<td>' . $row['Contact_Number'] . '</td>';
         echo '<td>' . $row['E_mail'] . '</td>';
         echo '<td>' . $row['tb_address'] . '</td>';
-
-        // Add a button for rows where Role is 'Staff'
+    
+        // Add buttons for rows where Role is 'Staff'
         if ($row['tb_role'] === 'Staff') {
             // Check if the user status is "Deactivated"
             $status = $row['status'];
             
             // Check if the status is "Deactivated" and disable the button accordingly
             $disabled = ($status === 'Deactivated') ? 'disabled' : '';
-        
+    
+            // Form for deactivation
             echo "<td><form class='deactivated-form' method='GET' action='admin_staff.php'>";
             echo "<input type='hidden' name='deactivated_id' value='" . $row['User_ID'] . "'>";
             // Add the $disabled variable to the button
-            echo "<button type='submit' class='btn btn-danger btn-sm deactivated-btn' $disabled onclick='return confirmdeactivated(" . $row['User_ID'] . ")'>Deactivate</button>";
+            echo "<button type='submit' class='btn btn-danger btn-sm deactivated-btn' $disabled onclick='return confirmDeactivate(" . $row['User_ID'] . ")'>Deactivate</button>";
+            echo "</form></td>";
+    
+            // Form for reactivation
+            echo "<td><form class='reactivate-form' method='GET' action='admin_staff.php'>";
+            echo "<input type='hidden' name='reactivate_id' value='" . $row['User_ID'] . "'>";
+            // Add condition to show the button only if the status is "Deactivated"
+            if ($status === 'Deactivated') {
+                echo "<button type='submit' class='btn btn-success btn-sm reactivate-btn' onclick='return confirmReactivate(" . $row['User_ID'] . ")'>Reactivate</button>";
+            } else {
+                echo "<button type='submit' class='btn btn-success btn-sm reactivate-btn' disabled>Reactivate</button>";
+            }
             echo "</form></td>";
         } else {
+            echo '<td></td>'; // Empty cell for other roles
             echo '<td></td>'; // Empty cell for other roles
         }
         echo '</tr>';
     }
+    
     echo '</tbody>';
     echo '</table>';
 }

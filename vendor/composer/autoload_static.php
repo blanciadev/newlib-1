@@ -8,8 +8,8 @@ class ComposerStaticInit2de82f7989b7317091bfb2630b1bfc5b
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
-        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
+        '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
@@ -33,6 +33,10 @@ class ComposerStaticInit2de82f7989b7317091bfb2630b1bfc5b
             'chillerlan\\QRCode\\' => 18,
             'chillerlan\\QRCodeTest\\' => 22,
             'chillerlan\\Authenticator\\' => 25,
+        ),
+        'Z' => 
+        array (
+            'ZipStream\\' => 10,
         ),
         'W' => 
         array (
@@ -61,9 +65,13 @@ class ComposerStaticInit2de82f7989b7317091bfb2630b1bfc5b
         ),
         'P' => 
         array (
+            'Psr\\SimpleCache\\' => 16,
             'Psr\\Log\\' => 8,
+            'Psr\\Http\\Message\\' => 17,
+            'Psr\\Http\\Client\\' => 16,
             'Psr\\Container\\' => 14,
             'PhpParser\\' => 10,
+            'PhpOffice\\PhpSpreadsheet\\' => 25,
             'Phan\\' => 5,
             'ParagonIE\\ConstantTime\\' => 23,
             'PHPStan\\PhpDocParser\\' => 21,
@@ -73,6 +81,7 @@ class ComposerStaticInit2de82f7989b7317091bfb2630b1bfc5b
         'M' => 
         array (
             'Microsoft\\PhpParser\\' => 20,
+            'Matrix\\' => 7,
         ),
         'E' => 
         array (
@@ -89,6 +98,7 @@ class ComposerStaticInit2de82f7989b7317091bfb2630b1bfc5b
             'Composer\\XdebugHandler\\' => 23,
             'Composer\\Semver\\' => 16,
             'Composer\\Pcre\\' => 14,
+            'Complex\\' => 8,
         ),
         'B' => 
         array (
@@ -122,6 +132,10 @@ class ComposerStaticInit2de82f7989b7317091bfb2630b1bfc5b
         'chillerlan\\Authenticator\\' => 
         array (
             0 => __DIR__ . '/..' . '/chillerlan/php-authenticator/src',
+        ),
+        'ZipStream\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/maennchen/zipstream-php/src',
         ),
         'Webmozart\\Assert\\' => 
         array (
@@ -187,9 +201,22 @@ class ComposerStaticInit2de82f7989b7317091bfb2630b1bfc5b
         array (
             0 => __DIR__ . '/..' . '/sabre/event/lib',
         ),
+        'Psr\\SimpleCache\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/simple-cache/src',
+        ),
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
+        ),
+        'Psr\\Http\\Message\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
+        ),
+        'Psr\\Http\\Client\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/psr/http-client/src',
         ),
         'Psr\\Container\\' => 
         array (
@@ -198,6 +225,10 @@ class ComposerStaticInit2de82f7989b7317091bfb2630b1bfc5b
         'PhpParser\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
+        ),
+        'PhpOffice\\PhpSpreadsheet\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
         ),
         'Phan\\' => 
         array (
@@ -222,6 +253,10 @@ class ComposerStaticInit2de82f7989b7317091bfb2630b1bfc5b
         'Microsoft\\PhpParser\\' => 
         array (
             0 => __DIR__ . '/..' . '/microsoft/tolerant-php-parser/src',
+        ),
+        'Matrix\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/markbaker/matrix/classes/src',
         ),
         'Endroid\\QrCode\\' => 
         array (
@@ -250,6 +285,10 @@ class ComposerStaticInit2de82f7989b7317091bfb2630b1bfc5b
         'Composer\\Pcre\\' => 
         array (
             0 => __DIR__ . '/..' . '/composer/pcre/src',
+        ),
+        'Complex\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
         ),
         'BaconQrCode\\' => 
         array (
