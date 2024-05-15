@@ -91,7 +91,7 @@ function calculateFine($dueDate, $dateBorrowed, $bookStatus)
             // Add default penalty fine of 30 pesos
             $fine += 0;
             // Add per-day fine of 15 pesos for each subsequent day of overdue
-            $fine += ($daysOverdue - 1) * 15;
+            $fine += ($daysOverdue - 1) * 5;
             break;
         default:
             // No additional fine for books in GOOD CONDITION or if none of the expected statuses are selected
@@ -266,19 +266,29 @@ SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tb
     // Get current date and time
     $currentDateTime = date("Y-m-d H:i:s");
 
+    if($fine != 0){
+        echo '<script>';
+        echo 'console.log("Fine is not Equals to 0");';
+        echo '</script>';
     // Prepare SQL statement to insert fine information
     $sql5 = "INSERT INTO tbl_fines (Borrower_ID, ReturnDetails_ID, Amount, Reason, Payment_Status, Date_Created, Payment_Date) 
-    VALUES (?, ?, ?, ?, ?, ?, ?)";
+            VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt5 = $conn->prepare($sql5);
+
     if (!$stmt5) {
         die("Error in preparing statement 5: " . $conn->error);
     }
-
-    // Bind parameters and execute statement
-    $stmt5->bind_param("iiissss", $borrowerId, $bd_Id, $fine, $Reason, $paymentStatus, $currentDate, $currentDateTime);
-
-    // Set the payment status
     $paymentStatus = "Paid";
+     // Bind parameters and execute statement
+     $stmt5->bind_param("iiissss", $borrowerId, $bd_Id, $fine, $Reason, $paymentStatus, $currentDate, $currentDateTime);
+     $status5 = $stmt5->execute();
+
+    }else{
+        echo '<script>';
+echo 'console.log("Fine is 0");';
+echo '</script>';
+    }
+
     $_SESSION['stat'] =  $paymentStatus;
     $accessionCode = $_SESSION['Accession_Code'];
     $qtyb = $_SESSION['qty'];
@@ -308,17 +318,19 @@ SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tb
     $status2 = $stmt2->execute();
     $status3 = $stmt3->execute();
     $status4 = $stmt4->execute();
-    $status5 = $stmt5->execute();
+  
 
     // Check each query execution status
-    if ($status1 && $status2 && $status3 && $status4 && $status5) {
+    if ($status1 && $status2 && $status3 && $status4) {
         // All queries executed successfully
         echo '<script>
         // Call showToast with "success" message type after successful insertion
-        showToast("success", "Image Updated successfully.");
-        // Redirect to this page after 3 seconds
-        redirectToPage("queries/print_return.php", 3000);
-    </script>';
+        showToast("success", "Transaction Complete");
+        // Redirect to print_return.php after 3 seconds with fine as a query parameter
+        redirectToPage("queries/print_return.php?fine=' . urlencode($fine) . '", 1500);
+      </script>';
+      
+
 
 
         // echo '<script>alert("Record Updated successfully."); window.location.href = "queries/print_return.php";</script>';
@@ -345,9 +357,7 @@ SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tb
         if (!$status4) {
             echo " Error in statement 4: " . $stmt4->error;
         }
-        if (!$status5) {
-            echo " Error in statement 5: " . $stmt5->error;
-        }
+      
     }
 
 

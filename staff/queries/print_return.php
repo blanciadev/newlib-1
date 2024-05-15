@@ -1,12 +1,16 @@
 <?php
 // Start the session
 session_start();
+
 // Check if the User_ID session variable is not set or empty
 if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     // Redirect to index.php
     header("Location: ../index.php");
     exit(); // Ensure script execution stops after redirection
 }
+
+// Retrieve the $fine value from the URL if it exists, otherwise set it to 0
+$fine = isset($_GET['fine']) ? $_GET['fine'] : 0;
 
 // Access the stored session data
 $accessionCode = $_SESSION['Accession_Code'];
@@ -15,10 +19,13 @@ $quantity = $_SESSION['Quantity'];
 $borrowDetailsId = $_SESSION['BorrowDetails_ID'];
 $date = $_SESSION['Date_Borrowed'];
 $due = $_SESSION['Due_Date'];
-$fine =  $_SESSION['fine'];
 $stat = $_SESSION['stat'];
 
+echo '<script>';
+echo 'console.log("Fine is ' . $fine . '");';
+echo '</script>';
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

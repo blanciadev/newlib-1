@@ -240,7 +240,12 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                                 echo '<td>' . $row['Quantity'] . '</td>'; 
                                 echo '<td>' . $row['Date_Borrowed'] . '</td>'; 
                                 echo '<td>' . $row['Due_Date'] . '</td>'; 
-                                echo '<td>' . $row['Amount'] . '</td>'; 
+                                // Check if the Amount is not equal to 0 before displaying it
+    if ($row['Amount'] != 0) {
+        echo '<td>' . $row['Amount'] . '</td>'; 
+    } else {
+        echo '<td></td>'; // Display an empty cell if Amount is 0
+    }
                                 echo '<td>' . $row['tb_status'] . '</td>'; 
                                 echo '</tr>';
                             }
