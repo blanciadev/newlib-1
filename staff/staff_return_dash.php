@@ -59,7 +59,7 @@ if ($conn->connect_error) {
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary"><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
+            <img src="../images/lib-icon.png" style="width: 16%;" alt="lib-icon"/>
         </a><!--header container--> 
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
             <?php
@@ -93,7 +93,7 @@ if ($conn->connect_error) {
             <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul> 
     </div>
-    <div class="board container"><!--board container-->
+    <div class="board container-fluid"><!--board container-->
         <div class="header1">
                 <div class="text">
                     <div class="back-btn">
@@ -110,7 +110,7 @@ if ($conn->connect_error) {
                     </form>
                 </div>
         </div>
-        <div class="books container">
+        <div class="books container-fluid">
             <table class="table table-hover table-sm">
                 <thead>
                     <tr>
@@ -178,7 +178,6 @@ if ($conn->connect_error) {
                 </tbody>
             </table>
         </div>
-        <button class="btn btn-success showToast">Show Toast</button>
     </div>
     
     <!--Logout Modal -->

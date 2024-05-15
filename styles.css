@@ -1,8 +1,8 @@
 body{
+    width: 100vw;
+    height: 100vh;
     margin: 0%;
     font-family: 'Poppins';
-    width: 1366px;
-    height: 641px;
     display: flex;
     align-items: center;
 }
@@ -17,23 +17,27 @@ body{
 .img-sec{
     background-color: lightgray;
     display: flex;
-    justify-content: end;
     border-top-right-radius: 15px;
-    border-bottom-right-radius: 15px; 
+    border-bottom-right-radius: 15px;
+    align-items: center;
+    padding-right: 30px;
+    justify-content: flex-end; 
 }
 .img-sec img{
     align-self: center;   
     object-fit: cover;
     height: 90%;
-    width: 83%; 
+    width: 90%; 
     border-radius: 15px;
     margin: 0px 15px ;
 }
-.form-sec{ 
+.form-sec{
     display: flex;
     flex-direction: column;
-    align-items: center; 
+    align-items: center;
     gap: 10px;
+    align-content: center;
+    flex-wrap: wrap;
 }
 .form-sec .title{
     display: flex;

@@ -47,7 +47,7 @@
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
+            <img src="../images/lib-icon.png" style="width: 16%;" alt="lib-icon"/>
         </a><!--header container--> 
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
             <?php
@@ -82,7 +82,7 @@
             <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-    <div class="board container"><!--board container-->
+    <div class="board container-fluid"><!--board container-->
         <div class="header1">
             <div class="text">
                 <div class="title">
@@ -91,12 +91,13 @@
             </div>
             <div class="searchbar">
                 <form action="">
-                    <input type="search" id="searchInput"  placeholder="Search..." required>
                     <i class='bx bx-search' id="search-icon"></i>
+                    <input type="search" id="searchInput"  placeholder="Search..." required>
+                    
                 </form>
             </div>
         </div>
-        <div class="books container">
+        <div class="books container-fluid">
             <table class="table table-hover table-sm">
                 <thead class="bg-light sticky-top">
                     <tr>
@@ -120,16 +121,6 @@
                         if ($conn->connect_error) {
                             die("Connection failed: " . $conn->connect_error);
                         }
-
-                        // Number of records per page
-                        $recordsPerPage = 10;
-
-                        // Determine current page number
-                        $page = isset($_GET['page']) ? $_GET['page'] : 1;
-
-                        // Calculate the offset
-                        $offset = ($page - 1) * $recordsPerPage;
-
                         // SQL query to count total records
                         $countSql = "SELECT COUNT(*) AS total FROM tbl_books";
                         $countResult = $conn->query($countSql);
@@ -160,8 +151,7 @@
                                     tbl_section ON tbl_books.Section_Code = tbl_section.Section_uid
                                 INNER JOIN
                                     tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID
-                                WHERE tb_status = 'Available'
-                                LIMIT $offset, $recordsPerPage";
+                                WHERE tb_status = 'Available'";
 
                         $result = $conn->query($sql);
 
@@ -184,30 +174,6 @@
                     ?>
                 </tbody>
             </table>
-            
-            <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-end"><!-- Pagination links -->
-                <?php
-                    // Calculate total number of pages
-                    $totalPages = ceil($totalRecords / $recordsPerPage);
-
-                    // Previous page link
-                    if ($page > 1) {
-                        echo '<li class="page-item"><a class="page-link" href="?page=' . ($page - 1) . '">Previous</a></li>';
-                    }
-
-                    // Page numbers
-                    for ($i = 1; $i <= $totalPages; $i++) {
-                        echo '<li class="page-item ' . ($i == $page ? 'active' : '') . '"><a class="page-link" href="?page=' . $i . '">' . $i . '</a></li>';
-                    }
-
-                    // Next page link
-                    if ($page < $totalPages) {
-                        echo '<li class="page-item"><a class="page-link" href="?page=' . ($page + 1) . '">Next</a></li>';
-                    }
-                ?>
-            </ul>
-            </nav>
         </div>
         <div class="btn-con">
             <a href="./staff_request_list.php" class="btn">Request List</a>
@@ -238,11 +204,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script> 
     
-        //popover
-        const popover = new bootstrap.Popover('.authorPop', {
-            container: 'body'
-        })
-
          // JavaScript code for search functionality
         document.getElementById("searchInput").addEventListener("input", function() {
             let searchValue = this.value.toLowerCase();

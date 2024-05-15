@@ -76,7 +76,7 @@ $dataJSON = json_encode($data);
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary"><!--sidenav container-->
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2>
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon" />
+            <img src="../images/lib-icon.png" style="width: 16%;" alt="lib-icon" />
         </a><!--header container-->
         <div class="user-header d-flex flex-row flex-wrap align-content-center justify-content-evenly">
             <?php
@@ -111,17 +111,18 @@ $dataJSON = json_encode($data);
             <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-
     <div class="board1 container-fluid"><!--board container-->
         <div class="header">
             <div class="text">
                 <div class="title">
                     <h2>Dashboard</h2>
                 </div>
-                <div class="datetime">
-                    <p id="currentDate"></p>
-                    <p id="currentTime"></p>
-                </div>
+                <p>Welcome! <strong><span><?php echo $userData['First_Name']; ?></span></strong>
+        </p>
+            </div>
+            <div class="datetime">
+                <p id="currentTime" style="font-size:1rem;font-weight: 700; margin:0%;"></p>
+                <p id="currentDate" style="font-size: 10pt;margin:0%;"></p>
             </div>
         </div>
         <div class="content">
@@ -130,22 +131,22 @@ $dataJSON = json_encode($data);
                 <div class="ovw-con">
                     <div class="totalbooks">
                         <?php
-                        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308 ); // database connection
+                            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308 ); // database connection
 
-                        // Query to get the total quantity of all books
-                        $totalQuantityQuery = "SELECT SUM(Quantity) AS total_quantity FROM tbl_books";
-                        $totalQuantityResult = mysqli_query($conn, $totalQuantityQuery);
+                            // Query to get the total quantity of all books
+                            $totalQuantityQuery = "SELECT SUM(Quantity) AS total_quantity FROM tbl_books";
+                            $totalQuantityResult = mysqli_query($conn, $totalQuantityQuery);
 
-                        // Check if the query was successful and fetch the total quantity
-                        if ($totalQuantityResult && mysqli_num_rows($totalQuantityResult) > 0) {
-                            $totalQuantityData = mysqli_fetch_assoc($totalQuantityResult);
-                            $totalQuantity = $totalQuantityData['total_quantity'];
+                            // Check if the query was successful and fetch the total quantity
+                            if ($totalQuantityResult && mysqli_num_rows($totalQuantityResult) > 0) {
+                                $totalQuantityData = mysqli_fetch_assoc($totalQuantityResult);
+                                $totalQuantity = $totalQuantityData['total_quantity'];
 
-                            // Display the total quantity of all books
-                            echo "<h3>" . $totalQuantity . "</h3>";
-                        } else {
-                            echo "No books found";
-                        }
+                                // Display the total quantity of all books
+                                echo "<h3>" . $totalQuantity . "</h3>";
+                            } else {
+                                echo "No books found";
+                            }
                         ?>
                         <div class="d-flex w-100 flex-wrap justify-content-around ">
                             <i class='bx bxs-book' style="font-size: 30pt;"></i>
@@ -183,7 +184,7 @@ $dataJSON = json_encode($data);
 
             <div class="duebooks">
                 <h3 class="mb-3">Due Today</h3>
-                <div class="duebooks-con" style="max-height: 200px; overflow-y:auto;">
+                <div class="duebooks-con" style="overflow-y:auto;">
                     <?php
                     $totalVisits = "SELECT
                                             b.User_ID, 
@@ -219,7 +220,7 @@ $dataJSON = json_encode($data);
                     $totalVisits_run = mysqli_query($conn, $totalVisits);
 
                     if ($totalVisits_run && mysqli_num_rows($totalVisits_run) > 0) {
-                        echo '<ol class="list-group list-group-numbered" style="height:40%; width:100%">';
+                        echo '<ol class="list-group list-group-numbered" style="height:100%; width:100%">';
                         while ($row = mysqli_fetch_assoc($totalVisits_run)) {
                             echo '<li class="list-group-item d-flex justify-content-between align-items-start">';
                             echo '<div class="ms-2 me-auto">';
@@ -333,7 +334,7 @@ $dataJSON = json_encode($data);
 
             <div class="newbooks">
                 <h3>What's New?</h3>
-                <div class="newbooks-con">
+                <div class="newbooks-con" style="overflow-y:auto;">
                     <?php
                     // Calculate the date 3 days ago from today
                     $threeDaysAgo = date('Y-m-d H:i:s', strtotime('-3 days'));
@@ -349,19 +350,17 @@ $dataJSON = json_encode($data);
                     if ($result && mysqli_num_rows($result) > 0) {
                         $totalBooksCount = mysqli_num_rows($result);
 
-                        // Display the books or process further as needed
-                        echo '<div class="list-group">';
+                        echo '<ol class="list-group list-group-numbered" style="height:100%; width:100%">';
                         while ($row = mysqli_fetch_assoc($result)) {
-                            // Display book details or perform actions
-                            echo '<a href="#" class="list-group-item list-group-item-action">';
-                            echo '<div class="d-flex w-100 justify-content-between">';
-                            echo '<h5 class="mb-1">' . $row['Book_Title'] . '</h5>';
-                            echo '</div>';
-                            echo '<p class="mb-1">' . $row['Authors_Name'] . '</p>';
-                            echo '<small>' . $row['date_inserted'] . '</small>';
-                            echo '</a>';
+                            echo '<li class="list-group-item d-flex justify-content-between align-items-start">';
+                            echo '<div class="ms-2 me-auto">';
+                            echo '  <div class="fw"><strong>' . $row['Book_Title'] . '</strong></div>
+                                            ' . $row['Authors_Name'] . ' <br/>
+                                            ' . $row['date_inserted'] .'
+                                        </div>';
+                            echo '</li>';
                         }
-                        echo '</div>';
+                        echo '</ol>';
                     } else {
                         echo "<p>No New Books</p>";
                     }
@@ -388,6 +387,7 @@ $dataJSON = json_encode($data);
             </div>
         </div>
     </div>
+    
 
     <div class="toastNotif" class="hide">
         <div class="toast-content">

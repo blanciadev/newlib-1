@@ -174,7 +174,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
+            <img src="../images/lib-icon.png" style="width: 16%;" alt="lib-icon"/>
         </a><!--header container-->
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
             <?php
@@ -223,7 +223,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             font-size: 1.5rem;
         }
     </style>
-    <div class="board1 container"><!--board container-->
+    <div class="board1 container-fluid"><!--board container-->
         <div class="header1">
             <div class="text">
                 <div class="back-btn">
@@ -234,7 +234,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
                 </div>
             </div>
         </div>
-        <div class="books container">
+        <div class="books container-fluid">
             <main>
                 <div id="reader"></div>
                 <div id="result"></div>
@@ -255,7 +255,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
                 </div>
             <?php endif; ?>
         </div>
-        <button class="btn btn-success showToast">Show Toast</button>
     </div>
 
     <!--Logout Modal -->

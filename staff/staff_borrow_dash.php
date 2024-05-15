@@ -1,5 +1,6 @@
 <?php
     session_start(); // Start or resume the session
+
     // Check if the User_ID session variable is not set or empty
     if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         // Redirect to index.php
@@ -7,54 +8,52 @@
         exit(); // Ensure script execution stops after redirection
     }
 
-
-    
-// Define showToast() function
-// Output the HTML code for the toast element
-echo '<div class="toastNotif hide">
-<div class="toast-content">
-    <i class="bx bx-check check"></i>
-    <div class="message">
-        <span class="text text-1">Success</span>
-        <!-- this message can be changed to "Success" and "Error"-->
-        <span class="text text-2"></span>
-        <!-- specify based on the if-else statements -->
+    // Define showToast() function
+    // Output the HTML code for the toast element
+    echo '<div class="toastNotif hide">
+    <div class="toast-content">
+        <i class="bx bx-check check"></i>
+        <div class="message">
+            <span class="text text-1">Success</span>
+            <!-- this message can be changed to "Success" and "Error"-->
+            <span class="text text-2"></span>
+            <!-- specify based on the if-else statements -->
+        </div>
     </div>
-</div>
-<i class="bx bx-x close"></i>
-<div class="progress"></div>
-</div>';
+    <i class="bx bx-x close"></i>
+    <div class="progress"></div>
+    </div>';
 
-// Define JavaScript functions to handle the toast
-echo '<script>
-function showToast(messageType, message) {
-    console.log("Toast Called");
-    var toast = document.querySelector(".toastNotif");
-    var progress = document.querySelector(".progress");
-    
-    // Set the message type and text
-    toast.querySelector(".text-1").textContent = messageType;
-    toast.querySelector(".text-2").textContent = message;
-    
-    if (toast && progress) {
-        toast.classList.add("showing");
-        progress.classList.add("showing");
-        setTimeout(() => {
-            toast.classList.remove("showing");
-            progress.classList.remove("showing");
-        }, 5000);
-    } else {
-        console.error("Toast elements not found");
+    // Define JavaScript functions to handle the toast
+    echo '<script>
+    function showToast(messageType, message) {
+        console.log("Toast Called");
+        var toast = document.querySelector(".toastNotif");
+        var progress = document.querySelector(".progress");
+        
+        // Set the message type and text
+        toast.querySelector(".text-1").textContent = messageType;
+        toast.querySelector(".text-2").textContent = message;
+        
+        if (toast && progress) {
+            toast.classList.add("showing");
+            progress.classList.add("showing");
+            setTimeout(() => {
+                toast.classList.remove("showing");
+                progress.classList.remove("showing");
+            }, 5000);
+        } else {
+            console.error("Toast elements not found");
+        }
     }
-}
 
-function closeToast() {
-    var toast = document.querySelector(".toastNotif");
-    var progress = document.querySelector(".progress");
-    toast.classList.remove("showing");
-    progress.classList.remove("showing");
-}
-</script>';
+    function closeToast() {
+        var toast = document.querySelector(".toastNotif");
+        var progress = document.querySelector(".progress");
+        toast.classList.remove("showing");
+        progress.classList.remove("showing");
+    }
+    </script>';
 
 
 
@@ -127,7 +126,6 @@ function closeToast() {
     }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -162,12 +160,11 @@ function closeToast() {
     </style>
 
 </head>
-
 <body>
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary"><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2>
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon" />
+            <img src="../images/lib-icon.png" style="width: 16%;" alt="lib-icon" />
         </a><!--header container-->
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly">
             <!--user container--> 
@@ -188,7 +185,7 @@ function closeToast() {
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image"
                     width="50" height="50" class="rounded-circle me-2">
             <?php else: ?> 
-                <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+                <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
             <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong>
         </div>
@@ -201,10 +198,10 @@ function closeToast() {
             <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
             <hr>
             <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-    <div class="board container"><!--board container-->
+    <div class="board container-fluid"><!--board container-->
         <div class="header1">
             <div class="text">
                 <div class="back-btn">
@@ -215,7 +212,7 @@ function closeToast() {
                 </div>
             </div>
         </div>
-        <div class="books container">
+        <div class="books container-fluid">
             <main>
                 <div id="reader"></div>
                 <div id="result"></div>
@@ -228,6 +225,24 @@ function closeToast() {
                 </div> 
                 <button type="submit" class="btn btn-primary" id="book_borrow" disabled>Continue</button>
             </form>
+        </div>
+    </div>
+
+     <!--Logout Modal -->
+     <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+            </div>
+            <div class="modal-body">
+                Do you want to log out?
+            </div>
+            <div class="modal-footer d-flex flex-row justify-content-center">
+                <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+            </div>
+            </div>
         </div>
     </div>
 

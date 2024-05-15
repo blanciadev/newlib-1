@@ -30,7 +30,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary"><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2>
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon" />
+            <img src="../images/lib-icon.png" style="width: 16%;" alt="lib-icon" />
         </a><!--header container-->
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
             <!-- Display user image -->
@@ -48,10 +48,8 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             }
             ?>
             <?php if (!empty($userData['image_data'])) : ?>
-                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else : ?>
-                <!-- default image -->
                 <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
             <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong>
@@ -70,7 +68,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
     </div>
 
-    <div class="board1 container"><!--board container-->
+    <div class="board1 container-fluid"><!--board container-->
         <div class="header1">
             <div class="text">
                 <div class="back-btn">
@@ -81,22 +79,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 </div>
             </div>
         </div>
-        <div class="books container">
-            <!-- Display success or error message -->
-            <div class="container">
-                <?php if (!empty($successMessage)) : ?>
-                    <div class="alert alert-success" role="alert">
-                        <?php echo $successMessage; ?>
-                    </div>
-                <?php endif; ?>
-
-                <?php if (!empty($errorMessage)) : ?>
-                    <div class="alert alert-danger" role="alert">
-                        <?php echo $errorMessage; ?>
-                    </div>
-                <?php endif; ?>
-            </div>
-
+        <div class="books container-fluid">
             <form id="requestForm" method="POST" action="">
 
                 <input type="hidden" name="userID" value="<?php echo $_SESSION['User_ID']; ?>">
@@ -217,9 +200,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
             </form>
         </div>
-
-        <button class="btn btn-success showToast">Show Toast</button>
-
     </div>
 
     <!--Logout Modal -->
@@ -393,7 +373,7 @@ document.addEventListener("DOMContentLoaded", function() {
         toast.classList.add("showing");
         setTimeout(() => {
             toast.classList.remove("showing");
-            window.location.href = "staff_books.php";
+            window.location.href = "staff_request_list.php";
         }, 5000);
     }
 

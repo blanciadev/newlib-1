@@ -29,132 +29,139 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
+            <img src="../images/lib-icon.png" style="width: 16%;" alt="lib-icon"/>
         </a><!--header container-->
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
           <!-- Display user image -->
-          <?php
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-            $userID = $_SESSION["User_ID"];
-            $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
-                    FROM tbl_employee 
-                    WHERE User_ID = $userID";
-            $result = mysqli_query($conn, $sql);
-            if (!$result) {
-                echo "Error: " . mysqli_error($conn);
-            } else {
-                $userData = mysqli_fetch_assoc($result);
-            }
+            <?php
+                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                $userID = $_SESSION["User_ID"];
+                $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
+                        FROM tbl_employee 
+                        WHERE User_ID = $userID";
+                $result = mysqli_query($conn, $sql);
+                if (!$result) {
+                    echo "Error: " . mysqli_error($conn);
+                } else {
+                    $userData = mysqli_fetch_assoc($result);
+                }
             ?>
             <?php if (!empty($userData['image_data'])): ?>
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else: ?> 
                 <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-            <strong><span><?php $fname = $userData["First_Name"]; $lname = $userData["Last_Name"]; $userName = $fname." ". $lname;  echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong>
+            <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong>
         </div> 
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item"> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
             <li class="nav-item"> <a href="./staff_transaction_dash.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>
-           <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
+            <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
             <li class="nav-item active"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
             <hr>
             <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut"  class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-    <div class=" board container"><!--board container-->
-    <div class="header1">
-        <div class="text">
-            <div class="title">
-                <h2>Fines</h2>
+    <div class=" board container-fluid"><!--board container-->
+        <div class="header1">
+            <div class="text">
+                <div class="title">
+                    <h2>Fines</h2>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="content">
-        <div class="overview1">
-            <h3>Overview</h3>
-            <div class="ovw-con">
-                <div class="overview-item"> 
-                    <div class="col"><br>
-                        <h4>Lost Books:</h4>
-                        <?php
-                            // Query for LOST fines
-                            $lostQuery = "SELECT 
-                                                COUNT(*) AS record_count,
-                                                SUM(Amount) AS total_amount
-                                            FROM 
-                                                tbl_fines
-                                            WHERE 
-                                                Reason = 'LOST';";
-                            $lostResult = mysqli_query($conn, $lostQuery);
-                            displayFinesSummary($lostResult);
-                        ?>
-                    </div>
-                    <div class="col"><br>
-                        <h4>Damaged Books:</h4>
-                        <?php
-                            // Query for DAMAGE fines
-                            $damageQuery = "SELECT 
-                                                COUNT(*) AS record_count,
-                                                SUM(Amount) AS total_amount
-                                            FROM 
-                                                tbl_fines
-                                            WHERE 
-                                                Reason = 'DAMAGE';";
-                            $damageResult = mysqli_query($conn, $damageQuery);
-                            displayFinesSummary($damageResult);
-                        ?>
-                    </div>
-                    <div class="col"><br>
-                        <h4>Late Return:</h4>
-                        <?php
-                            // Query for GOOD CONDITION fines
-                            $goodConditionQuery = "SELECT 
-                                                COUNT(*) AS record_count,
-                                                SUM(Amount) AS total_amount
-                                            FROM 
-                                                tbl_fines
-                                            WHERE 
-                                                Reason = 'GOOD CONDITION';";
-                            $goodConditionResult = mysqli_query($conn, $goodConditionQuery);
-                            displayFinesSummary($goodConditionResult);
-                        ?>
-                        <?php
-                            // Function to display fines summary
-                            function displayFinesSummary($result)
-                            {
-                                if ($result && mysqli_num_rows($result) > 0) {
-                                    $row = mysqli_fetch_assoc($result);
+        <div class="content1">
+            <div class="overview1">
+                <h3>Overview</h3>
+                <div class="ovw-con">
+                    <div class="overview-item"> 
+                        <div class="col"><br>
+                            <?php
+                                // Query for LOST fines
+                                $lostQuery = "SELECT 
+                                                    COUNT(*) AS record_count,
+                                                    SUM(Amount) AS total_amount
+                                                FROM 
+                                                    tbl_fines
+                                                WHERE 
+                                                    Reason = 'LOST';";
+                                $lostResult = mysqli_query($conn, $lostQuery);
+                                if ($result && mysqli_num_rows($lostResult) > 0) {
+                                    $row = mysqli_fetch_assoc($lostResult);
                                     $recordCount = $row['record_count'];
                                     $totalAmount = $row['total_amount'];
-                                    // echo "<p>Record Count: $recordCount</p>";
-                                    echo "<p>Total Amount: $totalAmount</p>";
+                                    echo"<h3>Lost Books: $recordCount</h3>";
+                                    echo "<p>Total Amount: Php $totalAmount.00</p>";
                                 } else {
                                     echo "<p>Record Count: 0</p>";
                                     echo "<p>Total Amount: 0</p>";
                                 }
-                            }
-                        ?>
-                    </div> 
+                            ?>
+                        </div>
+                        <div class="col"><br>
+                            <?php
+                                // Query for DAMAGE fines
+                                $damageQuery = "SELECT 
+                                                    COUNT(*) AS record_count,
+                                                    SUM(Amount) AS total_amount
+                                                FROM 
+                                                    tbl_fines
+                                                WHERE 
+                                                    Reason = 'DAMAGE';";
+                                $damageResult = mysqli_query($conn, $damageQuery);
+                                if ($result && mysqli_num_rows($damageResult) > 0) {
+                                    $row = mysqli_fetch_assoc($damageResult);
+                                    $recordCount = $row['record_count'];
+                                    $totalAmount = $row['total_amount'];
+                                    echo"<h3>Damaged Books: $recordCount</h3>";
+                                    echo "<p>Total Amount: Php $totalAmount.00</p>";
+                                } else {
+                                    echo "<p>Record Count: 0</p>";
+                                    echo "<p>Total Amount: 0</p>";
+                                }
+                            ?>
+                        </div>
+                        <div class="col"><br>
+                            <?php
+                                // Query for GOOD CONDITION fines
+                                $goodConditionQuery = "SELECT 
+                                                    COUNT(*) AS record_count,
+                                                    SUM(Amount) AS total_amount
+                                                FROM 
+                                                    tbl_fines
+                                                WHERE 
+                                                    Reason = 'GOOD CONDITION';";
+                                $goodConditionResult = mysqli_query($conn, $goodConditionQuery);
+                                if ($result && mysqli_num_rows($goodConditionResult) > 0) {
+                                    $row = mysqli_fetch_assoc($goodConditionResult);
+                                    $recordCount = $row['record_count'];
+                                    $totalAmount = $row['total_amount'];
+                                    echo"<h3>Late Return: $recordCount</h3>";
+                                    echo "<p>Total Amount: Php $totalAmount.00</p>";
+                                } else {
+                                    echo "<p>Record Count: 0</p>";
+                                    echo "<p>Total Amount: 0</p>";
+                                }
+                            ?>
+                        </div> 
+                    </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="fines">
+            </div> 
+            <div class="fines">
             <h3>History</h3>
-            <div class="fines-con">
+            <div class="fines-con" style="overflow-y: scroll;">
                 <table class="table table-striped table-m" id="borrowerTable"> 
                     <thead class="bg-light sticky-top">
                         <tr>
-                            <th scope="col">Borrower</th>
-                            <th scope="col">Accession Code</th>
-                            <th scope="col">Book Title</th>
+                            <th scope="col">Borrower</th> 
+                            <th scope="col">Book</th>
                             <th scope="col">Quantity</th>
                             <th scope="col">Date Borrowed</th>
                             <th scope="col">Due Date</th>
+                            <!-- <th scope="col">Date Returned</th> -->
                             <th scope="col">Fine Amount</th>
                             <th scope="col">Status</th>
                         </tr>
@@ -234,17 +241,16 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                                 } 
                                 
                                 echo '<tr>';
-                                echo '<td>' . $row['Borrower_ID'] . '</td>'; 
-                                echo '<td>' . $row['Accession_Code'] . '</td>'; 
-                                echo '<td>' . $row['Book_Title'] . '</td>'; 
+                                echo '<td>' . $row['Borrower_ID'] . '</td>';  
+                                echo '<td>' . $row['Accession_Code'] . ' - ' . $row['Book_Title'] . '</td>'; 
                                 echo '<td>' . $row['Quantity'] . '</td>'; 
                                 echo '<td>' . $row['Date_Borrowed'] . '</td>'; 
-                                echo '<td>' . $row['Due_Date'] . '</td>'; 
+                                echo '<td>' . $row['Due_Date'] . '</td>';   
                                 // Check if the Amount is not equal to 0 before displaying it
     if ($row['Amount'] != 0) {
         echo '<td>' . $row['Amount'] . '</td>'; 
     } else {
-        echo '<td></td>'; // Display an empty cell if Amount is 0
+        echo '<td> None </td>'; // Display an empty cell if Amount is 0
     }
                                 echo '<td>' . $row['tb_status'] . '</td>'; 
                                 echo '</tr>';
@@ -264,9 +270,26 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                    // }
                 ?>
             </ul> -->
-        </div> 
+        </div>  
+        </div>
     </div>
-</div>
+    <!--Logout Modal -->
+    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+                </div>
+                <div class="modal-body">
+                    Do you want to log out?
+                </div>
+                <div class="modal-footer d-flex flex-row justify-content-center">
+                    <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                    <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
     // Function to sort the table

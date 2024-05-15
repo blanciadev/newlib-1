@@ -276,7 +276,7 @@ if (isset($_POST['updatePassword'])) {
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
+            <img src="../images/lib-icon.png" style="width: 16%;" alt="lib-icon"/>
         </a><!--header container-->
         <div class="user-header mt-4 d-flex flex-row flex-wrap align-content-center justify-content-evenly">
             <!-- Display user image -->
@@ -312,7 +312,7 @@ if (isset($_POST['updatePassword'])) {
         </ul>
     </div>
 
-    <div class=" board1 container"><!--board container-->
+    <div class=" board1 container-fluid"><!--board container-->
         <div class="header1">
             <div class="text">
                 <div class="title">
@@ -320,9 +320,10 @@ if (isset($_POST['updatePassword'])) {
                 </div>
             </div>
         </div>
-        <div class="books container">
+        <div class="books container-fluid">
             <!-- Display user data -->
             <div class="settingForms">
+                
                 <form id="imageUploadForm" action="" method="post" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="imageFile" class="form-label">
@@ -335,38 +336,45 @@ if (isset($_POST['updatePassword'])) {
                     <button type="submit" style="width: 180px;height: 55px;background-color: palegreen;border: none;border-radius: 5px;font-weight: 700;" name="uploadImageBtn">Change Profile Image</button>        </form>
                 </form>
                 <form id="userProfileForm" action="" method="post">
+                    
+                    <h4>Account Settings</h4>
+                    <div class="userProfile">
+                        
                         <!-- Display user data -->
-                        <h4>Account Settings</h4>
-                        <div class="mb-3">
+                        <div class="mb-3" style="width: 200px;">
                             <label for="firstName" class="form-label">First Name</label>
                             <input type="text" class="form-control" id="firstName" name="firstName" value="<?php echo $userData['First_Name']; ?>" >
                         </div>
-                        <div class="mb-3">
-                            <label for="middleName" class="form-label">Middle Name</label>
+                        <div class="mb-3" style="width: 40px;">
+                            <label for="middleName" class="form-label">M.I</label>
                             <input type="text" class="form-control" id="middleName" name="middleName" value="<?php echo $userData['Middle_Name']; ?>">
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3" style="width: 200px;">
                             <label for="lastName" class="form-label">Last Name</label>
                             <input type="text" class="form-control" id="lastName" name="lastName" value="<?php echo $userData['Last_Name']; ?>" >
                         </div> 
-                        <div class="mb-3">
+                        <div class="mb-3" style="width: 200px;">
                             <label for="contactNumber" class="form-label">Contact Number</label>
                             <input type="tel" class="form-control" id="contactNumber" name="contactNumber" value="<?php echo $userData['Contact_Number']; ?>" >
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3" style="width: 300px;">
                             <label for="email" class="form-label">Email</label>
                             <input type="email" class="form-control" id="email" name="email" value="<?php echo $userData['E_mail']; ?>" >
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3" style="width: 200px; height:auto;">
                             <label for="address" class="form-label">Address</label>
-                            <input type="text" class="form-control" id="address" name="address" value="<?php echo $userData['tb_address']; ?>" >
+                            <input type="text" class="form-control" id="address" name="address"  height="100" value="<?php echo $userData['tb_address']; ?>" >
                         </div>
                         <!-- Update button -->
                         <button type="submit" class="btn btn-primary" name="updateProfile" value="Update Profile">Update Profile</button>
+                        
+                    </div>
                 </form>
                 <form id="userPasswordForm" method="post">
+                    <h4>Change Password</h4>
+                    <div class="userPassword">
+                        
                         <!-- Password Change Section --> 
-                        <h4>Change Password</h4>
                         <div class="mb-3">
                             <label for="oldPassword" class="form-label">Old Password</label>
                             <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>
@@ -382,10 +390,11 @@ if (isset($_POST['updatePassword'])) {
 
                         <!-- Update button -->
                         <button type="submit" class="btn btn-primary" name="updatePassword" value="Update Password">Update Password</button>
+                
+                    </div>
                 </form>
             </div>
         </div>
-        <button class="btn btn-success showToast">Show Toast</button>
     </div>
 
     <!--Logout Modal -->

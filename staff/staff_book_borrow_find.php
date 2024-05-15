@@ -145,7 +145,7 @@
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary"><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2>
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon" />
+            <img src="../images/lib-icon.png" style="width: 16%;" alt="lib-icon" />
         </a><!--header container-->
         <div class="user-header d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
             <?php
@@ -164,7 +164,7 @@
             <?php if (!empty($userData['image_data'])) : ?>
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else : ?>
-                <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+                <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
             <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong>
         </div>
@@ -178,17 +178,17 @@
             <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
             <hr>
             <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut"  class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-    <div class="board1 container"><!--board container-->
+    <div class="board1 container-fluid"><!--board container-->
         <div class="header1">
             <div class="text">
                 <div class="back-btn">
                     <a href="./staff_borrow_dash.php"><i class='bx bx-arrow-back'></i></a>
                 </div>
                 <div class="title">
-                    <h2>Search Book by Accession Code</h2>
+                    <h2>Search Book</h2>
                 </div>
                 <!-- Add the book cart icon and badge -->
                 <div class="book-cart">
@@ -197,111 +197,62 @@
                 </div>
             </div>
         </div>
-
         <div class='books container'>
             
-        <form id="dataform" method="POST">
-    <label for="Accession_Code">Accession Code:</label>
-    <input type="text" id="Accession_Code" name="Accession_Code[]" placeholder="Enter Accession Code">
+            <form id="dataform" method="POST">
 
-    <label for="Book_Title">Book Title:</label>
-    <input type="text" id="Book_Title" name="Book_Title" placeholder="Enter Book Title">
+            <label for="Accession_Code">Accession Code:</label>
+            <input type="text" id="Accession_Code" name="Accession_Code[]" placeholder="Enter Accession Code">
 
-    <div class="container">
-        <h3>Search Results</h3>
-        <div class="bookSearchResult container" id="bookDetailsContainer">
-            <!-- Display book details will be added dynamically -->
+            <label for="Book_Title">Book Title:</label>
+            <input type="text" id="Book_Title" name="Book_Title" placeholder="Enter Book Title">
+            <div class="container">
+                <h3>Search Results</h3>
+                <div class='bookSearchResult container' id="bookDetailsContainer">
+                    <!-- Display book details will be added dynamically -->
+                </div>
+            </div>
+            
+            <a id="checkoutBtn" class="btn btn-primary">Checkout</a> 
         </div>
+            </form>
     </div>
-    
-    <a id="checkoutBtn" class="btn btn-primary" style="display: none;">Checkout</a>
-</form>
 
-<div class="toastNotif hide">
-<div class="toast-content">
-    <i class="bx bx-check check"></i>
-    <div class="message">
-        <span class="text text-1">Success</span>
-        <!-- this message can be changed to "Success" and "Error"-->
-        <span class="text text-2"></span>
-        <!-- specify based on the if-else statements -->
-    </div>
-</div>
-<i class="bx bx-x close"></i>
-<div class="progress"></div>
-</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Define the bookDetails array
+            let bookDetails = [];
 
-<script>
+            // Get the book cart badge element
+            const bookCartBadge = document.getElementById('bookCartBadge');
 
-    
-// Define showToast() function
-function showToast(messageType, message) {
-    console.log("Toast Called");
-    var toast = document.querySelector(".toastNotif");
-    var progress = document.querySelector(".progress");
-    
-    // Set the message type and text
-    toast.querySelector(".text-1").textContent = messageType;
-    toast.querySelector(".text-2").textContent = message;
-    
-    if (toast && progress) {
-        toast.classList.add("showing");
-        progress.classList.add("showing");
-        setTimeout(() => {
-            toast.classList.remove("showing");
-            progress.classList.remove("showing");
-        }, 5000);
-    } else {
-        console.error("Toast elements not found");
-    }
-}
+            // Hide the "Checkout" button initially
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            checkoutBtn.style.display = 'none';
 
-function closeToast() {
-    var toast = document.querySelector(".toastNotif");
-    var progress = document.querySelector(".progress");
-    toast.classList.remove("showing");
-    progress.classList.remove("showing");
-}
+            // Add event listener to search input fields
+            const accessionCodeInput = document.getElementById('Accession_Code');
+            const bookTitleInput = document.getElementById('Book_Title');
 
+            // Add event listener to both input fields
+            [accessionCodeInput, bookTitleInput].forEach(input => {
+                input.addEventListener('input', function() {
+                    // Get the form data
+                    const formData = new FormData(document.getElementById('dataform'));
+                    console.log('Form data:', formData);
 
-
-    document.addEventListener('DOMContentLoaded', function() {
-        let bookDetails = [];
-        const bookCartBadge = document.getElementById('bookCartBadge');
-        const checkoutBtn = document.getElementById('checkoutBtn');
-
-        const accessionCodeInput = document.getElementById('Accession_Code');
-        const bookTitleInput = document.getElementById('Book_Title');
-
-        [accessionCodeInput, bookTitleInput].forEach(input => {
-            input.addEventListener('input', function() {
-                console.log('Input event triggered'); // Debugging statement
-
-                const formData = new FormData(document.getElementById('dataform'));
-
-                fetch('staff_book_borrow_find.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.text(); // Change to text() to read response as text
-                })
-                .then(data => {
-                    console.log('Data received from server:', data); // Debugging statement
-
-                    try {
-                        const jsonData = JSON.parse(data); // Attempt to parse response as JSON
-                        console.log('Parsed JSON data:', jsonData); // Debugging statement
-
+                    // Send an AJAX request
+                    fetch('staff_book_borrow_find.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Response:', data);
+                        // Display book details dynamically
                         const bookDetailsContainer = document.getElementById('bookDetailsContainer');
                         bookDetailsContainer.innerHTML = '';
-
-                        jsonData.forEach(book => {
-                            console.log('Processing book:', book); // Debugging statement
-
+                        data.forEach(book => {
                             const bookDiv = document.createElement('div');
                             bookDiv.classList.add('book');
                             bookDiv.innerHTML = `
@@ -318,13 +269,13 @@ function closeToast() {
                             `;
                             const quantity = book['Quantity'];
 
+                            // Add event listener to "Add Book" button
                             const addBookBtn = bookDiv.querySelector('.add-book-btn');
-                            if (quantity === 0) {
-                                addBookBtn.disabled = true;
+                            if (quantity == 0) {
+                                addBookBtn.disabled = true; // Disable button if quantity is 0
                             } else {
                                 addBookBtn.addEventListener('click', function() {
-                                    console.log('Add to cart button clicked'); // Debugging statement
-
+                                    // Add or remove the book from the bookDetails array
                                     const accessionCode = this.getAttribute('data-accession');
                                     const index = bookDetails.indexOf(accessionCode);
                                     if (index === -1) {
@@ -332,38 +283,37 @@ function closeToast() {
                                     } else {
                                         bookDetails.splice(index, 1);
                                     }
-                                    console.log('Updated bookDetails array:', bookDetails); // Debugging statement
+
+                                    // Update the book cart badge count
                                     bookCartBadge.textContent = bookDetails.length;
+                                    console.log('Book details:', bookDetails);
+
+                                    // Show or hide the "Checkout" button based on the bookDetails array length
                                     checkoutBtn.style.display = bookDetails.length > 0 ? 'block' : 'none';
+                            
                                 });
+
                             }
                             bookDetailsContainer.appendChild(bookDiv);
                         });
-                    } catch (error) {
-                        console.error('Error parsing JSON:', error);
-                        // Handle error (e.g., display an error message to the user)
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    // Handle error (e.g., display an error message to the user)
+                    })
+                    .catch(error => console.error('Error:', error));
                 });
+            });
+
+            // Add event listener to "Checkout" button
+            checkoutBtn.addEventListener('click', function() {
+                // Construct the URL with the bookDetails array values
+                const url = 'staff_book_borrow_process.php?bookDetails=' + JSON.stringify(bookDetails);
+                console.log('Checkout URL:', url);
+                // Redirect to the checkout page with the bookDetails in the URL
+                window.location.href = url;
             });
         });
 
-        // Add event listener to "Checkout" button
-        checkoutBtn.addEventListener('click', function() {
-            console.log('Checkout button clicked'); // Debugging statement
-            // Construct the URL with the bookDetails array values
-            const url = 'staff_book_borrow_process.php?bookDetails=' + JSON.stringify(bookDetails);
-            console.log('Checkout URL:', url); // Debugging statement
-            // Redirect to the checkout page with the bookDetails in the URL
-            window.location.href = url;
-        });
-    });
-</script>
+
+    </script>
 
 
 </body>
-
 </html>

@@ -19,37 +19,25 @@ if ($conn->connect_error) {
 }
 
 // Get the current date in the format 'YYYY-MM-DD'
-$currentDate = date('Y-m-d');
-
-// Pagination variables for today's log
-$results_per_page_today = 5;
-$current_page_today = isset($_GET['page_today']) ? $_GET['page_today'] : 1;
-$start_from_today = ($current_page_today - 1) * $results_per_page_today;
+$currentDate = date('Y-m-d'); 
 
 // SQL query to count records for the current date from tbl_log
 $sql_count_today = "SELECT COUNT(*) AS total FROM tbl_log WHERE DATE(Date_Time) = '$currentDate'";
 $result_count_today = $conn->query($sql_count_today);
-$row_count_today = $result_count_today->fetch_assoc();
-$total_pages_today = ceil($row_count_today["total"] / $results_per_page_today);
+$row_count_today = $result_count_today->fetch_assoc(); 
 
 // SQL query to select records for the current date from tbl_borrower and tbl_log with pagination
-$sql_display_today = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID WHERE DATE(tbl_log.Date_Time) = '$currentDate' LIMIT $start_from_today, $results_per_page_today";
-$result_display_today = $conn->query($sql_display_today);
-
-// Pagination variables for all logs
-$results_per_page = 5;
-$current_page = isset($_GET['page']) ? $_GET['page'] : 1;
-$start_from = ($current_page - 1) * $results_per_page;
+$sql_display_today = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID WHERE DATE(tbl_log.Date_Time) = '$currentDate' ";
+$result_display_today = $conn->query($sql_display_today); 
 
 // SQL query to select all records with pagination
-$sql_display_all = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID ORDER BY tbl_log.Date_Time DESC LIMIT $start_from, $results_per_page";
+$sql_display_all = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID ORDER BY tbl_log.Date_Time DESC  ";
 $result_display_all = $conn->query($sql_display_all);
 
 // Total number of records for pagination
 $sql_count_all = "SELECT COUNT(*) AS total FROM tbl_log";
 $result_count_all = $conn->query($sql_count_all);
-$row_count_all = $result_count_all->fetch_assoc();
-$total_pages = ceil($row_count_all["total"] / $results_per_page);
+$row_count_all = $result_count_all->fetch_assoc(); 
 
 // Close connection
 $conn->close();
@@ -86,7 +74,7 @@ $conn->close();
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
+            <img src="../images/lib-icon.png" style="width: 16%;" alt="lib-icon"/>
         </a><!--header container-->
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
       <!-- Display user image -->
@@ -123,22 +111,23 @@ $conn->close();
             <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-    <div class="board container">
-        <div class="header1">
+    <div class="board container-fluid"><!--board container-->
+    <div class="header1">
             <div class="text">
                 <div class="title">
                     <h2>Log Record</h2>
                 </div>
             </div>
-            <div class="searchbar mt-4">
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" id="searchInput" placeholder="Search..." required>
-                    <button class="btn btn-outline-primary" type="submit"><i class='bx bx-search' id="search-icon"></i></button>
+            <div class="searchbar">
+                <form action="">
+                    <i class='bx bx-search' id="search-icon"></i>
+                    <input type="search" id="searchInput"  placeholder="Search..." required>
+                    
                 </form>
             </div>
         </div>
-        <div class="books container">
-            <h2>Today's Log</h2>
+        <div class="books container-fluid">
+            <caption><em> Today </em></caption>
             <table class="table table-striped">
                 <thead class="bg-light sticky-top">
                     <tr>
@@ -162,20 +151,8 @@ $conn->close();
                     }
                     ?>
                 </tbody>
-            </table>
-            
-            <!-- Pagination for today's log -->
-            <nav>
-                <ul class="pagination">
-                    <?php
-                    for ($i = 1; $i <= $total_pages_today; $i++) {
-                        echo "<li class='page-item" . ($i == $current_page_today ? " active" : "") . "'><a class='page-link' href='?page_today=" . $i . "'>" . $i . "</a></li>";
-                    }
-                    ?>
-                </ul>
-            </nav>
-
-            <h2>All Logs</h2>
+            </table>  
+            <caption><em>Recent</em></caption> 
             <table class="table table-striped">
                 <thead class="bg-light sticky-top">
                     <tr>
@@ -199,18 +176,7 @@ $conn->close();
                     }
                     ?>
                 </tbody>
-            </table>
-
-            <!-- Pagination for all logs -->
-            <nav>
-                <ul class="pagination">
-                    <?php
-                    for ($i = 1; $i <= $total_pages; $i++) {
-                        echo "<li class='page-item" . ($i == $current_page ? " active" : "") . "'><a class='page-link' href='?page=" . $i . "'>" . $i . "</a></li>";
-                    }
-                    ?>
-                </ul>
-            </nav>
+            </table> 
         </div>
         
     <div class="btn-con">

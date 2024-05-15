@@ -62,7 +62,7 @@ if (isset($_GET['borrowId'])) {
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary"><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
+            <img src="../images/lib-icon.png" style="width: 16%;" alt="lib-icon"/>
         </a><!--header container--> 
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
        <!-- Display user image -->
@@ -80,14 +80,12 @@ if (isset($_GET['borrowId'])) {
             }
             ?>
             <?php if (!empty($userData['image_data'])): ?>
-                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else: ?>
-                <!-- Change the path to your actual default image -->
-                <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+                <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-       <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong></div> 
-    
+            <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong>
+        </div> 
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
@@ -96,10 +94,10 @@ if (isset($_GET['borrowId'])) {
              <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
              <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>  <hr>
             <li class="nav-item"> <a href="./staff_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut"  class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul> 
     </div>
-    <div class="board container"><!--board container-->
+    <div class="board container-fluid"><!--board container-->
     <div class="header1">
             <div class="text">
                 <div class="back-btn">
@@ -116,148 +114,151 @@ if (isset($_GET['borrowId'])) {
                 </form>
             </div>
     </div>
-    <div class="books container">
-    <table class="table table-hover table-sm">
-        <thead>
-            <tr>
-                <th>Accession Code</th>
-                <th>Book Title</th>
-                <th>Quantity</th>
-                <th>Date</th>
-                <th>Due Date</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            // Database connection
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-            if ($conn->connect_error) {
-                die("Connection failed: " . $conn->connect_error);
-            }
-
-            // Initialize borrowId variable
-            $borrowId = "";
-
-            // Check if borrowId is provided in the URL
-            if (isset($_GET['borrowId'])) {
-                // Sanitize and store the borrowId
-                $borrowId = mysqli_real_escape_string($conn, $_GET['borrowId']);
-            }
-
-            // Pagination
-            $records_per_page = 5;
-            $page = 1;
-            if (isset($_GET['page']) && is_numeric($_GET['page'])) {
-                $page = $_GET['page'];
-            }
-            $start_from = ($page - 1) * $records_per_page;
-
-            // Fetch records based on borrowId and pagination parameters
-            $sql = "SELECT DISTINCT
-            b.User_ID, 
-            b.Accession_Code, 
-            bk.Book_Title, 
-            bd.Quantity, 
-            b.Date_Borrowed, 
-            b.Due_Date, 
-            bd.tb_status, 
-            bd.Borrower_ID, 
-            b.Borrow_ID
-        FROM
-            tbl_borrowdetails AS bd
-            INNER JOIN
-            tbl_borrow AS b
-            ON 
-                bd.Borrower_ID = b.Borrower_ID AND
-                bd.BorrowDetails_ID = b.Borrow_ID
-            INNER JOIN
-            tbl_books AS bk
-            ON 
-                b.Accession_Code = bk.Accession_Code
-            INNER JOIN
-            tbl_borrower AS br
-            ON 
-                b.Borrower_ID = br.Borrower_ID AND
-                bd.Borrower_ID = br.Borrower_ID
-        WHERE
-            bd.Borrower_ID = ?
-                    LIMIT ?, ?"; // Using a placeholder for the borrowId
-
-            // Prepare the SQL statement
-            $stmt = mysqli_prepare($conn, $sql);
-            if ($stmt) {
-                // Bind the parameters to the placeholders
-                mysqli_stmt_bind_param($stmt, "sii", $borrowId, $start_from, $records_per_page);
-                
-                // Execute the SQL query
-                mysqli_stmt_execute($stmt);
-
-                // Get the result
-                $result = mysqli_stmt_get_result($stmt);
-
-                // Use the result as needed
-                while ($row = mysqli_fetch_assoc($result)) {
-                    echo "<tr>";
-                    echo "<td>" . $row["Accession_Code"] . "</td>";
-                    echo "<td>" . $row["Book_Title"] . "</td>";
-                    echo "<td>" . $row["Quantity"] . "</td>";
-                    echo "<td>" . $row["Date_Borrowed"] . "</td>";
-                    echo "<td>" . $row["Due_Date"] . "</td>";
-                    echo "<td>" . $row["tb_status"] . "</td>";
-
-                    echo "<td>";
-
-                    echo "<form class='update-form' method='GET' action='staff_borrow_details.php'>";
-                    echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["Borrow_ID"] . "'>";
-                    echo "</form>";
-
-                    // Conditionally render the button based on the status
-                    echo "<input type='hidden' name='borrowerId' value='" . $row["Borrower_ID"] . "'>";
-
-                    if ($row["tb_status"] === 'Pending') {
-                        echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='updateAndSetSession(" . $row["Borrow_ID"] . ")'>UPDATE</button>";
-
-                    } else {
-                        echo "<button type='button' class='btn btn-sm' disabled>Update</button>";
+    <div class="books container-fluid">
+        <div class="table-responsive">
+            <table class="table table-hover table-sm">
+                <thead>
+                    <tr>
+                        <th>Accession Code</th>
+                        <th>Book Title</th>
+                        <th>Quantity</th>
+                        <th>Date</th>
+                        <th>Due Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    // Database connection
+                    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                    if ($conn->connect_error) {
+                        die("Connection failed: " . $conn->connect_error);
                     }
-                
-                    echo "<div class='update-message'></div>";
-                    echo "</td>";
-                    echo "</tr>";
+
+                    // Initialize borrowId variable
+                    $borrowId = "";
+
+                    // Check if borrowId is provided in the URL
+                    if (isset($_GET['borrowId'])) {
+                        // Sanitize and store the borrowId
+                        $borrowId = mysqli_real_escape_string($conn, $_GET['borrowId']);
+                    }
+
+                    // Pagination
+                    $records_per_page = 5;
+                    $page = 1;
+                    if (isset($_GET['page']) && is_numeric($_GET['page'])) {
+                        $page = $_GET['page'];
+                    }
+                    $start_from = ($page - 1) * $records_per_page;
+
+                    // Fetch records based on borrowId and pagination parameters
+                    $sql = "SELECT DISTINCT
+                    b.User_ID, 
+                    b.Accession_Code, 
+                    bk.Book_Title, 
+                    bd.Quantity, 
+                    b.Date_Borrowed, 
+                    b.Due_Date, 
+                    bd.tb_status, 
+                    bd.Borrower_ID, 
+                    b.Borrow_ID
+                FROM
+                    tbl_borrowdetails AS bd
+                    INNER JOIN
+                    tbl_borrow AS b
+                    ON 
+                        bd.Borrower_ID = b.Borrower_ID AND
+                        bd.BorrowDetails_ID = b.Borrow_ID
+                    INNER JOIN
+                    tbl_books AS bk
+                    ON 
+                        b.Accession_Code = bk.Accession_Code
+                    INNER JOIN
+                    tbl_borrower AS br
+                    ON 
+                        b.Borrower_ID = br.Borrower_ID AND
+                        bd.Borrower_ID = br.Borrower_ID
+                WHERE
+                    bd.Borrower_ID = ?
+                            LIMIT ?, ?"; // Using a placeholder for the borrowId
+
+                    // Prepare the SQL statement
+                    $stmt = mysqli_prepare($conn, $sql);
+                    if ($stmt) {
+                        // Bind the parameters to the placeholders
+                        mysqli_stmt_bind_param($stmt, "sii", $borrowId, $start_from, $records_per_page);
+                        
+                        // Execute the SQL query
+                        mysqli_stmt_execute($stmt);
+
+                        // Get the result
+                        $result = mysqli_stmt_get_result($stmt);
+
+                        // Use the result as needed
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            echo "<tr>";
+                            echo "<td>" . $row["Accession_Code"] . "</td>";
+                            echo "<td>" . $row["Book_Title"] . "</td>";
+                            echo "<td>" . $row["Quantity"] . "</td>";
+                            echo "<td>" . $row["Date_Borrowed"] . "</td>";
+                            echo "<td>" . $row["Due_Date"] . "</td>";
+                            echo "<td>" . $row["tb_status"] . "</td>";
+
+                            echo "<td>";
+
+                            echo "<form class='update-form' method='GET' action='staff_borrow_details.php'>";
+                            echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["Borrow_ID"] . "'>";
+                            echo "</form>";
+
+                            // Conditionally render the button based on the status
+                            echo "<input type='hidden' name='borrowerId' value='" . $row["Borrower_ID"] . "'>";
+
+                            if ($row["tb_status"] === 'Pending') {
+                                echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='updateAndSetSession(" . $row["Borrow_ID"] . ")'>UPDATE</button>";
+
+                            } else {
+                                echo "<button type='button' class='btn btn-sm' disabled>Update</button>";
+                            }
+                        
+                            echo "<div class='update-message'></div>";
+                            echo "</td>";
+                            echo "</tr>";
+                        }
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <?php
+                $sql_count = "SELECT COUNT(*) AS total FROM tbl_borrowdetails WHERE Borrower_ID = ?";
+                $stmt_count = mysqli_prepare($conn, $sql_count);
+                mysqli_stmt_bind_param($stmt_count, "s", $borrowId);
+                mysqli_stmt_execute($stmt_count);
+                $result_count = mysqli_stmt_get_result($stmt_count);
+                $row_count = mysqli_fetch_assoc($result_count);
+                $total_records = $row_count['total'];
+                $total_pages = ceil($total_records / $records_per_page);
+
+                // Pagination links
+                for ($i = 1; $i <= $total_pages; $i++) {
+                    echo "<li class='page-item'><a class='page-link' href='?borrowId=$borrowId&page=$i'>$i</a></li>";
                 }
-            }
-            ?>
-        </tbody>
-    </table>
+                ?>
+            </ul>
+        </nav>
+    </div>
 
-    <!-- Pagination -->
-    <nav aria-label="Page navigation example">
-        <ul class="pagination">
-            <?php
-            $sql_count = "SELECT COUNT(*) AS total FROM tbl_borrowdetails WHERE Borrower_ID = ?";
-            $stmt_count = mysqli_prepare($conn, $sql_count);
-            mysqli_stmt_bind_param($stmt_count, "s", $borrowId);
-            mysqli_stmt_execute($stmt_count);
-            $result_count = mysqli_stmt_get_result($stmt_count);
-            $row_count = mysqli_fetch_assoc($result_count);
-            $total_records = $row_count['total'];
-            $total_pages = ceil($total_records / $records_per_page);
-
-            // Pagination links
-            for ($i = 1; $i <= $total_pages; $i++) {
-                echo "<li class='page-item'><a class='page-link' href='?borrowId=$borrowId&page=$i'>$i</a></li>";
-            }
-            ?>
-        </ul>
-    </nav>
-</div>
-
-<?php
-// Close connection
-$conn->close();
-?>
+    <?php
+    // Close connection
+    $conn->close();
+    ?>
+    </div>
 
     
     <!--Logout Modal -->

@@ -287,7 +287,7 @@ function closeToast() {
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary"><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2>
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon" />
+            <img src="../images/lib-icon.png" style="width: 16%;" alt="lib-icon" />
         </a><!--header container-->
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
             <!-- Display user image -->
@@ -307,7 +307,7 @@ function closeToast() {
             <?php if (!empty($userData['image_data'])) : ?>
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else : ?>
-                <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+                <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
             <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong>
         </div>
@@ -324,7 +324,7 @@ function closeToast() {
         </ul>
     </div>
 
-    <div class="board1 container"><!--board container-->
+    <div class="board1 container-fluid"><!--board container-->
         <div class="header1">
             <div class="text">
                 <div class="back-btn">
@@ -335,7 +335,7 @@ function closeToast() {
                 </div>
             </div>
         </div>
-        <div class="books container">
+        <div class="books container-fluid">
             <div class="header1">
                 <!-- Header content -->
                 <h2 class="mb-4">Book Borrow Process</h2>
