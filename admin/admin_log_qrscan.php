@@ -63,7 +63,7 @@ echo '<script>
             setTimeout(() => {
                 toast.classList.remove("showing");
                 progress.classList.remove("showing");
-                 window.location.href = "staff_log.php";
+                 window.location.href = "admin_log.php";
             }, 5000);
         } else {
             console.error("Toast elements not found");
@@ -145,7 +145,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
                         redirectToPage("admin_log.php", 3000);
                     </script>';
 
-                    exit();
+                  
                 } else {
                     echo "Error: " . $sql . "<br>" . $conn->error;
                 }
