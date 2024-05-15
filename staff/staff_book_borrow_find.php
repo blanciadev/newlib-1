@@ -1,6 +1,8 @@
 <?php
     session_start();
 
+    
+
     // Check if the User_ID session variable is not set or empty
     if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         // Redirect to index.php
@@ -10,54 +12,6 @@
 
     
     
-// Define showToast() function
-// Output the HTML code for the toast element
-echo '<div class="toastNotif hide">
-<div class="toast-content">
-    <i class="bx bx-check check"></i>
-    <div class="message">
-        <span class="text text-1">Success</span>
-        <!-- this message can be changed to "Success" and "Error"-->
-        <span class="text text-2"></span>
-        <!-- specify based on the if-else statements -->
-    </div>
-</div>
-<i class="bx bx-x close"></i>
-<div class="progress"></div>
-</div>';
-
-// Define JavaScript functions to handle the toast
-echo '<script>
-function showToast(messageType, message) {
-    console.log("Toast Called");
-    var toast = document.querySelector(".toastNotif");
-    var progress = document.querySelector(".progress");
-    
-    // Set the message type and text
-    toast.querySelector(".text-1").textContent = messageType;
-    toast.querySelector(".text-2").textContent = message;
-    
-    if (toast && progress) {
-        toast.classList.add("showing");
-        progress.classList.add("showing");
-        setTimeout(() => {
-            toast.classList.remove("showing");
-            progress.classList.remove("showing");
-        }, 5000);
-    } else {
-        console.error("Toast elements not found");
-    }
-}
-
-function closeToast() {
-    var toast = document.querySelector(".toastNotif");
-    var progress = document.querySelector(".progress");
-    toast.classList.remove("showing");
-    progress.classList.remove("showing");
-}
-</script>';
-
-
 
 
 
@@ -67,6 +21,8 @@ function closeToast() {
 
     // Check if the form is submitted
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+        
         // Sanitize input to prevent SQL injection
         $conn =  mysqli_connect("localhost", "root", "root", "db_library_2", 3308); //database connection
 
@@ -150,9 +106,9 @@ function closeToast() {
                 // Display an alert for invalid Accession Code or Book Title
                 // echo '<script>alert("Invalid Accession Code or Book Title: ' . $Accession_Code . ' - ' . $Book_Title . '");</script>';
                 echo '<script>
-                // Call showToast with "success" message type after successful insertion
-                showToast("error", "Invalid Accession Code or Book Title");
-                </script>';
+                // // Call showToast with "success" message type after successful insertion
+                // showToast("error", "Invalid Accession Code or Book Title");
+                // </script>';
             }
             
             // Close the statement
@@ -170,6 +126,7 @@ function closeToast() {
         exit(); // Stop further execution
     }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -240,62 +197,111 @@ function closeToast() {
                 </div>
             </div>
         </div>
+
         <div class='books container'>
             
-            <form id="dataform" method="POST">
+        <form id="dataform" method="POST">
+    <label for="Accession_Code">Accession Code:</label>
+    <input type="text" id="Accession_Code" name="Accession_Code[]" placeholder="Enter Accession Code">
 
-            <label for="Accession_Code">Accession Code:</label>
-            <input type="text" id="Accession_Code" name="Accession_Code[]" placeholder="Enter Accession Code">
+    <label for="Book_Title">Book Title:</label>
+    <input type="text" id="Book_Title" name="Book_Title" placeholder="Enter Book Title">
 
-            <label for="Book_Title">Book Title:</label>
-            <input type="text" id="Book_Title" name="Book_Title" placeholder="Enter Book Title">
-            <div class="container">
-                <h3>Search Results</h3>
-                <div class='bookSearchResult container' id="bookDetailsContainer">
-                    <!-- Display book details will be added dynamically -->
-                </div>
-            </div>
-            
-            <a id="checkoutBtn" class="btn btn-primary">Checkout</a> 
+    <div class="container">
+        <h3>Search Results</h3>
+        <div class="bookSearchResult container" id="bookDetailsContainer">
+            <!-- Display book details will be added dynamically -->
         </div>
-            </form>
     </div>
+    
+    <a id="checkoutBtn" class="btn btn-primary" style="display: none;">Checkout</a>
+</form>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Define the bookDetails array
-            let bookDetails = [];
+<div class="toastNotif hide">
+<div class="toast-content">
+    <i class="bx bx-check check"></i>
+    <div class="message">
+        <span class="text text-1">Success</span>
+        <!-- this message can be changed to "Success" and "Error"-->
+        <span class="text text-2"></span>
+        <!-- specify based on the if-else statements -->
+    </div>
+</div>
+<i class="bx bx-x close"></i>
+<div class="progress"></div>
+</div>
 
-            // Get the book cart badge element
-            const bookCartBadge = document.getElementById('bookCartBadge');
+<script>
 
-            // Hide the "Checkout" button initially
-            const checkoutBtn = document.getElementById('checkoutBtn');
-            checkoutBtn.style.display = 'none';
+    
+// Define showToast() function
+function showToast(messageType, message) {
+    console.log("Toast Called");
+    var toast = document.querySelector(".toastNotif");
+    var progress = document.querySelector(".progress");
+    
+    // Set the message type and text
+    toast.querySelector(".text-1").textContent = messageType;
+    toast.querySelector(".text-2").textContent = message;
+    
+    if (toast && progress) {
+        toast.classList.add("showing");
+        progress.classList.add("showing");
+        setTimeout(() => {
+            toast.classList.remove("showing");
+            progress.classList.remove("showing");
+        }, 5000);
+    } else {
+        console.error("Toast elements not found");
+    }
+}
 
-            // Add event listener to search input fields
-            const accessionCodeInput = document.getElementById('Accession_Code');
-            const bookTitleInput = document.getElementById('Book_Title');
+function closeToast() {
+    var toast = document.querySelector(".toastNotif");
+    var progress = document.querySelector(".progress");
+    toast.classList.remove("showing");
+    progress.classList.remove("showing");
+}
 
-            // Add event listener to both input fields
-            [accessionCodeInput, bookTitleInput].forEach(input => {
-                input.addEventListener('input', function() {
-                    // Get the form data
-                    const formData = new FormData(document.getElementById('dataform'));
-                    console.log('Form data:', formData);
 
-                    // Send an AJAX request
-                    fetch('staff_book_borrow_find.php', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Response:', data);
-                        // Display book details dynamically
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let bookDetails = [];
+        const bookCartBadge = document.getElementById('bookCartBadge');
+        const checkoutBtn = document.getElementById('checkoutBtn');
+
+        const accessionCodeInput = document.getElementById('Accession_Code');
+        const bookTitleInput = document.getElementById('Book_Title');
+
+        [accessionCodeInput, bookTitleInput].forEach(input => {
+            input.addEventListener('input', function() {
+                console.log('Input event triggered'); // Debugging statement
+
+                const formData = new FormData(document.getElementById('dataform'));
+
+                fetch('staff_book_borrow_find.php', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text(); // Change to text() to read response as text
+                })
+                .then(data => {
+                    console.log('Data received from server:', data); // Debugging statement
+
+                    try {
+                        const jsonData = JSON.parse(data); // Attempt to parse response as JSON
+                        console.log('Parsed JSON data:', jsonData); // Debugging statement
+
                         const bookDetailsContainer = document.getElementById('bookDetailsContainer');
                         bookDetailsContainer.innerHTML = '';
-                        data.forEach(book => {
+
+                        jsonData.forEach(book => {
+                            console.log('Processing book:', book); // Debugging statement
+
                             const bookDiv = document.createElement('div');
                             bookDiv.classList.add('book');
                             bookDiv.innerHTML = `
@@ -312,13 +318,13 @@ function closeToast() {
                             `;
                             const quantity = book['Quantity'];
 
-                            // Add event listener to "Add Book" button
                             const addBookBtn = bookDiv.querySelector('.add-book-btn');
-                            if (quantity == 0) {
-                                addBookBtn.disabled = true; // Disable button if quantity is 0
+                            if (quantity === 0) {
+                                addBookBtn.disabled = true;
                             } else {
                                 addBookBtn.addEventListener('click', function() {
-                                    // Add or remove the book from the bookDetails array
+                                    console.log('Add to cart button clicked'); // Debugging statement
+
                                     const accessionCode = this.getAttribute('data-accession');
                                     const index = bookDetails.indexOf(accessionCode);
                                     if (index === -1) {
@@ -326,36 +332,36 @@ function closeToast() {
                                     } else {
                                         bookDetails.splice(index, 1);
                                     }
-
-                                    // Update the book cart badge count
+                                    console.log('Updated bookDetails array:', bookDetails); // Debugging statement
                                     bookCartBadge.textContent = bookDetails.length;
-                                    console.log('Book details:', bookDetails);
-
-                                    // Show or hide the "Checkout" button based on the bookDetails array length
                                     checkoutBtn.style.display = bookDetails.length > 0 ? 'block' : 'none';
-                            
                                 });
-
                             }
                             bookDetailsContainer.appendChild(bookDiv);
                         });
-                    })
-                    .catch(error => console.error('Error:', error));
+                    } catch (error) {
+                        console.error('Error parsing JSON:', error);
+                        // Handle error (e.g., display an error message to the user)
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Handle error (e.g., display an error message to the user)
                 });
-            });
-
-            // Add event listener to "Checkout" button
-            checkoutBtn.addEventListener('click', function() {
-                // Construct the URL with the bookDetails array values
-                const url = 'staff_book_borrow_process.php?bookDetails=' + JSON.stringify(bookDetails);
-                console.log('Checkout URL:', url);
-                // Redirect to the checkout page with the bookDetails in the URL
-                window.location.href = url;
             });
         });
 
-
-    </script>
+        // Add event listener to "Checkout" button
+        checkoutBtn.addEventListener('click', function() {
+            console.log('Checkout button clicked'); // Debugging statement
+            // Construct the URL with the bookDetails array values
+            const url = 'staff_book_borrow_process.php?bookDetails=' + JSON.stringify(bookDetails);
+            console.log('Checkout URL:', url); // Debugging statement
+            // Redirect to the checkout page with the bookDetails in the URL
+            window.location.href = url;
+        });
+    });
+</script>
 
 
 </body>

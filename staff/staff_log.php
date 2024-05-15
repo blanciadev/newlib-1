@@ -13,60 +13,46 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
-// Check if the form is submitted and Borrower ID is provided
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
-    // Database connection
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
-
-    // Retrieve Borrower_ID from the form
-    $borrower_id = $_POST['borrower_id'];
-    if (substr($borrower_id, 0, 1) === '0') {
-        // Borrower_ID starts with '0', flag as error
-        $errorMessage = "Borrower ID cannot start with '0'.";
-    } else {
-        // Check if a log entry already exists for the specified Borrower ID and the current date
-        $currentDate = date("Y-m-d");
-        $sql_check_log = "SELECT * FROM tbl_log WHERE Borrower_ID = '$borrower_id' AND DATE(`Date_Time`) = '$currentDate'";
-        $result_check_log = $conn->query($sql_check_log);
-
-        if ($result_check_log->num_rows > 0) {
-            // Log entry already exists for the current date, display error message
-            $errorMessage = "A log entry for this borrower already exists for today.";
-        } else {
-            // Validate Borrower_ID against tbl_borrower table
-            $sql_validate_borrower = "SELECT * FROM tbl_borrower WHERE Borrower_ID = '$borrower_id'";
-            $result_validate_borrower = $conn->query($sql_validate_borrower);
-
-            if ($result_validate_borrower->num_rows > 0) {
-                // Borrower_ID is valid
-                $isBorrowerIdValid = true;
-                $_SESSION['borrower_id'] = $borrower_id;
-
-                // SQL query to insert data with auto-increment Log_ID and current timestamp
-                $sql = "INSERT INTO tbl_log (Borrower_ID, `Date_Time`) 
-                VALUES ($borrower_id, NOW())";
-
-                if ($conn->query($sql) === TRUE) {
-                    echo '<script>alert("Record inserted successfully."); window.location.href = "staff_log.php";</script>';
-                    exit();
-                } else {
-                    echo "Error: " . $sql . "<br>" . $conn->error;
-                }
-            } else {
-                // Borrower_ID is invalid
-                $errorMessage = "Invalid Borrower ID.";
-            }
-        }
-    }
-
-    // Close connection
-    $conn->close();
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 
+// Get the current date in the format 'YYYY-MM-DD'
+$currentDate = date('Y-m-d');
 
+// Pagination variables for today's log
+$results_per_page_today = 5;
+$current_page_today = isset($_GET['page_today']) ? $_GET['page_today'] : 1;
+$start_from_today = ($current_page_today - 1) * $results_per_page_today;
+
+// SQL query to count records for the current date from tbl_log
+$sql_count_today = "SELECT COUNT(*) AS total FROM tbl_log WHERE DATE(Date_Time) = '$currentDate'";
+$result_count_today = $conn->query($sql_count_today);
+$row_count_today = $result_count_today->fetch_assoc();
+$total_pages_today = ceil($row_count_today["total"] / $results_per_page_today);
+
+// SQL query to select records for the current date from tbl_borrower and tbl_log with pagination
+$sql_display_today = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID WHERE DATE(tbl_log.Date_Time) = '$currentDate' LIMIT $start_from_today, $results_per_page_today";
+$result_display_today = $conn->query($sql_display_today);
+
+// Pagination variables for all logs
+$results_per_page = 5;
+$current_page = isset($_GET['page']) ? $_GET['page'] : 1;
+$start_from = ($current_page - 1) * $results_per_page;
+
+// SQL query to select all records with pagination
+$sql_display_all = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID ORDER BY tbl_log.Date_Time DESC LIMIT $start_from, $results_per_page";
+$result_display_all = $conn->query($sql_display_all);
+
+// Total number of records for pagination
+$sql_count_all = "SELECT COUNT(*) AS total FROM tbl_log";
+$result_count_all = $conn->query($sql_count_all);
+$row_count_all = $result_count_all->fetch_assoc();
+$total_pages = ceil($row_count_all["total"] / $results_per_page);
+
+// Close connection
+$conn->close();
 ?>
 
 
@@ -137,74 +123,96 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-    <div class="board container"><!--board container-->
-    <div class="header1">
+    <div class="board container">
+        <div class="header1">
             <div class="text">
                 <div class="title">
                     <h2>Log Record</h2>
                 </div>
             </div>
-            <div class="searchbar">
-                <form action="">
-                    <input type="search" id="searchInput"  placeholder="Search..." required>
-                    <i class='bx bx-search' id="search-icon"></i>
+            <div class="searchbar mt-4">
+                <form class="d-flex">
+                    <input class="form-control me-2" type="search" id="searchInput" placeholder="Search..." required>
+                    <button class="btn btn-outline-primary" type="submit"><i class='bx bx-search' id="search-icon"></i></button>
                 </form>
             </div>
-    </div>
-    <div class="books container">
-        <table class="table table-striped">
-            <thead class="bg-light sticky-top">
-                <tr>
-                   <th>Borrower ID</th>
-                    <th>Borrower Name</th>
-                    <th>Date & Time</th>
-                </tr>
-            </thead>
-            <?php
-// Database connection
-$conn_display_today = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
-if ($conn_display_today->connect_error) {
-    die("Connection failed: " . $conn_display_today->connect_error);
-}
+        </div>
+        <div class="books container">
+            <h2>Today's Log</h2>
+            <table class="table table-striped">
+                <thead class="bg-light sticky-top">
+                    <tr>
+                        <th>Borrower ID</th>
+                        <th>Borrower Name</th>
+                        <th>Date & Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    if ($result_display_today && $result_display_today->num_rows > 0) {
+                        while ($row = $result_display_today->fetch_assoc()) {
+                            echo "<tr>";
+                            echo "<td>" . $row['Borrower_ID'] . "</td>";
+                            echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
+                            echo "<td>" . $row['Date_Time'] . "</td>";
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='3'>No records found for the current date.</td></tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+            
+            <!-- Pagination for today's log -->
+            <nav>
+                <ul class="pagination">
+                    <?php
+                    for ($i = 1; $i <= $total_pages_today; $i++) {
+                        echo "<li class='page-item" . ($i == $current_page_today ? " active" : "") . "'><a class='page-link' href='?page_today=" . $i . "'>" . $i . "</a></li>";
+                    }
+                    ?>
+                </ul>
+            </nav>
 
-// Get the current date in the format 'YYYY-MM-DD'
-$currentDate = date('Y-m-d');
+            <h2>All Logs</h2>
+            <table class="table table-striped">
+                <thead class="bg-light sticky-top">
+                    <tr>
+                        <th>Borrower ID</th>
+                        <th>Borrower Name</th>
+                        <th>Date & Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    if ($result_display_all && $result_display_all->num_rows > 0) {
+                        while ($row = $result_display_all->fetch_assoc()) {
+                            echo "<tr>";
+                            echo "<td>" . $row['Borrower_ID'] . "</td>";
+                            echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
+                            echo "<td>" . $row['Date_Time'] . "</td>";
+                            echo "</tr>";
+                        }
+                    } else {
+                        echo "<tr><td colspan='3'>No records found.</td></tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
 
-// SQL query to select records for the current date from tbl_borrower and tbl_log
-$sql_display_today = "SELECT 
-                            tbl_borrower.*, tbl_log.* 
-                      FROM 
-                            tbl_borrower
-                      INNER JOIN 
-                            tbl_log 
-                      ON 
-                            tbl_borrower.Borrower_ID = tbl_log.Borrower_ID
-                    ORDER BY Date_Time DESC"; //WHERE DATE(tbl_log.Date_Time) = '$currentDate'";
-$result_display_today = $conn_display_today->query($sql_display_today);
-
-// Close display connection
-$conn_display_today->close();
-?>
-
-<tbody>
-    <?php
-    if ($result_display_today && $result_display_today->num_rows > 0) {
-        while ($row = $result_display_today->fetch_assoc()) {
-            echo "<tr>";
-            echo "<td>" . $row['Borrower_ID'] . "</td>";
-            echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
-            echo "<td>" . $row['Date_Time'] . "</td>";
-            echo "</tr>";
-        }
-    } else {
-        echo "<tr><td colspan='3'>No records found for the current date.</td></tr>";
-    }
-    ?>
-
-
-            </tbody>
-        </table>
-    </div>
+            <!-- Pagination for all logs -->
+            <nav>
+                <ul class="pagination">
+                    <?php
+                    for ($i = 1; $i <= $total_pages; $i++) {
+                        echo "<li class='page-item" . ($i == $current_page ? " active" : "") . "'><a class='page-link' href='?page=" . $i . "'>" . $i . "</a></li>";
+                    }
+                    ?>
+                </ul>
+            </nav>
+        </div>
+        
     <div class="btn-con">
         <a href="staff_log_qrscan.php" class="btn">Scan</a>
         <a href="staff_registeredList.php" class="btn">Registered List</a>

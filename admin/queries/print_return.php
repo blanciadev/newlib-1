@@ -8,6 +8,8 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
+$fine = isset($_GET['fine']) ? $_GET['fine'] : 0;
+
 // Access the stored session data
 $accessionCode = $_SESSION['Accession_Code'];
 $bookTitle = $_SESSION['Book_Title'];
@@ -15,8 +17,11 @@ $quantity = $_SESSION['Quantity'];
 $borrowDetailsId = $_SESSION['BorrowDetails_ID'];
 $date = $_SESSION['Date_Borrowed'];
 $due = $_SESSION['Due_Date'];
-$fine =  $_SESSION['fine'];
 $stat = $_SESSION['stat'];
+
+echo '<script>';
+echo 'console.log("Fine is ' . $fine . '");';
+echo '</script>';
 
 ?>
 <!DOCTYPE html>
