@@ -1,56 +1,192 @@
 <?php
 session_start();
+
 // Check if the User_ID session variable is not set or empty
 if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     // Redirect to index.php
     header("Location: ../index.php");
     exit(); // Ensure script execution stops after redirection
 }
+
 $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$sql ="UPDATE tbl_books
-SET tb_status = 'Unavailable'
-WHERE Quantity = 0;
-";
 
-if ($conn->query($sql) === TRUE) {
-    echo '<script>console.log("Quantity update to 0 ");</script>';
-}
 
-$sqlUpdate = "UPDATE tbl_books
-        SET tb_status = 'Available'
-        WHERE Quantity > 0 AND tb_status != 'Archived' AND tb_status = 'Unavailable'";
+// Define the HTML code for the toast element
+echo '<div class="toastNotif hide">
+ <div class="toast-content">
+     <i class="bx bx-check check"></i>
+     <div class="message">
+         <span class="text text-1"></span>
+         <!-- this message can be changed to "Success" and "Error"-->
+         <span class="text text-2"></span>
+         <!-- specify based on the if-else statements -->
+     </div>
+ </div>
+ <i class="bx bx-x close"></i>
+ <div class="progress"></div>
+</div>';
 
-if ($conn->query($sqlUpdate) === TRUE) {
-    echo '<script>console.log("Update to status to Avaialble");</script>';
-}
+// Define JavaScript functions to handle the toast
+echo '<script>
+ function showToast(type, message) {
+     var toast = document.querySelector(".toastNotif");
+     var progress = document.querySelector(".progress");
+     var text1 = toast.querySelector(".text-1");
+     var text2 = toast.querySelector(".text-2");
+     
+     if (toast && progress && text1 && text2) {
+         // Update the toast content based on the message type
+         if (type === "success") {
+             text1.textContent = "Success";
+             toast.classList.remove("error");
+         } else if (type === "error") {
+             text1.textContent = "Error";
+             toast.classList.add("error");
+         } else {
+             console.error("Invalid message type");
+             return;
+         }
+         
+         // Set the message content
+         text2.textContent = message;
+         
+         // Show the toast and progress
+         toast.classList.add("showing");
+         progress.classList.add("showing");
+         
+         // Hide the toast and progress after 5 seconds
+         setTimeout(() => {
+             toast.classList.remove("showing");
+             progress.classList.remove("showing");
+            
+         }, 5000);
+     } else {
+         console.error("Toast elements not found");
+     }
+ }
 
-// Check if the accession code is set in the POST request
-if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
-    // Handle archiving the book
-  
+ function closeToast() {
+     var toast = document.querySelector(".toastNotif");
+     var progress = document.querySelector(".progress");
+     toast.classList.remove("showing");
+     progress.classList.remove("showing");
+ }
 
-    // Sanitize the accession code to prevent SQL injection
-    $accessionCode = mysqli_real_escape_string($conn, $_POST['accessionCode']);
+  function redirectToPage(url, delay) {
+     setTimeout(() => {
+         window.location.href = url;
+     }, delay);
+ }
 
-    // Update the status to 'Archived' for the specified accession code
-    $sql = "UPDATE tbl_books SET tb_status = 'Archived' WHERE Accession_Code = '$accessionCode'";
-    if ($conn->query($sql) === TRUE) {
-        echo "Status updated successfully";
-    } else {
-        echo "Error updating status: " . $conn->error;
+
+</script>';
+
+
+
+// Check if the request contains the accessionCode in the URL
+if (isset($_POST['accessionCode'])) {
+    // Get the Accession_Code from the URL
+    $accessionCode = $_POST['accessionCode'];
+
+    // Prepare and execute the SQL query to update the book status to 'Archived'
+    $sql = "UPDATE tbl_books SET tb_status = 'Archived' WHERE Accession_Code = ?";
+    $stmt = $conn->prepare($sql);
+
+    if (!$stmt) {
+        // Error handling for prepared statement creation
+        echo json_encode(["success" => false, "message" => "Failed to prepare statement: " . $conn->error]);
+        exit();
     }
 
-    $conn->close();
-}
+    $stmt->bind_param("s", $accessionCode); // Bind the parameter to the query
+    $stmt->execute();
+
+    if ($stmt->error) {
+        // Error handling for query execution
+        echo json_encode(["success" => false, "message" => "Failed to execute query: " . $stmt->error]);
+        exit();
+    }
+
+    // Check if the query was successful
+    if ($stmt->affected_rows > 0) {
+        // Book was successfully archived
+        echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("success", "Image Updated successfully.");
+        // Redirect to this page after 3 seconds
+        redirectToPage("admin_books.php", 1000);
+    </script>';
+
+
+    } else {
+        // No rows affected, possibly the book with the given Accession_Code was not found
+      
+        echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Failed to archive book: No rows affected");
+    </script>';
+
+    }
+
+    // Close the prepared statement
+    $stmt->close();
+} 
+
+
+// Set the status and page variables
+$status = isset($_GET['status']) ? $_GET['status'] : 'Available';
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+$recordsPerPage = 3;
+$offset = ($page - 1) * $recordsPerPage;
+
+// Update book status based on quantity
+$sql = "UPDATE tbl_books SET tb_status = 'Unavailable' WHERE Quantity = 0";
+$conn->query($sql);
+
+$sqlUpdate = "UPDATE tbl_books SET tb_status = 'Available' WHERE Quantity > 0 AND tb_status != 'Archived' AND tb_status = 'Unavailable'";
+$conn->query($sqlUpdate);
 
 
 
+// Get the status from the query string
+$status = isset($_GET['status']) ? $_GET['status'] : 'Available';
+
+// Your SQL query with the status parameter
+$sql = "SELECT
+            tbl_books.Accession_Code, 
+            tbl_books.Book_Title, 
+            tbl_books.Authors_ID, 
+            tbl_books.Publisher_Name, 
+            tbl_books.Section_Code, 
+            tbl_books.shelf, 
+            tbl_books.tb_edition, 
+            tbl_books.Year_Published, 
+            tbl_books.ISBN, 
+            tbl_books.Bibliography, 
+            tbl_books.Quantity, 
+            tbl_books.tb_status, 
+            tbl_books.Price, 
+            tbl_section.Section_uid, 
+            tbl_section.Section_Name, 
+            tbl_section.Section_Code, 
+            tbl_authors.Authors_Name
+        FROM
+            tbl_books
+        INNER JOIN
+            tbl_section ON tbl_books.Section_Code = tbl_section.Section_uid
+        INNER JOIN
+            tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID
+        WHERE
+            tbl_books.tb_status = '$status'
+        LIMIT $recordsPerPage OFFSET $offset";
+
+// Execute the query and process the results
+$result = $conn->query($sql);
 ?>
-
 
 
 <!DOCTYPE html>
@@ -66,6 +202,7 @@ if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./admin.css" rel="stylesheet">
+    <link href="toast.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
 
@@ -119,159 +256,352 @@ if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
 
     </div>
 
-   
     <div class="row">
         <div class="col-md-13">
             <h2 class="mt-4 mb-3">Book Information</h2>
             <div class="form-group">
-                <select id="statusFilter" class="form-select mb-3">
-                    <option value="Available" selected>Available</option>
-                    <option value="Archived">Archived</option>
-                    <option value="Request">Request</option>
-                </select>
+                <form id="statusFilterForm" method="GET" action="admin_books.php">
+                    <select id="statusFilter" name="status" class="form-select mb-3">
+                        <option value="Available" <?php echo $status == 'Available' ? 'selected' : ''; ?>>Available</option>
+                        <option value="Archived" <?php echo $status == 'Archived' ? 'selected' : ''; ?>>Archived</option>
+                        <option value="Request" <?php echo $status == 'Request' ? 'selected' : ''; ?>>Request</option>
+                    </select>
+                </form>
             </div>
+            <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display: none;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <div class="table-responsive" id="bookTable">
 
-            <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-    <table class="table table-hover">
-        <thead class="bg-light sticky-top">
-            <tr>
-                <th style="width: 10%;">Accession Code</th>
-                <th style="width: 15%;">Book Title</th>
-                <th style="width: 10%;">Authors</th>
-                <th style="width: 10%;">Publisher</th>
-                <th style="width: 10%;">Section</th>
-                <th style="width: 5%;">Shelf #</th>
-                <th style="width: 5%;">Edition</th>
-                <th style="width: 5%;">Year Published</th>
-                <th style="width: 10%;">ISBN</th>
-                <th style="width: 10%;">Bibliography</th>
-                <th style="width: 5%;">Quantity</th>
-                <th style="width: 5%;">Price</th>
-                <th style="width: 5%;">Status</th>
-                <th style="width: 5%;">Action</th>
-            </tr>
-        </thead>
-        <tbody id="bookTableBody">
-            <!-- Book records will be dynamically loaded here -->
-        </tbody>
-    </table>
-</div>
+                <?php
+                if (($status === 'Request')) {
+
+                    $sql = "SELECT tbl_requestbooks.* FROM tbl_requestbooks";
 
 
-            <div class="btn-group">
-                <a href="./admin_bookCatalog.php" class="btn btn-secondary">Catalog</a>
-                <a href="./admin_addBook.php" class="btn btn-success">Add New Book</a>
+                    // Execute the query and process the results
+                    $result = $conn->query($sql);
+
+                    // Prepare response data
+                    $response = "";
+
+                    if ($result->num_rows > 0) {
+                        $tableHTML = '<table class="table table-hover">
+                        <thead class="bg-light sticky-top">
+                            <tr>
+                                <th style="width: 10%;">Accession Code</th>
+                                <th style="width: 15%;">Book Title</th>
+                                <th style="width: 10%;">Authors</th>
+                                <th style="width: 10%;">Publisher</th>
+                                <th style="width: 10%;">Section</th>
+                                <th style="width: 5%;">Shelf #</th>
+                                <th style="width: 5%;">Edition</th>
+                                <th style="width: 5%;">Year Published</th>
+                                <th style="width: 10%;">ISBN</th>
+                                <th style="width: 10%;">Bibliography</th>
+                                <th style="width: 5%;">Quantity</th>
+                                <th style="width: 5%;">Price</th>
+                                <th style="width: 5%;">Status</th>
+                                <th style="width: 5%;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>';
+
+                        // Output data of each row
+                        while ($row = $result->fetch_assoc()) {
+                            $tableHTML .= '<tr>
+                                            <td></td>
+                                            <td>' . $row["Book_Title"] . '</td>
+                                            <td>' . $row["Authors_Name"] . '</td>
+                                            <td>' . $row["Publisher_Name"] . '</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>' . $row["tb_edition"] . '</td>
+                                            <td>' . $row["Year_Published"] . '</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td>' . $row["Quantity"] . '</td>
+                                            <td>' . $row["price"] . '</td>
+                                            <td>' . $row["tb_status"] . '</td>
+                                            <td>';
+
+                            // Add appropriate action button based on status
+                            if ($row["tb_status"] === "Approved") {
+                                $tableHTML .= "<button type='button' class='btn btn-secondary' disabled>Process</button>";
+                            } else {
+                                $tableHTML .= "<a href='process_data_book.php?id=" . $row["Request_ID"] . "' class='btn btn-primary'>Process</a>";
+                            }
+
+                            $tableHTML .= '</td>
+                                        </tr>';
+                        }
+
+                        $tableHTML .= "</tbody></table>";
+                    } else {
+                        $tableHTML = "No books found.";
+                    }
+
+                    echo $tableHTML;
+
+
+                    // Close the database connection
+                    // $conn->close();
+
+                    // Return the response
+                    echo $response;
+                } else {
+
+                    $sql = "SELECT
+                    tbl_books.Accession_Code, 
+                    tbl_books.Book_Title, 
+                    tbl_books.Authors_ID, 
+                    tbl_books.Publisher_Name, 
+                    tbl_books.Section_Code, 
+                    tbl_books.shelf, 
+                    tbl_books.tb_edition, 
+                    tbl_books.Year_Published, 
+                    tbl_books.ISBN, 
+                    tbl_books.Bibliography, 
+                    tbl_books.Quantity, 
+                    tbl_books.tb_status, 
+                    tbl_books.Price, 
+                    tbl_section.Section_uid, 
+                    tbl_section.Section_Name, 
+                    tbl_section.Section_Code, 
+                    tbl_authors.Authors_Name
+                FROM
+                    tbl_books
+                INNER JOIN
+                    tbl_section ON tbl_books.Section_Code = tbl_section.Section_uid
+                INNER JOIN
+                    tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID
+                WHERE
+                    tbl_books.tb_status = '$status'
+                LIMIT $recordsPerPage OFFSET $offset";
+
+                    // Execute the query and process the results
+                    $result = $conn->query($sql);
+
+                    // Generate the HTML for the table based on the query results
+                    $tableHTML = '<table class="table table-hover">
+                            <thead class="bg-light sticky-top">
+                                <tr>
+                                    <th style="width: 10%;">Accession Code</th>
+                                    <th style="width: 15%;">Book Title</th>
+                                    <th style="width: 10%;">Authors</th>
+                                    <th style="width: 10%;">Publisher</th>
+                                    <th style="width: 10%;">Section</th>
+                                    <th style="width: 5%;">Shelf #</th>
+                                    <th style="width: 5%;">Edition</th>
+                                    <th style="width: 5%;">Year Published</th>
+                                    <th style="width: 10%;">ISBN</th>
+                                    <th style="width: 10%;">Bibliography</th>
+                                    <th style="width: 5%;">Quantity</th>
+                                    <th style="width: 5%;">Price</th>
+                                    <th style="width: 5%;">Status</th>
+                                    <th style="width: 5%;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+                    while ($row = $result->fetch_assoc()) {
+                        $tableHTML .= '<tr>
+                                    <td>' . $row['Accession_Code'] . '</td>
+                                    <td>' . $row['Book_Title'] . '</td>
+                                    <td>' . $row['Authors_Name'] . '</td>
+                                    <td>' . $row['Publisher_Name'] . '</td>
+                                    <td>' . $row['Section_Name'] . '</td>
+                                    <td>' . $row['shelf'] . '</td>
+                                    <td>' . $row['tb_edition'] . '</td>
+                                    <td>' . $row['Year_Published'] . '</td>
+                                    <td>' . $row['ISBN'] . '</td>
+                                    <td>' . $row['Bibliography'] . '</td>
+                                    <td>' . $row['Quantity'] . '</td>
+                                    <td>' . $row['Price'] . '</td>
+                                    <td>' . $row['tb_status'] . '</td>
+                                    <td>';
+                        if ($row['tb_status'] == 'Available') {
+                            $tableHTML .= '<button type="button" class="btn btn-primary btn-sm archive-btn" data-bs-toggle="modal" data-bs-target="#archiveModal" data-accession-code="' . $row['Accession_Code'] . '">Archive</button>                                        ';
+                        }
+                        $tableHTML .= '</td>
+                                                </tr>';
+                    }
+                    $tableHTML .= '</tbody>
+                        </table>';
+
+                    echo $tableHTML;
+                }
+
+
+                ?>
+            </div>
+            <div class="d-flex justify-content-center">
+                <ul class="pagination">
+                    <?php
+                    $sqlCount = "SELECT COUNT(*) AS totalRecords FROM tbl_books WHERE tb_status = '$status'";
+                    $resultCount = $conn->query($sqlCount);
+                    $totalRecords = $resultCount->fetch_assoc()['totalRecords'];
+                    $totalPages = ceil($totalRecords / $recordsPerPage);
+
+                    for ($i = 1; $i <= $totalPages; $i++) {
+                        echo '<li class="page-item ' . ($page == $i ? 'active' : '') . '"><a class="page-link" href="?status=' . $status . '&page=' . $i . '">' . $i . '</a></li>';
+                    }
+                    ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <a href="./admin_bookCatalog.php" class="btn btn-secondary">Catalog</a>
+        <a href="./admin_addBook.php" class="btn btn-success">Add New Book</a>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper.js (for Bootstrap 5) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <div id="archiveModal" class="modal fade" tabindex="-1" aria-labelledby="archiveModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="archiveModalLabel">Archive Book</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-body">
+                        <p><strong>Book Title:</strong><input type="text" id="bookTitle" class="form-control" readonly><strong>Author</strong> <input type="text" id="authors" class="form-control" readonly></p>
+                        <p><strong>Publisher:</strong> <input type="text" id="publisher" class="form-control" readonly></p>
+                        <p><strong>Section:</strong> <input type="text" id="section" class="form-control" readonly></p>
+                        <p><strong>Shelf:</strong> <input type="text" id="shelf" class="form-control" readonly></p>
+                        <p><strong>Edition:</strong> <input type="text" id="edition" class="form-control" readonly></p>
+                        <p><strong>Year Published:</strong> <input type="text" id="yearPublished" class="form-control" readonly></p>
+                        <p><strong>ISBN:</strong> <input type="text" id="isbn" class="form-control" readonly></p>
+                        <p><strong>Bibliography:</strong> <input type="text" id="bibliography" class="form-control" readonly></p>
+                        <p><strong>Quantity:</strong> <input type="text" id="quantity" class="form-control" readonly></p>
+                        <p><strong>Price:</strong> <input type="text" id="price" class="form-control" readonly></p>
+                        <p><strong>Status:</strong> <input type="text" id="status" class="form-control" readonly></p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <form id="archiveForm" method="POST" action="">
+                        <input type="hidden" id="archiveAccessionCode" name="accessionCode">
+                        <button type="submit" class="btn btn-primary">Archive</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
 
 
-    <script>
-        // Function to fetch book information based on selected status
-        function fetchBooksByStatus(status) {
-            fetch('queries/fetch_books.php?status=' + status)
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('bookTableBody').innerHTML = data;
-                });
-        }
-        
-        function fetchRequests() {
-            fetch('queries/fetch_book_request.php')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('bookTableBody').innerHTML = data;
-                });
-        }
+    </div>
 
-        // Event listener for dropdown change
-        document.getElementById('statusFilter').addEventListener('change', function() {
-            let selectedStatus = this.value;
-            if (selectedStatus === 'Request') {
-                fetchRequests();
-            } else {
-                fetchBooksByStatus(selectedStatus);
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const archiveButtons = document.querySelectorAll('.archive-btn');
+
+            archiveButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const accessionCode = this.getAttribute('data-accession-code');
+                    document.getElementById('archiveAccessionCode').value = accessionCode;
+                    fetchBookDetails(accessionCode);
+                });
+            });
+
+            // Function to fetch book details and populate modal
+            function fetchBookDetails(accessionCode) {
+                fetch('queries/fetch_book_request.php?accessionCode=' + accessionCode)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Populate modal fields with retrieved data
+                            document.getElementById('bookTitle').value = data.data.Book_Title;
+                            document.getElementById('authors').value = data.data.Authors_Name;
+                            document.getElementById('publisher').value = data.data.Publisher_Name;
+                            document.getElementById('section').value = data.data.Section_Name;
+                            document.getElementById('shelf').value = data.data.shelf;
+                            document.getElementById('edition').value = data.data.tb_edition;
+                            document.getElementById('yearPublished').value = data.data.Year_Published;
+                            document.getElementById('isbn').value = data.data.ISBN;
+                            document.getElementById('bibliography').value = data.data.Bibliography;
+                            document.getElementById('quantity').value = data.data.Quantity;
+                            document.getElementById('price').value = data.data.Price;
+                            document.getElementById('status').value = data.data.tb_status;
+
+                            // Show the modal
+                            const archiveModal = new bootstrap.Modal(document.getElementById('archiveModal'));
+                            archiveModal.show();
+                        } else {
+                            // Display error message if book not found
+                            alert(data.message);
+                        }
+                    })
+                    .catch(error => console.error('Error fetching book details:', error));
             }
         });
 
-      
 
-        // Call fetchBooksByStatus with default status "Available" when the page loads
-        window.addEventListener('load', function() {
-            fetchBooksByStatus('Available');
+        // Add event listener to the select element for both functionalities
+        document.getElementById('statusFilter').addEventListener('change', function() {
+            var status = this.value; // Get the selected value
+            // Show loading spinner
+            showLoadingSpinner();
+            // Update form action with the selected status
+            document.getElementById('statusFilterForm').action = 'admin_books.php?status=' + encodeURIComponent(status);
+            // Submit the form
+            document.getElementById('statusFilterForm').submit();
+
+            // Call function to update books
+            updateBooks(status);
         });
+
+        // Function to update books using AJAX
+        function updateBooks(status) {
+            // Send AJAX request to update books
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', 'admin_books.php?status=' + encodeURIComponent(status), true);
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    // Success
+                    // Update the books display with the response from the server
+                    var tableResponsive = document.querySelector('.table-responsive');
+                    if (tableResponsive) {
+                        tableResponsive.innerHTML = xhr.responseText;
+                    } else {
+                        console.error('.table-responsive element not found');
+                    }
+                } else {
+                    // Error
+                    console.error('Request failed');
+                }
+                // Hide loading spinner after request completes
+                hideLoadingSpinner();
+            };
+            xhr.onerror = function() {
+                // Connection error
+                console.error('Connection error');
+                // Hide loading spinner on error
+                hideLoadingSpinner();
+            };
+            xhr.send();
+        }
+
+        // Function to show loading spinner
+        function showLoadingSpinner() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+        }
+
+        // Function to hide loading spinner
+        function hideLoadingSpinner() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
     </script>
-    
-<script>
-
-function archiveBook(accessionCode) {
-    // Show the confirmation dialog
-    if (confirm("Do you want to archive this book?")) {
-        // If confirmed, send the AJAX request to archive the book
-        fetch('admin_books.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: 'archive_book=true&accessionCode=' + encodeURIComponent(accessionCode),
-        })
-        .then(response => response.text())
-        .then(data => {
-            console.log(data); // Log the response from the server
-            // Optionally, you can handle success or error messages here
-            // For example, display a message to the user indicating success or failure
-            // You can also update the UI if needed
-            location.reload();
-        })
-        .catch(error => {
-            console.error('Error archiving book:', error);
-            // Handle errors here if needed
-        });
-    } else {
-        // If canceled, do nothing
-        return;
-    }
-}
-
-</script>
 
 
 
 
-
-    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-    <script>
-        let date = new Date().toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-            weekday: 'long',
-        });
-        document.getElementById("currentDate").innerText = date;
-
-        setInterval(() => {
-            let time = new Date().toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: 'numeric',
-                second: 'numeric',
-                hour12: 'true',
-            })
-            document.getElementById("currentTime").innerText = time;
-
-        }, 1000)
-
-
-        let navItems = document.querySelectorAll(".nav-item"); //adding .active class to navitems 
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                document.querySelector('.active')?.classList.remove('active');
-                item.classList.add('active');
-
-
-            })
-
-        })
-    </script> -->
 </body>
 
 </html>
