@@ -150,7 +150,7 @@
         }
 
         #reader {
-            width: 600px;
+            width: 500px;
         }
 
         #result {
@@ -201,7 +201,7 @@
             <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-    <div class="board container-fluid"><!--board container-->
+    <div class="board1 container-fluid"><!--board container-->
         <div class="header1">
             <div class="text">
                 <div class="back-btn">
@@ -213,18 +213,19 @@
             </div>
         </div>
         <div class="books container-fluid">
-            <main>
-                <div id="reader"></div>
-                <div id="result"></div>
-            </main>
-            
-            <form id="borrowForm" action="staff_borrow_dash.php" method="post">
-                <div class="mb-3">
-                    <label for="borrowerIdInput" class="form-label">Borrower ID</label>
-                    <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
-                </div> 
-                <button type="submit" class="btn btn-primary" id="book_borrow" disabled>Continue</button>
-            </form>
+            <div class="container d-flex flex-column">
+                <main>
+                    <div id="reader"></div>
+                    <div id="result"></div>
+                </main>
+                
+                <form id="borrowForm" action="staff_borrow_dash.php" method="post">
+                    <div class="mb-3">
+                        <label for="borrowerIdInput" class="form-label">Or Enter Borrower ID:</label>
+                        <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
+                    </div>  
+                </form>
+            </div>
         </div>
     </div>
 

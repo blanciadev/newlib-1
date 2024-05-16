@@ -27,7 +27,7 @@ $result_count_today = $conn->query($sql_count_today);
 $row_count_today = $result_count_today->fetch_assoc(); 
 
 // SQL query to select records for the current date from tbl_borrower and tbl_log with pagination
-$sql_display_today = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID WHERE DATE(tbl_log.Date_Time) = '$currentDate' ";
+$sql_display_today = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID WHERE DATE(tbl_log.Date_Time) = '$currentDate' ORDER BY tbl_log.Date_Time DESC";
 $result_display_today = $conn->query($sql_display_today); 
 
 // SQL query to select all records with pagination

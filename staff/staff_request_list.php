@@ -178,8 +178,7 @@ document.querySelector(".close").addEventListener("click", closeToast);
                     </form>
                 </div>
         </div>
-        <div class="books container-fluid">
-            <div class="table-responsive">
+        <div class="books container-fluid"> 
                 <table class="table table-hover table-sm" style="table-layout: auto;">
                     <thead class="bg-light sticky-top">
                         <tr>
@@ -203,7 +202,7 @@ document.querySelector(".close").addEventListener("click", closeToast);
                                 die("Connection failed: " . $conn->connect_error);
                             }
 
-                            $sql = "SELECT Request_ID, User_ID, Book_Title, Authors_Name, Publisher_Name, price, tb_edition, Year_Published, Quantity, tb_status FROM tbl_requestbooks";
+                            $sql = "SELECT Request_ID, User_ID, Book_Title, Authors_Name, Publisher_Name, price, tb_edition, Year_Published, Quantity, tb_status FROM tbl_requestbooks  ORDER BY Request_ID DESC ";
                             $result = $conn->query($sql);
 
                             while ($row = $result->fetch_assoc()) {
@@ -236,12 +235,10 @@ document.querySelector(".close").addEventListener("click", closeToast);
                         ?>
 
                     </tbody>
-                </table>
-            </div>
-            
+                </table> 
         </div>
         <div class="btn-con">
-            <button class="btn" id="requestButton">Request New Book</button>
+            <a href="./staff_request_form.php" class="btn">Request New Book</a>
         </div>
     </div>
 
@@ -264,9 +261,7 @@ document.querySelector(".close").addEventListener("click", closeToast);
                 </form>
             </div>
         </div>
-    </div>
-
-
+    </div> 
     <!--Logout Modal -->
     <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -406,14 +401,6 @@ document.querySelector(".close").addEventListener("click", closeToast);
                 console.error("Details form element not found");
             }
         });
-    </script>
-
-    <!-- <script>
-        document.getElementById("requestButton").addEventListener("click", function() {
-            window.location.href = "staff_request_form.php";
-        });
-    </script> -->
-
-
+    </script> 
 </body>
 </html>

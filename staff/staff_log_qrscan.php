@@ -216,7 +216,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             align-items: center;
         }
         #reader {
-            width: 600px;
+            width: 500px;
         }
         #result {
             text-align: center;
@@ -235,25 +235,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             </div>
         </div>
         <div class="books container-fluid">
-            <main>
-                <div id="reader"></div>
-                <div id="result"></div>
-            </main>
+            <div class="container d-flex flex-column">
+                <main>
+                    <div id="reader"></div>
+                    <div id="result"></div>
+                </main>
+ 
 
-            <div id="statusMessage"></div>
-
-            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                <label for="borrower_id">Or Enter Borrower ID:</label>
-                  <!-- Bootstrap input field -->
-                <input type="text" class="form-control" id="borrower_id" name="borrower_id" placeholder="Enter Borrower ID">
-                <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
-            </form>
-
-            <?php if (!empty($errorMessage)): ?>
-                <div class="alert alert-danger" role="alert">
-                    <?php echo $errorMessage; ?>
-                </div>
-            <?php endif; ?>
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                    <label for="borrower_id">Or Enter Borrower ID:</label> 
+                    <input type="text" class="form-control" id="borrower_id" name="borrower_id" placeholder="Enter Borrower ID"> 
+                </form>
+            </div> 
         </div>
     </div>
 
@@ -295,26 +288,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
    
     <script>
         //Toast Notification 
-        const btn = document.querySelector(".showToast"),
-            toast = document.querySelector(".toastNotif"),
-            close = document.querySelector(".close"),
-            progress = document.querySelector(".progress");
+        // const btn = document.querySelector(".showToast"),
+        //     toast = document.querySelector(".toastNotif"),
+        //     close = document.querySelector(".close"),
+        //     progress = document.querySelector(".progress");
 
-        btn.addEventListener("click", () => { // showing toast
-            console.log("showing toast")
-            toast.classList.add("showing");
-            progress.classList.add("showing");
-            setTimeout(() => {
-                toast.classList.remove("showing");
-                progress.classList.remove("showing");
-                console.log("hide toast after 5s")
-            }, 5000);
-        });
+        // btn.addEventListener("click", () => { // showing toast
+        //     console.log("showing toast")
+        //     toast.classList.add("showing");
+        //     progress.classList.add("showing");
+        //     setTimeout(() => {
+        //         toast.classList.remove("showing");
+        //         progress.classList.remove("showing");
+        //         console.log("hide toast after 5s")
+        //     }, 5000);
+        // });
 
-        close.addEventListener("click", () => { // closing toast
-            toast.classList.remove("showing");
-            progress.classList.remove("showing");
-        });
+        // close.addEventListener("click", () => { // closing toast
+        //     toast.classList.remove("showing");
+        //     progress.classList.remove("showing");
+        // });
 
         const scanner = new Html5QrcodeScanner('reader', { 
             // Scanner will be initialized in DOM inside element with id of 'reader'
@@ -345,10 +338,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
             // console.error(err);
             // Prints any errors to the console
         }
-
-        function redirectToBorrowDetails(borrowId) {
-            window.location.href = "staff_borrow_find.php?borrowId=" + borrowId;
-        }
+ 
 
         document.addEventListener("DOMContentLoaded", function() {
             console.log("DOMContentLoaded event fired.");
