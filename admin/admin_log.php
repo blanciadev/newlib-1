@@ -33,7 +33,7 @@ $row_count_today = $result_count_today->fetch_assoc();
 $total_pages_today = ceil($row_count_today["total"] / $results_per_page_today);
 
 // SQL query to select records for the current date from tbl_borrower and tbl_log with pagination
-$sql_display_today = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID WHERE DATE(tbl_log.Date_Time) = '$currentDate' LIMIT $start_from_today, $results_per_page_today";
+$sql_display_today = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID WHERE DATE(tbl_log.Date_Time) = '$currentDate' ORDER BY tbl_log.Date_Time DESC  ";
 $result_display_today = $conn->query($sql_display_today);
 
 // Pagination variables for all logs
@@ -42,7 +42,7 @@ $current_page = isset($_GET['page']) ? $_GET['page'] : 1;
 $start_from = ($current_page - 1) * $results_per_page;
 
 // SQL query to select all records with pagination
-$sql_display_all = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID ORDER BY tbl_log.Date_Time DESC LIMIT $start_from, $results_per_page";
+$sql_display_all = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID ORDER BY tbl_log.Date_Time DESC ";
 $result_display_all = $conn->query($sql_display_all);
 
 // Total number of records for pagination
@@ -127,22 +127,23 @@ $conn->close();
 
 
     </div>
-    <div class="board container">
-        <div class="header1">
+    <div class="board container-fluid"><!--board container-->
+    <div class="header1">
             <div class="text">
                 <div class="title">
                     <h2>Log Record</h2>
                 </div>
             </div>
-            <div class="searchbar mt-4">
-                <form class="d-flex">
-                    <input class="form-control me-2" type="search" id="searchInput" placeholder="Search..." required>
-                    <button class="btn btn-outline-primary" type="submit"><i class='bx bx-search' id="search-icon"></i></button>
+            <div class="searchbar">
+                <form action="">
+                    <i class='bx bx-search' id="search-icon"></i>
+                    <input type="search" id="searchInput"  placeholder="Search..." required>
+                    
                 </form>
             </div>
         </div>
-        <div class="books container">
-            <h2>Today's Log</h2>
+        <div class="books container-fluid">
+            <caption><em> Today </em></caption>
             <table class="table table-striped">
                 <thead class="bg-light sticky-top">
                     <tr>
@@ -166,20 +167,8 @@ $conn->close();
                     }
                     ?>
                 </tbody>
-            </table>
-            
-            <!-- Pagination for today's log -->
-            <nav>
-                <ul class="pagination">
-                    <?php
-                    for ($i = 1; $i <= $total_pages_today; $i++) {
-                        echo "<li class='page-item" . ($i == $current_page_today ? " active" : "") . "'><a class='page-link' href='?page_today=" . $i . "'>" . $i . "</a></li>";
-                    }
-                    ?>
-                </ul>
-            </nav>
-
-            <h2>All Logs</h2>
+            </table>  
+            <caption><em>Recent</em></caption> 
             <table class="table table-striped">
                 <thead class="bg-light sticky-top">
                     <tr>
@@ -203,20 +192,15 @@ $conn->close();
                     }
                     ?>
                 </tbody>
-            </table>
-
-            <!-- Pagination for all logs -->
-            <nav>
-                <ul class="pagination">
-                    <?php
-                    for ($i = 1; $i <= $total_pages; $i++) {
-                        echo "<li class='page-item" . ($i == $current_page ? " active" : "") . "'><a class='page-link' href='?page=" . $i . "'>" . $i . "</a></li>";
-                    }
-                    ?>
-                </ul>
-            </nav>
+            </table> 
         </div>
-        <div class="btn-con mt-4">
+        
+    <div class="btn-con">
+        <a href="admin_log_qrscan.php" class="btn btn-primary mr-2">Scan</a>
+            <a href="admin_registeredList.php" class="btn btn-secondary">Registered List</a>
+    </div>
+</div>
+    <div class="btn-con mt-4">
             <a href="admin_log_qrscan.php" class="btn btn-primary mr-2">Scan</a>
             <a href="admin_registeredList.php" class="btn btn-secondary">Registered List</a>
         </div>

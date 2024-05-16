@@ -140,8 +140,8 @@ if (isset($_POST['accessionCode'])) {
 // Set the status and page variables
 $status = isset($_GET['status']) ? $_GET['status'] : 'Available';
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
-$recordsPerPage = 3;
-$offset = ($page - 1) * $recordsPerPage;
+// $recordsPerPage = 3;
+// $offset = ($page - 1) * $recordsPerPage;
 
 // Update book status based on quantity
 $sql = "UPDATE tbl_books SET tb_status = 'Unavailable' WHERE Quantity = 0";
@@ -181,8 +181,7 @@ $sql = "SELECT
         INNER JOIN
             tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID
         WHERE
-            tbl_books.tb_status = '$status'
-        LIMIT $recordsPerPage OFFSET $offset";
+            tbl_books.tb_status = '$status' ";
 
 // Execute the query and process the results
 $result = $conn->query($sql);
@@ -195,7 +194,7 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Dashboard</title>
+    <title>Books</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -211,30 +210,27 @@ $result = $conn->query($sql);
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2>
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon" />
-        </a><!--header container-->
-
+        </a><!--header container--> 
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
             <?php
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-            $userID = $_SESSION["User_ID"];
-            $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
-                    FROM tbl_employee 
-                    WHERE User_ID = $userID";
-            $result = mysqli_query($conn, $sql);
-            if (!$result) {
-                echo "Error: " . mysqli_error($conn);
-            } else {
-                $userData = mysqli_fetch_assoc($result);
-                // Fetch the First_Name from $userData
-                $firstName = $userData['First_Name'];
-                $role = $userData['tb_role'];
-            }
+                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                $userID = $_SESSION["User_ID"];
+                $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
+                        FROM tbl_employee 
+                        WHERE User_ID = $userID";
+                $result = mysqli_query($conn, $sql);
+                if (!$result) {
+                    echo "Error: " . mysqli_error($conn);
+                } else {
+                    $userData = mysqli_fetch_assoc($result);
+                    // Fetch the First_Name from $userData
+                    $firstName = $userData['First_Name'];
+                    $role = $userData['tb_role'];
+                }
             ?>
-            <?php if (!empty($userData['image_data'])) : ?>
-                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
+            <?php if (!empty($userData['image_data'])) : ?> 
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
-            <?php else : ?>
-                <!-- Change the path to your actual default image -->
+            <?php else : ?> 
                 <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
             <strong><span><?php echo  $firstName . "<br/>" .  $role; ?></span></strong>
@@ -251,28 +247,30 @@ $result = $conn->query($sql);
             <hr>
             <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
             <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
-        </ul>
-
-
+        </ul> 
     </div>
-
-    <div class="row">
-        <div class="col-md-13">
-            <h2 class="mt-4 mb-3">Book Information</h2>
-            <div class="form-group">
-                <form id="statusFilterForm" method="GET" action="admin_books.php">
-                    <select id="statusFilter" name="status" class="form-select mb-3">
-                        <option value="Available" <?php echo $status == 'Available' ? 'selected' : ''; ?>>Available</option>
-                        <option value="Archived" <?php echo $status == 'Archived' ? 'selected' : ''; ?>>Archived</option>
-                        <option value="Request" <?php echo $status == 'Request' ? 'selected' : ''; ?>>Request</option>
+    <div class="board container-fluid"><!--board container-->
+        <div class="header1">
+            <div class="text">
+                <div class="title">
+                    <h2>Books</h2>
+                </div>
+                <div class="form-group">
+                    <select id="statusFilter" class="form-select mb-3">
+                        <option value="Available" selected>Available</option>
+                        <option value="Archived">Archived</option>
+                        <option value="Request">Request</option>
                     </select>
+                </div>
+            </div> 
+            <div class="searchbar">
+                <form action="">
+                    <i class='bx bx-search' id="search-icon"></i>
+                    <input type="search" id="searchInput"  placeholder="Search..." required>
                 </form>
             </div>
-            <div id="loadingSpinner" class="spinner-border text-primary" role="status" style="display: none;">
-                <span class="visually-hidden">Loading...</span>
-            </div>
-            <div class="table-responsive" id="bookTable">
-
+        </div>
+        <div class="books container-fluid">  
                 <?php
                 if (($status === 'Request')) {
 
@@ -376,8 +374,7 @@ $result = $conn->query($sql);
                 INNER JOIN
                     tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID
                 WHERE
-                    tbl_books.tb_status = '$status'
-                LIMIT $recordsPerPage OFFSET $offset";
+                    tbl_books.tb_status = '$status' ";
 
                     // Execute the query and process the results
                     $result = $conn->query($sql);
@@ -432,29 +429,15 @@ $result = $conn->query($sql);
                 }
 
 
-                ?>
-            </div>
-            <div class="d-flex justify-content-center">
-                <ul class="pagination">
-                    <?php
-                    $sqlCount = "SELECT COUNT(*) AS totalRecords FROM tbl_books WHERE tb_status = '$status'";
-                    $resultCount = $conn->query($sqlCount);
-                    $totalRecords = $resultCount->fetch_assoc()['totalRecords'];
-                    $totalPages = ceil($totalRecords / $recordsPerPage);
-
-                    for ($i = 1; $i <= $totalPages; $i++) {
-                        echo '<li class="page-item ' . ($page == $i ? 'active' : '') . '"><a class="page-link" href="?status=' . $status . '&page=' . $i . '">' . $i . '</a></li>';
-                    }
-                    ?>
-                </ul>
-            </div>
+                ?> 
+        </div>
+        <div class="btn-con">
+            <a href="./admin_bookCatalog.php" class="btn btn-secondary">Catalog</a>
+            <a href="./admin_addBook.php" class="btn btn-success">Add New Book</a>
         </div>
     </div>
 
-    <div class="btn-group">
-        <a href="./admin_bookCatalog.php" class="btn btn-secondary">Catalog</a>
-        <a href="./admin_addBook.php" class="btn btn-success">Add New Book</a>
-    </div>
+    
 
     <!-- Bootstrap Bundle with Popper.js (for Bootstrap 5) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -468,30 +451,18 @@ $result = $conn->query($sql);
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="modal-body">
-                        <p><strong>Book Title:</strong><input type="text" id="bookTitle" class="form-control" readonly><strong>Author</strong> <input type="text" id="authors" class="form-control" readonly></p>
-                        <p><strong>Publisher:</strong> <input type="text" id="publisher" class="form-control" readonly></p>
-                        <p><strong>Section:</strong> <input type="text" id="section" class="form-control" readonly></p>
-                        <p><strong>Shelf:</strong> <input type="text" id="shelf" class="form-control" readonly></p>
-                        <p><strong>Edition:</strong> <input type="text" id="edition" class="form-control" readonly></p>
-                        <p><strong>Year Published:</strong> <input type="text" id="yearPublished" class="form-control" readonly></p>
-                        <p><strong>ISBN:</strong> <input type="text" id="isbn" class="form-control" readonly></p>
-                        <p><strong>Bibliography:</strong> <input type="text" id="bibliography" class="form-control" readonly></p>
-                        <p><strong>Quantity:</strong> <input type="text" id="quantity" class="form-control" readonly></p>
-                        <p><strong>Price:</strong> <input type="text" id="price" class="form-control" readonly></p>
-                        <p><strong>Status:</strong> <input type="text" id="status" class="form-control" readonly></p>
-                    </div>
+                    Confirm Archive?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
                     <form id="archiveForm" method="POST" action="">
                         <input type="hidden" id="archiveAccessionCode" name="accessionCode">
-                        <button type="submit" class="btn btn-primary">Archive</button>
+                        <button type="submit" class="btn btn-primary">Yes</button>
                     </form>
                 </div>
             </div>
         </div>
-    </div>
+    </div> 
 
 
     </div>

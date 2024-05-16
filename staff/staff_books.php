@@ -88,7 +88,7 @@
                 <div class="title">
                     <h2>Books</h2>
                 </div>
-            </div>
+            </div> 
             <div class="searchbar">
                 <form action="">
                     <i class='bx bx-search' id="search-icon"></i>

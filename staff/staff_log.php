@@ -122,7 +122,6 @@ $conn->close();
                 <form action="">
                     <i class='bx bx-search' id="search-icon"></i>
                     <input type="search" id="searchInput"  placeholder="Search..." required>
-                    
                 </form>
             </div>
         </div>

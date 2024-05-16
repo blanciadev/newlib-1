@@ -179,7 +179,7 @@ document.querySelector(".close").addEventListener("click", closeToast);
                 </div>
         </div>
         <div class="books container-fluid"> 
-                <table class="table table-hover table-sm" style="table-layout: auto;">
+                <table class="table table-hover table-sm" style="table-layout: auto;"> 
                     <thead class="bg-light sticky-top">
                         <tr>
                             <th>#</th>

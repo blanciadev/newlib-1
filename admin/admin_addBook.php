@@ -143,12 +143,11 @@ if (isset($_POST['submit'])) {
 
 
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en"> 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Dashboard</title>
+    <title>Adding of Books</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -156,8 +155,7 @@ if (isset($_POST['submit'])) {
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./admin.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
-</head>
-
+</head> 
 <body>
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary"><!--sidenav container-->
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
@@ -182,7 +180,7 @@ if (isset($_POST['submit'])) {
         <div class="header1">
             <div class="text">
                 <div class="back-btn">
-                    <a href="./staff_request_list.php"><i class='bx bx-arrow-back'></i></a>
+                    <a href="./admin_books.php"><i class='bx bx-arrow-back'></i></a>
                 </div>
                 <div class="title">
                     <h2>Add Book</h2>

@@ -186,30 +186,29 @@ if (isset($_POST['submit'])) {
     <link href="./admin.css" rel="stylesheet">
     <link href="toast.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
-</head>
-
+</head> 
 <body>
-<div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
+    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container-->
        
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-        <?php
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-            $userID = $_SESSION["User_ID"];
-            $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
-                    FROM tbl_employee 
-                    WHERE User_ID = $userID";
-            $result = mysqli_query($conn, $sql);
-            if (!$result) {
-                echo "Error: " . mysqli_error($conn);
-            } else {
-                $userData = mysqli_fetch_assoc($result);
-            // Fetch the First_Name from $userData
-    $firstName = $userData['First_Name'];
-    $role = $userData['tb_role'];
+            <?php
+                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                $userID = $_SESSION["User_ID"];
+                $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
+                        FROM tbl_employee 
+                        WHERE User_ID = $userID";
+                $result = mysqli_query($conn, $sql);
+                if (!$result) {
+                    echo "Error: " . mysqli_error($conn);
+                } else {
+                    $userData = mysqli_fetch_assoc($result);
+                // Fetch the First_Name from $userData
+                $firstName = $userData['First_Name'];
+                $role = $userData['tb_role'];
 
             }
             ?>
@@ -221,8 +220,8 @@ if (isset($_POST['submit'])) {
                 <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
             <strong><span><?php echo  $firstName . "<br/>" .  $role; ?></span></strong>
-    </div>
-    <hr>
+        </div>
+        <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item "> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
@@ -235,89 +234,107 @@ if (isset($_POST['submit'])) {
             <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
             <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
+    </div>
+    <div class="board container-fluid">
+        <div class="header1">
+            <div class="text">
+                <div class="title">
+                    <h2>Staff Management</h2>
+                </div>
+            </div> 
+            <div class="searchbar">
+                <form action="">
+                    <i class='bx bx-search' id="search-icon"></i>
+                    <input type="search" id="searchInput"  placeholder="Search..." required>
+                    
+                </form>
+            </div>
+        </div>
+        <div class="books container-fluid"> 
+            <table class="table table-striped table-sm"> 
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th style="width: 100%;">Full Name</th> 
+                        <th>Role</th>
+                        <th>Contact Number</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>Action</th>
+                        <th></th>
+                    </tr>
+                </thead> 
+                <tbody>
 
-
-  
-<!-- Button to trigger modal -->
-<button type="button" class="btn btn-primary" onclick="openEmployeeModal()">Add Employee</button>
-  </div>
-   
-   
-   
-    <h2>Staff Management</h2>
-  
-  
-  
-    <div class="board container"><!--board container-->
-
-<?php
-// Check if the query executed successfully
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Query to fetch data from your database
-$sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, status FROM tbl_employee";
-$result = mysqli_query($conn, $sql);
-
-if ($result) {
-    echo '<table class="table table-bordered">';
-    echo '<thead><tr><th>User ID</th><th>First Name</th><th>Middle Name</th><th>Last Name</th><th>Role</th><th>Contact Number</th><th>Email</th><th>Address</th><th>Action</th><th></th></tr></thead>';
-    echo '<tbody>';
-
-    while ($row = mysqli_fetch_assoc($result)) {
-        echo '<tr>';
-        echo '<td>' . $row['User_ID'] . '</td>';
-        echo '<td>' . $row['First_Name'] . '</td>';
-        echo '<td>' . $row['Middle_Name'] . '</td>';
-        echo '<td>' . $row['Last_Name'] . '</td>';
-        echo '<td>' . $row['tb_role'] . '</td>';
-        echo '<td>' . $row['Contact_Number'] . '</td>';
-        echo '<td>' . $row['E_mail'] . '</td>';
-        echo '<td>' . $row['tb_address'] . '</td>';
-    
-        // Add buttons for rows where Role is 'Staff'
-        if ($row['tb_role'] === 'Staff') {
-            // Check if the user status is "Deactivated"
-            $status = $row['status'];
             
-            // Check if the status is "Deactivated" and disable the button accordingly
-            $disabled = ($status === 'Deactivated') ? 'disabled' : '';
-    
-            // Form for deactivation
-            echo "<td><form class='deactivated-form' method='GET' action='admin_staff.php'>";
-            echo "<input type='hidden' name='deactivated_id' value='" . $row['User_ID'] . "'>";
-            // Add the $disabled variable to the button
-            echo "<button type='submit' class='btn btn-danger btn-sm deactivated-btn' $disabled onclick='return confirmDeactivate(" . $row['User_ID'] . ")'>Deactivate</button>";
-            echo "</form></td>";
-    
-            // Form for reactivation
-            echo "<td><form class='reactivate-form' method='GET' action='admin_staff.php'>";
-            echo "<input type='hidden' name='reactivate_id' value='" . $row['User_ID'] . "'>";
-            // Add condition to show the button only if the status is "Deactivated"
-            if ($status === 'Deactivated') {
-                echo "<button type='submit' class='btn btn-success btn-sm reactivate-btn' onclick='return confirmReactivate(" . $row['User_ID'] . ")'>Reactivate</button>";
-            } else {
-                echo "<button type='submit' class='btn btn-success btn-sm reactivate-btn' disabled>Reactivate</button>";
-            }
-            echo "</form></td>";
-        } else {
-            echo '<td></td>'; // Empty cell for other roles
-            echo '<td></td>'; // Empty cell for other roles
-        }
-        echo '</tr>';
-    }
-    
-    echo '</tbody>';
-    echo '</table>';
-}
+            <?php
+                // Check if the query executed successfully
+                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                if ($conn->connect_error) {
+                    die("Connection failed: " . $conn->connect_error);
+                }
 
-// Close the database connection
-mysqli_close($conn);
-?>
+                // Query to fetch data from your database
+                $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, status FROM tbl_employee";
+                $result = mysqli_query($conn, $sql);
 
-</div>
+                if ($result) { 
+
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        echo '<tr>';
+                        echo '<td>' . $row['User_ID'] . '</td>';
+                        echo '<td>' . $row['First_Name'] . ' ' . $row['Middle_Name'] . ' ' . $row['Last_Name'] .'</td>';  
+                        echo '<td>' . $row['tb_role'] . '</td>';
+                        echo '<td>' . $row['Contact_Number'] . '</td>';
+                        echo '<td>' . $row['E_mail'] . '</td>';
+                        echo '<td>' . $row['tb_address'] . '</td>';
+                    
+                        // Add buttons for rows where Role is 'Staff'
+                        if ($row['tb_role'] === 'Staff') {
+                            // Check if the user status is "Deactivated"
+                            $status = $row['status'];
+                            
+                            // Check if the status is "Deactivated" and disable the button accordingly
+                            $disabled = ($status === 'Deactivated') ? 'disabled' : ''; 
+
+                            // Add condition to show the button only if the status is "Deactivated"
+                            if ($status === 'Deactivated') { 
+                                // Form for reactivation
+                                echo "<td><form class='reactivate-form' method='GET' action='admin_staff.php'>";
+                                echo "<input type='hidden' name='reactivate_id' value='" . $row['User_ID'] . "'>";
+                                echo "<button type='submit' class='btn btn-success btn-sm reactivate-btn' onclick='return confirmReactivate(" . $row['User_ID'] . ")'>Activate</button>";
+                                echo "</form></td>";
+                            } else {
+                                // Form for deactivation
+                                echo "<td><form class='deactivated-form' method='GET' action='admin_staff.php'>";
+                                echo "<input type='hidden' name='deactivated_id' value='" . $row['User_ID'] . "'>";
+                                // Add the $disabled variable to the button
+                                echo "<button type='submit' class='btn btn-danger btn-sm deactivated-btn' $disabled onclick='return confirmDeactivate(" . $row['User_ID'] . ")'>Deactivate</button>";
+                                echo "</form></td>";
+                            }
+                            
+                        } else {
+                            echo '<td></td>'; // Empty cell for other roles
+                            echo '<td></td>'; // Empty cell for other roles
+                        }
+                        echo '</tr>';
+                    }
+        
+                    echo '</tbody>';
+                    echo '</table>';
+                }
+
+                // Close the database connection
+                mysqli_close($conn);
+            ?> 
+        </div>
+        <div class="btn-con"> 
+        <!-- Button to trigger modal -->
+        <button type="button" class="btn btn-primary" onclick="openEmployeeModal()">Add Employee</button>
+    </div>
+    </div> 
+    
+ 
 
 <!-- Modal -->
 <div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

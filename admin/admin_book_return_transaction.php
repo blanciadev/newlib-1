@@ -476,126 +476,137 @@ echo '</script>';
 
 
     </div>
-    <div class="board container"><!--board container-->
+    <div class="board1 container"><!--board container-->
+    <div class="header1">
+            <div class="text">
+                <div class="back-btn">
+                    <a href="./admin_transactions.php"><i class='bx bx-arrow-back'></i></a>
+                </div>
+                <div class="title">
+                    <h2>List Of Borrowers</h2>
+                </div>
+            </div> 
+        </div>
+         <div class="books container-fluid"> 
 
-        <h2>Request List Proccess</h2>
 
 
+<!-- Container for displaying search results with a fixed height and scrollable content -->
+<div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
 
-        <!-- Container for displaying search results with a fixed height and scrollable content -->
-        <div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
+    <?php
 
-            <?php
+    // Initialize $bd_Id to the BorrowDetails_ID from session
+    $bd_Id = $_SESSION['BorrowDetails_ID'];
 
-            // Initialize $bd_Id to the BorrowDetails_ID from session
-            $bd_Id = $_SESSION['BorrowDetails_ID'];
+    // Prepare the SQL statement with a placeholder for the BorrowDetails_ID
+    $sql = "SELECT DISTINCT
+    b.User_ID, 
+    b.Accession_Code, 
+    bk.Book_Title, 
+    bd.Quantity, 
+    b.Date_Borrowed, 
+    b.Due_Date, 
+    bd.tb_status, 
+    bd.Borrower_ID, 
+    b.Borrow_ID
+FROM
+    tbl_borrowdetails AS bd
+    INNER JOIN
+    tbl_borrow AS b
+    ON 
+        bd.Borrower_ID = b.Borrower_ID AND
+        bd.BorrowDetails_ID = b.Borrow_ID
+    INNER JOIN
+    tbl_books AS bk
+    ON 
+        b.Accession_Code = bk.Accession_Code
+    INNER JOIN
+    tbl_borrower AS br
+    ON 
+        b.Borrower_ID = br.Borrower_ID AND
+        bd.Borrower_ID = br.Borrower_ID
+WHERE
+    bd.BorrowDetails_ID =  ?";
 
-            // Prepare the SQL statement with a placeholder for the BorrowDetails_ID
-            $sql = "SELECT DISTINCT
-            b.User_ID, 
-            b.Accession_Code, 
-            bk.Book_Title, 
-            bd.Quantity, 
-            b.Date_Borrowed, 
-            b.Due_Date, 
-            bd.tb_status, 
-            bd.Borrower_ID, 
-            b.Borrow_ID
-        FROM
-            tbl_borrowdetails AS bd
-            INNER JOIN
-            tbl_borrow AS b
-            ON 
-                bd.Borrower_ID = b.Borrower_ID AND
-                bd.BorrowDetails_ID = b.Borrow_ID
-            INNER JOIN
-            tbl_books AS bk
-            ON 
-                b.Accession_Code = bk.Accession_Code
-            INNER JOIN
-            tbl_borrower AS br
-            ON 
-                b.Borrower_ID = br.Borrower_ID AND
-                bd.Borrower_ID = br.Borrower_ID
-        WHERE
-            bd.BorrowDetails_ID =  ?";
+    // Prepare and bind the statement
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $bd_Id);
 
-            // Prepare and bind the statement
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("s", $bd_Id);
+    // Execute the statement
+    $stmt->execute();
 
-            // Execute the statement
-            $stmt->execute();
+    // Get the result
+    $result = $stmt->get_result();
 
-            // Get the result
-            $result = $stmt->get_result();
+    // Close the prepared statement (we'll reuse $stmt for the form later)
+    $stmt->close();
+    $conn->close();
+    ?>
 
-            // Close the prepared statement (we'll reuse $stmt for the form later)
-            $stmt->close();
-            $conn->close();
-            ?>
+    <!-- Container for displaying search results with a fixed height and scrollable content -->
+    <div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
+        <?php
+        if ($result->num_rows > 0) {
+            // Output data of each row
+            while ($row = $result->fetch_assoc()) {
+                $_SESSION['Accession_Code'] = $row["Accession_Code"];
+                $_SESSION['Book_Title'] = $row["Book_Title"];
+                $_SESSION['Quantity'] = $row["Quantity"];
+             //   $_SESSION['BorrowDetails_ID'] = $row["BorrowDetails_ID"];
+                $_SESSION['Date_Borrowed'] = $row["Date_Borrowed"];
+                $_SESSION['Due_Date'] = $row["Due_Date"];
+                $_SESSION['status'] = $row["tb_status"];
+                $_SESSION['qty'] = $row["Quantity"];
 
-            <!-- Container for displaying search results with a fixed height and scrollable content -->
-            <div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
-                <?php
-                if ($result->num_rows > 0) {
-                    // Output data of each row
-                    while ($row = $result->fetch_assoc()) {
-                        $_SESSION['Accession_Code'] = $row["Accession_Code"];
-                        $_SESSION['Book_Title'] = $row["Book_Title"];
-                        $_SESSION['Quantity'] = $row["Quantity"];
-                     //   $_SESSION['BorrowDetails_ID'] = $row["BorrowDetails_ID"];
-                        $_SESSION['Date_Borrowed'] = $row["Date_Borrowed"];
-                        $_SESSION['Due_Date'] = $row["Due_Date"];
-                        $_SESSION['status'] = $row["tb_status"];
-                        $_SESSION['qty'] = $row["Quantity"];
+                echo "<div class='container'>";
+                echo "<div class='row'>";
+                echo "<div class='col'>";
+                echo "<p>Accession Code: " . $row["Accession_Code"] . "</p>";
+                $_SESSION['Accession_Code'] = $row["Accession_Code"];
 
-                        echo "<div class='container'>";
-                        echo "<div class='row'>";
-                        echo "<div class='col'>";
-                        echo "<p>Accession Code: " . $row["Accession_Code"] . "</p>";
-                        $_SESSION['Accession_Code'] = $row["Accession_Code"];
+                echo "<p>Book Title: " . $row["Book_Title"] . "</p>";
+                echo "<p>Quantity: " . $row["Quantity"] . "</p>";
+                echo "<p>Date Borrowed : " . $row["Date_Borrowed"] . "</p>";
+                echo "<p>Due Date: " . $row["Due_Date"] . "</p>";
 
-                        echo "<p>Book Title: " . $row["Book_Title"] . "</p>";
-                        echo "<p>Quantity: " . $row["Quantity"] . "</p>";
-                        echo "<p>Date Borrowed : " . $row["Date_Borrowed"] . "</p>";
-                        echo "<p>Due Date: " . $row["Due_Date"] . "</p>";
+            //    echo "Fine: " . $fine . "<br>";
+                // $_SESSION['fine'] = $fine;
 
-                    //    echo "Fine: " . $fine . "<br>";
-                        // $_SESSION['fine'] = $fine;
+                // Radio buttons for selecting book status within the same form
+                echo '<form class="update-form" method="POST" action="">';
 
-                        // Radio buttons for selecting book status within the same form
-                        echo '<form class="update-form" method="POST" action="">';
+                echo '<div class="form-group">';
+                echo '<label for="paymentStatus">Book Status:</label><br>';
+                echo '<div class="form-check">';
+                echo '<input type="radio" id="damage" name="paymentStatus" value="DAMAGE" class="form-check-input">';
+                echo '<label for="damage" class="form-check-label">Damage</label><br>';
+                echo '</div>';
+              
+                echo '<div class="form-check">';
+                echo '<input type="radio" id="goodCondition" name="paymentStatus" value="GOOD CONDITION" class="form-check-input">';
+                echo '<label for="goodCondition" class="form-check-label">Good Condition</label><br>';
+                echo '</div>';
+                echo '<div class="form-check">';
+                echo '<input type="radio" id="lost" name="paymentStatus" value="LOST" class="form-check-input">';
+                echo '<label for="lost" class="form-check-label">Lost</label><br>';
+                echo '</div>';
+                echo '</div>';
+                echo '<button type="submit" class="btn btn-primary">Proceed to Payment</button>';
+                echo '</form>';
 
-                        echo '<div class="form-group">';
-                        echo '<label for="paymentStatus">Book Status:</label><br>';
-                        echo '<div class="form-check">';
-                        echo '<input type="radio" id="damage" name="paymentStatus" value="DAMAGE" class="form-check-input">';
-                        echo '<label for="damage" class="form-check-label">Damage</label><br>';
-                        echo '</div>';
-                      
-                        echo '<div class="form-check">';
-                        echo '<input type="radio" id="goodCondition" name="paymentStatus" value="GOOD CONDITION" class="form-check-input">';
-                        echo '<label for="goodCondition" class="form-check-label">Good Condition</label><br>';
-                        echo '</div>';
-                        echo '<div class="form-check">';
-                        echo '<input type="radio" id="lost" name="paymentStatus" value="LOST" class="form-check-input">';
-                        echo '<label for="lost" class="form-check-label">Lost</label><br>';
-                        echo '</div>';
-                        echo '</div>';
-                        echo '<button type="submit" class="btn btn-primary">Proceed to Payment</button>';
-                        echo '</form>';
+                echo "</div>"; // Close div.col
+                echo "</div>"; // Close div.row
+                echo "</div>"; // Close div.container
+            }
+        } else {
+            echo "No records found for the provided Borrower ID.";
+        }
+        ?>
 
-                        echo "</div>"; // Close div.col
-                        echo "</div>"; // Close div.row
-                        echo "</div>"; // Close div.container
-                    }
-                } else {
-                    echo "No records found for the provided Borrower ID.";
-                }
-                ?>
-
-            </div>
+    </div>
+         </div>
+    </div>
 
             <script>
                 function updateAndSetSession(borrowIdadmin) {

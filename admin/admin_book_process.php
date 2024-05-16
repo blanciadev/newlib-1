@@ -272,7 +272,7 @@ $conn->close();
     </div>
 
   
-    <div class='books-container'>
+    <div class='books container'>
    
     <h1>Search Book by Accession Code</h1>
 

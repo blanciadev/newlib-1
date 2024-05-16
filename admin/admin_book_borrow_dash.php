@@ -123,7 +123,17 @@ if ($isBorrowerIdValid) {
         
         
     </div>
-    < class="board container"><!--board container--> 
+    <div class="board1 container"><!--board container--> 
+    <div class="header1">
+            <div class="text">
+                <div class="back-btn">
+                    <a href="./admin_transactions.php"><i class='bx bx-arrow-back'></i></a>
+                </div>
+                <div class="title">
+                    <h2>Scan Borrower</h2>
+                </div>
+            </div> 
+        </div>
             
             
     <style>
