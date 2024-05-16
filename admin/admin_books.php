@@ -87,54 +87,121 @@ echo '<script>
 
 
 
-// Check if the request contains the accessionCode in the URL
-if (isset($_POST['accessionCode'])) {
-    // Get the Accession_Code from the URL
-    $accessionCode = $_POST['accessionCode'];
 
-    // Prepare and execute the SQL query to update the book status to 'Archived'
-    $sql = "UPDATE tbl_books SET tb_status = 'Archived' WHERE Accession_Code = ?";
+// Check if the request contains the accessionCode and action in the POST data
+if (isset($_POST['accessionCode']) && isset($_POST['action'])) {
+    // Get the Accession_Code and action from the POST data
+    $accessionCode = $_POST['accessionCode'];
+    $action = $_POST['action'];
+
+    // Check which action was triggered
+    if ($action === 'archive') {
+        // Prepare and execute the SQL query to update the book status to 'Archived'
+        $sql = "UPDATE tbl_books SET tb_status = 'Archived' WHERE Accession_Code = ?";
+        $stmt = $conn->prepare($sql);
+
+        if (!$stmt) {
+            // Error handling for prepared statement creation
+            echo json_encode(["success" => false, "message" => "Failed to prepare statement: " . $conn->error]);
+            exit();
+        }
+
+        $stmt->bind_param("s", $accessionCode); // Bind the parameter to the query
+        $stmt->execute();
+
+        if ($stmt->error) {
+            // Error handling for query execution
+            echo json_encode(["success" => false, "message" => "Failed to execute query: " . $stmt->error]);
+            exit();
+        }
+
+        // Check if the query was successful
+        if ($stmt->affected_rows > 0) {
+            // Book was successfully archived
+            echo '<script>
+            // Call showToast with "success" message type after successful archiving
+            showToast("success", "Book archived successfully.");
+            // Redirect to this page after 3 seconds
+            redirectToPage("admin_books.php", 3000);
+            </script>';
+        } else {
+            // No rows affected, possibly the book with the given Accession_Code was not found
+            echo '<script>
+            // Call showToast with "error" message type after failed archiving
+            showToast("error", "Failed to archive book: No rows affected");
+            </script>';
+        }
+
+        // Close the prepared statement
+        $stmt->close();
+    } else  if ($action === 'save_changes' && isset($_POST['quantity'])) {
+        $quantity = $_POST['quantity'];
+
+
+    // Validate the quantity (assuming it should be a positive integer)
+    if (!ctype_digit($quantity) || intval($quantity) < 0) {
+        // echo json_encode(["success" => false, "message" => "Invalid quantity"]);
+        echo '<script>
+        // Call showToast with "error" message type after failed archiving
+        showToast("error", "Invalid quantity");
+        </script>';
+    }
+
+    // Prepare and execute the SQL query to update the quantity
+    $sql = "UPDATE tbl_books SET Quantity = ? WHERE Accession_Code = ?";
     $stmt = $conn->prepare($sql);
 
     if (!$stmt) {
         // Error handling for prepared statement creation
-        echo json_encode(["success" => false, "message" => "Failed to prepare statement: " . $conn->error]);
-        exit();
+        // echo json_encode(["success" => false, "message" => "Failed to prepare statement: " . $conn->error]);
+        echo '<script>
+        // Call showToast with "error" message type after failed archiving
+        showToast("error", "Failed to prepare statement");
+        </script>';
     }
 
-    $stmt->bind_param("s", $accessionCode); // Bind the parameter to the query
+    $stmt->bind_param("is", $quantity, $accessionCode); // Bind the parameters to the query
     $stmt->execute();
 
     if ($stmt->error) {
         // Error handling for query execution
-        echo json_encode(["success" => false, "message" => "Failed to execute query: " . $stmt->error]);
-        exit();
+        echo '<script>
+        // Call showToast with "error" message type after failed archiving
+        showToast("error", "Failed to Update book Quantity: No rows affected");
+        </script>';
+       
     }
 
     // Check if the query was successful
     if ($stmt->affected_rows > 0) {
-        // Book was successfully archived
+        // Quantity was successfully updated
         echo '<script>
-        // Call showToast with "success" message type after successful insertion
-        showToast("success", "Image Updated successfully.");
+        // Call showToast with "success" message type after successful archiving
+        showToast("success", "Book archived successfully.");
         // Redirect to this page after 3 seconds
-        redirectToPage("admin_books.php", 1000);
-    </script>';
-
-
+        redirectToPage("admin_books.php", 1500);
+        </script>';
     } else {
         // No rows affected, possibly the book with the given Accession_Code was not found
-      
         echo '<script>
-        // Call showToast with "success" message type after successful insertion
+        // Call showToast with "error" message type after failed archiving
         showToast("error", "Failed to archive book: No rows affected");
-    </script>';
-
+        </script>';
     }
 
     // Close the prepared statement
     $stmt->close();
-} 
+} else {
+    // Invalid request
+    echo '<script>
+    // Call showToast with "error" message type after failed archiving
+    showToast("error", "Failed to archive book: No rows affected");
+    </script>';
+}
+    }
+
+
+
 
 
 // Set the status and page variables
@@ -451,14 +518,42 @@ $result = $conn->query($sql);
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Confirm Archive?
+              
+                    <div class="modal-body">
+                        <p><strong>Book Title:</strong><input type="text" id="bookTitle" class="form-control" readonly><strong>Author</strong> <input type="text" id="authors" class="form-control" readonly></p>
+                        <p><strong>Publisher:</strong> <input type="text" id="publisher" class="form-control" readonly></p>
+                        <p><strong>Section:</strong> <input type="text" id="section" class="form-control" readonly></p>
+                        <p><strong>Shelf:</strong> <input type="text" id="shelf" class="form-control" readonly></p>
+                        <p><strong>Edition:</strong> <input type="text" id="edition" class="form-control" readonly></p>
+                        <p><strong>Year Published:</strong> <input type="text" id="yearPublished" class="form-control" readonly></p>
+                        <p><strong>ISBN:</strong> <input type="text" id="isbn" class="form-control" readonly></p>
+                        <p><strong>Bibliography:</strong> <input type="text" id="bibliography" class="form-control" readonly></p>
+                      
+                        <p><strong>Quantity:</strong> <input type="text" id="quantity" class="form-control" readonly></p>
+                        <p><strong>Price:</strong> <input type="text" id="price" class="form-control" readonly></p>
+                        <p><strong>Status:</strong> <input type="text" id="status" class="form-control" readonly></p>
+                   
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                    <form id="archiveForm" method="POST" action="">
-                        <input type="hidden" id="archiveAccessionCode" name="accessionCode">
-                        <button type="submit" class="btn btn-primary">Yes</button>
-                    </form>
+                <form id="archiveForm" method="POST" action="">
+               
+                <p><strong>Updated Quantity:</strong> <input type="text" id="qty" placeholder="Update Quantity" oninput="updateHiddenQuantity()"></p>
+        
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    
+    <input type="hidden" id="hiddenQuantity" name="quantity">
+    <input type="hidden" id="archiveAccessionCode" name="accessionCode">
+    <input type="hidden" id="action" name="action" value=""> 
+
+    <br>
+    <button type="button" class="btn btn-primary" onclick="saveChanges()">Save Changes</button>
+    <button type="button" class="btn btn-primary" onclick="setActionAndSubmit('archive')">Archive</button>
+</form>
+
+
+
+
                 </div>
             </div>
         </div>
@@ -468,6 +563,47 @@ $result = $conn->query($sql);
     </div>
 
 
+    <script>
+    function setAction(action) {
+        document.getElementById('action').value = action;
+        console.log('Action set to:', action);
+    }
+
+    // Function to update hidden input with quantity value
+    function updateHiddenQuantity() {
+        const quantityInput = document.getElementById('qty');
+        const hiddenQuantityInput = document.getElementById('hiddenQuantity');
+        hiddenQuantityInput.value = quantityInput.value;
+        console.log('Hidden quantity updated to:', hiddenQuantityInput.value);
+    }
+
+    // Function to handle Save Changes button click
+    function saveChanges() {
+        // Set the action to save_changes
+        setAction('save_changes');
+        // Update hidden input with quantity value
+        updateHiddenQuantity();
+        // Submit the form
+        document.getElementById('archiveForm').submit();
+    }
+
+    // Function to handle Archive button click and submit the form
+    function setActionAndSubmit(action) {
+        setAction(action);
+        document.getElementById('archiveForm').submit();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const quantityInput = document.getElementById('quantity');
+
+        // Add event listener for input on the quantity field
+        quantityInput.addEventListener('input', function() {
+            // Remove non-numeric characters from input
+            this.value = this.value.replace(/\D/g, '');
+            console.log('Quantity input value:', this.value);
+        });
+    });
+</script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
