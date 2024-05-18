@@ -82,12 +82,12 @@ if(isset($_GET['deactivated_id'])) {
 
     if (mysqli_query($conn, $updateSql)) {
         // Deletion successful, redirect to the same page to refresh the data
-        // echo '<script>alert("Record deactivatedd successfully.");</script>';
+        // echo '<script>alert("Deactivated.");</script>';
         // echo '<script>window.location.href = "admin_staff.php";</script>';
      
         echo '<script>
         // Call showToast with "success" message type after successful insertion
-        showToast("success", "Record deactivated successfully");
+        showToast("success", "Account Deactivated.");
     </script>';
         // exit(); // Ensure to exit after header redirection
     } else {
@@ -105,7 +105,7 @@ if(isset($_GET['reactivate_id'])) {
        
         echo '<script>
         // Call showToast with "success" message type after successful insertion
-        showToast("success", "Record Reactivated successfully");
+        showToast("success", "Account Activated");
     </script>';
 
         // exit(); // Ensure to exit after header redirection
@@ -123,9 +123,9 @@ if (isset($_POST['submit'])) {
     }
 
     // Get form data
-    $firstName = $_POST['empFirstName'];
-    $lastName = $_POST['empLastName'];
+    $firstName = $_POST['empFirstName']; 
     $midName = $_POST['midName'];
+    $lastName = $_POST['empLastName'];
     $role = $_POST['empRole'];
     $contactNumber = $_POST['empContactNumber'];
     $email = $_POST['empEmail'];
@@ -134,7 +134,7 @@ if (isset($_POST['submit'])) {
     $password = $lastName . '@' . $role;
 
     $sql = "INSERT INTO tbl_employee (tb_password, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, token ) 
-            VALUES ('$password','$firstName', '$lastName','$midName', '$role', '$contactNumber', '$email', '$address', $token )";
+            VALUES ('$password','$firstName','$midName', '$lastName', '$role', '$contactNumber', '$email', '$address', $token )";
 
     try {
         if (mysqli_query($conn, $sql)) {
@@ -143,7 +143,7 @@ if (isset($_POST['submit'])) {
             
         echo '<script>
         // Call showToast with "success" message type after successful insertion
-        showToast("success", "Default password will be your Lastname@role. Insertion Successful!");
+        showToast("success", "Default password will be your Lastname@role.");
     </script>';
 
             // Redirect the user back to the same page
@@ -177,7 +177,7 @@ if (isset($_POST['submit'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Dashboard</title>
+    <title>Manage Staff</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -351,14 +351,14 @@ if (isset($_POST['submit'])) {
                     <div class="mb-3">
                         <label for="empFirstName" class="form-label">First Name</label>
                         <input type="text" class="form-control" id="empFirstName" name="empFirstName" required>
+                    </div> 
+                    <div class="mb-3">
+                        <label for="midName" class="form-label">Middle Initial</label>
+                        <input type="text" class="form-control" id="midName" name="midName">
                     </div>
                     <div class="mb-3">
                         <label for="empLastName" class="form-label">Last Name</label>
                         <input type="text" class="form-control" id="empLastName" name="empLastName" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="midName" class="form-label">Middle Name</label>
-                        <input type="text" class="form-control" id="midName" name="midName" required>
                     </div>
                     <div class="mb-3">
                         <label for="empRole" class="form-label">Role</label>
@@ -393,6 +393,25 @@ if (isset($_POST['submit'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
 
 <script>
+    // JavaScript code for search functionality
+    document.getElementById("searchInput").addEventListener("input", function() {
+            let searchValue = this.value.toLowerCase();
+            let rows = document.querySelectorAll("tbody tr");
+            rows.forEach(row => {
+                let cells = row.querySelectorAll("td");
+                let found = false;
+                cells.forEach(cell => {
+                    if (cell.textContent.toLowerCase().includes(searchValue)) {
+                        found = true;
+                    }
+                });
+                if (found) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
 
  function openEmployeeModal() {
         $('#employeeModal').modal('show');

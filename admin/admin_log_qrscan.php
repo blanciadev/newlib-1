@@ -118,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
        
     echo '<script>
         // Call showToast with "success" message type after successful insertion
-        showToast("error", "A log entry for this borrower already exists for today.");
+        showToast("error", "A log entry already exists for today.");
         </script>';
 
 
@@ -140,7 +140,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
                     // echo '<script>alert("Record inserted successfully."); window.location.href = "staff_log.php";</script>';
                              echo '<script>
                         // Call showToast with "success" message type after successful insertion
-                        showToast("success", "Image Updated successfully.");
+                        showToast("success", "Log Recorded");
                         // Redirect to this page after 3 seconds
                         redirectToPage("admin_log.php", 3000);
                     </script>';
@@ -154,7 +154,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
                 // $errorMessage = "Invalid Borrower ID.";
                    echo '<script>
         // Call showToast with "success" message type after successful insertion
-        showToast("error", "Invalid Borrower ID");
+        showToast("error", "Invalid ID");
         </script>';
 
             }
@@ -175,7 +175,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Dashboard</title>
+    <title>Scan Visitor Card</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -254,92 +254,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
         align-items: center;
     }
     #reader {
-        width: 600px;
+        width: 500px;
     }
     #result {
         text-align: center;
         font-size: 1.5rem;
     }
 </style>
-
-<main>
-    <div id="reader"></div>
-    <div id="result"></div>
-</main>
-
-    <div id="statusMessage"></div>
-
-    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-        <label for="borrower_id">Enter Borrower ID:</label>
-        <input type="text" id="borrower_id" name="borrower_id">
-        <button type="submit">Submit</button>
-        
-    </form>
-
-
-<?php if (!empty($errorMessage)): ?>
-    <div class="alert alert-danger" role="alert">
-        <?php echo $errorMessage; ?>
-    </div>
-<?php endif; ?>
-
-
-   <?php
-
-  // Database connection
-  $conn_display_all = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); 
-  if ($conn_display_all->connect_error) {
-      die("Connection failed: " . $conn_display_all->connect_error);
-  }
-  
-  // SQL query to select all records from tbl_borrower and tbl_log
-  $sql_display_all = "SELECT tbl_borrower.*, tbl_log.* FROM tbl_borrower INNER JOIN tbl_log ON tbl_borrower.Borrower_ID = tbl_log.Borrower_ID";
-  $result_display_all = $conn_display_all->query($sql_display_all);
-
-  // Close display connection
-  $conn_display_all->close();
-  ?>
-  
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+    <div class="board1 container-fluid"><!--board container-->
+        <div class="header1">
+            <div class="text">
+                <div class="back-btn">
+                    <a href="./staff_log.php"><i class='bx bx-arrow-back'></i></a>
+                </div>
+                <div class="title">
+                    <h2>Scan Visitor Card</h2>
+                </div>
+            </div>
+        </div>
+        <div class="books container-fluid">
+            <div class="container d-flex flex-column">
+                <main>
+                    <div id="reader"></div>
+                    <div id="result"></div>
+                </main>
  
-  <div class="container"> 
-  
-    <!-- Button to register visitor -->
-    <a href="staff_registerUser.php" class="btn btn-primary">Register Visitor</a>
-  
 
-    <h1>Borrower Logs</h1>
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Borrower ID</th>
-                    <th>Borrower Name</th>
-                    <th>Date & Time</th>
-                    <!-- Add more headers as needed -->
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                if ($result_display_all && $result_display_all->num_rows > 0) {
-                    while ($row = $result_display_all->fetch_assoc()) {
-                        echo "<tr>";
-                        echo "<td>" . $row['Borrower_ID'] . "</td>";
-                        echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
-                        echo "<td>" . $row['Date_Time'] . "</td>";
-                        // Add more columns as needed
-                        echo "</tr>";
-                    }
-                } else {
-                    echo "<tr><td colspan='3'>No records found.</td></tr>";
-                }
-                ?>
-            </tbody>
-        </table>
-
-</div>
-
-
-
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                    <label for="borrower_id">Or Enter Borrower ID:</label> 
+                    <input type="text" class="form-control" id="borrower_id" name="borrower_id" placeholder="Enter Borrower ID"> 
+                </form>
+            </div> 
+        </div>
     <!--Logout Modal -->
     <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">

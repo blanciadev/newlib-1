@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Dashboard</title>
+    <title>Search Book</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -126,27 +126,56 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </ul>
     </div>
 
-    <div class="board container">
-        <div class='books-container'>
-            <h1>Search Book by Accession Code</h1>
-
-            <form id="dataform" method="POST">
-                <label for="Accession_Code">Accession Code:</label>
-                <!-- Allow multiple Accession Codes -->
-                <input type="text" id="Accession_Code" name="Accession_Code[]" placeholder="Enter Accession Code" required onkeydown="return (event.keyCode !== 13);">
-
-                <!-- <button type="button" class="btn btn-primary" id="book_borrow">Retrieve Book</button> -->
-                <br><br>
-                <a id="checkoutBtn" class="btn btn-primary">Checkout</a>
-            <br>
-            </form>
-
-            <div class="board container">
-                <div class='books-container' id="bookDetailsContainer">
-                    <h1>Book Details</h1>
-                    <!-- Display book details will be added dynamically -->
-                    
+    <div class="board1 container-fluid"><!--board container-->
+        <div class="header1">
+            <div class="text">
+                <div class="back-btn">
+                    <a href="./staff_borrow_dash.php"><i class='bx bx-arrow-back'></i></a>
                 </div>
+                <div class="title">
+                    <h2>Search Book</h2>
+                </div>
+                <!-- Add the book cart icon and badge -->
+                <div class="book-cart">
+                    <i class='bx bx-cart-alt'></i>
+                    <span class="badge bg-secondary" id="bookCartBadge">0</span>
+                </div>
+            </div>
+        </div>
+        <div class='books container'>
+            
+            <form id="dataform" method="POST">
+
+            <label for="Accession_Code">Accession Code:</label>
+            <input type="text" id="Accession_Code" name="Accession_Code[]" placeholder="Enter Accession Code">
+<!-- 
+            <label for="Book_Title">Book Title:</label>
+            <input type="text" id="Book_Title" name="Book_Title" placeholder="Enter Book Title"> -->
+            <div class="container">
+                <h3>Search Results</h3>
+                <div class='bookSearchResult container' id="bookDetailsContainer">
+                    <!-- Display book details will be added dynamically -->
+                </div>
+            </div>
+            
+            <a id="checkoutBtn" class="btn btn-primary">Checkout</a> 
+        </div>
+            </form>
+    </div>
+    <!--Logout Modal -->
+    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+            </div>
+            <div class="modal-body">
+                Do you want to log out?
+            </div>
+            <div class="modal-footer d-flex flex-row justify-content-center">
+                <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+            </div>
             </div>
         </div>
     </div>

@@ -338,8 +338,18 @@ $conn->close();
     </div>
 
 
-    <div class="container"><!--main container-->
-        <div class="books-container">
+    <div class="board1 container-fluid"><!--board container-->
+        <div class="header1">
+            <div class="text">
+                <div class="back-btn">
+                    <a href="./staff_book_borrow_find.php"><i class='bx bx-arrow-back'></i></a>
+                </div>
+                <div class="title">
+                    <h2>Borrow Process</h2>
+                </div>
+            </div>
+        </div>
+        <div class="books container-fluid">
             <div class="header1">
                 <!-- Header content -->
                 <h2 class="mb-4">Book Borrow Process</h2>
@@ -347,41 +357,41 @@ $conn->close();
 
             <form method="POST" action="">
                 <?php
-                // Retrieve book details from the database
-                $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
-            FROM tbl_books
-            INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
-            WHERE tbl_books.Accession_Code IN ($bookAccessionCodesStr)";
-                $result = $conn->query($sql);
+                    // Retrieve book details from the database
+                    $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
+                            FROM tbl_books
+                            INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
+                            WHERE tbl_books.Accession_Code IN ($bookAccessionCodesStr)";
+                    $result = $conn->query($sql);
 
-                // Check if the result set is not empty
-                if ($result && $result->num_rows > 0) {
-                    // Fetch each row from the result set
-                    while ($row = $result->fetch_assoc()) {
+                    // Check if the result set is not empty
+                    if ($result && $result->num_rows > 0) {
+                        // Fetch each row from the result set
+                        while ($row = $result->fetch_assoc()) {
                 ?>
-                        <div class="card mb-4" style="width: 500px">
-                            <div class="card-body">
-                                <h5 class="card-title"><strong>Title:</strong> <?php echo $row['Book_Title']; ?></h5>
-                                <p class="card-text"><strong>Author:</strong> <?php echo $row['Authors_Name']; ?></p>
-                                <p class="card-text"><strong>Availability:</strong> <?php echo $row['Quantity']; ?></p>
-                                <div class="mb-3">
-                                    <label for="quantity" class="form-label">Quantity:</label>
-                                    <!-- Input field for quantity with max attribute set to available quantity -->
-                                    <input type="number" id="quantity" name="quantity[]" min="1" max="<?php echo $row['Quantity']; ?>" value="1" readonly class="form-control form-control-sm">
-                                    <!-- Hidden input field to store the book ID or accession code for processing -->
-                                    <input type="hidden" name="accession_code[]" value="<?php echo $row['Accession_Code']; ?>">
+                            <div class="card mb-4" style="width: 500px">
+                                <div class="card-body">
+                                    <h5 class="card-title"><strong>Title:</strong> <?php echo $row['Book_Title']; ?></h5>
+                                    <p class="card-text"><strong>Author:</strong> <?php echo $row['Authors_Name']; ?></p>
+                                    <p class="card-text"><strong>Availability:</strong> <?php echo $row['Quantity']; ?></p>
+                                    <div class="mb-3">
+                                        <label for="quantity" class="form-label"><strong>Quantity:</strong></label>
+                                        <!-- Input field for quantity with max attribute set to available quantity -->
+                                        <input type="number" id="quantity" name="quantity[]" min="1" max="<?php echo $row['Quantity']; ?>" value="1" readonly>
+                                        <!-- Hidden input field to store the book ID or accession code for processing -->
+                                        <input type="hidden" name="accession_code[]" value="<?php echo $row['Accession_Code']; ?>">
+                                    </div>
+                                    <p class="card-text"><strong>Date Today:</strong> <?php echo $currentDate; ?></p>
                                 </div>
-                                <p class="card-text"><strong>Date Today:</strong> <?php echo $currentDate; ?></p>
                             </div>
-                        </div>
-                    <?php
-                    }
-                    ?>
-                    <div class="mb-3" style="width: 200px;">
-                        <label for="due_date" class="form-label">Date Return:</label>
-                        <!-- Datepicker input field -->
-                        <input type="text" name="due_date" id="due_date" class="form-control" required>
-                    </div>
+                <?php
+                        }
+                ?>
+                <div class="mb-3" style="width: 200px;">
+                    <label for="due_date" class="form-label">Select Due Date:</label>
+                    <!-- Datepicker input field -->
+                    <input type="text" name="due_date" id="due_date" class="form-control" required>
+                </div>
 
                 <?php
                 } else {
@@ -406,10 +416,41 @@ $conn->close();
                 <!-- Submit and cancel buttons -->
                 <div class="mb-3">
                     <button type="submit" class="btn btn-primary me-2" id="submit" name="submit">Submit</button>
-                    <a href="admin_book_borrow_dash.php" class="btn btn-secondary">Cancel</a>
+                    <a href="staff_return.php" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>
+        </div> 
+    </div>
+    
+    <!--Logout Modal -->
+    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+                </div>
+                <div class="modal-body">
+                    Do you want to log out?
+                </div>
+                <div class="modal-footer d-flex flex-row justify-content-center">
+                    <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                    <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <div class="toastNotif" class="hide">
+        <div class="toast-content">
+            <i class='bx bx-check check'></i>
+
+            <div class="message">
+                <span class="text text-1">Success</span><!-- this message can be changed to "Success" and "Error"-->
+                <span class="text text-2"></span> <!-- specify based on the if-else statements -->
+            </div>
+        </div>
+        <i class='bx bx-x close'></i>
+        <div class="progress"></div>
     </div>
 
     <script>

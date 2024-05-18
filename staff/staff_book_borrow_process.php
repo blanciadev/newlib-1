@@ -405,8 +405,7 @@ function closeToast() {
                     <a href="staff_return.php" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>
-        </div>
-        <button class="btn btn-success showToast">Show Toast</button>
+        </div> 
     </div>
     
     <!--Logout Modal -->

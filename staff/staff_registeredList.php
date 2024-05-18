@@ -138,7 +138,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                             echo "<td>" . $row['Contact_Number'] . "</td>";
                             echo "<td>" . $row['Email'] . "</td>";
                             echo "<td>" . $row['affiliation'] . "</td>";
-                            echo "<td><button type='button' class='btn borrower-edit-btn' data-bs-toggle='modal' data-bs-target='#BorrowerModal' data-borrower-id='" . $row['Borrower_ID'] . "'>Edit</button></td>";
+                            echo "<td><button type='button' class='btn borrower-edit-btn' data-bs-toggle='modal' data-bs-target='#BorrowerModal' data-borrower-id='" . $row['Borrower_ID'] . "'><i class='bx bxs-edit'></button></td>";
                             echo "<input type='hidden' id='borrowerID' name='borrowerID' value='" . $row['Borrower_ID'] . "'>";
 
                             echo "</tr>";

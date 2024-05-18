@@ -67,8 +67,7 @@ while ($row = $result->fetch_assoc()) {
         <td>" . $row["tb_edition"] . "</td>
         <td>" . $row["Year_Published"] . "</td> 
         <td>" . $row["Quantity"] . "</td>
-        <td>" . $row["Price"] . "</td>
-        <td>" . $row["tb_status"] . "</td>
+        <td>" . $row["Price"] . "</td> 
         <td>";
 
     if ($row["tb_status"] != 'Archived') {
