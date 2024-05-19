@@ -274,6 +274,9 @@ $result = $conn->query($sql);
         .toastNotif.show {
             display: block;
         }
+        #bookTable {
+    margin-top: 25px;
+}
     </style>
 </head>
 
@@ -322,12 +325,16 @@ $result = $conn->query($sql);
         </ul>
     </div>
     <div class="board container-fluid"><!--board container-->
+    
         <div class="header1">
+            
             <div class="text">
+                
                 <div class="title">
                     <h2>Books</h2>
                 </div>
                 <div class="form-group">
+                    
                     <form id="statusFilterForm" method="GET" action="admin_books.php">
                         <select id="statusFilter" name="status" class="form-select mb-3">
                             <option value="Available" <?php echo $status == 'Available' ? 'selected' : ''; ?>>Available</option>
@@ -335,15 +342,20 @@ $result = $conn->query($sql);
                             <option value="Request" <?php echo $status == 'Request' ? 'selected' : ''; ?>>Request</option>
                         </select>
                     </form>
-                </div>
-
-            </div>
-            <div class="searchbar">
+                    <div class="searchbar">
                 <form action="">
                     <i class='bx bx-search' id="search-icon"></i>
-                    <input type="search" id="searchInput" placeholder="Search..." required>
+                    <input type="search" id="searchInput"  placeholder="Search..." required>
+                    
                 </form>
-            </div><br>
+            </div>
+            <br>
+                </div>
+                
+
+            </div>
+            
+         
         </div>
         <div class="table-responsive" id="bookTable">
            
@@ -548,6 +560,31 @@ if ($status === 'Request') {
 
 
     <script>
+
+ // JavaScript code for search functionality
+ document.getElementById("searchInput").addEventListener("input", function() {
+            let searchValue = this.value.toLowerCase();
+            let rows = document.querySelectorAll("tbody tr");
+            rows.forEach(row => {
+                let cells = row.querySelectorAll("td");
+                let found = false;
+                cells.forEach(cell => {
+                    if (cell.textContent.toLowerCase().includes(searchValue)) {
+                        found = true;
+                    }
+                });
+                if (found) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        });
+
+
+
+
+
         function setAction(action) {
             document.getElementById('action').value = action;
             console.log('Action set to:', action);
