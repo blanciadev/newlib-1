@@ -154,9 +154,11 @@ if ($isBorrowerIdValid) {
                 </main>
  
 
-                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
-                    <label for="borrower_id">Or Enter Borrower ID:</label> 
-                    <input type="text" class="form-control" id="borrower_id" name="borrower_id" placeholder="Enter Borrower ID"> 
+                <form id="borrowForm" action="" method="post">
+    <div class="mb-3">
+        <label for="borrowerIdInput" class="form-label">Or Enter Borrower ID</label>
+        <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
+    </div> 
                 </form>
             </div> 
         </div> 
