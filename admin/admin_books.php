@@ -343,12 +343,15 @@ $result = $conn->query($sql);
                         </select>
                     </form>
                     <div class="searchbar">
-                <form action="">
-                    <i class='bx bx-search' id="search-icon"></i>
-                    <input type="search" id="searchInput"  placeholder="Search..." required>
-                    
-                </form>
-            </div>
+            <form action="" class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="search-icon">
+                        <i class='bx bx-search'></i>
+                    </span>
+                </div>
+                <input type="search" id="searchInput" class="form-control" placeholder="Search..." required>
+            </form>
+        </div>
             <br>
                 </div>
                 
@@ -392,9 +395,9 @@ if ($status === 'Request') {
                 <td></td>
                 <td>' . $row["Book_Title"] . '</td>
                 <td>' . $row["Authors_Name"] . '</td>
-                <td>' . $row["Publisher_Name"] . '</td> 
+                <td>' . $row["Publisher_Name"] . '</td>  <td></td> <td></td>
                 <td>' . $row["tb_edition"] . '</td>
-                <td>' . $row["Year_Published"] . '</td> 
+                <td>' . $row["Year_Published"] . '</td>  <td></td> <td></td>
                 <td>' . $row["Quantity"] . '</td>
                 <td>' . $row["price"] . '</td>
                 <td>' . $row["tb_status"] . '</td>
