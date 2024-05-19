@@ -17,6 +17,7 @@
     border-left: 6px solid red;
 }
 
+
 .toastNotif.showing {
     transform: translateX(0%);
 }
