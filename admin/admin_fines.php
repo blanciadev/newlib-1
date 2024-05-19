@@ -241,21 +241,18 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                                 if ($dateBorrowed > $earliestDate) {
                                     $earliestDate = $dateBorrowed;
                                 } 
-                                
-                                echo '<tr>';
-                                echo '<td>' . $row['Borrower_ID'] . '</td>';  
-                                echo '<td>' . $row['Accession_Code'] . ' - ' . $row['Book_Title'] . '</td>'; 
-                                echo '<td>' . $row['Quantity'] . '</td>'; 
-                                echo '<td>' . $row['Date_Borrowed'] . '</td>'; 
-                                echo '<td>' . $row['Due_Date'] . '</td>';   
-                                // Check if the Amount is not equal to 0 before displaying it
-    if ($row['Amount'] != 0) {
-        echo '<td>' . $row['Amount'] . '</td>'; 
-    } else {
-        echo '<td> None </td>'; // Display an empty cell if Amount is 0
-    }
-                                echo '<td>' . $row['tb_status'] . '</td>'; 
-                                echo '</tr>';
+                                if ($row['Amount'] != 0) { 
+                                    echo '<tr>';
+                                    echo '<td>' . $row['Borrower_ID'] . '</td>';  
+                                    echo '<td>' . $row['Accession_Code'] . ' - ' . $row['Book_Title'] . '</td>'; 
+                                    echo '<td>' . $row['Quantity'] . '</td>'; 
+                                    echo '<td>' . $row['Date_Borrowed'] . '</td>'; 
+                                    echo '<td>' . $row['Due_Date'] . '</td>';   
+                                    echo '<td>' . $row['Amount'] . '</td>'; 
+        
+                                    echo '<td>' . $row['tb_status'] . '</td>'; 
+                                    echo '</tr>';
+                                }
                             }
                         ?>
                     </tbody>
