@@ -88,15 +88,14 @@ if ($isBorrowerIdValid) {
                     FROM tbl_employee 
                     WHERE User_ID = $userID";
             $result = mysqli_query($conn, $sql);
-            if (!$result) {
-                echo "Error: " . mysqli_error($conn);
-            } else {
-                $userData = mysqli_fetch_assoc($result);
-            // Fetch the First_Name from $userData
-    $firstName = $userData['First_Name'];
-    $role = $userData['tb_role'];
-
-            }
+                if (!$result) {
+                    echo "Error: " . mysqli_error($conn);
+                } else {
+                    $userData = mysqli_fetch_assoc($result);
+                // Fetch the First_Name from $userData
+                $firstName = $userData['First_Name'];
+                $role = $userData['tb_role']; 
+                }
             ?>
             <?php if (!empty($userData['image_data'])): ?>
                 <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
@@ -106,8 +105,8 @@ if ($isBorrowerIdValid) {
                 <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
             <strong><span><?php echo  $firstName . "<br/>" .  $role; ?></span></strong>
-    </div>
-    <hr>
+        </div>
+        <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
         <li class="nav-item"> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
@@ -119,9 +118,7 @@ if ($isBorrowerIdValid) {
             <hr>
             <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
             <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
-        </ul>
-        
-        
+        </ul> 
     </div>
     <div class="board1 container"><!--board container--> 
     <div class="header1">
@@ -133,140 +130,116 @@ if ($isBorrowerIdValid) {
                     <h2>Scan Borrower</h2>
                 </div>
             </div> 
-        </div>
-            
-            
+        </div>      
     <style>
-    main {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    #reader {
-        width: 500px;
-    }
-    #result {
-        text-align: center;
-        font-size: 1.5rem;
-    }
-</style>
-
-<div class="books container">
-        <main>
-            <div id="reader"></div>
-            <div id="result"></div>
-        </main>
-
-        <div id="statusMessage"></div>
-
-<form id="borrowForm" action="" method="post">
-    <div class="mb-3">
-        <label for="borrowerIdInput" class="form-label">Borrower ID</label>
-        <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
-    </div> 
-</form>
-
-    </div>
-
-
-
-
-<script>
-    const scanner = new Html5QrcodeScanner('reader', { 
-        // Scanner will be initialized in DOM inside element with id of 'reader'
-        qrbox: {
-            width: 250,
-            height: 250,
-        },  // Sets dimensions of scanning box (set relative to reader element width)
-        fps: 20, // Frames per second to attempt a scan
-    });
-
-
-    scanner.render(success, error);
-    // Starts scanner
-
-    function success(result) {
-    // Set the scanned result as the value of the input field
-    document.getElementById('borrowerIdInput').value = result;
-
-    // Clear the scanning instance
-    scanner.clear();
-
-    // Remove the reader element from the DOM since it's no longer needed
-    document.getElementById('reader').remove();
-}
-
-
-    function error(err) {
-      //  console.error(err);
-        // Prints any errors to the console
-    }
-
-</script>
-
-
-
-
-
-<script>
-    function redirectToBorrowDetails(borrowId) {
-        window.location.href = "admin_book_borrow_find.php?borrowId=" + borrowId;
-    }
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    console.log("DOMContentLoaded event fired.");
-
-    var borrowForm = document.getElementById("borrowForm");
-    var borrowerIdInput = document.getElementById("borrowerIdInput");
-    var bookBorrowButton = document.getElementById("book_borrow");
-
-    // Function to check if the input field has a value and submit the form accordingly
-    function checkAndSubmitForm() {
-        // Check if the input field has a value
-        if (borrowerIdInput.value.trim() !== "") {
-            console.log("Input field has a value. Submitting form.");
-            borrowForm.submit(); // Submit the form
-        } else {
-            console.log("Input field is empty.");
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-    }
-
-    // Check and submit the form every 5 seconds
-    setInterval(checkAndSubmitForm, 5000);
-
-    // Add an input event listener to the Borrower ID input field
-    borrowerIdInput.addEventListener("input", function () {
-        console.log("Input event triggered.");
-        // Enable the button if there is input in the Borrower ID field
-        if (borrowerIdInput.value.trim() !== "") {
-            console.log("Enabling button.");
-            bookBorrowButton.removeAttribute("disabled");
-        } else {
-            console.log("Disabling button.");
-            // Otherwise, disable the button
-            bookBorrowButton.setAttribute("disabled", "disabled");
+        #reader {
+            width: 500px;
         }
-    });
-
-    // Automatically submit the form when a value is present in the Borrower ID field
-    borrowerIdInput.addEventListener("change", function () {
-        console.log("Change event triggered.");
-        if (borrowerIdInput.value.trim() !== "") {
-            console.log("Submitting form.");
-            borrowForm.submit();
+        #result {
+            text-align: center;
+            font-size: 1.5rem;
         }
-    });
-});
-</script>
+    </style>
 
+        <div class="books container-fluid">
+            <div class="container d-flex flex-column">
+                <main>
+                    <div id="reader"></div>
+                    <div id="result"></div>
+                </main>
+ 
 
-
-
-
+                <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+                    <label for="borrower_id">Or Enter Borrower ID:</label> 
+                    <input type="text" class="form-control" id="borrower_id" name="borrower_id" placeholder="Enter Borrower ID"> 
+                </form>
+            </div> 
+        </div> 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-    <script> 
+    <script>
+        const scanner = new Html5QrcodeScanner('reader', { 
+            // Scanner will be initialized in DOM inside element with id of 'reader'
+            qrbox: {
+                width: 250,
+                height: 250,
+            },  // Sets dimensions of scanning box (set relative to reader element width)
+            fps: 20, // Frames per second to attempt a scan
+        });
+
+
+        scanner.render(success, error);
+        // Starts scanner
+
+        function success(result) {
+            // Set the scanned result as the value of the input field
+            document.getElementById('borrowerIdInput').value = result;
+
+            // Clear the scanning instance
+            scanner.clear();
+
+            // Remove the reader element from the DOM since it's no longer needed
+            document.getElementById('reader').remove();
+        }
+ 
+        function error(err) {
+        //  console.error(err);
+            // Prints any errors to the console
+        }
+
+        function redirectToBorrowDetails(borrowId) {
+            window.location.href = "admin_book_borrow_find.php?borrowId=" + borrowId;
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("DOMContentLoaded event fired.");
+
+            var borrowForm = document.getElementById("borrowForm");
+            var borrowerIdInput = document.getElementById("borrowerIdInput");
+            var bookBorrowButton = document.getElementById("book_borrow");
+
+            // Function to check if the input field has a value and submit the form accordingly
+            function checkAndSubmitForm() {
+                // Check if the input field has a value
+                if (borrowerIdInput.value.trim() !== "") {
+                    console.log("Input field has a value. Submitting form.");
+                    borrowForm.submit(); // Submit the form
+                } else {
+                    console.log("Input field is empty.");
+                }
+            }
+
+            // Check and submit the form every 5 seconds
+            setInterval(checkAndSubmitForm, 5000);
+
+            // Add an input event listener to the Borrower ID input field
+            borrowerIdInput.addEventListener("input", function () {
+                console.log("Input event triggered.");
+                // Enable the button if there is input in the Borrower ID field
+                if (borrowerIdInput.value.trim() !== "") {
+                    console.log("Enabling button.");
+                    bookBorrowButton.removeAttribute("disabled");
+                } else {
+                    console.log("Disabling button.");
+                    // Otherwise, disable the button
+                    bookBorrowButton.setAttribute("disabled", "disabled");
+                }
+            });
+
+            // Automatically submit the form when a value is present in the Borrower ID field
+            borrowerIdInput.addEventListener("change", function () {
+                console.log("Change event triggered.");
+                if (borrowerIdInput.value.trim() !== "") {
+                    console.log("Submitting form.");
+                    borrowForm.submit();
+                }
+            });
+        });
+
         let date = new Date().toLocaleDateString('en-US', {  
             day:   'numeric',
             month: 'long',
@@ -285,21 +258,8 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("currentTime").innerText = time; 
 
         }, 1000)
-        
+    </script> 
 
-        let navItems = document.querySelectorAll(".nav-item");  //adding .active class to navitems 
-        navItems.forEach(item => {
-            item.addEventListener('click', ()=> { 
-                document.querySelector('.active')?.classList.remove('active');
-                item.classList.add('active');
-                
-                
-            })
-            
-        })
-     
-
-
-    </script>
+    
 </body>
 </html>

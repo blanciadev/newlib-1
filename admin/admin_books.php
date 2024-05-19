@@ -351,143 +351,9 @@ $result = $conn->query($sql);
                         </tr>
                     </thead>
                     <tbody id="bookTableBody"> -->
-                    <?php
-
-                        $recordsPerPage = 4;
-                        $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-                        $sqlCount = "SELECT COUNT(*) AS totalRecords FROM tbl_books WHERE tb_status = '$status'";
-                        $resultCount = $conn->query($sqlCount);
-                        $totalRecords = $resultCount->fetch_assoc()['totalRecords'];
-                        $totalPages = ceil($totalRecords / $recordsPerPage);
-                        $offset = ($page - 1) * $recordsPerPage;
-                        $tableHTML = '';
-
-                        if ($status === 'Request') {
-                            $sql = "SELECT tbl_requestbooks.* FROM tbl_requestbooks ORDER BY CASE WHEN 
-                            tb_status = 'Pending' THEN 0 ELSE 1 END, Request_ID LIMIT $offset, $recordsPerPage";
-                            $result = $conn->query($sql);
-                            if ($result->num_rows > 0) {
-                                $tableHTML = '<table class="table table-hover table-sm">
-                                    <thead class="bg-light sticky-top">
-                                        <tr>
-                                            <th style="width: 5%;">#</th>
-                                            <th style="width: 15%;">Book Title</th>
-                                            <th style="width: 10%;">Authors</th>
-                                            <th style="width: 10%;">Publisher</th> 
-                                            <th style="width: 5%;">Edition</th> 
-                                            <th style="width: 5%;">Year Published</th> 
-                                            <th style="width: 5%;">Quantity</th>
-                                            <th style="width: 5%;">Price</th>
-                                            <th style="width: 5%;">Status</th>
-                                            <th style="width: 5%;">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>';
-
-                                    while ($row = $result->fetch_assoc()) {
-                                        $tableHTML .= '<tr>
-                                            <td></td>
-                                            <td>' . $row["Book_Title"] . '</td>
-                                            <td>' . $row["Authors_Name"] . '</td>
-                                            <td>' . $row["Publisher_Name"] . '</td> 
-                                            <td>' . $row["tb_edition"] . '</td>
-                                            <td>' . $row["Year_Published"] . '</td> 
-                                            <td>' . $row["Quantity"] . '</td>
-                                            <td>' . $row["price"] . '</td>
-                                            <td>' . $row["tb_status"] . '</td>
-                                            <td>';
-                                            if ($row["tb_status"] === "Approved") {
-                                                $tableHTML .= "<button type='button' class='btn btn-secondary' disabled>Process</button>";
-                                            } else {
-                                                $tableHTML .= "<a href='process_data_book.php?id=" . $row["Request_ID"] . "' class='btn btn-primary'>Process</a>";
-                                            }
-
-                                                $tableHTML .= '</td> </tr>';
-                                    }
-
-                                    $tableHTML .= "</tbody></table>";
-                                            
-                                } else {
-                                    $tableHTML = "No books found.";
-                                }
-
-    
-    } else {
-                $sql = "SELECT
-        tbl_books.Accession_Code,   tbl_books.Book_Title, 
-        tbl_books.Authors_ID, tbl_books.Publisher_Name, 
-        tbl_books.Section_Code,  tbl_books.shelf, 
-        tbl_books.tb_edition,   tbl_books.Year_Published, 
-        tbl_books.ISBN,  tbl_books.Bibliography, 
-        tbl_books.Quantity,  tbl_books.tb_status, 
-        tbl_books.Price,  tbl_section.Section_uid, 
-        tbl_section.Section_Name,  tbl_section.Section_Code, 
-        tbl_authors.Authors_Name
-    FROM
-        tbl_books
-    INNER JOIN
-        tbl_section ON tbl_books.Section_Code = tbl_section.Section_uid
-    INNER JOIN
-        tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID
-    WHERE
-        tbl_books.tb_status = '$status'
-    LIMIT $offset, $recordsPerPage";
-                $result = $conn->query($sql);
-                echo '<table class="table table-hover">
-        <thead class="bg-light sticky-top">
-            <tr>
-                <th style="width: 10%;">Accession Code</th><th style="width: 15%;">Book Title</th>
-                <th style="width: 10%;">Authors</th><th style="width: 10%;">Publisher</th>
-                <th style="width: 10%;">Section</th> <th style="width: 5%;">Shelf #</th>
-                <th style="width: 5%;">Edition</th> <th style="width: 5%;">Year Published</th>
-                <th style="width: 10%;">ISBN</th><th style="width: 10%;">Bibliography</th>
-                <th style="width: 5%;">Quantity</th> <th style="width: 5%;">Price</th>
-                <th style="width: 5%;">Status</th> <th style="width: 5%;">Action</th>
-        </tr>
-    </thead>
-    <tbody>';
-
-                while ($row = $result->fetch_assoc()) {
-                    $tableHTML .= '<tr>
-        <td>' . $row['Accession_Code'] . '</td>
-        <td>' . $row['Book_Title'] . '</td>
-        <td>' . $row['Authors_Name'] . '</td>
-        <td>' . $row['Publisher_Name'] . '</td>
-        <td>' . $row['Section_Name'] . '</td>
-        <td>' . $row['shelf'] . '</td>
-        <td>' . $row['tb_edition'] . '</td>
-        <td>' . $row['Year_Published'] . '</td>
-        <td>' . $row['ISBN'] . '</td>
-        <td>' . $row['Bibliography'] . '</td>
-        <td>' . $row['Quantity'] . '</td>
-        <td>' . $row['Price'] . '</td>
-        <td>' . $row['tb_status'] . '</td>
-        <td>';
-
-                    if ($row['tb_status'] == 'Available') {
-                        $tableHTML .= '<button type="button" class="btn btn-primary btn-sm archive-btn" data-bs-toggle="modal" data-bs-target="#archiveModal" data-accession-code="' . $row['Accession_Code'] . '">Archive</button>';
-                    }
-                    $tableHTML .= '</td>
-                    </tr>';
-                }
-            }
-
-            $tableHTML .= '</tbody>
-    </table>';
-
-            echo $tableHTML;
-
-                    // Add pagination links
-                    echo '<div class="d-flex justify-content-center">
-            <ul class="pagination">';
-                    for ($i = 1; $i <= $totalPages; $i++) {
-                        echo '<li class="page-item ' . ($page == $i ? 'active' : '') . '"><a class="page-link" href="?status=' . $status . '&page=' . $i . '">' . $i . '</a></li>';
-                    }
-                    echo '</ul>
-        </div>';
-            ?>
-        </div>  </div>
-        </div> 
+                     
+            </div>  
+        </div>  
         <div class="btn-con">
             <a href="./admin_bookCatalog.php" class="btn btn-secondary">Catalog</a>
             <a href="./admin_addBook.php" class="btn btn-success">Add New Book</a>
@@ -501,7 +367,7 @@ $result = $conn->query($sql);
 
 
     <div id="archiveModal" class="modal fade" tabindex="-1" aria-labelledby="archiveModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="archiveModalLabel">Archive Book</h5>

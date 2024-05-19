@@ -270,7 +270,7 @@ li.nav-item.active {
     grid-row-end: 2;
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: space-evenly;
     align-content: space-around; 
 }
@@ -281,7 +281,7 @@ li.nav-item.active {
     grid-row-end: 2;
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: space-evenly;
     align-content: space-around; 
 }
@@ -296,7 +296,7 @@ li.nav-item.active {
     padding: 10px;
 }
 .ovw-con > .overview-item{
-    width: 99%;
+    width: 97%;
     display: flex;
     flex-wrap: wrap;
     flex-direction: row;
@@ -318,6 +318,15 @@ li.nav-item.active {
 .line{
     border-left: 2px solid rgba(122, 122, 122, 0.39) ;
     height: 95%;
+}
+.buttons{
+    width: 98%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: space-around;
+    align-items: center;
 }
 .request-books {
     grid-column-start: -1;

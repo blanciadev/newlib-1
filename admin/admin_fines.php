@@ -163,8 +163,9 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                             <th scope="col">Quantity</th>
                             <th scope="col">Date Borrowed</th>
                             <th scope="col">Due Date</th>
-                            <!-- <th scope="col">Date Returned</th> -->
                             <th scope="col">Fine Amount</th>
+                            <th scope="col" >Reason</th> 
+                            <!-- <th scope="col">Date Returned</th> -->
                             <th scope="col">Status</th>
                         </tr>
                     </thead>
@@ -198,7 +199,8 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                             bk.Book_Title, 
                             b.Date_Borrowed, 
                             b.Due_Date, 
-                            tbl_fines.Amount, 
+                            tbl_fines.Amount,
+                            tbl_fines.Reason, 
                             b.Borrower_ID, 
                             tbl_borrowdetails.tb_status, 
                             tbl_borrowdetails.Quantity
@@ -225,22 +227,8 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                             ";
                             
                             $result = mysqli_query($conn, $query);
-                            // Initialize variables to store oldest and earliest dates
-                            $oldestDate = PHP_INT_MAX;
-                            $earliestDate = PHP_INT_MIN;
-    
                             // Loop through each row in the result set
-                            while ($row = mysqli_fetch_assoc($result)) {
-                                $dateBorrowed = strtotime($row['Date_Borrowed']);
-                                // Check if the current date is older than the oldestDate
-                                if ($dateBorrowed < $oldestDate) {
-                                    $oldestDate = $dateBorrowed;
-                                }
-                                
-                                // Check if the current date is earlier than the earliestDate
-                                if ($dateBorrowed > $earliestDate) {
-                                    $earliestDate = $dateBorrowed;
-                                } 
+                            while ($row = mysqli_fetch_assoc($result)) { 
                                 if ($row['Amount'] != 0) { 
                                     echo '<tr>';
                                     echo '<td>' . $row['Borrower_ID'] . '</td>';  
@@ -249,7 +237,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                                     echo '<td>' . $row['Date_Borrowed'] . '</td>'; 
                                     echo '<td>' . $row['Due_Date'] . '</td>';   
                                     echo '<td>' . $row['Amount'] . '</td>'; 
-        
+                                    echo '<td>' . $row['Reason'] . '</td>';
                                     echo '<td>' . $row['tb_status'] . '</td>'; 
                                     echo '</tr>';
                                 }

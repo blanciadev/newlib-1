@@ -205,7 +205,7 @@ if (isset($_POST['submit'])) {
 
             <form id="bookForm" method="POST" action="">
                 <div class="mb-3">
-                    <label for="accessionCode" class="form-label">Custom Accession Code</label>
+                    <label for="accessionCode" class="form-label">Accession Code</label>
                     <input type="text" class="form-control" id="accessionCode" name="accessionCode" placeholder="You Can leave this field empty to generate unqiue Accession Code">
                 </div>
 
@@ -279,7 +279,7 @@ if (isset($_POST['submit'])) {
                         <input type="text" class="form-control" id="otherEdition" name="otherEdition">
                     </div>
 
-
+                </div>
                     <div class="mb-3">
                         <label for="year" class="form-label">Price</label>
                         <input type="text" class="form-control" id="price" name="price" required>
@@ -320,9 +320,7 @@ if (isset($_POST['submit'])) {
                     }
                     // Close connection
                     mysqli_close($conn);
-                    ?>
-
-
+                    ?> 
                     <br>
                     <div class="form-group">
                         <label for='shelf' class="form-label">Shelf Number:</label>
