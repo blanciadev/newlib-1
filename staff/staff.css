@@ -268,11 +268,12 @@ li.nav-item.active {
     grid-row-end: 2;
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
     justify-content: space-evenly;
-    align-items: flex-start;
+    align-content: space-around; 
 }
 .ovw-con{
-    width: 100%;
+    width: 97%;
     height: 75%;
     display: flex;
     align-items: center;

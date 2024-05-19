@@ -115,10 +115,10 @@ if ($isBorrowerIdValid) {
             <li class="nav-item"> <a href="./admin_staff.php" class="nav-link link-body-emphasis"><i class='bx bxs-user'></i>Manage Staff</a> </li>
             <li class="nav-item"> <a href="./admin_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
             <li class="nav-item"> <a href="./admin_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
-            <li class="nav-item"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-cloud'></i>Generate Report</a> </li>
+            <li class="nav-item"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-report'></i>Generate Report</a> </li>
             <hr>
             <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
         </ul>
         
         
@@ -143,7 +143,7 @@ if ($isBorrowerIdValid) {
         align-items: center;
     }
     #reader {
-        width: 600px;
+        width: 500px;
     }
     #result {
         text-align: center;
@@ -163,11 +163,7 @@ if ($isBorrowerIdValid) {
     <div class="mb-3">
         <label for="borrowerIdInput" class="form-label">Borrower ID</label>
         <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
-    </div>
-
-    <button type="submit" class="btn btn-primary" id="book_borrow" disabled>
-        Book Borrow
-    </button>
+    </div> 
 </form>
 
     </div>
