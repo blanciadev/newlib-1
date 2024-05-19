@@ -345,7 +345,7 @@ $result = $conn->query($sql);
                 </form>
             </div><br>
         </div>
-        <div class="table-responsive" id="bookTable">
+        <div class="books container-fluid" id="bookTable">  
            
            <?php
 
@@ -363,7 +363,7 @@ if ($status === 'Request') {
     tb_status = 'Pending' THEN 0 ELSE 1 END, Request_ID LIMIT $offset, $recordsPerPage";
     $result = $conn->query($sql);
     if ($result->num_rows > 0) {
-        $tableHTML = '<table class="table table-hover">
+        $tableHTML = '<table class="table table-hover table-sm">
             <thead class="bg-light sticky-top">
                 <tr>
                     <th style="width: 10%;">Accession Code</th><th style="width: 15%;">Book Title</th>
@@ -380,13 +380,9 @@ if ($status === 'Request') {
                 <td></td>
                 <td>' . $row["Book_Title"] . '</td>
                 <td>' . $row["Authors_Name"] . '</td>
-                <td>' . $row["Publisher_Name"] . '</td>
-                <td></td>
-                <td></td>
+                <td>' . $row["Publisher_Name"] . '</td> 
                 <td>' . $row["tb_edition"] . '</td>
-                <td>' . $row["Year_Published"] . '</td>
-                <td></td>
-                <td></td>
+                <td>' . $row["Year_Published"] . '</td> 
                 <td>' . $row["Quantity"] . '</td>
                 <td>' . $row["price"] . '</td>
                 <td>' . $row["tb_status"] . '</td>
@@ -435,8 +431,7 @@ if ($status === 'Request') {
                 <th style="width: 10%;">Accession Code</th><th style="width: 15%;">Book Title</th>
                 <th style="width: 10%;">Authors</th><th style="width: 10%;">Publisher</th>
                 <th style="width: 10%;">Section</th> <th style="width: 5%;">Shelf #</th>
-                <th style="width: 5%;">Edition</th> <th style="width: 5%;">Year Published</th>
-                <th style="width: 10%;">ISBN</th><th style="width: 10%;">Bibliography</th>
+                <th style="width: 5%;">Edition</th> <th style="width: 5%;">Year Published</th> 
                 <th style="width: 5%;">Quantity</th> <th style="width: 5%;">Price</th>
                 <th style="width: 5%;">Status</th> <th style="width: 5%;">Action</th>
         </tr>
@@ -452,9 +447,7 @@ if ($status === 'Request') {
         <td>' . $row['Section_Name'] . '</td>
         <td>' . $row['shelf'] . '</td>
         <td>' . $row['tb_edition'] . '</td>
-        <td>' . $row['Year_Published'] . '</td>
-        <td>' . $row['ISBN'] . '</td>
-        <td>' . $row['Bibliography'] . '</td>
+        <td>' . $row['Year_Published'] . '</td> 
         <td>' . $row['Quantity'] . '</td>
         <td>' . $row['Price'] . '</td>
         <td>' . $row['tb_status'] . '</td>
