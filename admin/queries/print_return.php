@@ -17,7 +17,7 @@ $quantity = $_SESSION['Quantity'];
 $borrowDetailsId = $_SESSION['BorrowDetails_ID'];
 $date = $_SESSION['Date_Borrowed'];
 $due = $_SESSION['Due_Date'];
-$stat = $_SESSION['stat'];
+$stat = "Resolved";
 
 echo '<script>';
 echo 'console.log("Fine is ' . $fine . '");';
