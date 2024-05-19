@@ -1,56 +1,251 @@
 <?php
 session_start();
+
 // Check if the User_ID session variable is not set or empty
 if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     // Redirect to index.php
     header("Location: ../index.php");
     exit(); // Ensure script execution stops after redirection
 }
+
 $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$sql ="UPDATE tbl_books
-SET tb_status = 'Unavailable'
-WHERE Quantity = 0;
-";
 
-if ($conn->query($sql) === TRUE) {
-    echo '<script>console.log("Quantity update to 0 ");</script>';
-}
 
-$sqlUpdate = "UPDATE tbl_books
-        SET tb_status = 'Available'
-        WHERE Quantity > 0 AND tb_status != 'Archived' AND tb_status = 'Unavailable'";
+// Define the HTML code for the toast element
+echo '<div class="toastNotif hide">
+ <div class="toast-content">
+     <i class="bx bx-check check"></i>
+     <div class="message">
+         <span class="text text-1"></span>
+         <!-- this message can be changed to "Success" and "Error"-->
+         <span class="text text-2"></span>
+         <!-- specify based on the if-else statements -->
+     </div>
+ </div>
+ <i class="bx bx-x close"></i>
+ <div class="progress"></div>
+</div>';
 
-if ($conn->query($sqlUpdate) === TRUE) {
-    echo '<script>console.log("Update to status to Avaialble");</script>';
-}
+// Define JavaScript functions to handle the toast
+echo '<script>
+ function showToast(type, message) {
+     var toast = document.querySelector(".toastNotif");
+     var progress = document.querySelector(".progress");
+     var text1 = toast.querySelector(".text-1");
+     var text2 = toast.querySelector(".text-2");
+     
+     if (toast && progress && text1 && text2) {
+         // Update the toast content based on the message type
+         if (type === "success") {
+             text1.textContent = "Success";
+             toast.classList.remove("error");
+         } else if (type === "error") {
+             text1.textContent = "Error";
+             toast.classList.add("error");
+         } else {
+             console.error("Invalid message type");
+             return;
+         }
+         
+         // Set the message content
+         text2.textContent = message;
+         
+         // Show the toast and progress
+         toast.classList.add("showing");
+         progress.classList.add("showing");
+         
+         // Hide the toast and progress after 5 seconds
+         setTimeout(() => {
+             toast.classList.remove("showing");
+             progress.classList.remove("showing");
+            
+         }, 5000);
+     } else {
+         console.error("Toast elements not found");
+     }
+ }
 
-// Check if the accession code is set in the POST request
-if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
-    // Handle archiving the book
-  
+ function closeToast() {
+     var toast = document.querySelector(".toastNotif");
+     var progress = document.querySelector(".progress");
+     toast.classList.remove("showing");
+     progress.classList.remove("showing");
+ }
 
-    // Sanitize the accession code to prevent SQL injection
-    $accessionCode = mysqli_real_escape_string($conn, $_POST['accessionCode']);
+  function redirectToPage(url, delay) {
+     setTimeout(() => {
+         window.location.href = url;
+     }, delay);
+ }
 
-    // Update the status to 'Archived' for the specified accession code
-    $sql = "UPDATE tbl_books SET tb_status = 'Archived' WHERE Accession_Code = '$accessionCode'";
-    if ($conn->query($sql) === TRUE) {
-        echo "Status updated successfully";
-    } else {
-        echo "Error updating status: " . $conn->error;
+
+</script>';
+
+
+
+
+// Check if the request contains the accessionCode and action in the POST data
+if (isset($_POST['accessionCode']) && isset($_POST['action'])) {
+    // Get the Accession_Code and action from the POST data
+    $accessionCode = $_POST['accessionCode'];
+    $action = $_POST['action'];
+
+    // Check which action was triggered
+    if ($action === 'archive') {
+        // Prepare and execute the SQL query to update the book status to 'Archived'
+        $sql = "UPDATE tbl_books SET tb_status = 'Archived' WHERE Accession_Code = ?";
+        $stmt = $conn->prepare($sql);
+
+        if (!$stmt) {
+            // Error handling for prepared statement creation
+            // echo json_encode(["success" => false, "message" => "Failed to prepare statement: " . $conn->error]);
+            exit();
+        }
+
+        $stmt->bind_param("s", $accessionCode); // Bind the parameter to the query
+        $stmt->execute();
+
+        if ($stmt->error) {
+            // Error handling for query execution
+            // echo json_encode(["success" => false, "message" => "Failed to execute query: " . $stmt->error]);
+            exit();
+        }
+
+        // Check if the query was successful
+        if ($stmt->affected_rows > 0) {
+            // Book was successfully archived
+            echo '<script>
+            // Call showToast with "success" message type after successful archiving
+            showToast("success", "Book archived successfully.");
+            // Redirect to this page after 3 seconds
+            redirectToPage("admin_books.php", 3000);
+            </script>';
+        } else {
+            // No rows affected, possibly the book with the given Accession_Code was not found
+            echo '<script>
+            // Call showToast with "error" message type after failed archiving
+            showToast("error", "Failed to archive book: No rows affected");
+            </script>';
+        }
+
+        // Close the prepared statement
+        $stmt->close();
+    } else  if ($action === 'save_changes' && isset($_POST['quantity'])) {
+        $quantity = $_POST['quantity'];
+
+
+        // Validate the quantity (assuming it should be a positive integer)
+        if (!ctype_digit($quantity) || intval($quantity) < 0) {
+            // echo json_encode(["success" => false, "message" => "Invalid quantity"]);
+            echo '<script>
+        // Call showToast with "error" message type after failed archiving
+        showToast("error", "Invalid quantity");
+        </script>';
+        }
+
+        // Prepare and execute the SQL query to update the quantity
+        $sql = "UPDATE tbl_books SET Quantity = ? WHERE Accession_Code = ?";
+        $stmt = $conn->prepare($sql);
+
+        if (!$stmt) {
+            // Error handling for prepared statement creation
+            // echo json_encode(["success" => false, "message" => "Failed to prepare statement: " . $conn->error]);
+            echo '<script>
+        // Call showToast with "error" message type after failed archiving
+        showToast("error", "Failed to prepare statement");
+        </script>';
+        }
+
+        $stmt->bind_param("is", $quantity, $accessionCode); // Bind the parameters to the query
+        $stmt->execute();
+
+        if ($stmt->error) {
+            // Error handling for query execution
+            echo '<script>
+        // Call showToast with "error" message type after failed archiving
+        showToast("error", "Failed to Update book Quantity: No rows affected");
+        </script>';
+        }
+
+        // Check if the query was successful
+        if ($stmt->affected_rows > 0) {
+            // Quantity was successfully updated
+            echo '<script>
+        // Call showToast with "success" message type after successful archiving
+        showToast("success", "Book archived successfully.");
+        // Redirect to this page after 3 seconds
+        redirectToPage("admin_books.php", 1500);
+        </script>';
+        } else {
+            // No rows affected, possibly the book with the given Accession_Code was not found
+            echo '<script>
+        // Call showToast with "error" message type after failed archiving
+        showToast("error", "Failed to archive book: No rows affected");
+        </script>';
+        }
+
+        // Close the prepared statement
+        $stmt->close();
     }
-
-    $conn->close();
 }
 
 
 
-?>
 
+
+// Set the status and page variables
+$status = isset($_GET['status']) ? $_GET['status'] : 'Available';
+$page = isset($_GET['page']) ? $_GET['page'] : 1;
+// $recordsPerPage = 3;
+// $offset = ($page - 1) * $recordsPerPage;
+
+// Update book status based on quantity
+$sql = "UPDATE tbl_books SET tb_status = 'Unavailable' WHERE Quantity = 0";
+$conn->query($sql);
+
+$sqlUpdate = "UPDATE tbl_books SET tb_status = 'Available' WHERE Quantity > 0 AND tb_status != 'Archived' AND tb_status = 'Unavailable'";
+$conn->query($sqlUpdate);
+
+
+
+// Get the status from the query string
+$status = isset($_GET['status']) ? $_GET['status'] : 'Available';
+
+// Your SQL query with the status parameter
+$sql = "SELECT
+            tbl_books.Accession_Code, 
+            tbl_books.Book_Title, 
+            tbl_books.Authors_ID, 
+            tbl_books.Publisher_Name, 
+            tbl_books.Section_Code, 
+            tbl_books.shelf, 
+            tbl_books.tb_edition, 
+            tbl_books.Year_Published, 
+            tbl_books.ISBN, 
+            tbl_books.Bibliography, 
+            tbl_books.Quantity, 
+            tbl_books.tb_status, 
+            tbl_books.Price, 
+            tbl_section.Section_uid, 
+            tbl_section.Section_Name, 
+            tbl_section.Section_Code, 
+            tbl_authors.Authors_Name
+        FROM
+            tbl_books
+        INNER JOIN
+            tbl_section ON tbl_books.Section_Code = tbl_section.Section_uid
+        INNER JOIN
+            tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID
+        WHERE
+            tbl_books.tb_status = '$status' ";
+
+// Execute the query and process the results
+$result = $conn->query($sql);
+?>
 
 
 <!DOCTYPE html>
@@ -66,6 +261,7 @@ if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./admin.css" rel="stylesheet">
+    <link href="toast.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
 
@@ -138,7 +334,7 @@ if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
             </div>
 
             <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                <table class="table table-hover table-sm">
+                <!-- <table class="table table-hover table-sm">
                     <thead class="bg-light sticky-top">
                         <tr>
                             <th style="width: 10%;">Accession Code</th>
@@ -154,19 +350,209 @@ if (isset($_POST['archive_book']) && isset($_POST['accessionCode'])) {
                             <th style="width: 5%;">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="bookTableBody">
-                        <!-- Book records will be dynamically loaded here -->
-                    </tbody>
-                </table>
-            </div>
+                    <tbody id="bookTableBody"> -->
+                    <?php
+
+                        $recordsPerPage = 4;
+                        $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+                        $sqlCount = "SELECT COUNT(*) AS totalRecords FROM tbl_books WHERE tb_status = '$status'";
+                        $resultCount = $conn->query($sqlCount);
+                        $totalRecords = $resultCount->fetch_assoc()['totalRecords'];
+                        $totalPages = ceil($totalRecords / $recordsPerPage);
+                        $offset = ($page - 1) * $recordsPerPage;
+                        $tableHTML = '';
+
+                        if ($status === 'Request') {
+                            $sql = "SELECT tbl_requestbooks.* FROM tbl_requestbooks ORDER BY CASE WHEN 
+                            tb_status = 'Pending' THEN 0 ELSE 1 END, Request_ID LIMIT $offset, $recordsPerPage";
+                            $result = $conn->query($sql);
+                            if ($result->num_rows > 0) {
+                                $tableHTML = '<table class="table table-hover table-sm">
+                                    <thead class="bg-light sticky-top">
+                                        <tr>
+                                            <th style="width: 5%;">#</th>
+                                            <th style="width: 15%;">Book Title</th>
+                                            <th style="width: 10%;">Authors</th>
+                                            <th style="width: 10%;">Publisher</th> 
+                                            <th style="width: 5%;">Edition</th> 
+                                            <th style="width: 5%;">Year Published</th> 
+                                            <th style="width: 5%;">Quantity</th>
+                                            <th style="width: 5%;">Price</th>
+                                            <th style="width: 5%;">Status</th>
+                                            <th style="width: 5%;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>';
+
+                                    while ($row = $result->fetch_assoc()) {
+                                        $tableHTML .= '<tr>
+                                            <td></td>
+                                            <td>' . $row["Book_Title"] . '</td>
+                                            <td>' . $row["Authors_Name"] . '</td>
+                                            <td>' . $row["Publisher_Name"] . '</td> 
+                                            <td>' . $row["tb_edition"] . '</td>
+                                            <td>' . $row["Year_Published"] . '</td> 
+                                            <td>' . $row["Quantity"] . '</td>
+                                            <td>' . $row["price"] . '</td>
+                                            <td>' . $row["tb_status"] . '</td>
+                                            <td>';
+                                            if ($row["tb_status"] === "Approved") {
+                                                $tableHTML .= "<button type='button' class='btn btn-secondary' disabled>Process</button>";
+                                            } else {
+                                                $tableHTML .= "<a href='process_data_book.php?id=" . $row["Request_ID"] . "' class='btn btn-primary'>Process</a>";
+                                            }
+
+                                                $tableHTML .= '</td> </tr>';
+                                    }
+
+                                    $tableHTML .= "</tbody></table>";
+                                            
+                                } else {
+                                    $tableHTML = "No books found.";
+                                }
+
+    
+    } else {
+                $sql = "SELECT
+        tbl_books.Accession_Code,   tbl_books.Book_Title, 
+        tbl_books.Authors_ID, tbl_books.Publisher_Name, 
+        tbl_books.Section_Code,  tbl_books.shelf, 
+        tbl_books.tb_edition,   tbl_books.Year_Published, 
+        tbl_books.ISBN,  tbl_books.Bibliography, 
+        tbl_books.Quantity,  tbl_books.tb_status, 
+        tbl_books.Price,  tbl_section.Section_uid, 
+        tbl_section.Section_Name,  tbl_section.Section_Code, 
+        tbl_authors.Authors_Name
+    FROM
+        tbl_books
+    INNER JOIN
+        tbl_section ON tbl_books.Section_Code = tbl_section.Section_uid
+    INNER JOIN
+        tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID
+    WHERE
+        tbl_books.tb_status = '$status'
+    LIMIT $offset, $recordsPerPage";
+                $result = $conn->query($sql);
+                echo '<table class="table table-hover">
+        <thead class="bg-light sticky-top">
+            <tr>
+                <th style="width: 10%;">Accession Code</th><th style="width: 15%;">Book Title</th>
+                <th style="width: 10%;">Authors</th><th style="width: 10%;">Publisher</th>
+                <th style="width: 10%;">Section</th> <th style="width: 5%;">Shelf #</th>
+                <th style="width: 5%;">Edition</th> <th style="width: 5%;">Year Published</th>
+                <th style="width: 10%;">ISBN</th><th style="width: 10%;">Bibliography</th>
+                <th style="width: 5%;">Quantity</th> <th style="width: 5%;">Price</th>
+                <th style="width: 5%;">Status</th> <th style="width: 5%;">Action</th>
+        </tr>
+    </thead>
+    <tbody>';
+
+                while ($row = $result->fetch_assoc()) {
+                    $tableHTML .= '<tr>
+        <td>' . $row['Accession_Code'] . '</td>
+        <td>' . $row['Book_Title'] . '</td>
+        <td>' . $row['Authors_Name'] . '</td>
+        <td>' . $row['Publisher_Name'] . '</td>
+        <td>' . $row['Section_Name'] . '</td>
+        <td>' . $row['shelf'] . '</td>
+        <td>' . $row['tb_edition'] . '</td>
+        <td>' . $row['Year_Published'] . '</td>
+        <td>' . $row['ISBN'] . '</td>
+        <td>' . $row['Bibliography'] . '</td>
+        <td>' . $row['Quantity'] . '</td>
+        <td>' . $row['Price'] . '</td>
+        <td>' . $row['tb_status'] . '</td>
+        <td>';
+
+                    if ($row['tb_status'] == 'Available') {
+                        $tableHTML .= '<button type="button" class="btn btn-primary btn-sm archive-btn" data-bs-toggle="modal" data-bs-target="#archiveModal" data-accession-code="' . $row['Accession_Code'] . '">Archive</button>';
+                    }
+                    $tableHTML .= '</td>
+                    </tr>';
+                }
+            }
+
+            $tableHTML .= '</tbody>
+    </table>';
+
+            echo $tableHTML;
+
+                    // Add pagination links
+                    echo '<div class="d-flex justify-content-center">
+            <ul class="pagination">';
+                    for ($i = 1; $i <= $totalPages; $i++) {
+                        echo '<li class="page-item ' . ($page == $i ? 'active' : '') . '"><a class="page-link" href="?status=' . $status . '&page=' . $i . '">' . $i . '</a></li>';
+                    }
+                    echo '</ul>
+        </div>';
+            ?>
+        </div>  </div>
         </div> 
         <div class="btn-con">
             <a href="./admin_bookCatalog.php" class="btn btn-secondary">Catalog</a>
             <a href="./admin_addBook.php" class="btn btn-success">Add New Book</a>
         </div>
-    </div> 
+    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script> 
+
+
+    <!-- Bootstrap Bundle with Popper.js (for Bootstrap 5) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <div id="archiveModal" class="modal fade" tabindex="-1" aria-labelledby="archiveModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="archiveModalLabel">Archive Book</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <div class="modal-body">
+                        <p><strong>Book Title:</strong><input type="text" id="bookTitle" class="form-control" readonly><strong>Author</strong> <input type="text" id="authors" class="form-control" readonly></p>
+                        <p><strong>Publisher:</strong> <input type="text" id="publisher" class="form-control" readonly></p>
+                        <p><strong>Section:</strong> <input type="text" id="section" class="form-control" readonly></p>
+                        <p><strong>Shelf:</strong> <input type="text" id="shelf" class="form-control" readonly></p>
+                        <p><strong>Edition:</strong> <input type="text" id="edition" class="form-control" readonly></p>
+                        <p><strong>Year Published:</strong> <input type="text" id="yearPublished" class="form-control" readonly></p>
+                        <p><strong>ISBN:</strong> <input type="text" id="isbn" class="form-control" readonly></p>
+                        <p><strong>Bibliography:</strong> <input type="text" id="bibliography" class="form-control" readonly></p>
+
+                        <p><strong>Quantity:</strong> <input type="text" id="quantity" class="form-control" readonly></p>
+                        <p><strong>Price:</strong> <input type="text" id="price" class="form-control" readonly></p>
+                        <p><strong>Status:</strong> <input type="text" id="status" class="form-control" readonly></p>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <form id="archiveForm" method="POST" action="">
+
+                        <p><strong>Updated Quantity:</strong> <input type="text" id="qty" placeholder="Update Quantity" oninput="updateHiddenQuantity()"></p>
+
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+                        <input type="hidden" id="hiddenQuantity" name="quantity">
+                        <input type="hidden" id="archiveAccessionCode" name="accessionCode">
+                        <input type="hidden" id="action" name="action" value="">
+
+                        <br>
+                        <button type="button" class="btn btn-primary" onclick="saveChanges()">Save Changes</button>
+                        <button type="button" class="btn btn-primary" onclick="setActionAndSubmit('archive')">Archive</button>
+                    </form>
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    </div>
+
+
     <script>
         // JavaScript code for search functionality
         document.getElementById("searchInput").addEventListener("input", function() {
