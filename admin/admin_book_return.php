@@ -218,7 +218,7 @@ if ($stmt) {
                     // Conditionally render the button based on the status
                     echo "<input type='hidden' name='borrowerIdadmin' value='" . $row["Borrow_ID"] . "'>";
 
-                    if ($row["tb_status"] === 'Pending') {
+                    if ($row["tb_status"] === 'Pending' || $row["tb_status"] === 'On Hold') {
                         echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='updateAndSetSession(" . $row["Borrow_ID"] . ")'>UPDATE</button>";
 
                     } else {

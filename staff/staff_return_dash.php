@@ -162,7 +162,7 @@ if ($conn->connect_error) {
 
                             echo "<td>";
                             // Conditionally render the button based on the status
-                            if ($row["tb_status"] === 'Pending') {
+                            if ($row["tb_status"] === 'Pending' || $row["tb_status"] === 'On Hold') {
                                 echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='updateAndSetSession(" . $row["Borrower_ID"] . ")'>View Books</button>";
                             } else {
                                 echo "<button type='button' class='btn btn-secondary btn-sm' disabled>All Books Returned</button>";

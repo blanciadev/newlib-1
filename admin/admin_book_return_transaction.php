@@ -142,44 +142,65 @@ echo '<script>
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    // Get current timestamp
-$currentTimestamp = time();
-$dateBorrowed = $_SESSION['Due_Date'];
+    $condition = 'proceed';
+    $paymentStatus = "Paid";
+    
+    if (isset($_POST['action'])) {
+        $action = $_POST['action'];
 
-// Calculate number of days since borrowed
-$daysSinceBorrowed = floor(($currentTimestamp - strtotime($dateBorrowed)) / (60 * 60 * 24));
+        if ($action == 'proceed_to_payment') {
+            // Handle the Proceed to Payment logic
+        $condition = 'proceed';
+            // Add your payment processing code here
+        } elseif ($action == 'pay_later') {
+            // Handle the Pay Later logic
+            $condition = 'pay_later';
+            // Add your pay later code here
+        } 
+    }else{
 
-// Subtract 3 days to account for the rental time valid only
-$daysOverdue = max(0, $daysSinceBorrowed - 3); // Ensure it's non-negative
+    }
 
-// Initialize fine
-$fine = 0;
-define('RETURNED_ON_TIME', 0);
-echo '<script>';
-echo 'console.log("Due Date: ' . $dateBorrowed . '");'; // Output the Due Date for logging
-echo 'console.log("Days Overdue: ' . $daysOverdue . '");';
-echo 'console.log("Days Since Borrowed: ' . $daysSinceBorrowed . '");';
-echo '</script>';
+            // Get current timestamp
+        $currentTimestamp = time();
+        $dateBorrowed = $_SESSION['Due_Date'];
 
-// Calculate the fine based on overdue status and book status
-switch (true) {
-    case $daysOverdue > 0:
-        // Add default penalty fine of 30 pesos
-        $fine += 0;
-        // Add per-day fine of 15 pesos for each subsequent day of overdue
-        $fine += ($daysOverdue - 1) * 5;
-        break;
-    default:
-        // No additional fine for books in GOOD CONDITION or if none of the expected statuses are selected
-        break;
-}
+        // Calculate number of days since borrowed
+        $daysSinceBorrowed = floor(($currentTimestamp - strtotime($dateBorrowed)) / (60 * 60 * 24));
+
+        // Subtract 3 days to account for the rental time valid only
+        $daysOverdue = max(0, $daysSinceBorrowed - 3); // Ensure it's non-negative
+
+        // Initialize fine
+        $fine = 0;
+        define('RETURNED_ON_TIME', 0);
+        echo '<script>';
+        echo 'console.log("Due Date: ' . $dateBorrowed . '");'; // Output the Due Date for logging
+        echo 'console.log("Days Overdue: ' . $daysOverdue . '");';
+        echo 'console.log("Days Since Borrowed: ' . $daysSinceBorrowed . '");';
+        echo '</script>';
+
+        // Calculate the fine based on overdue status and book status
+        switch (true) {
+            case $daysOverdue > 0:
+                // Add default penalty fine of 30 pesos
+                $fine += 0;
+                // Add per-day fine of 15 pesos for each subsequent day of overdue
+                $fine += ($daysOverdue - 1) * 5;
+                break;
+            default:
+                // No additional fine for books in GOOD CONDITION or if none of the expected statuses are selected
+                break;
+        }
 
 
    // Output the total fine after all calculations
 //    echo "Total Fine: " . $fine . "<br>";
 
-   // Get the payment status
-   $Reason = $_POST['paymentStatus'];
+ // Get the payment status
+ if (isset($_POST['paymentStatus'])) {
+    $Reason = $_POST['paymentStatus'];
+} 
 
    // Handle different payment status options
    switch ($Reason) {
@@ -215,6 +236,8 @@ switch (true) {
     $bd_Id = $_SESSION['BorrowDetails_ID'];
     $currentDate = date("Y-m-d");
 
+
+    if ($condition == 'proceed'){
     // Update tbl_borrowdetails status
     $sql1 = "UPDATE tbl_borrowdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = ?";
     $stmt1 = $conn->prepare($sql1);
@@ -222,7 +245,16 @@ switch (true) {
         die("Error in preparing statement 1: " . $conn->error);
     }
     $stmt1->bind_param("i", $bd_Id);
+    }else{
+        $sql1 = "UPDATE tbl_borrowdetails SET tb_status = 'On Hold' WHERE BorrowDetails_ID = ?";
+        $stmt1 = $conn->prepare($sql1);
+        if (!$stmt1) {
+            die("Error in preparing statement 1: " . $conn->error);
+        }
+        $stmt1->bind_param("i", $bd_Id);
+    }
 
+    if ($condition == 'proceed'){
     // Update tbl_borrow status
     $sql2 = "UPDATE tbl_borrow SET tb_status = 'Returned' WHERE Borrow_ID = (
         SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ?
@@ -232,7 +264,18 @@ switch (true) {
         die("Error in preparing statement 2: " . $conn->error);
     }
     $stmt2->bind_param("i", $bd_Id);
-
+    }else{
+      // Update tbl_borrow status
+      $sql2 = "UPDATE tbl_borrow SET tb_status = 'Pending' WHERE Borrow_ID = (
+        SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ?
+    )";
+    $stmt2 = $conn->prepare($sql2);
+    if (!$stmt2) {
+        die("Error in preparing statement 2: " . $conn->error);
+    }
+    $stmt2->bind_param("i", $bd_Id);
+    }
+    if ($condition == 'proceed'){
     // Update tbl_returningdetails status
     $sql3 = "UPDATE tbl_returningdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = ?";
     $stmt3 = $conn->prepare($sql3);
@@ -240,11 +283,21 @@ switch (true) {
         die("Error in preparing statement 3: " . $conn->error);
     }
     $stmt3->bind_param("i", $bd_Id);
-
+    }else{
+     // Update tbl_returningdetails status
+     $sql3 = "UPDATE tbl_returningdetails SET tb_status = 'On Hold' WHERE BorrowDetails_ID = ?";
+     $stmt3 = $conn->prepare($sql3);
+     if (!$stmt3) {
+         die("Error in preparing statement 3: " . $conn->error);
+     }
+     $stmt3->bind_param("i", $bd_Id);
+    
+    }
+    if ($condition == 'proceed'){
     // Update tbl_returned with current date and status
     $sql4 = "UPDATE tbl_returned SET Date_Returned = ?, tb_status = 'Resolved' WHERE Borrow_ID IN (
-SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ? LIMIT 1)
-)";
+    SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ? LIMIT 1)
+    )";
 
     $stmt4 = $conn->prepare($sql4);
     if (!$stmt4) {
@@ -252,14 +305,28 @@ SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tb
     }
 
     $stmt4->bind_param("si", $currentDate, $bd_Id);
+ } else{
+ // Update tbl_returned with current date and status
+ $sql4 = "UPDATE tbl_returned SET Date_Returned = ?, tb_status = 'On Hold' WHERE Borrow_ID IN (
+    SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ? LIMIT 1)
+    )";
 
+    $stmt4 = $conn->prepare($sql4);
+    if (!$stmt4) {
+        die("Error in preparing statement 4: " . $conn->error);
+    }
+
+    $stmt4->bind_param("si", $currentDate, $bd_Id);
+    }
+
+    
     // Get Borrower_ID from session
     $borrowerId = $_SESSION['BorrowDetails_ID'];
 
     // Get current date and time
     $currentDateTime = date("Y-m-d H:i:s");
 
-    if($fine != 0){
+    if($fine != 0 && $condition == 'proceed'){
         echo '<script>';
         echo 'console.log("Fine is not Equals to 0");';
         echo '</script>';
@@ -271,7 +338,8 @@ SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tb
     if (!$stmt5) {
         die("Error in preparing statement 5: " . $conn->error);
     }
-    $paymentStatus = "Paid";
+
+   
     $_SESSION['stat'] =  $paymentStatus;
      // Bind parameters and execute statement
      $stmt5->bind_param("iiissss", $borrowerId, $bd_Id, $fine, $Reason, $paymentStatus, $currentDate, $currentDateTime);
@@ -279,8 +347,8 @@ SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tb
 
     }else{
         echo '<script>';
-echo 'console.log("Fine is 0");';
-echo '</script>';
+            echo 'console.log("Fine is 0");';
+            echo '</script>';
     }
 
   
@@ -317,12 +385,22 @@ echo '</script>';
     // Check each query execution status
     if ($status1 && $status2 && $status3 && $status4) {
         // All queries executed successfully
+     
+
+      if($condition == 'proceed'){
         echo '<script>
         // Call showToast with "success" message type after successful insertion
         showToast("success", "Transaction Complete");
         // Redirect to print_return.php after 3 seconds with fine as a query parameter
-         redirectToPage("queries/print_return.php?fine=' . urlencode($fine) . '", 1500);
+           redirectToPage("queries/print_return.php?fine=' . urlencode($fine) . '", 1500);
       </script>';
+      }else{
+        echo '<script>
+        showToast("success", "Payment Pending");
+        // Redirect to print_return.php after 3 seconds with fine as a query parameter
+        //    redirectToPage("admin_transactions.php", 1500);
+      </script>';
+      }
       
 
         // echo '<script>alert("Record Updated successfully."); window.location.href = "queries/print_return.php";</script>';
@@ -430,6 +508,7 @@ echo '</script>';
 
 
     </div>
+ 
     <div class="board1 container"><!--board container-->
     <div class="header1">
             <div class="text">
@@ -507,7 +586,7 @@ WHERE
                 $_SESSION['Accession_Code'] = $row["Accession_Code"];
                 $_SESSION['Book_Title'] = $row["Book_Title"];
                 $_SESSION['Quantity'] = $row["Quantity"];
-             //   $_SESSION['BorrowDetails_ID'] = $row["BorrowDetails_ID"];
+         
                 $_SESSION['Date_Borrowed'] = $row["Date_Borrowed"];
                 $_SESSION['Due_Date'] = $row["Due_Date"];
                 $_SESSION['status'] = $row["tb_status"];
@@ -523,9 +602,9 @@ WHERE
                 echo "<p>Quantity: " . $row["Quantity"] . "</p>";
                 echo "<p>Date Borrowed : " . $row["Date_Borrowed"] . "</p>";
                 echo "<p>Due Date: " . $row["Due_Date"] . "</p>";
+                echo "<p>Status: " . $row["tb_status"] . "</p>";
 
-            //    echo "Fine: " . $fine . "<br>";
-                // $_SESSION['fine'] = $fine;
+          
 
                 // Radio buttons for selecting book status within the same form
                 echo '<form class="update-form" method="POST" action="">';
@@ -533,20 +612,24 @@ WHERE
                 echo '<div class="form-group">';
                 echo '<label for="paymentStatus">Book Status:</label><br>';
                 echo '<div class="form-check">';
-                echo '<input type="radio" id="damage" name="paymentStatus" value="DAMAGE" class="form-check-input">';
+                echo '<input type="radio" id="damage" name="paymentStatus" value="DAMAGE" class="form-check-input"required> ';
                 echo '<label for="damage" class="form-check-label">Damage</label><br>';
                 echo '</div>';
-              
                 echo '<div class="form-check">';
-                echo '<input type="radio" id="goodCondition" name="paymentStatus" value="GOOD CONDITION" class="form-check-input">';
+                echo '<input type="radio" id="goodCondition" name="paymentStatus" value="GOOD CONDITION" class="form-check-input"required>';
                 echo '<label for="goodCondition" class="form-check-label">Good Condition</label><br>';
                 echo '</div>';
                 echo '<div class="form-check">';
-                echo '<input type="radio" id="lost" name="paymentStatus" value="LOST" class="form-check-input">';
+                echo '<input type="radio" id="lost" name="paymentStatus" value="LOST" class="form-check-input"required>';
                 echo '<label for="lost" class="form-check-label">Lost</label><br>';
                 echo '</div>';
                 echo '</div>';
+                if ($row["tb_status"] === 'Pending') {
                 echo '<button type="submit" class="btn btn-primary">Proceed to Payment</button>';
+                echo ' <button type="submit" name="action" value="pay_later" class="btn btn-primary">Pay Later</button>';
+                }else{
+                    echo '<button type="submit" class="btn btn-primary">Proceed to Payment</button>';
+                }
                 echo '</form>';
 
                 echo "</div>"; // Close div.col
@@ -568,11 +651,6 @@ WHERE
                     window.location.href = "staff_return_transaction.php?borrowIdadmin=" + borrowIdadmin;
                 }
             </script>
-
-
-
-
-
 
             <script>
                 // Get the search input field
