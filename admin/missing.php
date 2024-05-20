@@ -118,45 +118,39 @@ FROM
     INNER JOIN tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
     INNER JOIN tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
     INNER JOIN tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID
+WHERE
+    bd.tb_status = 'Pending'
 GROUP BY
-    bd.Borrower_ID;";
+    bd.Borrower_ID";
+
 
 $result = $conn->query($sql);
 
-// Output data of each row
-while ($row = $result->fetch_assoc()) {
-    $dateBorrowed = new DateTime($row["Date_Borrowed"]);
-    $currentDate = new DateTime();
-    $interval = $currentDate->diff($dateBorrowed);
-    $monthsDifference = $interval->m + ($interval->y * 12);
+    // Output data of each row
+    while ($row = $result->fetch_assoc()) {
+        $dateBorrowed = new DateTime($row["Date_Borrowed"]);
+        $currentDate = new DateTime();
+        $interval = $currentDate->diff($dateBorrowed);
+        $monthsDifference = $interval->m + ($interval->y * 12);
 
-    // Update status to 'Missing' if more than a month
-    if ($monthsDifference > 1 && ($row["tb_status"] !== 'Returned')) {
-        $row["tb_status"] = 'Missing';
-
-        // Update the status in the database
-        $updateSql = "UPDATE tbl_borrowdetails SET tb_status = 'Missing' WHERE Borrower_ID = ?";
-        $updateStmt = $conn->prepare($updateSql);
-        $updateStmt->bind_param("i", $row["Borrower_ID"]);
-        $updateStmt->execute();
-        $updateStmt->close();
+        echo '<tr class="' . (($monthsDifference > 1 && $row["tb_status"] !== 'Returned') ? 'table-danger' : '') . '">';
+        echo '<td>' . htmlspecialchars($row["Borrower_ID"]) . '</td>';
+        echo '<td>' . htmlspecialchars($row["First_Name"] . " " . $row["Middle_Name"] . " " . $row["Last_Name"]) . '</td>';
+        echo '<td>' . htmlspecialchars($row["Date_Borrowed"]) . '</td>';
+        echo '<td>' . htmlspecialchars($row["Due_Date"]) . '</td>';
+        echo '<td>' . htmlspecialchars($row["tb_status"]) . '</td>';
+        echo '<td>';
+        echo '<form class="update-form" method="GET" action="staff_return.php">';
+        echo '<input type="hidden" name="borrowId" id="borrowId" value="' . htmlspecialchars($row["Borrower_ID"]) . '">';
+        echo '<input type="hidden" name="borrowerId" value="' . htmlspecialchars($row["Borrower_ID"]) . '">';
+        echo '</form>';
+    
+        echo '<div class="update-message"></div>';
+        echo '</td>';
+        echo '</tr>';
     }
-
-    echo "<tr>";
-    echo "<td>" . $row["Borrower_ID"] . "</td>";
-    echo "<td>" . $row["First_Name"] . " " . $row["Middle_Name"] . " " . $row["Last_Name"] . "</td>";
-    echo "<td>" . $row["Date_Borrowed"] . "</td>";
-    echo "<td>" . $row["Due_Date"] . "</td>";
-    echo "<td>" . $row["tb_status"] . "</td>";
-    echo "<td>";
-    echo "<form class='update-form' method='GET' action='staff_return.php'>";
-    echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["Borrower_ID"] . "'>";
-    echo "</form>";
-    echo "<input type='hidden' name='borrowerId' value='" . $row["Borrower_ID"] . "'>";
-
-  
-}
-?>
+    $conn->close();
+    ?>
 
    
 </body>
