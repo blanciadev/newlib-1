@@ -419,7 +419,68 @@
             
         })
      
+        function sendEmail(borrowerId) {
+            // Encode the borrowerId
+            console.log("Borrow ID:", borrowerId);
+            const encodedBorrowerId = encodeURIComponent(borrowerId);
+            console.log("Borrow ID encoded:", encodedBorrowerId);
 
+            // Send an AJAX request to a PHP script
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "send_email_due.php?borrower_id=" + encodedBorrowerId, true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+
+                if (xhr.status === 200) {
+                    // Request was successful
+                    console.log("Email sent successfully");
+                    var successMessageHeader = document.querySelector(".toastNotif .message .text-1");
+                    successMessageHeader.textContent = "Success!";
+                    var successMessageElement = document.querySelector(".toastNotif .message .text-2");
+                    successMessageElement.textContent = "Email sent successfully";
+                    var toast = document.querySelector(".toastNotif");
+                    var progress = document.querySelector(".toastNotif .progress");
+                    toast.classList.add("showing");
+                    progress.classList.add("showing");
+                    setTimeout(() => {
+                        toast.classList.remove("showing");
+                    }, 5000);
+                } else {
+                    // Error handling
+                    console.error("Error:", xhr.statusText);
+                    var successMessageHeader = document.querySelector(".toastNotif .message .text-1");
+                    successMessageHeader.textContent = "Error!";
+                    var errorMessageElement = document.querySelector(".toastNotif .message .text-2");
+                    errorMessageElement.textContent = "Failed to send email";
+                    var toast = document.querySelector(".toastNotif");
+                    var progress = document.querySelector(".toastNotif .progress");
+                    var icon = document.querySelector(".bx-check")
+                    icon.classList.remove("check");
+                    icon.classList.remove("bx-check");
+                    icon.classList.add("bx-x");
+                    icon.classList.add("xmark");
+                    toast.classList.add("showing");
+                    toast.classList.add("error");
+                    progress.classList.add("showing");
+                    progress.classList.add("error");
+                    setTimeout(() => {
+                        toast.classList.remove("showing");
+                        setTimeout(() => {
+                            toast.classList.remove("error");
+                            progress.classList.remove("error");
+                            progress.classList.remove("showing");
+                            icon.classList.remove("bx-x");
+                            icon.classList.remove("xmark");
+                            icon.classList.add("bx-check");
+                            icon.classList.add("check");
+                        }, 3000)
+                    }, 5000);
+                }
+
+            };
+            // No need to send data in the body since we're passing it as a URL parameter
+            xhr.send();
+        }
 
     </script>
 </body>
