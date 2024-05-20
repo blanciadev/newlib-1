@@ -33,7 +33,7 @@ if (isset($_POST['sectionCode'])) {
         echo '</select>';
         echo '</div>';
     } else {
-        echo '<div class="alert alert-warning" role="alert">No shelf numbers found for the selected section.</div>';
+        // echo '<div class="alert alert-warning" role="alert">No shelf numbers found for the selected section.</div>';
     }
 } else {
     echo "Invalid request.";

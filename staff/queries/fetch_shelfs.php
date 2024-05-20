@@ -40,7 +40,7 @@ if (isset($_POST['sectionCode'])) {
         }
         echo "</div>";
     } else {
-        echo "No shelf numbers found for the selected section.";
+        // echo "No shelf numbers found for the selected section.";
     }
     
     
