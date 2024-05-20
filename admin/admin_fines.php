@@ -303,7 +303,7 @@ mysqli_close($conn);
         </div>
 
         <div class="btn-con">
-            <a href="#" class="btn">Missing Books</a>
+            <a href="missing.php" class="btn">Missing Books</a>
         </div>
     </div>
     <!--Logout Modal -->
