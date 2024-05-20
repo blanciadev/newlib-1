@@ -66,50 +66,6 @@ $stmt->execute();
 
 // Get the result
 $result = $stmt->get_result();
-// Function to calculate fine based on due date and book status
-// function calculateFine($dueDate, $dateBorrowed, $bookStatus)
-// {
-//     // Get current timestamp
-//     $currentTimestamp = time();
-
-//     // Calculate number of days since borrowed
-//     $daysSinceBorrowed = floor(($currentTimestamp - strtotime($dateBorrowed)) / (60 * 60 * 24));
-
-//     // Subtract 3 days to account for the rental time valid only
-//     $daysOverdue = max(0, $daysSinceBorrowed - 3); // Ensure it's non-negative
-
-//     // Initialize fine
-//     $fine = 0;
-//     define('RETURNED_ON_TIME', 0);
-//     echo "Due Date: " . $dueDate . "<br>";
-//     echo "Days Overdue: " . $daysOverdue . "<br>";
-//     echo "Days Since Borrowed: " . $daysSinceBorrowed . "<br>";
-
-//     // Calculate the fine based on overdue status and book status
-//     switch (true) {
-//         case $daysOverdue > 0:
-//             // Add default penalty fine of 30 pesos
-//             $fine += 0;
-//             // Add per-day fine of 15 pesos for each subsequent day of overdue
-//             $fine += ($daysOverdue - 1) * 5;
-//             break;
-//         default:
-//             // No additional fine for books in GOOD CONDITION or if none of the expected statuses are selected
-//             break;
-//     }
-
-
-//     // Output the total fine after all calculations
-//     echo "Total Fine: " . $fine . "<br>";
-
-//     // Store the fine in session or database, if needed
-//     $_SESSION['fine'] = $fine;
-//     return $fine;
-// }
-
-
-
-
 
  // Define the HTML code for the toast element
  echo '<div class="toastNotif hide">
@@ -369,17 +325,15 @@ echo '</script>';
       </script>';
       
 
-
-
         // echo '<script>alert("Record Updated successfully."); window.location.href = "queries/print_return.php";</script>';
         // exit();
     } else {
         // Error occurred while executing queries
       
- echo '<script>
- // Call showToast with "success" message type after successful insertion
- showToast("error", "Process Failed");
- </script>';
+        echo '<script>
+        // Call showToast with "success" message type after successful insertion
+        showToast("error", "Process Failed");
+        </script>';
 
 
 
