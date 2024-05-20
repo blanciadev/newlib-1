@@ -91,26 +91,64 @@ if ($conn->connect_error) {
         </div>
         <div class="books container-fluid">   
                 <table class="table table-hover table-m">
-                    <thead class="bg-light sticky-top">
-                        <tr> 
-                            <td>Year</td>
-                            <th>Month</th> 
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- List of Reports in desc order -->
-                        <tr>
-                            <td>2024</td>
-                            <td>May</td>
-                            <td><a href="./admin_monthly_report.php" class="btn">View Report</a></td>
-                        </tr>
-                        <tr>
-                            <td>2024</td>
-                            <td>April</td>
-                            <td><a href="./admin_monthly_report.php" class="btn">View Report</a></td>
-                        </tr>
-                    </tbody>
+                    
+                    <?php
+// Database connection
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+
+// Check connection
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+// Query to get distinct months and years from the borrowing data
+$countBooksQuery = "SELECT YEAR(Date_Borrowed) AS Year, MONTH(Date_Borrowed) AS Month, COUNT(*) AS BooksBorrowed 
+                    FROM tbl_borrow 
+                    GROUP BY YEAR(Date_Borrowed), MONTH(Date_Borrowed)
+                    ORDER BY Year DESC, Month DESC";
+$countBooksResult = mysqli_query($conn, $countBooksQuery);
+
+// Display the data in a table
+echo '<table class="table">';
+echo '<thead>';
+echo '<tr><th>Year</th><th>Month</th><th>Books Borrowed</th><th>Visitors</th><th>Action</th></tr>';
+echo '</thead>';
+echo '<tbody>';
+
+if (!$countBooksResult) {
+    echo "<tr><td colspan='5'>Error fetching data: " . mysqli_error($conn) . "</td></tr>";
+} else {
+    // Fetch and display each row as a table row
+    while ($row = mysqli_fetch_assoc($countBooksResult)) {
+        // Get year and month
+        $year = $row['Year'];
+        $month = $row['Month'];
+        
+        // Query to count unique Borrower_ID for each month
+        $uniqueVisitorsQuery = "SELECT COUNT(DISTINCT Borrower_ID) AS UniqueVisitors 
+                                FROM tbl_borrow 
+                                WHERE YEAR(Date_Borrowed) = $year AND MONTH(Date_Borrowed) = $month";
+        $uniqueVisitorsResult = mysqli_query($conn, $uniqueVisitorsQuery);
+        $uniqueVisitorsCount = ($uniqueVisitorsResult) ? mysqli_fetch_assoc($uniqueVisitorsResult)['UniqueVisitors'] : 0;
+        
+        // Display the data in the table
+        echo '<tr>';
+        echo '<td>' . $year . '</td>';
+        echo '<td>' . date("F", mktime(0, 0, 0, $month, 1)) . '</td>'; // Display month name
+        echo '<td>' . $row['BooksBorrowed'] . '</td>';
+        echo '<td>' . $uniqueVisitorsCount . '</td>';
+        echo '<td><a href="./admin_monthly_report.php?year=' . $year . '&month=' . $month . '" class="btn">View Report</a></td>';
+        echo '</tr>';
+    }
+}
+
+echo '</tbody>';
+echo '</table>';
+
+// Close connection
+mysqli_close($conn);
+?>
+
                 </table>
         </div>
     </div> 
