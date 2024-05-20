@@ -392,7 +392,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Call showToast with "success" message type after successful insertion
         showToast("success", "Transaction Complete");
         // Redirect to print_return.php after 3 seconds with fine as a query parameter
-           redirectToPage("queries/print_return.php?fine=' . urlencode($fine) . '", 1500);
+            redirectToPage("queries/print_return.php?fine=' . urlencode($fine) . '", 1500);
       </script>';
       }else{
         echo '<script>

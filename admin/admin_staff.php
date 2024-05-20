@@ -1,5 +1,14 @@
 <?php
+
+require "../vendor/autoload.php";
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 session_start();
+
+
+
 // Check if the User_ID session variable is not set or empty
 if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     // Redirect to index.php
@@ -113,11 +122,9 @@ if(isset($_GET['reactivate_id'])) {
         echo "Error reactivating record: " . mysqli_error($conn);
     }
 }
-
-
 if (isset($_POST['submit'])) {
     // Database connection
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+    $conn = new mysqli("localhost", "root", "root", "db_library_2", 3308);
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
@@ -133,39 +140,74 @@ if (isset($_POST['submit'])) {
     $token = 0;
     $password = $lastName . '@' . $role;
 
-    $sql = "INSERT INTO tbl_employee (tb_password, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, token ) 
-            VALUES ('$password','$firstName','$midName', '$lastName', '$role', '$contactNumber', '$email', '$address', $token )";
+    // Insert data into the database
+    $sql = "INSERT INTO tbl_employee (tb_password, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, token) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     try {
-        if (mysqli_query($conn, $sql)) {
-            // Display a banner for successful insertion
-            // echo '<script>alert("Default password will be your Lastname@role. Insertion Successful!");</script>';
-            
-        echo '<script>
-        // Call showToast with "success" message type after successful insertion
-        showToast("success", "Default password will be your Lastname@role.");
-    </script>';
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssssssssi", $password, $firstName, $midName, $lastName, $role, $contactNumber, $email, $address, $token);
 
-            // Redirect the user back to the same page
-            // echo '<script>window.location.href = "admin_staff.php";</script>';
-            // exit();
-        }
-        else {
-            // Handle other errors
-            throw new Exception(mysqli_error($conn));
+        if ($stmt->execute()) {
+            echo '<script>
+                showToast("success", "Default password will be your Lastname@role.");
+                </script>';
+
+            // Create a new PHPMailer instance
+            $mail = new PHPMailer(true);
+    
+            try {
+                // SMTP configuration for Gmail
+                $mail->isSMTP();
+                $mail->Host = 'smtp.gmail.com';
+                $mail->SMTPAuth = true;
+                $mail->Username = 'villareadhub@gmail.com'; // Your Gmail email address
+                $mail->Password = 'ulmh emwr tsbw ijao'; // Your Gmail password
+                $mail->SMTPSecure = 'tls';
+                $mail->Port = 587;
+
+                // Email content
+                $mail->setFrom('villareadhub@gmail.com', 'Administrator'); // Set sender email and name
+                $mail->addAddress($email); // Add recipient email
+                $mail->isHTML(true); // Set email format to HTML
+                $mail->Subject = 'Employee Details';
+                $mail->Body = '<h1>Employee Details</h1>' .
+                    '<p>First Name: ' . htmlspecialchars($firstName) . '</p>' .
+                    '<p>Middle Name: ' . htmlspecialchars($midName) . '</p>' .
+                    '<p>Last Name: ' . htmlspecialchars($lastName) . '</p>' .
+                    '<p>Role: ' . htmlspecialchars($role) . '</p>' .
+                    '<p>Contact Number: ' . htmlspecialchars($contactNumber) . '</p>' .
+                    '<p>Email: ' . htmlspecialchars($email) . '</p>' .
+                    '<p>Address: ' . htmlspecialchars($address) . '</p>';
+
+                // Send email
+                if ($mail->send()) {
+                    echo '<script>console.log("Email sent successfully");</script>';
+                } else {
+                    echo '<script>console.error("Error sending email: ' . $mail->ErrorInfo . '");</script>';
+                }
+            } catch (Exception $e) {
+                echo '<script>console.error("Error sending email: ' . $mail->ErrorInfo . '");</script>';
+            }
+        } else {
+            // Handle specific error for duplicate entry
+            if ($conn->errno == 1062) { // Duplicate entry error code
+                echo '<script>
+                showToast("error", "Duplicate entry detected. Email already exists.");
+                </script>';
+            } else {
+                throw new Exception($conn->error);
+            }
         }
     } catch (Exception $e) {
-        // Handle the exception gracefully
-        // echo '<script>alert("Error: ' . $e->getMessage() . '");</script>';
         echo '<script>
-        // Call showToast with "success" message type after successful insertion
-        showToast("error", "Error");
-    </script>';
+        showToast("error", "Error: ' . $e->getMessage() . '");
+        </script>';
+    } finally {
+        $stmt->close();
+        $conn->close();
     }
-
-    mysqli_close($conn);
 }
-
 
 ?>
 
