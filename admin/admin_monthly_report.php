@@ -62,10 +62,15 @@ function fetch_query_results($conn, $query, $params, $types = "") {
                 display: none;
             }
         }
+        .report{
+            display: flex; 
+            flex-wrap: wrap;
+            flex-direction: column;
+        }
     </style>
 </head>
 <body> 
-    <div class="board container"><!--board container-->  
+    <div class="report container"><!--board container-->  
       
         <div class="print-btn-container">
             <button id="printBtn" class="btn btn-primary">Print Report</button>
@@ -84,7 +89,7 @@ function fetch_query_results($conn, $query, $params, $types = "") {
                     "types" => "ii"
                 ],
                 "Logs" => [
-                    "query" => "SELECT COUNT(DISTINCT Borrower_ID) AS UniqueBorrowers, COUNT(*) AS TotalLogs 
+                    "query" => "SELECT COUNT(DISTINCT Borrower_ID) AS TotalVisitors, COUNT(*) AS TotalLogs 
                                 FROM tbl_log 
                                 WHERE YEAR(`Date_Time`) = ? AND MONTH(`Date_Time`) = ?",
                     "params" => [$year, $month],
@@ -105,7 +110,8 @@ function fetch_query_results($conn, $query, $params, $types = "") {
             echo '<div class="col-12">';
             echo '<h3 class="text-center mb-3">Books Borrowed</h3>';
             echo '<table class="table table-bordered">';
-            echo '<thead class="table-dark"><tr><th>Unique Borrowers</th><th>Total Books Borrowed</th></tr></thead><tbody>';
+            echo '<thead class="table-dark">
+            <tr><th>Unique Borrowers</th><th>Total Books Borrowed</th></tr></thead><tbody>';
 
             $result = fetch_query_results($conn, $queries["Books Borrowed"]["query"], $queries["Books Borrowed"]["params"], $queries["Books Borrowed"]["types"]);
             $row = $result->fetch_assoc();
@@ -121,12 +127,12 @@ function fetch_query_results($conn, $query, $params, $types = "") {
             echo '<div class="col-12">';
             echo '<h3 class="text-center mb-3">Logs</h3>';
             echo '<table class="table table-bordered">';
-            echo '<thead class="table-dark"><tr><th>Unique Borrowers</th><th>Total Logs</th></tr></thead><tbody>';
+            echo '<thead class="table-dark"><tr><th>Total Visitors</th><th>Total Logs</th></tr></thead><tbody>';
 
             $result = fetch_query_results($conn, $queries["Logs"]["query"], $queries["Logs"]["params"], $queries["Logs"]["types"]);
             $row = $result->fetch_assoc();
             echo '<tr>';
-            echo '<td>' . htmlspecialchars($row['UniqueBorrowers']) . '</td>';
+            echo '<td>' . htmlspecialchars($row['TotalVisitors']) . '</td>';
             echo '<td>' . htmlspecialchars($row['TotalLogs']) . '</td>';
             echo '</tr>';
             echo '</tbody></table>';
@@ -137,7 +143,7 @@ function fetch_query_results($conn, $query, $params, $types = "") {
             echo '<div class="col-12">';
             echo '<h3 class="text-center mb-3">Fines</h3>';
             echo '<table class="table table-bordered">';
-            echo '<thead class="table-dark"><tr><th>Reason</th><th>Unique Borrowers</th><th>Total Amount</th></tr></thead><tbody>';
+            echo '<thead class="table-dark"><tr><th>Reason</th><th>Borrowers</th><th>Total Amount</th></tr></thead><tbody>';
 
             $result = fetch_query_results($conn, $queries["Fines"]["query"], $queries["Fines"]["params"], $queries["Fines"]["types"]);
             while ($row = $result->fetch_assoc()) {
