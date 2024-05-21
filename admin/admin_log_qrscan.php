@@ -266,7 +266,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['borrower_id'])) {
         <div class="header1">
             <div class="text">
                 <div class="back-btn">
-                    <a href="./staff_log.php"><i class='bx bx-arrow-back'></i></a>
+                    <a href="./admin_log.php"><i class='bx bx-arrow-back'></i></a>
                 </div>
                 <div class="title">
                     <h2>Scan Visitor Card</h2>

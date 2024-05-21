@@ -17,9 +17,8 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Dashboard</title>
+    <title>Catalog</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
@@ -29,61 +28,59 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
     <style>
         /* CSS for the shelfDropdown */
-/* CSS for the shelfDropdown */
-#shelfDropdown {
-  display: inline-block;
-  position: relative;
-  cursor: pointer;
-  background-color: #fff;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
- 
-  padding: 6px 12px;
-}
+        #shelfDropdown {
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+        background-color: #fff;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        
+        padding: 6px 12px;
+        }
 
-/* CSS for the dropdown arrow */
-#shelfDropdown::after {
-  content: '\25BC'; /* Unicode character for down arrow */
-  position: absolute;
-  top: 55%;
-  right: 13px;
-  transform: translateY(-50%);
-}
+        /* CSS for the dropdown arrow */
+        #shelfDropdown::after {
+        content: '\25BC'; /* Unicode character for down arrow */
+        position: absolute;
+        top: 55%;
+        right: 13px;
+        transform: translateY(-50%);
+        }
 
-/* CSS for the dropdown menu */
-.dropdown-menu {
-  display: none;
-  position: absolute;
-  z-index: 1;
-  background-color: #fff;
+        /* CSS for the dropdown menu */
+        .dropdown-menu {
+        display: none;
+        position: absolute;
+        z-index: 1;
+        background-color: #fff;
 
-  padding: 5px 0;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-}
+        padding: 5px 0;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+        }
 
-/* CSS for the dropdown menu items */
-.dropdown-menu a {
-  display: block;
-  padding: 5px 15px;
-  color: #333;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
-}
+        /* CSS for the dropdown menu items */
+        .dropdown-menu a {
+        display: block;
+        padding: 5px 15px;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+        }
 
-/* Hover effect for dropdown menu items */
-.dropdown-menu a:hover {
-  background-color: #f8f9fa;
-}
+        /* Hover effect for dropdown menu items */
+        .dropdown-menu a:hover {
+        background-color: #f8f9fa;
+        }
 
-/* Show dropdown menu on hover */
-#shelfDropdown:hover .dropdown-menu {
-  display: block;
-}
+        /* Show dropdown menu on hover */
+        #shelfDropdown:hover .dropdown-menu {
+        display: block;
+        }
 
 
     </style>
 </head>
-
 <body>
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
         <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
@@ -91,28 +88,26 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
         </a><!--header container--> 
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-        <!-- Display user image -->
-        <?php
-            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-            $userID = $_SESSION["User_ID"];
-            $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
-                    FROM tbl_employee 
-                    WHERE User_ID = $userID";
-            $result = mysqli_query($conn, $sql);
-            if (!$result) {
-                echo "Error: " . mysqli_error($conn);
-            } else {
-                $userData = mysqli_fetch_assoc($result);
-            }
+            <?php
+                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                $userID = $_SESSION["User_ID"];
+                $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
+                        FROM tbl_employee 
+                        WHERE User_ID = $userID";
+                $result = mysqli_query($conn, $sql);
+                if (!$result) {
+                    echo "Error: " . mysqli_error($conn);
+                } else {
+                    $userData = mysqli_fetch_assoc($result);
+                }
             ?>
             <?php if (!empty($userData['image_data'])): ?>
-                <!-- Assuming the image_data is in JPEG format, change the MIME type if needed -->
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else: ?>
-                <!--default image -->
                 <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-            <strong><span><?php $fname = $userData["First_Name"]; $lname = $userData["Last_Name"]; $userName = $fname." ". $lname;  echo $userName . "<br/>" . $_SESSION["role"]; ?></span></strong></div>
+            <strong><span><?php $fname = $userData["First_Name"]; echo $fname . "<br/>" . $_SESSION["role"]; ?></span></strong>
+        </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item "> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis "> <i class='bx bxs-home'></i>Dashboard </a> </li>
@@ -124,7 +119,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <li class="nav-item"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-report'></i>Generate Report</a> </li>
             <hr>
             <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
         </ul>
          
     </div>
@@ -148,10 +143,9 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
         </div>
         <div class="bookCatalog">
             <div class="catalogOptions">
-                <div class="d-flex w-100">
-                    <div class="catalogOptions">
-                        <form id="sectionForm">
-                            <div class="d-flex w-100">
+                <div class="d-flex w-100"> 
+                    <form id="sectionForm">
+                        <div class="d-flex w-100">
                                 <button type="button" class="btn btn-primary btnOption" data-target="FIL" value="FIL">Filipiniana</button>
                                 <button type="button" class="btn btn-primary btnOption" data-target="REF" value="REF">Reference</button>
                                 <button type="button" class="btn btn-primary btnOption" data-target="CIR" value="CIR">Circulation</button>
@@ -160,47 +154,45 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                                 <button type="button" class="btn btn-primary btnOption" data-target="Authors" value="Authors">Authors</button>
                                 <button type="button" class="btn btn-primary btnOption" data-target="Publishers" value="Publishers">Publishers</button>
 
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <hr>
-                <div class="catalogCon container">
-                    <br>
-                    <div id="shelfAccordion" class="accordion">
-                        <!-- Accordion items will be generated here -->
-                    </div>
-                    <div id="bookList">
-            <!-- Fetched books will be displayed here -->
-            </div>
-                </div>
-
-
-                <!--Logout Modal -->
-                <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
-                            </div>
-                            <div class="modal-body">
-                                Do you want to log out?
-                            </div>
-                            <div class="modal-footer d-flex flex-row justify-content-center">
-                                <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
-                                <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
-                            </div>
                         </div>
-                    </div>
+                    </form> 
                 </div>
+            </div>
+            <hr>
+            <div class="catalogCon container">
+                <br>
+                <div id="shelfAccordion" class="accordion">
+                    <!-- Accordion items will be generated here -->
+                </div>
+                <div id="bookList">
+                    <!-- Fetched books will be displayed here -->
+                </div>
+            </div> 
+        </div>
+    </div>
 
-                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-                <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-               
-               
-               
-               
-               <script>
+
+    <!--Logout Modal -->
+    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+                </div>
+                <div class="modal-body">
+                    Do you want to log out?
+                </div>
+                <div class="modal-footer d-flex flex-row justify-content-center">
+                    <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                    <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
                     // Wait for the document to load
                     document.addEventListener("DOMContentLoaded", function() {
                         // Get all accordion buttons

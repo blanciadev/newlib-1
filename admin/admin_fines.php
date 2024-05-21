@@ -68,7 +68,7 @@ $selectedCondition = isset($_GET['condition']) ? $_GET['condition'] : "";
             <li class="nav-item"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-report'></i>Generate Report</a> </li>
             <hr>
             <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
         </ul>
     </div>
     <div class=" board container-fluid"><!--board container-->
@@ -159,141 +159,138 @@ $selectedCondition = isset($_GET['condition']) ? $_GET['condition'] : "";
             <div class="fines">
                 <h3>History</h3>
                 <div class="fines-con" style="overflow-y: scroll;">
-                    <table class="table table-striped table-m" id="borrowerTable">
-                      
-                        <tbody>
-                          
-   <!-- Sorting Dropdown -->
-<form method="GET" action="">
-    <div class="mb-3">
-        <label for="sortCondition" class="form-label">Sort by Condition:</label>
-        <select class="form-select" id="sortCondition" name="condition">
-            <option value="" <?php if ($selectedCondition == "") echo "selected"; ?>>All</option>
-            <option value="LOST" <?php if ($selectedCondition == "LOST") echo "selected"; ?>>LOST</option>
-            <option value="DAMAGE" <?php if ($selectedCondition == "DAMAGE") echo "selected"; ?>>DAMAGE</option>
-            <option value="GOOD CONDITION" <?php if ($selectedCondition == "GOOD CONDITION") echo "selected"; ?>>GOOD CONDITION</option>
-        </select>
-    </div>
-    <button type="submit" class="btn btn-primary">Sort</button>
-</form>
+                    <table class="table table-striped table-m" id="borrowerTable"> 
+                        <tbody> 
+                            <!-- Sorting Dropdown -->
+                            <form method="GET" action="">
+                                <div class="mb-3">
+                                    <label for="sortCondition" class="form-label">Sort by Condition:</label>
+                                    <select class="form-select" id="sortCondition" name="condition">
+                                        <option value="" <?php if ($selectedCondition == "") echo "selected"; ?>>All</option>
+                                        <option value="LOST" <?php if ($selectedCondition == "LOST") echo "selected"; ?>>LOST</option>
+                                        <option value="DAMAGE" <?php if ($selectedCondition == "DAMAGE") echo "selected"; ?>>DAMAGE</option>
+                                        <option value="GOOD CONDITION" <?php if ($selectedCondition == "GOOD CONDITION") echo "selected"; ?>>GOOD CONDITION</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Sort</button>
+                            </form> 
+                            <?php
+                            // Database connection
+                            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                            if ($conn->connect_error) {
+                                die("Connection failed: " . $conn->connect_error);
+                            }
 
-<?php
-// Database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+                            // Function to calculate total pages
+                            function calculateTotalPages($conn, $recordsPerPage, $condition = "")
+                            {
+                                $conditionQuery = "";
+                                if (!empty($condition)) {
+                                    $conditionQuery = " AND tbl_fines.Reason = '" . mysqli_real_escape_string($conn, $condition) . "'";
+                                }
+                                $totalRecordsQuery = "SELECT COUNT(*) AS total FROM tbl_fines WHERE Payment_Status = 'Paid'" . $conditionQuery;
+                                $totalRecordsResult = mysqli_query($conn, $totalRecordsQuery);
+                                $totalRecords = mysqli_fetch_assoc($totalRecordsResult)['total'];
+                                return ceil($totalRecords / $recordsPerPage);
+                            }
 
-// Function to calculate total pages
-function calculateTotalPages($conn, $recordsPerPage, $condition = "")
-{
-    $conditionQuery = "";
-    if (!empty($condition)) {
-        $conditionQuery = " AND tbl_fines.Reason = '" . mysqli_real_escape_string($conn, $condition) . "'";
-    }
-    $totalRecordsQuery = "SELECT COUNT(*) AS total FROM tbl_fines WHERE Payment_Status = 'Paid'" . $conditionQuery;
-    $totalRecordsResult = mysqli_query($conn, $totalRecordsQuery);
-    $totalRecords = mysqli_fetch_assoc($totalRecordsResult)['total'];
-    return ceil($totalRecords / $recordsPerPage);
-}
+                            // Number of records per page
+                            $recordsPerPage = 10;
 
-// Number of records per page
-$recordsPerPage = 10;
-
-// Determine current page number
-$currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
+                            // Determine current page number
+                            $currentPage = isset($_GET['page']) ? intval($_GET['page']) : 1;
 
 
-// Calculate the offset for the SQL query
-$offset = ($currentPage - 1) * $recordsPerPage;
+                            // Calculate the offset for the SQL query
+                            $offset = ($currentPage - 1) * $recordsPerPage;
 
-// Fetch log records from the database with pagination and sorted by Date_Borrowed
-$conditionQuery = "";
+                            // Fetch log records from the database with pagination and sorted by Date_Borrowed
+                            $conditionQuery = "";
 
-if (!empty($selectedCondition)) {
-    $conditionQuery = " AND tbl_fines.Reason = '" . mysqli_real_escape_string($conn, $selectedCondition) . "'";
-}
+                            if (!empty($selectedCondition)) {
+                                $conditionQuery = " AND tbl_fines.Reason = '" . mysqli_real_escape_string($conn, $selectedCondition) . "'";
+                            }
 
-$query = "SELECT DISTINCT
-    b.User_ID, 
-    b.Accession_Code, 
-    bk.Book_Title, 
-    b.Date_Borrowed, 
-    b.Due_Date, 
-    tbl_fines.Amount,
-    tbl_fines.Reason, 
-    b.Borrower_ID, 
-    tbl_borrowdetails.tb_status, 
-    tbl_borrowdetails.Quantity
-FROM
-    tbl_borrow AS b
-INNER JOIN
-    tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-INNER JOIN
-    tbl_fines ON b.Borrow_ID = tbl_fines.Borrower_ID
-INNER JOIN
-    tbl_borrowdetails ON b.Borrower_ID = tbl_borrowdetails.Borrower_ID
-WHERE
-    tbl_borrowdetails.tb_status = 'Returned'" . $conditionQuery . "
-ORDER BY
-    b.Date_Borrowed DESC
-LIMIT
-    $offset, $recordsPerPage";
+                            $query = "SELECT DISTINCT
+                                b.User_ID, 
+                                b.Accession_Code, 
+                                bk.Book_Title, 
+                                b.Date_Borrowed, 
+                                b.Due_Date, 
+                                tbl_fines.Amount,
+                                tbl_fines.Reason, 
+                                b.Borrower_ID, 
+                                tbl_borrowdetails.tb_status, 
+                                tbl_borrowdetails.Quantity
+                            FROM
+                                tbl_borrow AS b
+                            INNER JOIN
+                                tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+                            INNER JOIN
+                                tbl_fines ON b.Borrow_ID = tbl_fines.Borrower_ID
+                            INNER JOIN
+                                tbl_borrowdetails ON b.Borrower_ID = tbl_borrowdetails.Borrower_ID
+                            WHERE
+                                tbl_borrowdetails.tb_status = 'Returned'" . $conditionQuery . "
+                            ORDER BY
+                                b.Date_Borrowed DESC
+                            LIMIT
+                                $offset, $recordsPerPage";
 
-$result = mysqli_query($conn, $query);
+                            $result = mysqli_query($conn, $query);
 
-// Display the records in a table
-echo '<table class="table table-hover">
-    <thead>
-        <tr>
-            <th>Borrower ID</th>
-            <th>Book Details</th>
-            <th>Quantity</th>
-            <th>Date Borrowed</th>
-            <th>Due Date</th>
-            <th>Amount</th>
-            <th>Reason</th>
-            <th>Status</th>
-        </tr>
-    </thead>
-    <tbody>';
+                            // Display the records in a table
+                            echo '<table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Borrower ID</th>
+                                        <th>Book Details</th>
+                                        <th>Quantity</th>
+                                        <th>Date Borrowed</th>
+                                        <th>Due Date</th>
+                                        <th>Amount</th>
+                                        <th>Reason</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>';
 
-while ($row = mysqli_fetch_assoc($result)) {
-    if ($row['Amount'] != 0) {
-        echo '<tr>';
-        echo '<td>' . $row['Borrower_ID'] . '</td>';
-        echo '<td>' . $row['Accession_Code'] . ' - ' . $row['Book_Title'] . '</td>';
-        echo '<td>' . $row['Quantity'] . '</td>';
-        echo '<td>' . $row['Date_Borrowed'] . '</td>';
-        echo '<td>' . $row['Due_Date'] . '</td>';
-        echo '<td>' . $row['Amount'] . '</td>';
-        echo '<td>' . $row['Reason'] . '</td>';
-        echo '<td>' . $row['tb_status'] . '</td>';
-        echo '</tr>';
-    }
-}
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                if ($row['Amount'] != 0) {
+                                    echo '<tr>';
+                                    echo '<td>' . $row['Borrower_ID'] . '</td>';
+                                    echo '<td>' . $row['Accession_Code'] . ' - ' . $row['Book_Title'] . '</td>';
+                                    echo '<td>' . $row['Quantity'] . '</td>';
+                                    echo '<td>' . $row['Date_Borrowed'] . '</td>';
+                                    echo '<td>' . $row['Due_Date'] . '</td>';
+                                    echo '<td>' . $row['Amount'] . '</td>';
+                                    echo '<td>' . $row['Reason'] . '</td>';
+                                    echo '<td>' . $row['tb_status'] . '</td>';
+                                    echo '</tr>';
+                                }
+                            }
 
-echo '</tbody>
-</table>';
+                            echo '</tbody>
+                            </table>';
 
-// Recalculate total pages and update pagination links
-$totalPages = calculateTotalPages($conn, $recordsPerPage, $selectedCondition);
+                            // Recalculate total pages and update pagination links
+                            $totalPages = calculateTotalPages($conn, $recordsPerPage, $selectedCondition);
 
-// Display pagination links
-echo '<div class="d-flex justify-content-center">
-    <ul class="pagination">';
+                            // Display pagination links
+                            echo '<div class="d-flex justify-content-center">
+                                <ul class="pagination">';
 
-for ($i = 1; $i <= $totalPages; $i++) {
-    $activeClass = ($currentPage == $i) ? 'active' : '';
-    echo '<li class="page-item ' . $activeClass . '"><a class="page-link" href="?page=' . $i . '&condition=' . urlencode($selectedCondition) . '">' . $i . '</a></li>';
-}
+                            for ($i = 1; $i <= $totalPages; $i++) {
+                                $activeClass = ($currentPage == $i) ? 'active' : '';
+                                echo '<li class="page-item ' . $activeClass . '"><a class="page-link" href="?page=' . $i . '&condition=' . urlencode($selectedCondition) . '">' . $i . '</a></li>';
+                            }
 
-echo '</ul>
-</div>';
+                            echo '</ul>
+                            </div>';
 
-// Close the database connection
-mysqli_close($conn);
-?>
+                            // Close the database connection
+                            mysqli_close($conn);
+                            ?>
 
 
                         </tbody>

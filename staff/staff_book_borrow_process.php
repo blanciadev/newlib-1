@@ -158,28 +158,24 @@ function closeToast() {
             // Convert the date format from 'MM/DD/YYYY' to 'YYYY-MM-DD'
             $dueDate = date('Y-m-d', strtotime($_POST['due_date']));
         }
-
-
-
+ 
         $User_ID = $_SESSION["User_ID"];
         $_SESSION["due"] = $dueDate;
         // Check if $bookAccessionCodesStr is set
         if (isset($_SESSION['bookAccessionCodesStr']) && !empty($_SESSION['bookAccessionCodesStr'])) {
-            // echo "<script>console.log('Page Submit');</script>";
+             
 
             // Split the string of Accession Codes into an array
             $bookAccessionCodes = explode(",", $_SESSION['bookAccessionCodesStr']);
 
             // Prepare and execute the INSERT statement for tbl_borrow for each book
             foreach ($bookAccessionCodes as $accessionCode) {
-                // echo "<script>console.log('Book Accession Code:', '" . $accessionCode . "');</script>"; // Debugging
-
+                
                 // Update the quantity in the database
                 $sql_update_quantity = "UPDATE tbl_books SET Quantity = Quantity - 1 WHERE Accession_Code = $accessionCode";
 
                 if ($conn->query($sql_update_quantity) === TRUE) {
-                    // echo "<script>console.log('Quantity updated for Accession Code: $accessionCode');</script>";
-
+                     
                     // Prepare and execute the INSERT statement for tbl_borrow
                     $sql_borrow = "INSERT INTO tbl_borrow (User_ID, Borrower_ID, Accession_Code, Date_Borrowed, Due_Date, tb_status) 
                                 VALUES ('$User_ID', '$borrower_id', $accessionCode, '$currentDate', ";
@@ -193,16 +189,14 @@ function closeToast() {
                     $sql_borrow .= ", '$Status')";
 
                     if ($conn->query($sql_borrow) === TRUE) {
-                        // echo "<script>console.log('Inserted into  for Accession Code: $accessionCode');</script>";
-
+                         
                         // Prepare and execute the INSERT statement for tbl_borrowdetails
                         $sql_borrowdetails = "INSERT INTO tbl_borrowdetails (Borrower_ID, Accession_Code, Quantity, tb_status) 
                                             VALUES ('$borrower_id', $accessionCode, '1', '$Status')";
 
                         if ($conn->query($sql_borrowdetails) === TRUE) {
                             // Insertion successful
-                            // echo "<script>console.log('Inserted into  for Accession Code: $accessionCode');</script>";
-                        } else {
+                             } else {
                             echo "Error inserting into : " . $conn->error;
                         }
 
@@ -212,8 +206,7 @@ function closeToast() {
 
                         if ($conn->query($sql_returndetails) === TRUE) {
                             // Insertion successful
-                            // echo "<script>console.log('Returning Details done');</script>";
-                        } else {
+                              } else {
                             echo "Error inserting into : " . $conn->error;
                         }
 
@@ -223,8 +216,7 @@ function closeToast() {
 
                         if ($conn->query($sql_return) === TRUE) {
                             // Insertion successful
-                            // echo "<script>console.log('Returning Details done');</script>";
-                        } else {
+                             } else {
                             echo "Error inserting into : " . $conn->error;
                         }
 
@@ -355,21 +347,21 @@ function closeToast() {
                         // Fetch each row from the result set
                         while ($row = $result->fetch_assoc()) {
                 ?>
-                            <div class="card mb-4" style="width: 500px">
-                                <div class="card-body">
-                                    <h5 class="card-title"><strong>Title:</strong> <?php echo $row['Book_Title']; ?></h5>
-                                    <p class="card-text"><strong>Author:</strong> <?php echo $row['Authors_Name']; ?></p>
-                                    <p class="card-text"><strong>Availability:</strong> <?php echo $row['Quantity']; ?></p>
-                                    <div class="mb-3">
-                                        <label for="quantity" class="form-label"><strong>Quantity:</strong></label>
-                                        <!-- Input field for quantity with max attribute set to available quantity -->
-                                        <input type="number" id="quantity" name="quantity[]" min="1" max="<?php echo $row['Quantity']; ?>" value="1" readonly>
-                                        <!-- Hidden input field to store the book ID or accession code for processing -->
-                                        <input type="hidden" name="accession_code[]" value="<?php echo $row['Accession_Code']; ?>">
-                                    </div>
-                                    <p class="card-text"><strong>Date Today:</strong> <?php echo $currentDate; ?></p>
-                                </div>
-                            </div>
+                <div class="card mb-4" style="width: 500px">
+                    <div class="card-body">
+                        <h5 class="card-title"><strong>Title:</strong> <?php echo $row['Book_Title']; ?></h5>
+                        <p class="card-text"><strong>Author:</strong> <?php echo $row['Authors_Name']; ?></p>
+                        <p class="card-text"><strong>Availability:</strong> <?php echo $row['Quantity']; ?></p>
+                        <div class="mb-3">
+                            <label for="quantity" class="form-label"><strong>Quantity:</strong></label> 
+                            <input type="number" id="quantity" name="quantity[]" min="1" max="<?php echo $row['Quantity']; ?>" value="1" readonly>
+                           
+                            <!-- Hidden input field to store the book ID or accession code for processing -->
+                            <input type="hidden" name="accession_code[]" value="<?php echo $row['Accession_Code']; ?>">
+                        </div>
+                        <p class="card-text"><strong>Date Today:</strong> <?php echo $currentDate; ?></p>
+                    </div>
+                </div>
                 <?php
                         }
                 ?>
@@ -377,13 +369,12 @@ function closeToast() {
                     <label for="due_date" class="form-label">Select Due Date:</label>
                     <!-- Datepicker input field -->
                     <input type="text" name="due_date" id="due_date" class="form-control" required>
-                </div>
-
+                </div> 
                 <?php
-                } else {
-                    // Book not found or error occurred
-                    echo "<p class='alert alert-warning'>No books found with the provided Accession Codes</p>";
-                }
+                    } else {
+                        // Book not found or error occurred
+                        echo "<p class='alert alert-warning'>No books found with the provided Accession Codes</p>";
+                    }
                 ?>
 
                 <!-- Success and error messages -->

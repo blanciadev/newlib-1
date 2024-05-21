@@ -40,7 +40,7 @@ unset($_SESSION['due']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   
-    <title>Book Details</title>
+    <title>Borrow Details</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -84,7 +84,7 @@ unset($_SESSION['due']);
 </head>
 <body>
 <div class="container">
-    <h2>Book Borrow Receipt</h2>
+    <h2>Borrow Receipt</h2>
     <span class="info-label">Borrower ID:</span> <?php echo $User_ID; ?>
     <div class="row">
    

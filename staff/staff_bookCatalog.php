@@ -10,7 +10,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 ?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,26 +31,28 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <img src="../images/lib-icon.png" style="width: 16%;" alt="lib-icon" />
         </a><!--header container-->
         <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-            <!-- Display user image -->
             <?php
             $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
             $userID = $_SESSION["User_ID"];
             $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
-                    FROM tbl_employee 
-                    WHERE User_ID = $userID";
+                        FROM tbl_employee 
+                        WHERE User_ID = $userID";
             $result = mysqli_query($conn, $sql);
             if (!$result) {
                 echo "Error: " . mysqli_error($conn);
             } else {
                 $userData = mysqli_fetch_assoc($result);
+                // Fetch the First_Name from $userData
+                $firstName = $userData['First_Name'];
+                $role = $userData['tb_role'];
             }
             ?>
             <?php if (!empty($userData['image_data'])) : ?>
                 <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
             <?php else : ?>
-                <img src="../images/default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
+                <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
             <?php endif; ?>
-            <strong><span><?php echo $userData['First_Name'] . "<br/>" . $_SESSION["role"]; ?></span></strong>
+            <strong><span><?php echo  $firstName . "<br/>" .  $role; ?></span></strong>
         </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->

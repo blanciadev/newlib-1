@@ -69,7 +69,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <li class="nav-item"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-report'></i>Generate Report</a> </li>
             <hr>
             <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
         </ul>
 
     </div>
@@ -204,22 +204,21 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 
                         // Display the top three borrowers
                         if ($topBorrowerResult && mysqli_num_rows($topBorrowerResult) > 0) {
-                            echo "<ul class='list-group' style='width:98%'>";
+                            echo "<ol class='list-group' style='width:98%'>";
                             while ($topBorrowerData = mysqli_fetch_assoc($topBorrowerResult)) {
                                 $topBorrowerID = $topBorrowerData['Borrower_ID'];
                                 $borrowCount = $topBorrowerData['borrow_count'];
                                 $name = $topBorrowerData['First_Name'];
                                 $lname = $topBorrowerData['Last_Name'];
 
-                                echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:40%; width:100%'>";
+                                echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:45px; width:100%'>";
                                 echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
-                                echo "<p style='font-size:12pt' class='fw-bold'>$topBorrowerID</p>";
+                                echo "<p style='font-size:12pt' class='fw-bold'>$name $lname</p>";
                                 echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";
-                                echo "</div>";
-                                echo "<small style='font-size:12px'>$name $lname</small>";
+                                echo "</div>"; 
                                 echo "</li>";
                             }
-                            echo "</ul>";
+                            echo "</ol>";
                         } else {
                             echo "<p>No Borrower Found</p>";
                         }

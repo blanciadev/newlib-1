@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Dashboard</title>
+    <title>Register Borrower</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -88,14 +88,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
             <li class="nav-item "> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis "> <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item "> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
-            <li class="nav-item active"> <a href="./admin_transactions.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transactions</a> </li>
+            <li class="nav-item"> <a href="./admin_transactions.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transactions</a> </li>
             <li class="nav-item"> <a href="./admin_staff.php" class="nav-link link-body-emphasis"><i class='bx bxs-user'></i>Manage Staff</a> </li>
-            <li class="nav-item"> <a href="./admin_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
+            <li class="nav-item active"> <a href="./admin_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
             <li class="nav-item"> <a href="./admin_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
             <li class="nav-item"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-report'></i>Generate Report</a> </li>
             <hr>
             <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
         </ul>
     </div>
 
@@ -115,34 +115,40 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="row">
                 <div class="col-md-6">
                     <label for="first_name" class="form-label">First Name:</label>
-                    <input type="text" id="first_name" name="first_name" class="form-control" required>
+                    <input type="text" id="first_name" name="first_name" class="form-control" required autocomplete="off">
                 </div>
                 <div class="col-md-6">
                     <label for="middle_name" class="form-label">Middle Initial:</label>
-                    <input type="text" id="middle_name" name="middle_name" class="form-control"> 
+                    <input type="text" id="middle_name" name="middle_name" class="form-control" autocomplete="off"> 
                 </div>
         
                 <div class="col-md-6">
                     <label for="last_name" class="form-label">Last Name:</label>
-                    <input type="text" id="last_name" name="last_name" class="form-control" required>
+                    <input type="text" id="last_name" name="last_name" class="form-control" required autocomplete="off">
                 </div>
                 <div class="col-md-6">
                     <label for="Age" class="form-label">Age : </label>
-                    <input type="text" id="Age" name="Age" class="form-control" required>
+                    <input type="text" id="Age" name="Age" class="form-control" required autocomplete="off">
                 </div>
 
                 <div class="col-md-6">
     <label class="form-label">Gender</label>
     <div class="form-check">
-        <input class="form-check-input" type="radio" name="Gender" id="maleGender" value="Male" required>
+        <input class="form-check-input" type="radio" name="Gender" id="maleGender" value="Male" required autocomplete="off">
         <label class="form-check-label" for="maleGender">
             Male
         </label>
     </div>
     <div class="form-check">
-        <input class="form-check-input" type="radio" name="Gender" id="femaleGender" value="Female" required>
+        <input class="form-check-input" type="radio" name="Gender" id="femaleGender" value="Female" required autocomplete="off">
         <label class="form-check-label" for="femaleGender">
             Female
+        </label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" name="Gender" id="femaleGender" value="Female" required autocomplete="off">
+        <label class="form-check-label" for="femaleGender">
+            Prefer Not To Say
         </label>
     </div>
    
@@ -151,15 +157,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div class="col-md-6">
                     <label for="contact_number" class="form-label">Contact Number:</label>
-                    <input type="text" id="contact_number" name="contact_number" class="form-control" required>
+                    <input type="text" id="contact_number" name="contact_number" class="form-control" required autocomplete="off">
                 </div>
                 <div class="col-md-6">
                     <label for="email" class="form-label">Email:</label>
-                    <input type="text" id="email" name="email" class="form-control" required>
+                    <input type="text" id="email" name="email" class="form-control" required autocomplete="off">
                 </div>
                 <div class="col-md-6">
                     <label for="affiliation" class="form-label">School / Affiliation:</label>
-                    <input type="text" id="affiliation" name="affiliation" class="form-control" required>
+                    <input type="text" id="affiliation" name="affiliation" class="form-control" required autocomplete="off">
                 </div>
     
 
@@ -170,7 +176,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </form>
     </div>
-
+    
+    <!--Logout Modal -->
+    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+            </div>
+            <div class="modal-body">
+                Do you want to log out?
+            </div>
+            <div class="modal-footer d-flex flex-row justify-content-center">
+                <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+            </div>
+            </div>
+        </div>
+    </div>
         
 
 

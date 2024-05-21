@@ -249,10 +249,8 @@ $sql = "SELECT
 $result = $conn->query($sql);
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -279,7 +277,6 @@ $result = $conn->query($sql);
 }
     </style>
 </head>
-
 <body>
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary"><!--sidenav container-->
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
@@ -321,20 +318,16 @@ $result = $conn->query($sql);
             <li class="nav-item"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-cloud'></i>Generate Report</a> </li>
             <hr>
             <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Log Out</a> </li>
         </ul>
     </div>
-    <div class="board container-fluid"><!--board container-->
-    
-        <div class="header1">
-            
-            <div class="text">
-                
+    <div class="board container-fluid"><!--board container--> 
+        <div class="header1"> 
+            <div class="text"> 
                 <div class="title">
                     <h2>Books</h2>
                 </div>
-                <div class="form-group">
-                    
+                <div class="form-group"> 
                     <form id="statusFilterForm" method="GET" action="admin_books.php">
                         <select id="statusFilter" name="status" class="form-select mb-3">
                             <option value="Available" <?php echo $status == 'Available' ? 'selected' : ''; ?>>Available</option>
@@ -342,223 +335,196 @@ $result = $conn->query($sql);
                             <option value="Request" <?php echo $status == 'Request' ? 'selected' : ''; ?>>Request</option>
                         </select>
                     </form>
-                    <div class="searchbar">
-            <form action="" class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="search-icon">
-                        <i class='bx bx-search'></i>
-                    </span>
                 </div>
-                <input type="search" id="searchInput" class="form-control" placeholder="Search..." required>
-            </form>
-        </div>
-            <br>
-                </div>
-                
-
             </div>
-            
-         
+            <div class="searchbar">
+                <form action="">
+                    <i class='bx bx-search' id="search-icon"></i>
+                    <input type="search" id="searchInput"  placeholder="Search..." required> 
+                </form>
+            </div> 
         </div>
-        <div class="books container-fluid" id="bookTable">  
-           
+        <div class="books container-fluid">  
            <?php
+                $recordsPerPage = 4;
+                $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+                $sqlCount = "SELECT COUNT(*) AS totalRecords FROM tbl_books WHERE tb_status = '$status'";
+                $resultCount = $conn->query($sqlCount);
+                $totalRecords = $resultCount->fetch_assoc()['totalRecords'];
+                $totalPages = ceil($totalRecords / $recordsPerPage);
+                $offset = ($page - 1) * $recordsPerPage;
+                $tableHTML = '';
 
-$recordsPerPage = 4;
-$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
-$sqlCount = "SELECT COUNT(*) AS totalRecords FROM tbl_books WHERE tb_status = '$status'";
-$resultCount = $conn->query($sqlCount);
-$totalRecords = $resultCount->fetch_assoc()['totalRecords'];
-$totalPages = ceil($totalRecords / $recordsPerPage);
-$offset = ($page - 1) * $recordsPerPage;
-$tableHTML = '';
-
-if ($status === 'Request') {
-    $sql = "SELECT tbl_requestbooks.* FROM tbl_requestbooks ORDER BY CASE WHEN 
-    tb_status = 'Pending' THEN 0 ELSE 1 END, Request_ID LIMIT $offset, $recordsPerPage";
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        $tableHTML = '<table class="table table-hover table-sm">
-            <thead class="bg-light sticky-top">
-                <tr>
-                    <th style="width: 10%;">Accession Code</th><th style="width: 15%;">Book Title</th>
-                    <th style="width: 10%;">Authors</th> <th style="width: 10%;">Publisher</th>
-                    <th style="width: 10%;">Section</th><th style="width: 5%;">Shelf #</th>
-                    <th style="width: 5%;">Edition</th> <th style="width: 5%;">Year Published</th><th style="width: 10%;">ISBN</th>
-                    <th style="width: 10%;">Bibliography</th> <th style="width: 5%;">Quantity</th>
-                    <th style="width: 5%;">Price</th><th style="width: 5%;">Status</th><th style="width: 5%;">Action</th>
-                </tr>
-            </thead>
-            <tbody>';
-        while ($row = $result->fetch_assoc()) {
-            $tableHTML .= '<tr>
-                <td></td>
-                <td>' . $row["Book_Title"] . '</td>
-                <td>' . $row["Authors_Name"] . '</td>
-                <td>' . $row["Publisher_Name"] . '</td>  <td></td> <td></td>
-                <td>' . $row["tb_edition"] . '</td>
-                <td>' . $row["Year_Published"] . '</td>  <td></td> <td></td>
-                <td>' . $row["Quantity"] . '</td>
-                <td>' . $row["price"] . '</td>
-                <td>' . $row["tb_status"] . '</td>
-                <td>';
-                if ($row["tb_status"] === "Approved") {
-                    $tableHTML .= "<button type='button' class='btn btn-secondary' disabled>Process</button>";
-                } else {
-                    $tableHTML .= "<a href='process_data_book.php?id=" . $row["Request_ID"] . "' class='btn btn-primary'>Process</a>";
-                }
-
-                $tableHTML .= '</td>
-                            </tr>';
-            }
-
-            $tableHTML .= "</tbody></table>";
-            
-        } else {
-            $tableHTML = "No books found.";
-        }
+                if ($status === 'Request') {
+                    $sql = "SELECT tbl_requestbooks.* FROM tbl_requestbooks ORDER BY CASE WHEN 
+                    tb_status = 'Pending' THEN 0 ELSE 1 END, Request_ID ";
+                    $result = $conn->query($sql);
+                    if ($result->num_rows > 0) {
+                        $tableHTML = '<table class="table table-hover table-sm">
+                                    <thead class="bg-light sticky-top">
+                                    <tr>
+                                    <th>#</th>
+                                    <th>Book Title</th>
+                                    <th>Authors</th> 
+                                    <th>Publisher</th> 
+                                    <th>Edition</th> 
+                                    <th>Year Published</th> 
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>';
+                        while ($row = $result->fetch_assoc()) {
+                             $tableHTML .= '<tr>
+                                <td>'. $row["Request_ID"] .'</td>
+                                <td>' . $row["Book_Title"] . '</td>
+                                <td>' . $row["Authors_Name"] . '</td>
+                                <td>' . $row["Publisher_Name"] . '</td>
+                                <td>' . $row["tb_edition"] . '</td>
+                                <td>' . $row["Year_Published"] . '</td>
+                                <td>' . $row["Quantity"] . '</td>
+                                <td>' . $row["price"] . '</td>
+                                <td>' . $row["tb_status"] . '</td>
+                                <td>';
+                                    if ($row["tb_status"] === "Approved") {
+                                        $tableHTML .= "<button type='button' class='btn btn-secondary' disabled>Process</button>";
+                                    } elseif ($row["tb_status"] === "Cancelled") { 
+                                        $tableHTML .= "<button type='button' class='btn btn-secondary' disabled>Process</button>";
+                                    } else{
+                                        $tableHTML .= "<a href='process_data_book.php?id=" . $row["Request_ID"] . "' class='btn btn-primary'>Process</a>";
+                                    }
+                            $tableHTML .= '</td>
+                                </tr>';
+                        } 
+                        
+                    } else {
+                        $tableHTML = "No books found.";
+                    }
 
     
-    } else {
-                $sql = "SELECT
-        tbl_books.Accession_Code,   tbl_books.Book_Title, 
-        tbl_books.Authors_ID, tbl_books.Publisher_Name, 
-        tbl_books.Section_Code,  tbl_books.shelf, 
-        tbl_books.tb_edition,   tbl_books.Year_Published, 
-        tbl_books.ISBN,  tbl_books.Bibliography, 
-        tbl_books.Quantity,  tbl_books.tb_status, 
-        tbl_books.Price,  tbl_section.Section_uid, 
-        tbl_section.Section_Name,  tbl_section.Section_Code, 
-        tbl_authors.Authors_Name
-    FROM
-        tbl_books
-    INNER JOIN
-        tbl_section ON tbl_books.Section_Code = tbl_section.Section_uid
-    INNER JOIN
-        tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID
-    WHERE
-        tbl_books.tb_status = '$status'
-    LIMIT $offset, $recordsPerPage";
-                $result = $conn->query($sql);
-                echo '<table class="table table-hover">
-        <thead class="bg-light sticky-top">
-            <tr>
-                <th style="width: 10%;">Accession Code</th><th style="width: 15%;">Book Title</th>
-                <th style="width: 10%;">Authors</th><th style="width: 10%;">Publisher</th>
-                <th style="width: 10%;">Section</th> <th style="width: 5%;">Shelf #</th>
-                <th style="width: 5%;">Edition</th> <th style="width: 5%;">Year Published</th> 
-                <th style="width: 5%;">Quantity</th> <th style="width: 5%;">Price</th>
-                <th style="width: 5%;">Status</th> <th style="width: 5%;">Action</th>
-        </tr>
-    </thead>
-    <tbody>';
+                } else {
+                    $sql = "SELECT
+                                tbl_books.Accession_Code,   tbl_books.Book_Title, 
+                                tbl_books.Authors_ID, tbl_books.Publisher_Name, 
+                                tbl_books.Section_Code,  tbl_books.shelf, 
+                                tbl_books.tb_edition,   tbl_books.Year_Published, 
+                                tbl_books.ISBN,  tbl_books.Bibliography, 
+                                tbl_books.Quantity,  tbl_books.tb_status, 
+                                tbl_books.Price,  tbl_section.Section_uid, 
+                                tbl_section.Section_Name,  tbl_section.Section_Code, 
+                                tbl_authors.Authors_Name
+                            FROM
+                                tbl_books
+                            INNER JOIN
+                                tbl_section ON tbl_books.Section_Code = tbl_section.Section_uid
+                            INNER JOIN
+                                tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID
+                            WHERE
+                                tbl_books.tb_status = '$status' ";
+                            $result = $conn->query($sql);
+                    echo '<table class="table table-hover table-sm">
+                        <thead class="bg-light sticky-top">
+                        <tr>
+                        <th>Accession Code</th>
+                        <th>Book Title</th>
+                        <th>Authors</th>
+                        <th>Publisher</th>
+                        <th>Section</th> 
+                        <th>Shelf</th>
+                        <th>Edition</th> 
+                        <th>Year Published</th> 
+                        <th>Quantity</th> 
+                        <th>Price</th> 
+                        <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>';
 
-                while ($row = $result->fetch_assoc()) {
-                    $tableHTML .= '<tr>
-        <td>' . $row['Accession_Code'] . '</td>
-        <td>' . $row['Book_Title'] . '</td>
-        <td>' . $row['Authors_Name'] . '</td>
-        <td>' . $row['Publisher_Name'] . '</td>
-        <td>' . $row['Section_Name'] . '</td>
-        <td>' . $row['shelf'] . '</td>
-        <td>' . $row['tb_edition'] . '</td>
-        <td>' . $row['Year_Published'] . '</td> 
-        <td>' . $row['Quantity'] . '</td>
-        <td>' . $row['Price'] . '</td>
-        <td>' . $row['tb_status'] . '</td>
-        <td>';
+                    while ($row = $result->fetch_assoc()) {
+                        $tableHTML .= '<tr>
+                            <td>' . $row['Accession_Code'] . '</td>
+                            <td>' . $row['Book_Title'] . '</td>
+                            <td>' . $row['Authors_Name'] . '</td>
+                            <td>' . $row['Publisher_Name'] . '</td>
+                            <td>' . $row['Section_Name'] . '</td>
+                            <td>' . $row['shelf'] . '</td>
+                            <td>' . $row['tb_edition'] . '</td>
+                            <td>' . $row['Year_Published'] . '</td> 
+                            <td>' . $row['Quantity'] . '</td>
+                            <td>' . $row['Price'] . '</td> 
+                            <td>';
 
-                    if ($row['tb_status'] == 'Available') {
-                        $tableHTML .= '<button type="button" class="btn btn-primary btn-sm archive-btn" data-bs-toggle="modal" data-bs-target="#archiveModal" data-accession-code="' . $row['Accession_Code'] . '">Archive</button>';
+                            if ($row['tb_status'] == 'Available') {
+                                $tableHTML .= '<button type="button" class="btn btn-primary btn-sm archive-btn" data-bs-toggle="modal" data-bs-target="#archiveModal" data-accession-code="' . $row['Accession_Code'] . '"><i class="bx bxs-edit"><i></button>';
+                            } elseif ($row['tb_status'] == 'Archived') {
+                                $tableHTML .= '<button type="button" class="btn btn-primary btn-sm archive-btn" data-bs-toggle="modal" data-bs-target="#unarchiveModal" data-accession-code="' . $row['Accession_Code'] . ' "disabled><i class="bx bxs-archive-out"><i></button>';
+                            }
+                        $tableHTML .= '</td>
+                            </tr>';
                     }
-                    $tableHTML .= '</td>
-                    </tr>';
                 }
-            }
 
-            $tableHTML .= '</tbody>
-    </table>';
+                $tableHTML .= '</tbody>
+                    </table>';
 
-            echo $tableHTML;
-
-                    // Add pagination links
-                    echo '<div class="d-flex justify-content-center">
-            <ul class="pagination">';
-                    for ($i = 1; $i <= $totalPages; $i++) {
-                        echo '<li class="page-item ' . ($page == $i ? 'active' : '') . '"><a class="page-link" href="?status=' . $status . '&page=' . $i . '">' . $i . '</a></li>';
-                    }
-                    echo '</ul>
-        </div>';
+                echo $tableHTML; 
             ?>
-        </div>
-        
-
+        </div> 
         <div class="btn-con">
             <a href="./admin_bookCatalog.php" class="btn btn-secondary">Catalog</a>
             <a href="./admin_addBook.php" class="btn btn-success">Add New Book</a>
         </div>
     </div>
-
-
-
-    <!-- Bootstrap Bundle with Popper.js (for Bootstrap 5) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-
+    <!--Logout Modal -->
+    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+            </div>
+            <div class="modal-body">
+                Do you want to log out?
+            </div>
+            <div class="modal-footer d-flex flex-row justify-content-center">
+                <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+            </div>
+            </div>
+        </div>
+    </div>
 
     <div id="archiveModal" class="modal fade" tabindex="-1" aria-labelledby="archiveModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="archiveModalLabel">Archive Book</h5>
+                    <h5 class="modal-title" id="archiveModalLabel">Update Book</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-
-                    <div class="modal-body">
-                        <p><strong>Book Title:</strong><input type="text" id="bookTitle" class="form-control" readonly><strong>Author</strong> <input type="text" id="authors" class="form-control" readonly></p>
-                        <p><strong>Publisher:</strong> <input type="text" id="publisher" class="form-control" readonly></p>
-                        <p><strong>Section:</strong> <input type="text" id="section" class="form-control" readonly></p>
-                        <p><strong>Shelf:</strong> <input type="text" id="shelf" class="form-control" readonly></p>
-                        <p><strong>Edition:</strong> <input type="text" id="edition" class="form-control" readonly></p>
-                        <p><strong>Year Published:</strong> <input type="text" id="yearPublished" class="form-control" readonly></p>
-                        <p><strong>ISBN:</strong> <input type="text" id="isbn" class="form-control" readonly></p>
-                        <p><strong>Bibliography:</strong> <input type="text" id="bibliography" class="form-control" readonly></p>
-
-                        <p><strong>Quantity:</strong> <input type="text" id="quantity" class="form-control" readonly></p>
-                        <p><strong>Price:</strong> <input type="text" id="price" class="form-control" readonly></p>
-                        <p><strong>Status:</strong> <input type="text" id="status" class="form-control" readonly></p>
-
-                    </div>
-                </div>
-                <div class="modal-footer">
+                </div> 
+                <div class="modal-footer d-flex flex-row justify-content-center">
                     <form id="archiveForm" method="POST" action="">
-
                         <p><strong>Updated Quantity:</strong> <input type="text" id="qty" placeholder="Update Quantity" oninput="updateHiddenQuantity()"></p>
+                            
+                            <input type="hidden" id="hiddenQuantity" name="quantity">
+                            <input type="hidden" id="archiveAccessionCode" name="accessionCode">
+                            <input type="hidden" id="action" name="action" value="">
 
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-
-                        <input type="hidden" id="hiddenQuantity" name="quantity">
-                        <input type="hidden" id="archiveAccessionCode" name="accessionCode">
-                        <input type="hidden" id="action" name="action" value="">
-
-                        <br>
-                        <button type="button" class="btn btn-primary" onclick="saveChanges()">Save Changes</button>
-                        <button type="button" class="btn btn-primary" onclick="setActionAndSubmit('archive')">Archive</button>
-                    </form>
-
+                            <br>
+                            <button type="button" class="btn btn-primary" onclick="saveChanges()">Save Changes</button>
+                            <button type="button" class="btn btn-primary" onclick="setActionAndSubmit('archive')">Archive Book</button>
+                    </form> 
                 </div>
             </div>
         </div>
     </div>
 
 
-    </div>
 
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-
- // JavaScript code for search functionality
- document.getElementById("searchInput").addEventListener("input", function() {
+        // JavaScript code for search functionality
+        document.getElementById("searchInput").addEventListener("input", function() {
             let searchValue = this.value.toLowerCase();
             let rows = document.querySelectorAll("tbody tr");
             rows.forEach(row => {
@@ -575,11 +541,7 @@ if ($status === 'Request') {
                     row.style.display = "none";
                 }
             });
-        });
-
-
-
-
+        });  
 
         function setAction(action) {
             document.getElementById('action').value = action;
@@ -621,9 +583,7 @@ if ($status === 'Request') {
                 console.log('Quantity input value:', this.value);
             });
         });
-    </script>
 
-    <script>
         document.addEventListener('DOMContentLoaded', function() {
             const archiveButtons = document.querySelectorAll('.archive-btn');
 
@@ -666,7 +626,6 @@ if ($status === 'Request') {
                     .catch(error => console.error('Error fetching book details:', error));
             }
         });
-
 
         // Add event listener to the select element for both functionalities
         document.getElementById('statusFilter').addEventListener('change', function() {
@@ -713,10 +672,6 @@ if ($status === 'Request') {
             xhr.send();
         }
     </script>
-
-
-
-
-</body>
-
+ 
+</body> 
 </html>

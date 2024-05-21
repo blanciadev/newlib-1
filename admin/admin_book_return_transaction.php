@@ -1,4 +1,7 @@
 <?php
+
+use PhpOffice\PhpSpreadsheet\Calculation\Financial\Securities\Price;
+
 session_start();
 // Check if the User_ID session variable is not set or empty
 if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
@@ -39,6 +42,7 @@ $sql = "SELECT DISTINCT
 b.User_ID, 
 b.Accession_Code, 
 bk.Book_Title, 
+bk.Price,
 bd.Quantity, 
 b.Date_Borrowed, 
 b.Due_Date, 
@@ -200,7 +204,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
  // Get the payment status
  if (isset($_POST['paymentStatus'])) {
     $Reason = $_POST['paymentStatus'];
-} 
+}   
 
    // Handle different payment status options
    switch ($Reason) {
@@ -217,7 +221,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
        case 'LOST':
            $value = 2000;
            $fine += $value;
-           $_SESSION['fine'] += $fine;
+        //    $_SESSION['fine'] += $fine;
            break;
        default:
            // Handle the case where the payment status is not recognized
@@ -448,7 +452,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Dashboard</title>
+    <title>Update Status</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -503,7 +507,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <li class="nav-item"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-report'></i>Generate Report</a> </li>
             <hr>
             <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
         </ul>
 
 
@@ -513,10 +517,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="header1">
             <div class="text">
                 <div class="back-btn">
-                    <a href="./admin_transactions.php"><i class='bx bx-arrow-back'></i></a>
+                    <a href="./admin_return_dash.php"><i class='bx bx-arrow-back'></i></a>
                 </div>
                 <div class="title">
-                    <h2>List Of Borrowers</h2>
+                    <h2>Update Status</h2>
                 </div>
             </div> 
         </div>
@@ -537,6 +541,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     b.User_ID, 
     b.Accession_Code, 
     bk.Book_Title, 
+    bk.Price,
     bd.Quantity, 
     b.Date_Borrowed, 
     b.Due_Date, 
@@ -591,12 +596,14 @@ WHERE
                 $_SESSION['Due_Date'] = $row["Due_Date"];
                 $_SESSION['status'] = $row["tb_status"];
                 $_SESSION['qty'] = $row["Quantity"];
+                $_SESSION['price'] = $row["Price"];
 
                 echo "<div class='container'>";
                 echo "<div class='row'>";
                 echo "<div class='col'>";
                 echo "<p>Accession Code: " . $row["Accession_Code"] . "</p>";
                 $_SESSION['Accession_Code'] = $row["Accession_Code"];
+                $_SESSION['Price'] = $row["Price"];
 
                 echo "<p>Book Title: " . $row["Book_Title"] . "</p>";
                 echo "<p>Quantity: " . $row["Quantity"] . "</p>";
@@ -643,6 +650,24 @@ WHERE
 
     </div>
          </div>
+    </div>
+
+    <!--Logout Modal -->
+    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+            </div>
+            <div class="modal-body">
+                Do you want to log out?
+            </div>
+            <div class="modal-footer d-flex flex-row justify-content-center">
+                <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+            </div>
+            </div>
+        </div>
     </div>
 
             <script>

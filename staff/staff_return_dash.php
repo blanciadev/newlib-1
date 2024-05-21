@@ -158,7 +158,7 @@ if ($conn->connect_error) {
                             echo "<td>" . $row["Borrower_ID"] . "</td>";
                             echo "<td>" . $row["First_Name"] ." ". $row["Middle_Name"] ." ". $row["Last_Name"] . "</td>";
                             echo "<td>" . $row["tb_status"] . "</td>";
-                            echo "<td> </td>";// insert borrower contact number please
+                            echo "<td> </td>";// Contact Number
 
                             echo "<td>";
                             // Conditionally render the button based on the status

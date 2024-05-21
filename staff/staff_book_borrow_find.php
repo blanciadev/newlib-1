@@ -199,23 +199,23 @@
         </div>
         <div class='books container'>
             
-            <form id="dataform" method="POST">
+            <form id="dataform" method="POST"> 
+                <label for="Accession_Code">Accession Code:</label>
+                <input type="text" id="Accession_Code" name="Accession_Code[]" placeholder="Enter Accession Code">
 
-            <label for="Accession_Code">Accession Code:</label>
-            <input type="text" id="Accession_Code" name="Accession_Code[]" placeholder="Enter Accession Code">
-
-            <label for="Book_Title">Book Title:</label>
-            <input type="text" id="Book_Title" name="Book_Title" placeholder="Enter Book Title">
-            <div class="container">
-                <h3>Search Results</h3>
-                <div class='bookSearchResult container' id="bookDetailsContainer">
-                    <!-- Display book details will be added dynamically -->
+                <label for="Book_Title">Book Title:</label>
+                <input type="text" id="Book_Title" name="Book_Title" placeholder="Enter Book Title">
+                <div class="container">
+                    <h3>Search Results</h3>
+                    <div class='bookSearchResult container' id="bookDetailsContainer">
+                        <!-- Display book details will be added dynamically -->
+                    </div>
                 </div>
-            </div>
             
-            <a id="checkoutBtn" class="btn btn-primary">Checkout</a> 
-        </div>
+                <a id="checkoutBtn" class="btn btn-primary">Checkout</a> 
+        
             </form>
+        </div>    
     </div>
     <!--Logout Modal -->
     <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

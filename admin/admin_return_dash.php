@@ -23,7 +23,7 @@ if ($conn->connect_error) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Dashboard</title>
+    <title>List of Borrowers</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -94,7 +94,7 @@ if ($conn->connect_error) {
             <li class="nav-item"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-report'></i>Generate Report</a> </li>
             <hr>
             <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
         </ul>
         
         
@@ -104,7 +104,7 @@ if ($conn->connect_error) {
     <div class="header1">
             <div class="text">
                 <div class="title">
-                    <h2>Return List</h2>
+                    <h2>List of Borrower</h2>
                 </div>
             </div>
             <div class="searchbar">
@@ -121,8 +121,7 @@ if ($conn->connect_error) {
             <tr>
                  
                     <th>Visitors Id</th>
-                    <th>Borrowers Name</th>
-                    
+                    <th>Borrowers Name</th> 
                     <th>Date Borrowed</th>
                     <th>Due Date</th>
                     <th>Status</th>

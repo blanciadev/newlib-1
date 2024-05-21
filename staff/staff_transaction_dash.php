@@ -209,7 +209,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                                 $name = $topBorrowerData['First_Name'];
                                 $lname = $topBorrowerData['Last_Name'];
 
-                                echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:40%; width:100%'>";
+                                echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:60px; width:100%'>";
                                 echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
                                 echo "<p style='font-size:12pt' class='fw-bold'>$topBorrowerID</p>";
                                 echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";
@@ -267,7 +267,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                                         $bookTitle = $row['Book_Title'];
                                         $borrowCount = $row['borrow_count'];
 
-                                        echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height:50%; width:100%'>";
+                                        echo "<li class='list-group-item d-flex flex-column justify-content-between align-items-start' style='height: 60px; width:100%'>";
                                         echo "<div class='w-100 d-flex flex-row justify-content-between' style='height: 20px;'>";
                                         echo "<p style='font-size:12pt' class='fw-bold'>$accessionCode</p>";
                                         echo "<span class='badge text-bg-primary rounded-pill'>$borrowCount</span>";

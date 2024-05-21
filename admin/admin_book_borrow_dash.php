@@ -60,12 +60,7 @@ if ($isBorrowerIdValid) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VillaReadHub - Dashboard</title>
-    
-    <script src="../node_modules/html5-qrcode/html5-qrcode.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-
+    <title>Scan Borrower Card</title> 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -117,35 +112,34 @@ if ($isBorrowerIdValid) {
             <li class="nav-item"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-report'></i>Generate Report</a> </li>
             <hr>
             <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
+            <li class="nav-item"> <a href="" data-bs-toggle="modal" data-bs-target="#logOut" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
         </ul> 
     </div>
     <div class="board1 container"><!--board container--> 
-    <div class="header1">
+        <div class="header1">
             <div class="text">
                 <div class="back-btn">
                     <a href="./admin_transactions.php"><i class='bx bx-arrow-back'></i></a>
                 </div>
                 <div class="title">
-                    <h2>Scan Borrower</h2>
+                    <h2>Scan Borrower Card</h2>
                 </div>
             </div> 
         </div>      
-    <style>
-        main {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        #reader {
-            width: 500px;
-        }
-        #result {
-            text-align: center;
-            font-size: 1.5rem;
-        }
-    </style>
-
+        <style>
+            main {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            #reader {
+                width: 500px;
+            }
+            #result {
+                text-align: center;
+                font-size: 1.5rem;
+            }
+        </style> 
         <div class="books container-fluid">
             <div class="container d-flex flex-column">
                 <main>
@@ -153,15 +147,33 @@ if ($isBorrowerIdValid) {
                     <div id="result"></div>
                 </main>
  
-
-                <form id="borrowForm" action="" method="post">
-    <div class="mb-3">
-        <label for="borrowerIdInput" class="form-label">Or Enter Borrower ID</label>
-        <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
-    </div> 
+                <form id="borrowForm" action="" method="post"> 
+                    <label for="borrowerIdInput" class="form-label">Or Enter Borrower ID</label>
+                    <input type="text" class="form-control" id="borrowerIdInput" name="borrower_id" required>
                 </form>
             </div> 
         </div> 
+    </div>
+
+    <!--Logout Modal -->
+    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+            </div>
+            <div class="modal-body">
+                Do you want to log out?
+            </div>
+            <div class="modal-footer d-flex flex-row justify-content-center">
+                <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+            </div>
+            </div>
+        </div>
+    </div>
+    <script src="../node_modules/html5-qrcode/html5-qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
     <script>
         const scanner = new Html5QrcodeScanner('reader', { 

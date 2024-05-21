@@ -65,12 +65,12 @@ function fetch_query_results($conn, $query, $params, $types = "") {
     </style>
 </head>
 <body> 
-    <div class="container board-container">
-        <div class="print-btn-container text-center">
-            <button id="printBtn" class="btn btn-primary mb-3">Print Report</button>
-            <a href="admin_dashboard.php" id="dashboardBtn" class="btn btn-secondary mb-3">Go Back To Dashboard</a>
-        </div>
-
+    <div class="board container"><!--board container-->  
+      
+        <div class="print-btn-container">
+            <button id="printBtn" class="btn btn-primary">Print Report</button>
+            <a href="admin_generate_report.php" id="dashboardBtn" class="btn btn-primary">Go Back</a>
+        </div> 
         <?php
             $conn = db_connect();
 
