@@ -298,10 +298,10 @@ $selectedCondition = isset($_GET['condition']) ? $_GET['condition'] : "";
                 </div>
             </div>
         </div>
-
+<!-- 
         <div class="btn-con">
             <a href="missing.php" class="btn">Missing Books</a>
-        </div>
+        </div> -->
     </div>
     <!--Logout Modal -->
     <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

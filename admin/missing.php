@@ -40,7 +40,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Missing Books</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -49,7 +49,7 @@
     <link href="./admin.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png ">
 </head>
-<>
+<body>
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
         <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
             <h2>Villa<span>Read</span>Hub</h2> 
@@ -93,65 +93,81 @@
             <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
         </ul>
     </div>
-    
-    <?php
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+    <div class="board1 container"><!--board container-->
+        <div class="header1">
+            <div class="text">
+                <div class="back-btn">
+                    <a href="./admin_return_dash.php"><i class='bx bx-arrow-back'></i></a>
+                </div>
+                <div class="title">
+                    <h2>Missing Books</h2>
+                </div>
+            </div> 
+        </div>
+         <div class="books container-fluid"> 
+            <table class="table table-hover table-sm">
+                <thead class="bg-light sticky-top">
+                    <tr>
+                        <th></th>
+                    </tr>
+                    <?php
+                        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+                        if ($conn->connect_error) {
+                            die("Connection failed: " . $conn->connect_error);
+                        }
 
-// SQL query
-$sql = "SELECT
-    MIN(b.User_ID) AS User_ID,
-    MIN(b.Accession_Code) AS Accession_Code,
-    MIN(bk.Book_Title) AS Book_Title,
-    MIN(bd.Quantity) AS Quantity,
-    MIN(b.Date_Borrowed) AS Date_Borrowed,
-    MIN(b.Due_Date) AS Due_Date,
-    MIN(bd.tb_status) AS tb_status,
-    MIN(bd.Borrower_ID) AS Borrower_ID,
-    MIN(br.First_Name) AS First_Name,
-    MIN(br.Middle_Name) AS Middle_Name,
-    MIN(br.Last_Name) AS Last_Name
-FROM
-    tbl_borrowdetails AS bd
-    INNER JOIN tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
-    INNER JOIN tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-    INNER JOIN tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID
-WHERE
-    bd.tb_status = 'Pending'
-GROUP BY
-    bd.Borrower_ID";
+                        // SQL query
+                        $sql = "SELECT
+                            MIN(b.User_ID) AS User_ID,
+                            MIN(b.Accession_Code) AS Accession_Code,
+                            MIN(bk.Book_Title) AS Book_Title,
+                            MIN(bd.Quantity) AS Quantity,
+                            MIN(b.Date_Borrowed) AS Date_Borrowed,
+                            MIN(b.Due_Date) AS Due_Date,
+                            MIN(bd.tb_status) AS tb_status,
+                            MIN(bd.Borrower_ID) AS Borrower_ID,
+                            MIN(br.First_Name) AS First_Name,
+                            MIN(br.Middle_Name) AS Middle_Name,
+                            MIN(br.Last_Name) AS Last_Name
+                        FROM
+                            tbl_borrowdetails AS bd
+                            INNER JOIN tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+                            INNER JOIN tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+                            INNER JOIN tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID
+                        WHERE
+                            bd.tb_status = 'Pending'
+                        GROUP BY
+                            bd.Borrower_ID";
 
 
-$result = $conn->query($sql);
+                        $result = $conn->query($sql);
 
-    // Output data of each row
-    while ($row = $result->fetch_assoc()) {
-        $dateBorrowed = new DateTime($row["Date_Borrowed"]);
-        $currentDate = new DateTime();
-        $interval = $currentDate->diff($dateBorrowed);
-        $monthsDifference = $interval->m + ($interval->y * 12);
+                        // Output data of each row
+                        while ($row = $result->fetch_assoc()) {
+                            $dateBorrowed = new DateTime($row["Date_Borrowed"]);
+                            $currentDate = new DateTime();
+                            $interval = $currentDate->diff($dateBorrowed);
+                            $monthsDifference = $interval->m + ($interval->y * 12);
 
-        echo '<tr class="' . (($monthsDifference > 1 && $row["tb_status"] !== 'Returned') ? 'table-danger' : '') . '">';
-        echo '<td>' . htmlspecialchars($row["Borrower_ID"]) . '</td>';
-        echo '<td>' . htmlspecialchars($row["First_Name"] . " " . $row["Middle_Name"] . " " . $row["Last_Name"]) . '</td>';
-        echo '<td>' . htmlspecialchars($row["Date_Borrowed"]) . '</td>';
-        echo '<td>' . htmlspecialchars($row["Due_Date"]) . '</td>';
-        echo '<td>' . htmlspecialchars($row["tb_status"]) . '</td>';
-        echo '<td>';
-        echo '<form class="update-form" method="GET" action="staff_return.php">';
-        echo '<input type="hidden" name="borrowId" id="borrowId" value="' . htmlspecialchars($row["Borrower_ID"]) . '">';
-        echo '<input type="hidden" name="borrowerId" value="' . htmlspecialchars($row["Borrower_ID"]) . '">';
-        echo '</form>';
-    
-        echo '<div class="update-message"></div>';
-        echo '</td>';
-        echo '</tr>';
-    }
-    $conn->close();
-    ?>
-
-   
+                            echo '<tr class="' . (($monthsDifference > 1 && $row["tb_status"] !== 'Returned') ? 'table-danger' : '') . '">';
+                            echo '<td>' . htmlspecialchars($row["Borrower_ID"]) . '</td>';
+                            echo '<td>' . htmlspecialchars($row["First_Name"] . " " . $row["Middle_Name"] . " " . $row["Last_Name"]) . '</td>';
+                            echo '<td>' . htmlspecialchars($row["Date_Borrowed"]) . '</td>';
+                            echo '<td>' . htmlspecialchars($row["Due_Date"]) . '</td>';
+                            echo '<td>' . htmlspecialchars($row["tb_status"]) . '</td>';
+                            echo '<td>';
+                            echo '<form class="update-form" method="GET" action="staff_return.php">';
+                            echo '<input type="hidden" name="borrowId" id="borrowId" value="' . htmlspecialchars($row["Borrower_ID"]) . '">';
+                            echo '<input type="hidden" name="borrowerId" value="' . htmlspecialchars($row["Borrower_ID"]) . '">';
+                            echo '</form>';
+                        
+                            echo '<div class="update-message"></div>';
+                            echo '</td>';
+                            echo '</tr>';
+                        }
+                        $conn->close();
+                    ?>
+         </div>
+    </div>
 </body>
 </html>
