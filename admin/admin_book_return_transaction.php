@@ -161,8 +161,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $condition = 'pay_later';
             // Add your pay later code here
         } 
-    }else{
-
     }
 
             // Get current timestamp
@@ -198,8 +196,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
 
-   // Output the total fine after all calculations
-//    echo "Total Fine: " . $fine . "<br>";
 
  // Get the payment status
  if (isset($_POST['paymentStatus'])) {
@@ -219,9 +215,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
            $_SESSION['fine'] += $fine;
            break;
        case 'LOST':
-           $value = 2000;
+           $value = $_SESSION['price']; // <-------
            $fine += $value;
-        //    $_SESSION['fine'] += $fine;
+            //    $_SESSION['fine'] += $fine;
            break;
        default:
            // Handle the case where the payment status is not recognized
@@ -538,32 +534,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Prepare the SQL statement with a placeholder for the BorrowDetails_ID
     $sql = "SELECT DISTINCT
-    b.User_ID, 
-    b.Accession_Code, 
-    bk.Book_Title, 
-    bk.Price,
-    bd.Quantity, 
-    b.Date_Borrowed, 
-    b.Due_Date, 
-    bd.tb_status, 
-    bd.Borrower_ID, 
-    b.Borrow_ID
+	b.User_ID, 
+	b.Accession_Code, 
+	bk.Book_Title, 
+	bk.Price, 
+	bd.Quantity, 
+	b.Date_Borrowed, 
+	b.Due_Date, 
+	bd.tb_status, 
+	bd.Borrower_ID, 
+	b.Borrow_ID, 
+	bk.tb_edition
 FROM
-    tbl_borrowdetails AS bd
-    INNER JOIN
-    tbl_borrow AS b
-    ON 
-        bd.Borrower_ID = b.Borrower_ID AND
-        bd.BorrowDetails_ID = b.Borrow_ID
-    INNER JOIN
-    tbl_books AS bk
-    ON 
-        b.Accession_Code = bk.Accession_Code
-    INNER JOIN
-    tbl_borrower AS br
-    ON 
-        b.Borrower_ID = br.Borrower_ID AND
-        bd.Borrower_ID = br.Borrower_ID
+	tbl_borrowdetails AS bd
+	INNER JOIN
+	tbl_borrow AS b
+	ON 
+		bd.Borrower_ID = b.Borrower_ID AND
+		bd.BorrowDetails_ID = b.Borrow_ID
+	INNER JOIN
+	tbl_books AS bk
+	ON 
+		b.Accession_Code = bk.Accession_Code
+	INNER JOIN
+	tbl_borrower AS br
+	ON 
+		b.Borrower_ID = br.Borrower_ID AND
+		bd.Borrower_ID = br.Borrower_ID
 WHERE
     bd.BorrowDetails_ID =  ?";
 
@@ -602,12 +599,15 @@ WHERE
                 echo "<div class='row'>";
                 echo "<div class='col'>";
                 echo "<p>Accession Code: " . $row["Accession_Code"] . "</p>";
+
                 $_SESSION['Accession_Code'] = $row["Accession_Code"];
-                $_SESSION['Price'] = $row["Price"];
+                $_SESSION['price'] = $row["Price"];
 
                 echo "<p>Book Title: " . $row["Book_Title"] . "</p>";
                 echo "<p>Quantity: " . $row["Quantity"] . "</p>";
                 echo "<p>Date Borrowed : " . $row["Date_Borrowed"] . "</p>";
+                echo "<p>Edition: " . $row["tb_edition"] . "</p>";
+                echo "<p>Price: " . $row["Price"] . "</p>";
                 echo "<p>Due Date: " . $row["Due_Date"] . "</p>";
                 echo "<p>Status: " . $row["tb_status"] . "</p>";
 
