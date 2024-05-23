@@ -194,36 +194,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
 
-   // Output the total fine after all calculations
-//    echo "Total Fine: " . $fine . "<br>";
-
  // Get the payment status
  if (isset($_POST['paymentStatus'])) {
     $Reason = $_POST['paymentStatus'];
 } 
 
-   // Handle different payment status options
-   switch ($Reason) {
-       case 'DAMAGE':
-           $value = 1000;
-           $fine += $value;
-           $_SESSION['fine'] += $fine;  // Update fine directly in the session
-           break;
-       case 'GOOD CONDITION':
-           $value = 0;
-           $fine += $value;
-           $_SESSION['fine'] += $fine;
-           break;
-       case 'LOST':
-        $value = $_SESSION['price']; 
-           $fine += $value;
+  // Handle different payment status options
+  switch ($Reason) {
+    case 'minor':
+        $value = 100;
+        $fine += $value;
+        // $_SESSION['fine'] += $fine;  
+        break;
+    case 'moderate':
+        $value = 200;
+        $fine += $value;
+        // $_SESSION['fine'] += $fine;  
+        break;
+    case 'major':
+        $value = $_SESSION['price'] + 50;
+        $fine += $value;
+        // $_SESSION['fine'] += $fine;  
+        break;
+    case 'GOOD CONDITION':
+        $value = 0;
+        $fine += $value;
+        // $_SESSION['fine'] += $fine;
+        break;
+    case 'LOST':
+        $value = $_SESSION['price'] + 100;
+        $fine += $value;
         //    $_SESSION['fine'] += $fine;
-           break;
-       default:
-           // Handle the case where the payment status is not recognized
-           echo "Invalid payment status selected.";
-           break;
-   }
+        break;
+    default:
+        // Handle the case where the payment status is not recognized
+        echo "Invalid payment status selected.";
+        break;
+}
 
 
     // Database connection
@@ -610,8 +617,16 @@ WHERE
                 echo '<div class="form-group">';
                 echo '<label for="paymentStatus">Book Status:</label><br>';
                 echo '<div class="form-check">';
-                echo '<input type="radio" id="damage" name="paymentStatus" value="DAMAGE" class="form-check-input"required> ';
-                echo '<label for="damage" class="form-check-label">Damage</label><br>';
+                echo '<input type="radio" id="minor" name="paymentStatus" value="Minor DAMAGE" class="form-check-input"required> ';
+                echo '<label for="damage" class="form-check-label">Minor Damage</label><br>';
+                echo '</div>';
+                echo '<div class="form-check">';
+                echo '<input type="radio" id="moderate" name="paymentStatus" value="Moderate DAMAGE" class="form-check-input"required> ';
+                echo '<label for="damage" class="form-check-label">Moderate Damage</label><br>';
+                echo '</div>';
+                echo '<div class="form-check">';
+                echo '<input type="radio" id="major" name="paymentStatus" value="MAJOR DAMAGE" class="form-check-input"required> ';
+                echo '<label for="damage" class="form-check-label">Major Damage</label><br>';
                 echo '</div>';
                 echo '<div class="form-check">';
                 echo '<input type="radio" id="goodCondition" name="paymentStatus" value="GOOD CONDITION" class="form-check-input"required>';
@@ -622,6 +637,7 @@ WHERE
                 echo '<label for="lost" class="form-check-label">Lost</label><br>';
                 echo '</div>';
                 echo '</div>';
+
                 if ($row["tb_status"] === 'Pending') {
                 echo '<button type="submit" class="btn btn-primary">Proceed to Payment</button>';
                 echo ' <button type="submit" name="action" value="pay_later" class="btn btn-primary">Pay Later</button>';
