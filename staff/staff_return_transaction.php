@@ -199,38 +199,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $Reason = $_POST['paymentStatus'];
 } 
 
-  // Handle different payment status options
-  switch ($Reason) {
-    case 'minor':
-        $value = 100;
-        $fine += $value;
-        // $_SESSION['fine'] += $fine;  
-        break;
-    case 'moderate':
-        $value = 200;
-        $fine += $value;
-        // $_SESSION['fine'] += $fine;  
-        break;
-    case 'major':
-        $value = $_SESSION['price'] + 50;
-        $fine += $value;
-        // $_SESSION['fine'] += $fine;  
-        break;
-    case 'GOOD CONDITION':
-        $value = 0;
-        $fine += $value;
-        // $_SESSION['fine'] += $fine;
-        break;
-    case 'LOST':
-        $value = $_SESSION['price'] + 100;
-        $fine += $value;
-        //    $_SESSION['fine'] += $fine;
-        break;
-    default:
-        // Handle the case where the payment status is not recognized
-        echo "Invalid payment status selected.";
-        break;
-}
+    // Handle different payment status options
+    switch ($Reason) {
+        case 'Minor DAMAGE':
+            $value = 100;
+            $fine += $value;
+            // $_SESSION['fine'] += $fine;  
+            break;
+        case 'Moderate DAMAGE':
+            $value = 200;
+            $fine += $value;
+            // $_SESSION['fine'] += $fine;  
+            break;
+        case 'Major DAMAGE':
+            $value = $_SESSION['price'] + 50;
+            $fine += $value;
+            // $_SESSION['fine'] += $fine;  
+            break;
+        case 'GOOD CONDITION':
+            $value = 0;
+            $fine += $value;
+            // $_SESSION['fine'] += $fine;
+            break;
+        case 'LOST':
+            $value = $_SESSION['price'] + 100;
+            $fine += $value;
+            //    $_SESSION['fine'] += $fine;
+            break;
+        default:
+            // Handle the case where the payment status is not recognized
+            echo "Invalid payment status selected.";
+            break;
+    }
 
 
     // Database connection
@@ -625,7 +625,7 @@ WHERE
                 echo '<label for="damage" class="form-check-label">Moderate Damage</label><br>';
                 echo '</div>';
                 echo '<div class="form-check">';
-                echo '<input type="radio" id="major" name="paymentStatus" value="MAJOR DAMAGE" class="form-check-input"required> ';
+                echo '<input type="radio" id="major" name="paymentStatus" value="Major DAMAGE" class="form-check-input"required> ';
                 echo '<label for="damage" class="form-check-label">Major Damage</label><br>';
                 echo '</div>';
                 echo '<div class="form-check">';

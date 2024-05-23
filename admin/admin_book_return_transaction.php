@@ -204,17 +204,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Handle different payment status options
     switch ($Reason) {
-        case 'minor':
+        case 'Minor DAMAGE':
             $value = 100;
             $fine += $value;
             // $_SESSION['fine'] += $fine;  
             break;
-        case 'moderate':
+        case 'Moderate DAMAGE':
             $value = 200;
             $fine += $value;
             // $_SESSION['fine'] += $fine;  
             break;
-        case 'major':
+        case 'Major DAMAGE':
             $value = $_SESSION['price'] + 50;
             $fine += $value;
             // $_SESSION['fine'] += $fine;  
@@ -633,7 +633,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             echo '<label for="damage" class="form-check-label">Moderate Damage</label><br>';
                             echo '</div>';
                             echo '<div class="form-check">';
-                            echo '<input type="radio" id="major" name="paymentStatus" value="MAJOR DAMAGE" class="form-check-input"required> ';
+                            echo '<input type="radio" id="major" name="paymentStatus" value="Major DAMAGE" class="form-check-input"required> ';
                             echo '<label for="damage" class="form-check-label">Major Damage</label><br>';
                             echo '</div>';
                             echo '<div class="form-check">';
@@ -685,14 +685,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
 
-        <script>
+        <!-- <script>
             function updateAndSetSession(borrowIdadmin) {
                 // Redirect to staff_return_transaction.php with the borrowId parameter
                 window.location.href = "staff_return_transaction.php?borrowIdadmin=" + borrowIdadmin;
             }
-        </script>
+        </script> -->
 
-        <script>
+        <!-- <script>
             // Get the search input field
             const searchInput = document.getElementById("searchInput");
 
@@ -714,20 +714,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 };
                 xhr.send();
             });
-        </script>
+        </script> -->
 
 
 
-        <script>
+        <!-- <script>
             document.getElementById("requestButton").addEventListener("click", function() {
                 window.location.href = "staff_request_form.php";
             });
-        </script>
+        </script> -->
 
 
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-        <script>
+        <!-- <script>
             let date = new Date().toLocaleDateString('en-US', {
                 day: 'numeric',
                 month: 'long',
@@ -758,7 +758,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 })
 
             })
-        </script>
+        </script> -->
 </body>
 
 </html>
