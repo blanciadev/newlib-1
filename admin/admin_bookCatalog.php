@@ -142,8 +142,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             </div>
         </div>
         <div class="bookCatalog">
-            <div class="catalogOptions">
-                <div class="d-flex w-100"> 
+            <div class="catalogOptions"> 
                     <form id="sectionForm">
                         <div class="d-flex w-100">
                                 <button type="button" class="btn btn-primary btnOption" data-target="FIL" value="FIL">Filipiniana</button>
@@ -155,8 +154,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                                 <button type="button" class="btn btn-primary btnOption" data-target="Publishers" value="Publishers">Publishers</button>
 
                         </div>
-                    </form> 
-                </div>
+                    </form>  
             </div>
             <hr>
             <div class="catalogCon container">

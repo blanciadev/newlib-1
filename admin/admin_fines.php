@@ -72,12 +72,16 @@ $selectedCondition = isset($_GET['condition']) ? $_GET['condition'] : "";
         </ul>
     </div>
     <div class=" board container-fluid"><!--board container-->
-        <div class="header1">
+    <div class="header">
             <div class="text">
                 <div class="title">
                     <h2>Fines</h2>
                 </div>
             </div>
+            <div class="datetime">
+                    <p id="currentTime" style="font-size:1rem;font-weight: 700; margin:0%;"></p>
+                    <p id="currentDate" style="font-size: 10pt;margin:0%;"></p>
+                </div>
         </div>
         <div class="content1">
             <div class="overview1">
@@ -322,6 +326,25 @@ $selectedCondition = isset($_GET['condition']) ? $_GET['condition'] : "";
     </div>
 
     <script>
+        let date = new Date().toLocaleDateString('en-US', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            weekday: 'long',
+        });
+        document.getElementById("currentDate").innerText = date;
+
+        setInterval(() => {
+            let time = new Date().toLocaleTimeString('en-US', {
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: 'true',
+            })
+            document.getElementById("currentTime").innerText = time;
+
+        }, 1000)
+        
         // Function to sort the table
         function sortTable() {
             var selectBox = document.getElementById("sortSelect");
