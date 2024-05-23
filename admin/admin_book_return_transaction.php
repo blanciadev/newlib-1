@@ -71,8 +71,8 @@ $stmt->execute();
 // Get the result
 $result = $stmt->get_result();
 
- // Define the HTML code for the toast element
- echo '<div class="toastNotif hide">
+// Define the HTML code for the toast element
+echo '<div class="toastNotif hide">
  <div class="toast-content">
      <i class="bx bx-check check"></i>
      <div class="message">
@@ -148,82 +148,92 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $condition = 'proceed';
     $paymentStatus = "Paid";
-    
+
     if (isset($_POST['action'])) {
         $action = $_POST['action'];
 
         if ($action == 'proceed_to_payment') {
             // Handle the Proceed to Payment logic
-        $condition = 'proceed';
+            $condition = 'proceed';
             // Add your payment processing code here
         } elseif ($action == 'pay_later') {
             // Handle the Pay Later logic
             $condition = 'pay_later';
             // Add your pay later code here
-        } 
+        }
     }
 
-            // Get current timestamp
-        $currentTimestamp = time();
-        $dateBorrowed = $_SESSION['Due_Date'];
+    // Get current timestamp
+    $currentTimestamp = time();
+    $dateBorrowed = $_SESSION['Due_Date'];
 
-        // Calculate number of days since borrowed
-        $daysSinceBorrowed = floor(($currentTimestamp - strtotime($dateBorrowed)) / (60 * 60 * 24));
+    // Calculate number of days since borrowed
+    $daysSinceBorrowed = floor(($currentTimestamp - strtotime($dateBorrowed)) / (60 * 60 * 24));
 
-        // Subtract 3 days to account for the rental time valid only
-        $daysOverdue = max(0, $daysSinceBorrowed - 3); // Ensure it's non-negative
+    // Subtract 3 days to account for the rental time valid only
+    $daysOverdue = max(0, $daysSinceBorrowed - 3); // Ensure it's non-negative
 
-        // Initialize fine
-        $fine = 0;
-        define('RETURNED_ON_TIME', 0);
-        echo '<script>';
-        echo 'console.log("Due Date: ' . $dateBorrowed . '");'; // Output the Due Date for logging
-        echo 'console.log("Days Overdue: ' . $daysOverdue . '");';
-        echo 'console.log("Days Since Borrowed: ' . $daysSinceBorrowed . '");';
-        echo '</script>';
+    // Initialize fine
+    $fine = 0;
+    define('RETURNED_ON_TIME', 0);
+    echo '<script>';
+    echo 'console.log("Due Date: ' . $dateBorrowed . '");'; // Output the Due Date for logging
+    echo 'console.log("Days Overdue: ' . $daysOverdue . '");';
+    echo 'console.log("Days Since Borrowed: ' . $daysSinceBorrowed . '");';
+    echo '</script>';
 
-        // Calculate the fine based on overdue status and book status
-        switch (true) {
-            case $daysOverdue > 0:
-                // Add default penalty fine of 30 pesos
-                $fine += 0;
-                // Add per-day fine of 15 pesos for each subsequent day of overdue
-                $fine += ($daysOverdue - 1) * 5;
-                break;
-            default:
-                // No additional fine for books in GOOD CONDITION or if none of the expected statuses are selected
-                break;
-        }
+    // Calculate the fine based on overdue status and book status
+    switch (true) {
+        case $daysOverdue > 0:
+            // Add default penalty fine of 30 pesos
+            $fine += 0;
+            // Add per-day fine of 15 pesos for each subsequent day of overdue
+            $fine += ($daysOverdue - 1) * 5;
+            break;
+        default:
+            // No additional fine for books in GOOD CONDITION or if none of the expected statuses are selected
+            break;
+    }
 
 
 
- // Get the payment status
- if (isset($_POST['paymentStatus'])) {
-    $Reason = $_POST['paymentStatus'];
-}   
+    // Get the payment status
+    if (isset($_POST['paymentStatus'])) {
+        $Reason = $_POST['paymentStatus'];
+    }
 
-   // Handle different payment status options
-   switch ($Reason) {
-       case 'DAMAGE':
-           $value = 1000;
-           $fine += $value;
-           $_SESSION['fine'] += $fine;  // Update fine directly in the session
-           break;
-       case 'GOOD CONDITION':
-           $value = 0;
-           $fine += $value;
-           $_SESSION['fine'] += $fine;
-           break;
-       case 'LOST':
-           $value = $_SESSION['price']; // <-------
-           $fine += $value;
+    // Handle different payment status options
+    switch ($Reason) {
+        case 'minor':
+            $value = 100;
+            $fine += $value;
+            // $_SESSION['fine'] += $fine;  
+            break;
+        case 'moderate':
+            $value = 200;
+            $fine += $value;
+            // $_SESSION['fine'] += $fine;  
+            break;
+        case 'major':
+            $value = $_SESSION['price'] + 50;
+            $fine += $value;
+            // $_SESSION['fine'] += $fine;  
+            break;
+        case 'GOOD CONDITION':
+            $value = 0;
+            $fine += $value;
+            // $_SESSION['fine'] += $fine;
+            break;
+        case 'LOST':
+            $value = $_SESSION['price'] + 100;
+            $fine += $value;
             //    $_SESSION['fine'] += $fine;
-           break;
-       default:
-           // Handle the case where the payment status is not recognized
-           echo "Invalid payment status selected.";
-           break;
-   }
+            break;
+        default:
+            // Handle the case where the payment status is not recognized
+            echo "Invalid payment status selected.";
+            break;
+    }
 
 
     // Database connection
@@ -237,15 +247,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $currentDate = date("Y-m-d");
 
 
-    if ($condition == 'proceed'){
-    // Update tbl_borrowdetails status
-    $sql1 = "UPDATE tbl_borrowdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = ?";
-    $stmt1 = $conn->prepare($sql1);
-    if (!$stmt1) {
-        die("Error in preparing statement 1: " . $conn->error);
-    }
-    $stmt1->bind_param("i", $bd_Id);
-    }else{
+    if ($condition == 'proceed') {
+        // Update tbl_borrowdetails status
+        $sql1 = "UPDATE tbl_borrowdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = ?";
+        $stmt1 = $conn->prepare($sql1);
+        if (!$stmt1) {
+            die("Error in preparing statement 1: " . $conn->error);
+        }
+        $stmt1->bind_param("i", $bd_Id);
+    } else {
         $sql1 = "UPDATE tbl_borrowdetails SET tb_status = 'On Hold' WHERE BorrowDetails_ID = ?";
         $stmt1 = $conn->prepare($sql1);
         if (!$stmt1) {
@@ -254,104 +264,102 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt1->bind_param("i", $bd_Id);
     }
 
-    if ($condition == 'proceed'){
-    // Update tbl_borrow status
-    $sql2 = "UPDATE tbl_borrow SET tb_status = 'Returned' WHERE Borrow_ID = (
+    if ($condition == 'proceed') {
+        // Update tbl_borrow status
+        $sql2 = "UPDATE tbl_borrow SET tb_status = 'Returned' WHERE Borrow_ID = (
         SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ?
     )";
-    $stmt2 = $conn->prepare($sql2);
-    if (!$stmt2) {
-        die("Error in preparing statement 2: " . $conn->error);
-    }
-    $stmt2->bind_param("i", $bd_Id);
-    }else{
-      // Update tbl_borrow status
-      $sql2 = "UPDATE tbl_borrow SET tb_status = 'Pending' WHERE Borrow_ID = (
+        $stmt2 = $conn->prepare($sql2);
+        if (!$stmt2) {
+            die("Error in preparing statement 2: " . $conn->error);
+        }
+        $stmt2->bind_param("i", $bd_Id);
+    } else {
+        // Update tbl_borrow status
+        $sql2 = "UPDATE tbl_borrow SET tb_status = 'Pending' WHERE Borrow_ID = (
         SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ?
     )";
-    $stmt2 = $conn->prepare($sql2);
-    if (!$stmt2) {
-        die("Error in preparing statement 2: " . $conn->error);
+        $stmt2 = $conn->prepare($sql2);
+        if (!$stmt2) {
+            die("Error in preparing statement 2: " . $conn->error);
+        }
+        $stmt2->bind_param("i", $bd_Id);
     }
-    $stmt2->bind_param("i", $bd_Id);
+    if ($condition == 'proceed') {
+        // Update tbl_returningdetails status
+        $sql3 = "UPDATE tbl_returningdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = ?";
+        $stmt3 = $conn->prepare($sql3);
+        if (!$stmt3) {
+            die("Error in preparing statement 3: " . $conn->error);
+        }
+        $stmt3->bind_param("i", $bd_Id);
+    } else {
+        // Update tbl_returningdetails status
+        $sql3 = "UPDATE tbl_returningdetails SET tb_status = 'On Hold' WHERE BorrowDetails_ID = ?";
+        $stmt3 = $conn->prepare($sql3);
+        if (!$stmt3) {
+            die("Error in preparing statement 3: " . $conn->error);
+        }
+        $stmt3->bind_param("i", $bd_Id);
     }
-    if ($condition == 'proceed'){
-    // Update tbl_returningdetails status
-    $sql3 = "UPDATE tbl_returningdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = ?";
-    $stmt3 = $conn->prepare($sql3);
-    if (!$stmt3) {
-        die("Error in preparing statement 3: " . $conn->error);
-    }
-    $stmt3->bind_param("i", $bd_Id);
-    }else{
-     // Update tbl_returningdetails status
-     $sql3 = "UPDATE tbl_returningdetails SET tb_status = 'On Hold' WHERE BorrowDetails_ID = ?";
-     $stmt3 = $conn->prepare($sql3);
-     if (!$stmt3) {
-         die("Error in preparing statement 3: " . $conn->error);
-     }
-     $stmt3->bind_param("i", $bd_Id);
-    
-    }
-    if ($condition == 'proceed'){
-    // Update tbl_returned with current date and status
-    $sql4 = "UPDATE tbl_returned SET Date_Returned = ?, tb_status = 'Resolved' WHERE Borrow_ID IN (
+    if ($condition == 'proceed') {
+        // Update tbl_returned with current date and status
+        $sql4 = "UPDATE tbl_returned SET Date_Returned = ?, tb_status = 'Resolved' WHERE Borrow_ID IN (
     SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ? LIMIT 1)
     )";
 
-    $stmt4 = $conn->prepare($sql4);
-    if (!$stmt4) {
-        die("Error in preparing statement 4: " . $conn->error);
-    }
+        $stmt4 = $conn->prepare($sql4);
+        if (!$stmt4) {
+            die("Error in preparing statement 4: " . $conn->error);
+        }
 
-    $stmt4->bind_param("si", $currentDate, $bd_Id);
- } else{
- // Update tbl_returned with current date and status
- $sql4 = "UPDATE tbl_returned SET Date_Returned = ?, tb_status = 'On Hold' WHERE Borrow_ID IN (
+        $stmt4->bind_param("si", $currentDate, $bd_Id);
+    } else {
+        // Update tbl_returned with current date and status
+        $sql4 = "UPDATE tbl_returned SET Date_Returned = ?, tb_status = 'On Hold' WHERE Borrow_ID IN (
     SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ? LIMIT 1)
     )";
 
-    $stmt4 = $conn->prepare($sql4);
-    if (!$stmt4) {
-        die("Error in preparing statement 4: " . $conn->error);
+        $stmt4 = $conn->prepare($sql4);
+        if (!$stmt4) {
+            die("Error in preparing statement 4: " . $conn->error);
+        }
+
+        $stmt4->bind_param("si", $currentDate, $bd_Id);
     }
 
-    $stmt4->bind_param("si", $currentDate, $bd_Id);
-    }
 
-    
     // Get Borrower_ID from session
     $borrowerId = $_SESSION['BorrowDetails_ID'];
 
     // Get current date and time
     $currentDateTime = date("Y-m-d H:i:s");
 
-    if($fine != 0 && $condition == 'proceed'){
+    if ($fine != 0 && $condition == 'proceed') {
         echo '<script>';
         echo 'console.log("Fine is not Equals to 0");';
         echo '</script>';
-    // Prepare SQL statement to insert fine information
-    $sql5 = "INSERT INTO tbl_fines (Borrower_ID, ReturnDetails_ID, Amount, Reason, Payment_Status, Date_Created, Payment_Date) 
+        // Prepare SQL statement to insert fine information
+        $sql5 = "INSERT INTO tbl_fines (Borrower_ID, ReturnDetails_ID, Amount, Reason, Payment_Status, Date_Created, Payment_Date) 
             VALUES (?, ?, ?, ?, ?, ?, ?)";
-    $stmt5 = $conn->prepare($sql5);
+        $stmt5 = $conn->prepare($sql5);
 
-    if (!$stmt5) {
-        die("Error in preparing statement 5: " . $conn->error);
-    }
+        if (!$stmt5) {
+            die("Error in preparing statement 5: " . $conn->error);
+        }
 
-   
-    $_SESSION['stat'] =  $paymentStatus;
-     // Bind parameters and execute statement
-     $stmt5->bind_param("iiissss", $borrowerId, $bd_Id, $fine, $Reason, $paymentStatus, $currentDate, $currentDateTime);
-     $status5 = $stmt5->execute();
 
-    }else{
+        $_SESSION['stat'] =  $paymentStatus;
+        // Bind parameters and execute statement
+        $stmt5->bind_param("iiissss", $borrowerId, $bd_Id, $fine, $Reason, $paymentStatus, $currentDate, $currentDateTime);
+        $status5 = $stmt5->execute();
+    } else {
         echo '<script>';
-            echo 'console.log("Fine is 0");';
-            echo '</script>';
+        echo 'console.log("Fine is 0");';
+        echo '</script>';
     }
 
-  
+
     $accessionCode = $_SESSION['Accession_Code'];
     $qtyb = $_SESSION['qty'];
     $sqlUpdateQuantity = "UPDATE tbl_books SET Quantity = Quantity + ? WHERE Accession_Code = ?";
@@ -380,34 +388,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $status2 = $stmt2->execute();
     $status3 = $stmt3->execute();
     $status4 = $stmt4->execute();
-  
+
 
     // Check each query execution status
     if ($status1 && $status2 && $status3 && $status4) {
         // All queries executed successfully
-     
 
-      if($condition == 'proceed'){
-        echo '<script>
+
+        if ($condition == 'proceed') {
+            echo '<script>
         // Call showToast with "success" message type after successful insertion
         showToast("success", "Transaction Complete");
         // Redirect to print_return.php after 3 seconds with fine as a query parameter
             redirectToPage("queries/print_return.php?fine=' . urlencode($fine) . '", 1500);
       </script>';
-      }else{
-        echo '<script>
+        } else {
+            echo '<script>
         showToast("success", "Payment Pending");
         // Redirect to print_return.php after 3 seconds with fine as a query parameter
         //    redirectToPage("admin_transactions.php", 1500);
       </script>';
-      }
-      
+        }
+
 
         // echo '<script>alert("Record Updated successfully."); window.location.href = "queries/print_return.php";</script>';
         // exit();
     } else {
         // Error occurred while executing queries
-      
+
         echo '<script>
         // Call showToast with "success" message type after successful insertion
         showToast("error", "Process Failed");
@@ -427,7 +435,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (!$status4) {
             echo " Error in statement 4: " . $stmt4->error;
         }
-      
     }
 
 
@@ -494,7 +501,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
         <hr>
         <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
-        <li class="nav-item "> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
+            <li class="nav-item "> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis "> <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
             <li class="nav-item active"> <a href="./admin_transactions.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transactions</a> </li>
             <li class="nav-item"> <a href="./admin_staff.php" class="nav-link link-body-emphasis"><i class='bx bxs-user'></i>Manage Staff</a> </li>
@@ -508,9 +515,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
     </div>
- 
+
     <div class="board1 container"><!--board container-->
-    <div class="header1">
+        <div class="header1">
             <div class="text">
                 <div class="back-btn">
                     <a href="./admin_return_dash.php"><i class='bx bx-arrow-back'></i></a>
@@ -518,232 +525,240 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="title">
                     <h2>Update Status</h2>
                 </div>
-            </div> 
-        </div>
-         <div class="books container-fluid"> 
-
-
-
-<!-- Container for displaying search results with a fixed height and scrollable content -->
-<div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
-
-    <?php
-
-    // Initialize $bd_Id to the BorrowDetails_ID from session
-    $bd_Id = $_SESSION['BorrowDetails_ID'];
-
-    // Prepare the SQL statement with a placeholder for the BorrowDetails_ID
-    $sql = "SELECT DISTINCT
-	b.User_ID, 
-	b.Accession_Code, 
-	bk.Book_Title, 
-	bk.Price, 
-	bd.Quantity, 
-	b.Date_Borrowed, 
-	b.Due_Date, 
-	bd.tb_status, 
-	bd.Borrower_ID, 
-	b.Borrow_ID, 
-	bk.tb_edition
-FROM
-	tbl_borrowdetails AS bd
-	INNER JOIN
-	tbl_borrow AS b
-	ON 
-		bd.Borrower_ID = b.Borrower_ID AND
-		bd.BorrowDetails_ID = b.Borrow_ID
-	INNER JOIN
-	tbl_books AS bk
-	ON 
-		b.Accession_Code = bk.Accession_Code
-	INNER JOIN
-	tbl_borrower AS br
-	ON 
-		b.Borrower_ID = br.Borrower_ID AND
-		bd.Borrower_ID = br.Borrower_ID
-WHERE
-    bd.BorrowDetails_ID =  ?";
-
-    // Prepare and bind the statement
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("s", $bd_Id);
-
-    // Execute the statement
-    $stmt->execute();
-
-    // Get the result
-    $result = $stmt->get_result();
-
-    // Close the prepared statement (we'll reuse $stmt for the form later)
-    $stmt->close();
-    $conn->close();
-    ?>
-
-    <!-- Container for displaying search results with a fixed height and scrollable content -->
-    <div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
-        <?php
-        if ($result->num_rows > 0) {
-            // Output data of each row
-            while ($row = $result->fetch_assoc()) {
-                $_SESSION['Accession_Code'] = $row["Accession_Code"];
-                $_SESSION['Book_Title'] = $row["Book_Title"];
-                $_SESSION['Quantity'] = $row["Quantity"];
-         
-                $_SESSION['Date_Borrowed'] = $row["Date_Borrowed"];
-                $_SESSION['Due_Date'] = $row["Due_Date"];
-                $_SESSION['status'] = $row["tb_status"];
-                $_SESSION['qty'] = $row["Quantity"];
-                $_SESSION['price'] = $row["Price"];
-
-                echo "<div class='container'>";
-                echo "<div class='row'>";
-                echo "<div class='col'>";
-                echo "<p>Accession Code: " . $row["Accession_Code"] . "</p>";
-
-                $_SESSION['Accession_Code'] = $row["Accession_Code"];
-                $_SESSION['price'] = $row["Price"];
-
-                echo "<p>Book Title: " . $row["Book_Title"] . "</p>";
-                echo "<p>Quantity: " . $row["Quantity"] . "</p>";
-                echo "<p>Date Borrowed : " . $row["Date_Borrowed"] . "</p>";
-                echo "<p>Edition: " . $row["tb_edition"] . "</p>";
-                echo "<p>Price: " . $row["Price"] . "</p>";
-                echo "<p>Due Date: " . $row["Due_Date"] . "</p>";
-                echo "<p>Status: " . $row["tb_status"] . "</p>";
-
-          
-
-                // Radio buttons for selecting book status within the same form
-                echo '<form class="update-form" method="POST" action="">';
-
-                echo '<div class="form-group">';
-                echo '<label for="paymentStatus">Book Status:</label><br>';
-                echo '<div class="form-check">';
-                echo '<input type="radio" id="damage" name="paymentStatus" value="DAMAGE" class="form-check-input"required> ';
-                echo '<label for="damage" class="form-check-label">Damage</label><br>';
-                echo '</div>';
-                echo '<div class="form-check">';
-                echo '<input type="radio" id="goodCondition" name="paymentStatus" value="GOOD CONDITION" class="form-check-input"required>';
-                echo '<label for="goodCondition" class="form-check-label">Good Condition</label><br>';
-                echo '</div>';
-                echo '<div class="form-check">';
-                echo '<input type="radio" id="lost" name="paymentStatus" value="LOST" class="form-check-input"required>';
-                echo '<label for="lost" class="form-check-label">Lost</label><br>';
-                echo '</div>';
-                echo '</div>';
-                if ($row["tb_status"] === 'Pending') {
-                echo '<button type="submit" class="btn btn-primary">Proceed to Payment</button>';
-                echo ' <button type="submit" name="action" value="pay_later" class="btn btn-primary">Pay Later</button>';
-                }else{
-                    echo '<button type="submit" class="btn btn-primary">Proceed to Payment</button>';
-                }
-                echo '</form>';
-
-                echo "</div>"; // Close div.col
-                echo "</div>"; // Close div.row
-                echo "</div>"; // Close div.container
-            }
-        } else {
-            echo "No records found for the provided Borrower ID.";
-        }
-        ?>
-
-    </div>
-         </div>
-    </div>
-
-    <!--Logout Modal -->
-    <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
-            </div>
-            <div class="modal-body">
-                Do you want to log out?
-            </div>
-            <div class="modal-footer d-flex flex-row justify-content-center">
-                <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
-                <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
-            </div>
             </div>
         </div>
-    </div>
+        <div class="books container-fluid">
 
-            <script>
-                function updateAndSetSession(borrowIdadmin) {
-                    // Redirect to staff_return_transaction.php with the borrowId parameter
-                    window.location.href = "staff_return_transaction.php?borrowIdadmin=" + borrowIdadmin;
-                }
-            </script>
 
-            <script>
-                // Get the search input field
-                const searchInput = document.getElementById("searchInput");
 
-                // Add event listener for input field keyup event
-                searchInput.addEventListener("keyup", function() {
-                    // Get the search input value
-                    const inputValue = searchInput.value;
+            <!-- Container for displaying search results with a fixed height and scrollable content -->
+            <div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
 
-                    // Send an AJAX request to the server
-                    const xhr = new XMLHttpRequest();
-                    xhr.open("GET", "staff_return.php?searchInput=" + inputValue, true); // Pass the searchInput value
-                    xhr.onload = function() {
-                        if (xhr.status >= 200 && xhr.status < 300) {
-                            // Update the search results container with the response from the server
-                            document.getElementById("searchResults").innerHTML = xhr.responseText;
-                        } else {
-                            console.error(xhr.statusText);
+                <?php
+
+                // Initialize $bd_Id to the BorrowDetails_ID from session
+                $bd_Id = $_SESSION['BorrowDetails_ID'];
+
+                // Prepare the SQL statement with a placeholder for the BorrowDetails_ID
+                $sql = "SELECT DISTINCT
+                        b.User_ID, 
+                        b.Accession_Code, 
+                        bk.Book_Title, 
+                        bk.Price, 
+                        bd.Quantity, 
+                        b.Date_Borrowed, 
+                        b.Due_Date, 
+                        bd.tb_status, 
+                        bd.Borrower_ID, 
+                        b.Borrow_ID, 
+                        bk.tb_edition
+                    FROM
+                        tbl_borrowdetails AS bd
+                        INNER JOIN
+                        tbl_borrow AS b
+                        ON 
+                            bd.Borrower_ID = b.Borrower_ID AND
+                            bd.BorrowDetails_ID = b.Borrow_ID
+                        INNER JOIN
+                        tbl_books AS bk
+                        ON 
+                            b.Accession_Code = bk.Accession_Code
+                        INNER JOIN
+                        tbl_borrower AS br
+                        ON 
+                            b.Borrower_ID = br.Borrower_ID AND
+                            bd.Borrower_ID = br.Borrower_ID
+                    WHERE
+                        bd.BorrowDetails_ID =  ?";
+
+                // Prepare and bind the statement
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("s", $bd_Id);
+
+                // Execute the statement
+                $stmt->execute();
+
+                // Get the result
+                $result = $stmt->get_result();
+
+                // Close the prepared statement (we'll reuse $stmt for the form later)
+                $stmt->close();
+                $conn->close();
+                ?>
+
+                <!-- Container for displaying search results with a fixed height and scrollable content -->
+                <div class="container mt-3" style="max-height: 900px; overflow-y: auto;">
+                    <?php
+                    if ($result->num_rows > 0) {
+                        // Output data of each row
+                        while ($row = $result->fetch_assoc()) {
+                            $_SESSION['Accession_Code'] = $row["Accession_Code"];
+                            $_SESSION['Book_Title'] = $row["Book_Title"];
+                            $_SESSION['Quantity'] = $row["Quantity"];
+
+                            $_SESSION['Date_Borrowed'] = $row["Date_Borrowed"];
+                            $_SESSION['Due_Date'] = $row["Due_Date"];
+                            $_SESSION['status'] = $row["tb_status"];
+                            $_SESSION['qty'] = $row["Quantity"];
+                            $_SESSION['price'] = $row["Price"];
+
+                            echo "<div class='container'>";
+                            echo "<div class='row'>";
+                            echo "<div class='col'>";
+                            echo "<p>Accession Code: " . $row["Accession_Code"] . "</p>";
+
+                            $_SESSION['Accession_Code'] = $row["Accession_Code"];
+                            $_SESSION['price'] = $row["Price"];
+
+                            echo "<p>Book Title: " . $row["Book_Title"] . "</p>";
+                            echo "<p>Quantity: " . $row["Quantity"] . "</p>";
+                            echo "<p>Date Borrowed : " . $row["Date_Borrowed"] . "</p>";
+                            echo "<p>Edition: " . $row["tb_edition"] . "</p>";
+                            echo "<p>Price: " . $row["Price"] . "</p>";
+                            echo "<p>Due Date: " . $row["Due_Date"] . "</p>";
+                            echo "<p>Status: " . $row["tb_status"] . "</p>";
+
+
+                            // Radio buttons for selecting book status within the same form
+                            echo '<form class="update-form" method="POST" action="">';
+
+                            echo '<div class="form-group">';
+                            echo '<label for="paymentStatus">Book Status:</label><br>';
+                            echo '<div class="form-check">';
+                            echo '<input type="radio" id="minor" name="paymentStatus" value="Minor DAMAGE" class="form-check-input"required> ';
+                            echo '<label for="damage" class="form-check-label">Minor Damage</label><br>';
+                            echo '</div>';
+                            echo '<div class="form-check">';
+                            echo '<input type="radio" id="moderate" name="paymentStatus" value="Moderate DAMAGE" class="form-check-input"required> ';
+                            echo '<label for="damage" class="form-check-label">Moderate Damage</label><br>';
+                            echo '</div>';
+                            echo '<div class="form-check">';
+                            echo '<input type="radio" id="major" name="paymentStatus" value="MAJOR DAMAGE" class="form-check-input"required> ';
+                            echo '<label for="damage" class="form-check-label">Major Damage</label><br>';
+                            echo '</div>';
+                            echo '<div class="form-check">';
+                            echo '<input type="radio" id="goodCondition" name="paymentStatus" value="GOOD CONDITION" class="form-check-input"required>';
+                            echo '<label for="goodCondition" class="form-check-label">Good Condition</label><br>';
+                            echo '</div>';
+                            echo '<div class="form-check">';
+                            echo '<input type="radio" id="lost" name="paymentStatus" value="LOST" class="form-check-input"required>';
+                            echo '<label for="lost" class="form-check-label">Lost</label><br>';
+                            echo '</div>';
+                            echo '</div>';
+
+                            if ($row["tb_status"] === 'Pending') {
+                                echo '<button type="submit" class="btn btn-primary">Proceed to Payment</button>';
+                                echo ' <button type="submit" name="action" value="pay_later" class="btn btn-primary">Pay Later</button>';
+                            } else {
+                                echo '<button type="submit" class="btn btn-primary">Proceed to Payment</button>';
+                            }
+                            echo '</form>';
+
+                            echo "</div>"; // Close div.col
+                            echo "</div>"; // Close div.row
+                            echo "</div>"; // Close div.container
                         }
-                    };
-                    xhr.send();
-                });
-            </script>
+                    } else {
+                        echo "No records found for the provided Borrower ID.";
+                    }
+                    ?>
+
+                </div>
+            </div>
+        </div>
+
+        <!--Logout Modal -->
+        <div class="modal fade" id="logOut" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Logging Out...</h1>
+                    </div>
+                    <div class="modal-body">
+                        Do you want to log out?
+                    </div>
+                    <div class="modal-footer d-flex flex-row justify-content-center">
+                        <a href="javascript:history.go(0)"><button type="button" class="btn" data-bs-dismiss="modal">Cancel</button></a>
+                        <a href="../logout.php"><button type="button" class="btn">Log Out</button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function updateAndSetSession(borrowIdadmin) {
+                // Redirect to staff_return_transaction.php with the borrowId parameter
+                window.location.href = "staff_return_transaction.php?borrowIdadmin=" + borrowIdadmin;
+            }
+        </script>
+
+        <script>
+            // Get the search input field
+            const searchInput = document.getElementById("searchInput");
+
+            // Add event listener for input field keyup event
+            searchInput.addEventListener("keyup", function() {
+                // Get the search input value
+                const inputValue = searchInput.value;
+
+                // Send an AJAX request to the server
+                const xhr = new XMLHttpRequest();
+                xhr.open("GET", "staff_return.php?searchInput=" + inputValue, true); // Pass the searchInput value
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        // Update the search results container with the response from the server
+                        document.getElementById("searchResults").innerHTML = xhr.responseText;
+                    } else {
+                        console.error(xhr.statusText);
+                    }
+                };
+                xhr.send();
+            });
+        </script>
 
 
 
-            <script>
-                document.getElementById("requestButton").addEventListener("click", function() {
-                    window.location.href = "staff_request_form.php";
-                });
-            </script>
+        <script>
+            document.getElementById("requestButton").addEventListener("click", function() {
+                window.location.href = "staff_request_form.php";
+            });
+        </script>
 
 
 
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-            <script>
-                let date = new Date().toLocaleDateString('en-US', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric',
-                    weekday: 'long',
-                });
-                document.getElementById("currentDate").innerText = date;
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
+        <script>
+            let date = new Date().toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                weekday: 'long',
+            });
+            document.getElementById("currentDate").innerText = date;
 
-                setInterval(() => {
-                    let time = new Date().toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: 'numeric',
-                        second: 'numeric',
-                        hour12: 'true',
-                    })
-                    document.getElementById("currentTime").innerText = time;
+            setInterval(() => {
+                let time = new Date().toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: 'numeric',
+                    second: 'numeric',
+                    hour12: 'true',
+                })
+                document.getElementById("currentTime").innerText = time;
 
-                }, 1000)
-
-
-                let navItems = document.querySelectorAll(".nav-item"); //adding .active class to navitems 
-                navItems.forEach(item => {
-                    item.addEventListener('click', () => {
-                        document.querySelector('.active')?.classList.remove('active');
-                        item.classList.add('active');
+            }, 1000)
 
 
-                    })
+            let navItems = document.querySelectorAll(".nav-item"); //adding .active class to navitems 
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelector('.active')?.classList.remove('active');
+                    item.classList.add('active');
+
 
                 })
-            </script>
+
+            })
+        </script>
 </body>
 
 </html>
