@@ -118,15 +118,14 @@ if ($conn->connect_error) {
     <table class="table table-hover table-sm">
         <thead>
             <tr>
-            <tr>
-                 
-                    <th>Visitors Id</th>
-                    <th>Borrowers Name</th> 
-                    <th>Date Borrowed</th>
-                    <th>Due Date</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                    <th></th>
+            <tr> 
+                <th>Staff</th>
+                <th>Borrowers Name</th> 
+                <th>Date Borrowed</th>
+                <th>Due Date</th>
+                <th>Status</th>                    
+                <th>Action</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -163,12 +162,9 @@ if ($conn->connect_error) {
 
                 // Output data of each row
                 while($row = $result->fetch_assoc()) {
-                    echo "<tr>";
-                //    echo "<td>" . $row["BorrowDetails_ID"] . "</td>";
-                    echo "<td>" . $row["Borrower_ID"] . "</td>";
-                    echo "<td>" . $row["First_Name"] ." ". $row["Middle_Name"] ." ". $row["Last_Name"] . "</td>";
-                   
-                  
+                    echo "<tr>"; 
+                    echo "<td>" . $row["User_ID"] . "</td>"; 
+                    echo "<td>" . $row["First_Name"] ." ". $row["Middle_Name"] ." ". $row["Last_Name"] . "</td>"; 
                     echo "<td>" . $row["Date_Borrowed"] . "</td>";
                     echo "<td>" . $row["Due_Date"] . "</td>";
                     echo "<td>" . $row["tb_status"] . "</td>";

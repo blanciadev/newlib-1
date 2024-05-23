@@ -112,7 +112,7 @@ if (isset($_GET['borrowId'])) {
     <div class="header1">
             <div class="text">
                 <div class="back-btn">
-                    <a href="./admin_book_return.php"><i class='bx bx-arrow-back'></i></a>
+                    <a href="./admin_return_dash.php"><i class='bx bx-arrow-back'></i></a>
                 </div>
                 <div class="title">
                     <h2>Return List</h2>
@@ -128,8 +128,7 @@ if (isset($_GET['borrowId'])) {
     <div class="books container">
     <table class="table table-hover table-sm">
         <thead>
-            <tr>
-            <tr>
+            <tr> 
                     <th>Borrow Id</th>
                     <th>Visitors Id</th>
                     <th>Accession Code</th>
@@ -138,8 +137,7 @@ if (isset($_GET['borrowId'])) {
                     <th>Date</th>
                     <th>Due Date</th>
                     <th>Status</th>
-                    <th>Action</th>
-                    <th></th>
+                    <th>Action</th> 
             </tr>
         </thead>
         <tbody>

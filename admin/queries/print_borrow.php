@@ -72,7 +72,7 @@ unset($_SESSION['due']);
         .info-label {
             font-weight: bold;
         }
-       
+        
          /* Hide the print button when printed */
          @media print {
             .print-button,
@@ -124,7 +124,8 @@ unset($_SESSION['due']);
         ?>
     </div>
 </div>
-v
+
+
     <div class="container-fluid">
     <!-- Bootstrap print button -->
     <button id="printButton" class="print-button btn btn-primary" onclick="printPage()">Print</button>
