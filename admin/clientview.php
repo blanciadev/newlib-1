@@ -1,38 +1,32 @@
 <?php
-    session_start();
-    // Check if the User_ID session variable is not set or empty
-    if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
-        // Redirect to index.php
-        header("Location: ../index.php");
-        exit(); // Ensure script execution stops after redirection
-    }
+  
 
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
+    // $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
 
-    // Fetch data from tbl_log
-    $sql = "SELECT DATE_FORMAT(Date_Time, '%Y-%m') AS Month, COUNT(*) AS Visits
-            FROM tbl_log
-            GROUP BY DATE_FORMAT(Date_Time, '%Y-%m')
-            ORDER BY DATE_FORMAT(Date_Time, '%Y-%m') ASC";
-    $result = mysqli_query($conn, $sql);
+    // // Fetch data from tbl_log
+    // $sql = "SELECT DATE_FORMAT(Date_Time, '%Y-%m') AS Month, COUNT(*) AS Visits
+    //         FROM tbl_log
+    //         GROUP BY DATE_FORMAT(Date_Time, '%Y-%m')
+    //         ORDER BY DATE_FORMAT(Date_Time, '%Y-%m') ASC";
+    // $result = mysqli_query($conn, $sql);
 
-    // Initialize arrays to hold the labels and data for the chart
-    $labels = [];
-    $data = [];
+    // // Initialize arrays to hold the labels and data for the chart
+    // $labels = [];
+    // $data = [];
 
 
-    // Process the fetched data
-    while ($row = mysqli_fetch_assoc($result)) {
-        // Add the month to labels array
-        $labels[] = $row['Month'];
+    // // Process the fetched data
+    // while ($row = mysqli_fetch_assoc($result)) {
+    //     // Add the month to labels array
+    //     $labels[] = $row['Month'];
         
-        // Add the number of visits to data array
-        $data[] = $row['Visits'];
-    }
+    //     // Add the number of visits to data array
+    //     $data[] = $row['Visits'];
+    // }
 
-    // Convert labels and data arrays to JSON format
-    $labelsJSON = json_encode($labels);
-    $dataJSON = json_encode($data);
+    // // Convert labels and data arrays to JSON format
+    // $labelsJSON = json_encode($labels);
+    // $dataJSON = json_encode($data);
     
 
 ?>

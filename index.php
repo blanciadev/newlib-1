@@ -55,7 +55,7 @@
                     
                     </form>
                 </div>
-                
+                <a href="./view.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>View Client Books</a>
             </div>
         </div>
     </div>
