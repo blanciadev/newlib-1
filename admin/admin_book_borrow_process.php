@@ -37,6 +37,7 @@ if (!empty($bookDetails)) {
     foreach ($bookDetails as $accessionCode) {
         // Add the book Accession Code to the array
         $bookAccessionCodes[] = "'" . $accessionCode . "'";
+        
     }
 
     // Convert the array of book Accession Codes to a comma-separated string for the SQL query
@@ -154,6 +155,7 @@ echo '<script>
 if (isset($_POST['submit'])) {
     // Calculate due date as 3 days later by default
     $dueDate = date('Y-m-d', strtotime('+3 days', strtotime($currentDate)));
+    $code = $_SESSION['bookTransactionCodes'];
 
     $uid = $_SESSION["User_ID"];
 
@@ -164,11 +166,12 @@ if (isset($_POST['submit'])) {
         $dueDate = date('Y-m-d', strtotime($_POST['due_date']));
     }
 
-
+    $code = generateTransactionCode();
 
     $User_ID = $_SESSION["User_ID"];
     $_SESSION["due"] = $dueDate;
     // Check if $bookAccessionCodesStr is set
+
     if (isset($_SESSION['bookAccessionCodesStr']) && !empty($_SESSION['bookAccessionCodesStr'])) {
         echo "<script>console.log('Page Submit');</script>";
 
@@ -183,6 +186,8 @@ if (isset($_POST['submit'])) {
             $sql_update_quantity = "UPDATE tbl_books SET Quantity = Quantity - 1 WHERE Accession_Code = $accessionCode";
 
             if ($conn->query($sql_update_quantity) === TRUE) {
+             
+
                 echo "<script>console.log('Quantity updated for Accession Code: $accessionCode');</script>";
 
                 // Prepare and execute the INSERT statement for tbl_borrow
@@ -224,7 +229,7 @@ if (isset($_POST['submit'])) {
 
                     // Prepare and execute the INSERT statement for tbl_borrowdetails
                     $sql_return = "INSERT INTO tbl_returned (User_ID, Borrower_ID, Date_Returned, tb_status) 
-                    VALUES ('$uid', '$borrower_id', NULL, 'Pending')";
+                    VALUES ('$uid', '$borrower_id', NULL, 'Pending' )";
 
                     if ($conn->query($sql_return) === TRUE) {
                         // Insertion successful
@@ -256,9 +261,17 @@ if (isset($_POST['submit'])) {
 }
 
 
+function generateTransactionCode() {
+    $prefix = 'TXN'; // Prefix for the transaction code
+    $timestamp = microtime(true); // Current timestamp with microseconds
+    $unique_id = uniqid(); // Generate a unique identifier
+    $random = mt_rand(1000, 9999); // Generate a random number
 
+    // Generate a unique transaction code using the prefix, current timestamp, unique identifier, and random number
+    $transaction_code = $prefix . '_' . $timestamp . '_' . $unique_id . '_' . $random;
 
-
+    return $transaction_code;
+}
 
 
 $conn->close();

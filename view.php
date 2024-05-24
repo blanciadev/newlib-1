@@ -42,6 +42,7 @@
                         <th>Quantity</th>
                         <th>Date Borrowed</th>
                         <th>Due Date</th>
+                        <th>Date Returned</th>
                         <th>Status</th>
                         <th>Action</th>
                     </tr>
@@ -63,32 +64,43 @@ $offset = ($page - 1) * $records_per_page;
 
 // Fetch data
 $sql = "SELECT DISTINCT
-            b.User_ID, 
-            b.Accession_Code, 
-            bk.Book_Title, 
-            bd.Quantity, 
-            b.Date_Borrowed, 
-            b.Due_Date, 
-            bd.tb_status, 
-            br.Borrower_ID, 
-            b.Borrow_ID, 
-            br.First_Name, 
-            br.Middle_Name, 
-            br.Last_Name, 
-            bd.BorrowDetails_ID
-        FROM
-            tbl_borrowdetails AS bd
-        INNER JOIN
-            tbl_borrow AS b
-            ON bd.Borrower_ID = b.Borrower_ID AND bd.BorrowDetails_ID = b.Borrow_ID
-        INNER JOIN
-            tbl_books AS bk
-            ON b.Accession_Code = bk.Accession_Code
-        INNER JOIN
-            tbl_borrower AS br
-            ON b.Borrower_ID = br.Borrower_ID AND bd.Borrower_ID = br.Borrower_ID
-        WHERE
-            bd.Borrower_ID = $borrower_id
+b.User_ID, 
+b.Accession_Code, 
+bk.Book_Title, 
+bd.Quantity, 
+b.Date_Borrowed, 
+b.Due_Date, 
+bd.tb_status, 
+br.Borrower_ID, 
+b.Borrow_ID, 
+br.First_Name, 
+br.Middle_Name, 
+br.Last_Name, 
+bd.BorrowDetails_ID, 
+tbl_returned.Date_Returned
+FROM
+tbl_borrowdetails AS bd
+INNER JOIN
+tbl_borrow AS b
+ON 
+    bd.Borrower_ID = b.Borrower_ID AND
+    bd.BorrowDetails_ID = b.Borrow_ID
+INNER JOIN
+tbl_books AS bk
+ON 
+    b.Accession_Code = bk.Accession_Code
+INNER JOIN
+tbl_borrower AS br
+ON 
+    b.Borrower_ID = br.Borrower_ID AND
+    bd.Borrower_ID = br.Borrower_ID
+INNER JOIN
+tbl_returned
+ON 
+    b.User_ID = tbl_returned.User_ID AND
+    bd.Borrower_ID = tbl_returned.Borrower_ID
+WHERE
+bd.Borrower_ID = $borrower_id
         LIMIT $offset, $records_per_page";
 
 $result = $conn->query($sql);
@@ -103,6 +115,7 @@ if ($result->num_rows > 0) {
         echo "<td>" . $row['Quantity'] . "</td>";
         echo "<td>" . $row['Date_Borrowed'] . "</td>";
         echo "<td>" . $row['Due_Date'] . "</td>";
+        echo "<td>" . $row['Date_Returned'] . "</td>";
         echo "<td>" . $row['tb_status'] . "</td>";
         echo "<td><!-- Your action buttons here --></td>";
         echo "</tr>";
