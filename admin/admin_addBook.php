@@ -126,8 +126,8 @@ if (isset($_POST['submit'])) {
                 }
 
                 // Proceed with insertion
-                $insertBookSql = "INSERT INTO tbl_books (Accession_Code, Book_Title, Authors_ID, Publisher_Name, Section_Code, shelf, tb_edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status) 
-                VALUES ('$customAccessionCode','$bookTitle', '$authorsID', '$publisher', '$selectedSection', '$selectedShelf', '$edition', '$year', '$isbn', '$bib', '$quantity', '$price', 'Available')";
+                $insertBookSql = "INSERT INTO tbl_books (Accession_Code, Book_Title, Authors_ID, Publisher_Name, Section_Code, shelf, tb_edition, Year_Published, ISBN, Bibliography, cl_type, Quantity, Price, tb_status) 
+                VALUES ('$customAccessionCode','$bookTitle', '$authorsID', '$publisher', '$selectedSection', '$selectedShelf', '$edition', '$year', '$isbn', '$bib', '$type','$quantity', '$price', 'Available')";
               
                 if ($conn->query($insertBookSql) !== TRUE) {
                     throw new Exception("Error inserting book: " . $conn->error);
@@ -375,6 +375,13 @@ if (isset($_POST['submit'])) {
                     </div>
                     <br>
 
+                    <div class="mb-3">
+                    <label for="type" class="form-label">Type</label>
+                    <select class="form-select" id="type" name="type">
+                        <option value="Procured" selected>Supplier Procured</option>
+                        <option value="Donated">Donated</option>
+                    </select>
+                </div>
 
                     <div class="mb-3">
                 <label for="add_name" class="form-label">Name</label>

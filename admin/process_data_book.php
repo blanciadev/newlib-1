@@ -108,7 +108,7 @@ if (isset($_GET['id'])) {
             }
             ?>
 
-    <div class="mb-3">
+            <div class="mb-3">
                     <label for="type" class="form-label">Type</label>
                     <select class="form-select" id="type" name="type">
                         <option value="Procured" selected>Supplier Procured</option>
@@ -135,7 +135,7 @@ if (isset($_GET['id'])) {
                 <label for="add_contact" class="form-label">Contact Number</label>
                 <input type="text" class="form-control" id="add_contact" name="add_contact" required>
             </div>
-            
+
             <button type="submit" class="btn btn-primary" id="submit" name="submit">Procure Book</button>
             <a href="admin_books.php" class="btn btn-primary">Cancel</a>
         </form>
