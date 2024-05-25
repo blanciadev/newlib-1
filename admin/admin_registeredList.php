@@ -21,7 +21,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registered List</title>
+    <title>Library Clients</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.4/html5-qrcode.min.js" integrity="sha512-k/KAe4Yff9EUdYI5/IAHlwUswqeipP+Cp5qnrsUjTPCgl51La2/JhyyjNciztD7mWNKLSXci48m7cctATKfLlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
@@ -100,7 +100,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                     <a href="./admin_log.php"><i class='bx bx-arrow-back'></i></a>
                 </div>
                 <div class="title">
-                    <h2>Registered List</h2>
+                    <h2>Library Clients</h2>
                 </div>
             </div>
             <div class="searchbar">
@@ -159,7 +159,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             </table>
         </div>
         <div class="btn-con">
-            <a href="admin_registerUser.php" class="btn">Register Borrower</a>
+            <a href="admin_registerUser.php" class="btn">Register Client</a>
         </div>
     </div>
 

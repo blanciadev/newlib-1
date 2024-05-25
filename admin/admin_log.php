@@ -62,7 +62,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log Record</title>
+    <title>Visitor's Log</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -131,7 +131,7 @@ $conn->close();
     <div class="header1">
             <div class="text">
                 <div class="title">
-                    <h2>Log Record</h2>
+                    <h2>Visitor's Log</h2>
                 </div>
             </div>
             <div class="searchbar">
@@ -196,14 +196,9 @@ $conn->close();
         
     <div class="btn-con">
         <a href="admin_log_qrscan.php" class="btn btn-primary mr-2">Scan</a>
-            <a href="admin_registeredList.php" class="btn btn-secondary">Registered List</a>
+            <a href="admin_registeredList.php" class="btn btn-secondary">Library Clients</a>
     </div>
-</div>
-    <div class="btn-con mt-4">
-            <a href="admin_log_qrscan.php" class="btn btn-primary mr-2">Scan</a>
-            <a href="admin_registeredList.php" class="btn btn-secondary">Registered List</a>
-        </div>
-    </div>
+</div> 
 
 
     <!--Logout Modal -->
