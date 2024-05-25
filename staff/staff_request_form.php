@@ -186,20 +186,31 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 mysqli_close($conn);
                 ?>
                 <br>
-             
-                    
+
+
                 <div class="mb-3">
                     <label for='shelf'>Shelf Number:</label>
                     <div id="shelfContainer"></div>
                     <input type="hidden" id="selectedSection" name="selectedSection">
                     <input type="hidden" id="selectedShelf" name="selectedShelf">
-                 
+
                 </div>
                 <br>
-                <button type="submit" class="btn btn-primary">Submit Request</button>
 
-            </form>
+                <div class="mb-3">
+                    <label for="type" class="form-label">Type</label>
+                    <select class="form-select" id="type" name="type">
+                        <option value="Procured" selected>Supplier Procured</option>
+                        <option value="Donated">Donated</option>
+                    </select>
+                </div>
         </div>
+
+
+        <button type="submit" class="btn btn-primary">Submit Request</button>
+
+        </form>
+    </div>
     </div>
 
     <!--Logout Modal -->
@@ -225,8 +236,8 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
             <i class='bx bx-check check'></i>
 
             <div class="message">
-                <span class="text text-1">Success</span><!-- this message can be changed to "Success" and "Error"-->
-                <span class="text text-2"></span> <!-- specify based on the if-else statements -->
+                <span class="text text-1">Success</span>
+                <span class="text text-2"></span>
             </div>
         </div>
         <i class='bx bx-x close'></i>
@@ -237,10 +248,10 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
 
     <script>
-      document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function() {
 
-             // Event listener for form submission
-             $('form').submit(function() {
+            // Event listener for form submission
+            $('form').submit(function() {
                 // Get selected section and shelf number
                 var selectedSection = $('#section').val();
                 var selectedShelf = $('#shelf').val(); // Corrected variable name
@@ -249,148 +260,149 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
                 $('#selectedSection').val(selectedSection);
                 $('#selectedShelf').val(selectedShelf);
             });
-      
-
-    // Get the form element
-    const form = document.getElementById("requestForm");
-    // Get the progress element
-    const progress = document.querySelector(".progress");
-
-    
-    // Function to show toast notification
-    function showToast(type, message) {
-        const toast = document.querySelector(".toastNotif");
-        const messageElement = toast.querySelector(".message .text-2");
-        const checkIcon = toast.querySelector(".check");
-
-        // Set toast message and icon based on type
-        messageElement.textContent = message;
-        if (type === "Success") {
-            checkIcon.classList.remove("bx-x");
-            checkIcon.classList.add("bx-check");
-            toast.classList.add("success");
-        } else {
-            checkIcon.classList.remove("bx-check");
-            checkIcon.classList.add("bx-x");
-            toast.classList.remove("success");
-        }
-
-        // Show toast notification
-        toast.classList.add("showing");
-        setTimeout(() => {
-            toast.classList.remove("showing");
-            window.location.href = "staff_books.php";
-        }, 5000);
-    }
 
 
-// Add submit event listener to the form
-form.addEventListener("submit", function(event) {
-    event.preventDefault(); // Prevent form submission
-// Event listener for form submission using jQuery
-$('form').submit(function(event) {
-    event.preventDefault(); // Prevent form submission
+            // Get the form element
+            const form = document.getElementById("requestForm");
+            // Get the progress element
+            const progress = document.querySelector(".progress");
 
-    // Get selected section and shelf number
-    var selectedSection = $('#section').val();
-    var selectedShelf = $('#selectedShelf').val(); // Corrected variable name
 
-    // Set hidden input values
-    $('#selectedSection').val(selectedSection);
-    $('#selectedShelf').val(selectedShelf);
+            // Function to show toast notification
+            function showToast(type, message) {
+                const toast = document.querySelector(".toastNotif");
+                const messageElement = toast.querySelector(".message .text-2");
+                const checkIcon = toast.querySelector(".check");
 
-    // Create FormData object to send form data
-    var formData = new FormData($(this)[0]);
+                // Set toast message and icon based on type
+                messageElement.textContent = message;
+                if (type === "Success") {
+                    checkIcon.classList.remove("bx-x");
+                    checkIcon.classList.add("bx-check");
+                    toast.classList.add("success");
+                } else {
+                    checkIcon.classList.remove("bx-check");
+                    checkIcon.classList.add("bx-x");
+                    toast.classList.remove("success");
+                }
 
-    // Log all data being sent
-    for (var pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-    }
-
-    // Create a new XMLHttpRequest object
-    var xhr = new XMLHttpRequest();
-
-    // Define the request parameters
-    xhr.open("POST", "queries/req_form.php", true);
-
-    // Set up event listeners for the request
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            console.log(xhr.responseText);
-            if (xhr.status === 200) {
-                // Request successful, handle response
-
-                // Show toast notification for success
-                showToast("Success", "Form submitted successfully.");
-            } else {
-                // Show toast notification for error
-                showToast("Error", "An error occurred while submitting the form.");
-                console.log(xhr.responseText);
+                // Show toast notification
+                toast.classList.add("showing");
+                setTimeout(() => {
+                    toast.classList.remove("showing");
+                    window.location.href = "staff_books.php";
+                }, 5000);
             }
-            // Hide progress bar after request completes
-            progress.classList.remove("showing");
-        }
-    };
-
-    // Show progress bar while waiting for response
-    progress.classList.add("showing");
-
-    // Send the request with form data
-    xhr.send(formData);
-});
-});
-      
 
 
+            // Add submit event listener to the form
+            form.addEventListener("submit", function(event) {
+                event.preventDefault(); // Prevent form submission
+                // Event listener for form submission using jQuery
+
+                $('form').submit(function(event) {
+                    event.preventDefault(); // Prevent form submission
+
+                    // Get selected section and shelf number
+                    var selectedSection = $('#section').val();
+                    var selectedShelf = $('#selectedShelf').val(); // Corrected variable name
+
+                    // Set hidden input values
+                    $('#selectedSection').val(selectedSection);
+                    $('#selectedShelf').val(selectedShelf);
+
+                    // Create FormData object to send form data
+                    var formData = new FormData($(this)[0]);
+
+                    // Log all data being sent
+                    for (var pair of formData.entries()) {
+                        console.log(pair[0] + ': ' + pair[1]);
+                    }
+
+                    // Create a new XMLHttpRequest object
+                    var xhr = new XMLHttpRequest();
+
+                    // Define the request parameters
+                    xhr.open("POST", "queries/req_form.php", true);
+
+                    // Set up event listeners for the request
+                    xhr.onreadystatechange = function() {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            console.log(xhr.responseText);
+                            if (xhr.status === 200) {
+                                // Request successful, handle response
+
+                                // Show toast notification for success
+                                showToast("Success", "Form submitted successfully.");
+                            } else {
+                                // Show toast notification for error
+                                showToast("Error", "An error occurred while submitting the form.");
+                                console.log(xhr.responseText);
+                            }
+                            // Hide progress bar after request completes
+                            progress.classList.remove("showing");
+                        }
+                    };
+
+                    // Show progress bar while waiting for response
+                    progress.classList.add("showing");
+
+                    // Send the request with form data
+                    xhr.send(formData);
+                });
+            });
+
+        });
 
 
-});
-document.addEventListener("DOMContentLoaded", function() {
-    // Get the form element
-    const form = document.getElementById("requestForm");
-    // Get the progress element
-    const progress = document.querySelector(".progress");
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get the form element
+            const form = document.getElementById("requestForm");
+            // Get the progress element
+            const progress = document.querySelector(".progress");
 
-    // Function to show toast notification
-    function showToast(type, message) {
-        const toast = document.querySelector(".toastNotif");
-        const messageElement = toast.querySelector(".message .text-2");
-        const checkIcon = toast.querySelector(".check");
+            // Function to show toast notification
+            function showToast(type, message) {
+                const toast = document.querySelector(".toastNotif");
+                const messageElement = toast.querySelector(".message .text-2");
+                const checkIcon = toast.querySelector(".check");
 
-        // Set toast message and icon based on type
-        messageElement.textContent = message;
-        if (type === "Success") {
-            checkIcon.classList.remove("bx-x");
-            checkIcon.classList.add("bx-check");
-            toast.classList.add("success");
-        } else {
-            checkIcon.classList.remove("bx-check");
-            checkIcon.classList.add("bx-x");
-            toast.classList.remove("success");
-        }
+                // Set toast message and icon based on type
+                messageElement.textContent = message;
+                if (type === "Success") {
+                    checkIcon.classList.remove("bx-x");
+                    checkIcon.classList.add("bx-check");
+                    toast.classList.add("success");
+                } else {
+                    checkIcon.classList.remove("bx-check");
+                    checkIcon.classList.add("bx-x");
+                    toast.classList.remove("success");
+                }
 
-        // Show toast notification
-        toast.classList.add("showing");
-        setTimeout(() => {
-            toast.classList.remove("showing");
-            window.location.href = "staff_request_list.php";
-        }, 5000);
-    }
+                // Show toast notification
+                toast.classList.add("showing");
+                setTimeout(() => {
+                    toast.classList.remove("showing");
+                    window.location.href = "staff_request_list.php";
+                }, 5000);
+            }
 
-    // Event listener for form submission using jQuery
-    $('form').submit(function(event) {
-        event.preventDefault(); // Prevent form submission
+            // Event listener for form submission using jQuery
+            $('form').submit(function(event) {
+                event.preventDefault(); // Prevent form submission
 
+               
         // Get selected section and shelf number
         var selectedSection = $('#section').val();
         var selectedShelf = $('#selectedShelf').val(); // Corrected variable name
+        var selectedType = $('#type').val(); // Get the selected type
 
         // Set hidden input values
         $('#selectedSection').val(selectedSection);
         $('#selectedShelf').val(selectedShelf);
 
         // Create FormData object to send form data
-        var formData = new FormData($(this)[0]);
+        var formData = new FormData(this);
 
         // Log all data being sent
         for (var pair of formData.entries()) {
@@ -429,50 +441,49 @@ document.addEventListener("DOMContentLoaded", function() {
         xhr.send(formData);
     });
 
-    // Event listener for section dropdown change
-    $('#section').change(function() {
-        var sectionCode = $(this).val();
+            // Event listener for section dropdown change
+            $('#section').change(function() {
+                var sectionCode = $(this).val();
 
-        // AJAX request to fetch shelf numbers
-        $.ajax({
-            url: 'queries/shelf.php', // Update the URL to your PHP script
-            method: 'POST',
-            data: {
-                sectionCode: sectionCode
-            },
-            dataType: 'html',
-            success: function(response) {
-                // Update shelf container with fetched shelf numbers
-                $('#shelfContainer').html(response);
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching shelf numbers:', error);
-            }
+                // AJAX request to fetch shelf numbers
+                $.ajax({
+                    url: 'queries/shelf.php', // Update the URL to your PHP script
+                    method: 'POST',
+                    data: {
+                        sectionCode: sectionCode
+                    },
+                    dataType: 'html',
+                    success: function(response) {
+                        // Update shelf container with fetched shelf numbers
+                        $('#shelfContainer').html(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching shelf numbers:', error);
+                    }
+                });
+            });
+
+            // Event listener for author dropdown change
+            $('#author').change(function() {
+                const newAuthorInput = $('#newAuthorInput');
+                newAuthorInput.toggle($(this).val() === "Other");
+            });
+
+            // Event listener for edition select change
+            $('#edition').change(function() {
+                const otherEditionContainer = $('#otherEditionContainer');
+                const otherEditionInput = $('#otherEdition');
+
+                if ($(this).val() === 'Other') {
+                    otherEditionContainer.show(); // Show the input field
+                    otherEditionInput.prop('required', true); // Make the input field required
+                } else {
+                    otherEditionContainer.hide(); // Hide the input field
+                    otherEditionInput.prop('required', false); // Make the input field optional
+                    otherEditionInput.val(''); // Clear the input field value
+                }
+            });
         });
-    });
-
-    // Event listener for author dropdown change
-    $('#author').change(function() {
-        const newAuthorInput = $('#newAuthorInput');
-        newAuthorInput.toggle($(this).val() === "Other");
-    });
-
-    // Event listener for edition select change
-    $('#edition').change(function() {
-        const otherEditionContainer = $('#otherEditionContainer');
-        const otherEditionInput = $('#otherEdition');
-
-        if ($(this).val() === 'Other') {
-            otherEditionContainer.show(); // Show the input field
-            otherEditionInput.prop('required', true); // Make the input field required
-        } else {
-            otherEditionContainer.hide(); // Hide the input field
-            otherEditionInput.prop('required', false); // Make the input field optional
-            otherEditionInput.val(''); // Clear the input field value
-        }
-    });
-});
-
     </script>
 </body>
 

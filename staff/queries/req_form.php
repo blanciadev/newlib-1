@@ -17,6 +17,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $price = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
     $country = $_POST['country'];
 
+    $type = $_POST['type']; 
+    
     // Retrieve selected section and shelf number from form data
     $selectedSection = $_POST['selectedSection'];
     $selectedShelf = $_POST['selectedShelf'];
@@ -54,10 +56,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); //database connection
 
         // Assuming you have a database connection named $conn
-        $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Authors_Name, Publisher_Name, price, tb_edition, Year_Published, Quantity, country, tb_status, Section_Code, shelf) 
-        VALUES ('$userID', '$bookTitle', '$author', '$publisher', '$price', '$edition', '$year', '$quantity', '$country', '$status', '$selectedSection', '$selectedShelf')";
+        $query = "INSERT INTO tbl_requestbooks (User_ID, Book_Title, Authors_Name, Publisher_Name, price, tb_edition, Year_Published, Quantity, country, tb_status, Section_Code, shelf, cl_type) 
+        VALUES ('$userID', '$bookTitle', '$author', '$publisher', '$price', '$edition', '$year', '$quantity', '$country', '$status', '$selectedSection', '$selectedShelf', '$type')";
 
         $result = mysqli_query($conn, $query);
+
+        $sql = "INSERT INTO ";
 
         if ($result) {
             echo json_encode(array("success" => true));

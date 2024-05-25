@@ -8,7 +8,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
-
 // Check if the ID parameter is set in the URL
 if (isset($_GET['id'])) {
     // Get the ID value from the URL
@@ -25,17 +24,12 @@ if (isset($_GET['id'])) {
 
     $result = $conn->query($sql);
 
-
     echo '<script>console.log("ID RETRIEVED '.$id.'");</script>';
 } else {
     // If the ID parameter is not set in the URL
     echo "No ID parameter found in the URL.";
 }
-
-
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -45,7 +39,6 @@ if (isset($_GET['id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VillaReadHub - Dashboard</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -82,20 +75,16 @@ if (isset($_GET['id'])) {
 
     <h2>Book Request Information</h2>
 
-
     <div class="board container">
         <form id="myForm" method="POST" action="">
-            
-        <div class="mb-3">
+            <div class="mb-3">
                 <label for="accessionCode" class="form-label">Custom Accession Code</label>
                 <input type="text" class="form-control" id="accessionCode" name="accessionCode">
             </div>
-            
-            <?php
 
+            <?php
             // Output data of each row
             while ($row = $result->fetch_assoc()) {
-
                 echo "<p><strong>Book Title:</strong> " . $row["Book_Title"] . "</p>";
                 echo "<p><strong>Authors Name:</strong> " . $row["Authors_Name"] . "</p>";
                 echo "<p><strong>Publisher Name:</strong> " . $row["Publisher_Name"] . "</p>";
@@ -107,7 +96,6 @@ if (isset($_GET['id'])) {
                 echo "<p><strong>Status:</strong> " . $row["tb_status"] . "</p>";
 
                 echo "<input type='hidden' id='Authors_ID' name='Authors_ID' value='" . $row["Authors_Name"] . "'>";
-        
                 echo "<input type='hidden' name='Book_Title' value='" . $row["Book_Title"] . "'>";
                 echo "<input type='hidden' name='Publisher_Name' value='" . $row["Publisher_Name"] . "'>";
                 echo "<input type='hidden' name='tb_edition' value='" . $row["tb_edition"] . "'>";
@@ -118,65 +106,84 @@ if (isset($_GET['id'])) {
                 echo "<input type='hidden' name='section' value='" . $row["Section_Code"] . "'>";
                 echo "<input type='hidden' name='shelf' value='" . $row["shelf"] . "'>";
             }
-
             ?>
+
+    <div class="mb-3">
+                    <label for="type" class="form-label">Type</label>
+                    <select class="form-select" id="type" name="type">
+                        <option value="Procured" selected>Supplier Procured</option>
+                        <option value="Donated">Donated</option>
+                    </select>
+                </div>
+
+            <div class="mb-3">
+                <label for="add_name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="add_name" name="add_name" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="add_address" class="form-label">Address</label>
+                <input type="text" class="form-control" id="add_address" name="add_address" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="add_email" class="form-label">Email</label>
+                <input type="text" class="form-control" id="add_email" name="add_email" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="add_contact" class="form-label">Contact Number</label>
+                <input type="text" class="form-control" id="add_contact" name="add_contact" required>
+            </div>
+            
             <button type="submit" class="btn btn-primary" id="submit" name="submit">Procure Book</button>
             <a href="admin_books.php" class="btn btn-primary">Cancel</a>
-       
-
+        </form>
     </div>
-    </form>
 
-
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"> </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script>
-// Assuming you have a form with id 'myForm' and an AJAX endpoint 'process_data_ajax.php'
-var form = document.getElementById('myForm');
+        // Assuming you have a form with id 'myForm' and an AJAX endpoint 'process_data_ajax.php'
+        var form = document.getElementById('myForm');
 
-form.addEventListener('submit', function(event) {
-    // Prevent the default form submission behavior
-    event.preventDefault();
+        form.addEventListener('submit', function(event) {
+            // Prevent the default form submission behavior
+            event.preventDefault();
 
-    // Gather the form data
-    var formData = new FormData(form);
+            // Gather the form data
+            var formData = new FormData(form);
 
-    // Add the 'submit' parameter to the form data
-    formData.append('submit', true);
+            // Add the 'submit' parameter to the form data
+            formData.append('submit', true);
 
-    // Create and configure the AJAX request
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'process_data_ajax.php', true);
-    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); // Add this line to identify AJAX requests
+            // Create and configure the AJAX request
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'process_data_ajax.php', true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); // Add this line to identify AJAX requests
 
-    // Define the callback function to handle the AJAX response
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) {
-                // Successful AJAX request
-                if (xhr.responseText.includes('Update Quantity Success') || xhr.responseText.includes('Insert New Book Success') || xhr.responseText.includes('Update Success')) {
-                    // Display alert for successful operation
-                    alert('Operation successful!');
-                    window.location.href = "admin_books.php";
-                } else {
-                    // Display alert for other messages or errors
-                    alert(xhr.responseText);
+            // Define the callback function to handle the AJAX response
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // Successful AJAX request
+                        if (xhr.responseText.includes('Update Quantity Success') || xhr.responseText.includes('Insert New Book Success') || xhr.responseText.includes('Update Success')) {
+                            // Display alert for successful operation
+                            alert('Operation successful!');
+                            window.location.href = "admin_books.php";
+                        } else {
+                            // Display alert for other messages or errors
+                            alert(xhr.responseText);
+                        }
+                    } else {
+                        // Error handling for failed AJAX request
+                        console.error('AJAX request failed:', xhr.status, xhr.statusText);
+                    }
                 }
-            } else {
-                // Error handling for failed AJAX request
-                console.error('AJAX request failed:', xhr.status, xhr.statusText);
-            }
-        }
-    };
+            };
 
-    // Send the AJAX request with form data
-    xhr.send(formData);
-});
-
+            // Send the AJAX request with form data
+            xhr.send(formData);
+        });
     </script>
 </body>
-
 </html>

@@ -27,6 +27,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
     $requestID =   $_SESSION['reqID'];
     $authorsName = $_POST['Authors_ID'];
     $customAccessionCode = $_POST['accessionCode'];
+ 
+ // Additional data from form fields
+    $name = $_POST['add_name'];
+    $address = $_POST['add_address'];
+    $email = $_POST['add_email'];
+    $contact = $_POST['add_contact'];
+   
+   
+echo '<script>console.log("' . $name . '");</script>';
+echo '<script>console.log("' . $address . '");</script>';
+echo '<script>console.log("' . $email . '");</script>';
+echo '<script>console.log("' . $contact . '");</script>';
 
     // Check if custom Accession Code is provided
     if (!empty($customAccessionCode)) {
@@ -99,7 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
         } else {
             // Insert the new book into tbl_books
             $booksql = "INSERT INTO tbl_books (Accession_Code, Book_Title, Authors_ID, Publisher_Name, Section_Code, shelf, tb_edition, Year_Published, ISBN, Bibliography, Quantity, Price, tb_status) 
-                        VALUES ('$customAccessionCode', '$bookTitle', '$authorsName', '$pubname', '$sectionCode', '$shelfNumber', '$edition', '$yr', '$isbn', '$bibliography', '$qty', '$price', 'Available')";
+                        VALUES ('$customAccessionCode', '$bookTitle', '$authorsID', '$pubname', '$sectionCode', '$shelfNumber', '$edition', '$yr', '$isbn', '$bibliography', '$qty', '$price', 'Available')";
 
             if ($conn->query($booksql) !== TRUE) {
                 echo "Error inserting book: " . $conn->error;
@@ -118,10 +130,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['submit'])) {
                 echo "Error updating request status: " . $conn->error;
             }
 
-           
-           
+            $insertContributor = "INSERT INTO tbl_contributor (Accession_Code, Name, Address, Email, Contact_Number)
+            VALUES ('$customAccessionCode','$name','$address','$email','$contact')";
+             
+             if ($conn->query($insertContributor) === TRUE) {
+                echo '<script>console.log("Update Success");</script>';
+                
+            } else {
+                echo "Error updating request status: " . $conn->error;
+            }
+
         }
     }
+
 } else {
     // If the request method is not POST or 'submit' is not set
     echo "Invalid request";

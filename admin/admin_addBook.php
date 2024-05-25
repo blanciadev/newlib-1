@@ -13,6 +13,7 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     header("Location: ../index.php");
     exit(); // Ensure script execution stops after redirection
 }
+
 if (isset($_POST['submit'])) {
     try {
         // Retrieve form data
@@ -24,6 +25,14 @@ if (isset($_POST['submit'])) {
         $quantity = $_POST['quantity'];
         $price = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
         $country = $_POST['country'];
+
+        
+     // Additional data from form fields
+    $name = $_POST['add_name'];
+    $address = $_POST['add_address'];
+    $email = $_POST['add_email'];
+    $contact = $_POST['add_contact'];
+        $type = $_POST['type']; 
 
         // Retrieve selected section and shelf number from hidden input fields
         $selectedSection = $_POST['selectedSection'];
@@ -122,6 +131,17 @@ if (isset($_POST['submit'])) {
               
                 if ($conn->query($insertBookSql) !== TRUE) {
                     throw new Exception("Error inserting book: " . $conn->error);
+                }else{
+                    $insertContributor = "INSERT INTO tbl_contributor (Accession_Code, Name, Address, Email, Contact_Number)
+                    VALUES ('$customAccessionCode','$name','$address','$email','$contact')";
+                     
+                     if ($conn->query($insertContributor) === TRUE) {
+                        echo '<script>console.log("Update Success");</script>';
+                        
+                    } else {
+                        echo "Error updating request status: " . $conn->error;
+                    }
+
                 }
             }
 
@@ -354,6 +374,32 @@ if (isset($_POST['submit'])) {
                         <input type="hidden" id="selectedShelf" name="selectedShelf">
                     </div>
                     <br>
+
+
+                    <div class="mb-3">
+                <label for="add_name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="add_name" name="add_name" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="add_address" class="form-label">Address</label>
+                <input type="text" class="form-control" id="add_address" name="add_address" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="add_email" class="form-label">Email</label>
+                <input type="text" class="form-control" id="add_email" name="add_email" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="add_contact" class="form-label">Contact Number</label>
+                <input type="text" class="form-control" id="add_contact" name="add_contact" required>
+            </div>
+
+         
+            <a href="admin_books.php" class="btn btn-primary">Cancel</a>
+
+
                     <button type="submit" class="btn btn-primary" name="submit">Submit</button>
             </form>
 
