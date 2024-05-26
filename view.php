@@ -165,7 +165,7 @@
         <div class="header1">
             <div class="text">
                 <div class="back-btn">
-                    <a href="./staff_borrow_dash.php"><i class='bx bx-arrow-back'></i></a>
+                    <a href="./index.php"><i class='bx bx-arrow-back'></i></a>
                 </div>
                 <div class="title">
                     <h2>Search Book</h2>
@@ -283,14 +283,7 @@
                 });
             });
 
-            // Add event listener to "Checkout" button
-            checkoutBtn.addEventListener('click', function() {
-                // Construct the URL with the bookDetails array values
-                const url = 'staff_book_borrow_process.php?bookDetails=' + JSON.stringify(bookDetails);
-                console.log('Checkout URL:', url);
-                // Redirect to the checkout page with the bookDetails in the URL
-                window.location.href = url;
-            });
+          
         });
 
 
