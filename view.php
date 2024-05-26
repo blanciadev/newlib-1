@@ -1,3 +1,133 @@
+<?php
+    session_start();
+
+    
+
+    // Check if the User_ID session variable is not set or empty
+    if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
+        // Redirect to index.php
+        header("Location: ../index.php");
+        exit(); // Ensure script execution stops after redirection
+    }
+
+    
+    
+
+
+
+    // Initialize $result variable
+    $result = null;
+    $bookDetails = [];
+
+    // Check if the form is submitted
+    if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+        
+        // Sanitize input to prevent SQL injection
+        $conn =  mysqli_connect("localhost", "root", "root", "db_library_2", 3308); //database connection
+
+        // Initialize an empty array to store book details
+        $bookDetails = [];
+
+        // Retrieve all Accession Codes from the form
+        $accessionCodes = $_POST['Accession_Code'];
+        // Retrieve Book Title from the form
+        $Book_Title = $_POST['Book_Title'];
+
+        // Ensure $accessionCodes is treated as an array
+        if (!is_array($accessionCodes)) {
+            $accessionCodes = [$accessionCodes];
+        }
+
+        // Loop through each Accession Code
+        foreach ($accessionCodes as $Accession_Code) {
+            // Check if Accession Code is provided
+            if (!empty($Accession_Code) || $Accession_Code === '0') {
+                // Query to retrieve book details based on Accession Code
+                $sql = "SELECT
+                            tbl_books.*, 
+                            tbl_authors.Authors_Name
+                        FROM
+                            tbl_books
+                        INNER JOIN
+                            tbl_authors
+                        ON 
+                            tbl_books.Authors_ID = tbl_authors.Authors_ID
+                        WHERE
+                            Accession_Code = ?";
+            } elseif (!empty($Book_Title)) {
+                // Query to retrieve book details based on Book Title
+                $sql = "SELECT
+                            tbl_books.*, 
+                            tbl_authors.Authors_Name
+                        FROM
+                            tbl_books
+                        INNER JOIN
+                            tbl_authors
+                        ON 
+                            tbl_books.Authors_ID = tbl_authors.Authors_ID
+                        WHERE
+                            Book_Title LIKE ?";
+            } else {
+                // Display an alert if neither Accession Code nor Book Title is provided
+                // echo '<script>alert("Please enter either Accession Code or Book Title.");</script>';
+                echo '<script>
+                // Call showToast with "success" message type after successful insertion
+                showToast("error", "Please enter either Accession Code or Book Title.");
+                </script>';
+        
+    
+                continue; // Skip to the next iteration of the loop
+            }
+
+            // Prepare the statement
+            $stmt = $conn->prepare($sql);
+
+            // Bind parameters and execute the query
+            if ($stmt) {
+                if (!empty($Accession_Code) || $Accession_Code === '0') {
+                    $stmt->bind_param("s", $Accession_Code);
+                } else {
+                    $Book_Title = "%" . $Book_Title . "%";
+                    $stmt->bind_param("s", $Book_Title);
+                }
+                
+            $stmt->execute();
+
+            // Get the result set
+            $result = $stmt->get_result();
+
+            // Check if the query returned any rows
+            if ($result && $result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $bookDetails[] = $row;
+                }
+            } else {
+                // Display an alert for invalid Accession Code or Book Title
+                // echo '<script>alert("Invalid Accession Code or Book Title: ' . $Accession_Code . ' - ' . $Book_Title . '");</script>';
+                echo '<script>
+                // // Call showToast with "success" message type after successful insertion
+                // showToast("error", "Invalid Accession Code or Book Title");
+                // </script>';
+            }
+            
+            // Close the statement
+            $stmt->close();
+            }
+        }
+        // Close the database connection
+        $conn->close();
+
+        // Store bookDetails array in session
+        $_SESSION['bookDetails'] = $bookDetails;
+
+        // Output book details in JSON format
+        echo json_encode($bookDetails);
+        exit(); // Stop further execution
+    }
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,6 +139,12 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <!-- <link href="./staff.css" rel="stylesheet"> -->
     <link rel="icon" href="../images/lib-icon.png">
+    <style>
+        .add-book-btn {
+    display: none;
+}
+
+    </style>
 </head>
 <body>
     <div class="board1 container-fluid">
@@ -25,130 +161,142 @@
             </div>
         </div>
 
-        <form action="" method="GET">  
-            <div class="input-group">
-                <input type="text" class="form-control" id="borrower_id" name="borrower_id" placeholder="Enter Borrower ID">
-                <button class="btn btn-primary" type="submit">Search</button>
+        <div class="board1 container-fluid"><!--board container-->
+        <div class="header1">
+            <div class="text">
+                <div class="back-btn">
+                    <a href="./staff_borrow_dash.php"><i class='bx bx-arrow-back'></i></a>
+                </div>
+                <div class="title">
+                    <h2>Search Book</h2>
+                </div>
+              
             </div>
-        </form>
-
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Borrower ID</th>
-                        <th>Borrower Name</th>
-                        <th>Book Title</th>
-                        <th>Quantity</th>
-                        <th>Date Borrowed</th>
-                        <th>Due Date</th>
-                        <th>Date Returned</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>       
-
-                <tbody id="resultTable">
-                <?php
-// Database connection
-$conn = new mysqli("localhost", "root", "root", "db_library_2", 3308);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['borrower_id'])) {
-    $borrower_id = intval($_GET['borrower_id']);
-// Pagination configuration
-$records_per_page = 5;
-$page = isset($_GET['page']) && is_numeric($_GET['page']) ? intval($_GET['page']) : 1;
-$offset = ($page - 1) * $records_per_page;
-
-// Fetch data
-$sql = "SELECT DISTINCT
-b.User_ID, 
-b.Accession_Code, 
-bk.Book_Title, 
-bd.Quantity, 
-b.Date_Borrowed, 
-b.Due_Date, 
-bd.tb_status, 
-br.Borrower_ID, 
-b.Borrow_ID, 
-br.First_Name, 
-br.Middle_Name, 
-br.Last_Name, 
-bd.BorrowDetails_ID, 
-tbl_returned.Date_Returned
-FROM
-tbl_borrowdetails AS bd
-INNER JOIN
-tbl_borrow AS b
-ON 
-    bd.Borrower_ID = b.Borrower_ID AND
-    bd.BorrowDetails_ID = b.Borrow_ID
-INNER JOIN
-tbl_books AS bk
-ON 
-    b.Accession_Code = bk.Accession_Code
-INNER JOIN
-tbl_borrower AS br
-ON 
-    b.Borrower_ID = br.Borrower_ID AND
-    bd.Borrower_ID = br.Borrower_ID
-INNER JOIN
-tbl_returned
-ON 
-    b.User_ID = tbl_returned.User_ID AND
-    bd.Borrower_ID = tbl_returned.Borrower_ID
-WHERE
-bd.Borrower_ID = $borrower_id
-        LIMIT $offset, $records_per_page";
-
-$result = $conn->query($sql);
-
-// Display data
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        echo "<tr>";
-        echo "<td>" . $row['Borrower_ID'] . "</td>";
-        echo "<td>" . $row['First_Name'] . " " . $row['Middle_Name'] . " " . $row['Last_Name'] . "</td>";
-        echo "<td>" . $row['Book_Title'] . "</td>";
-        echo "<td>" . $row['Quantity'] . "</td>";
-        echo "<td>" . $row['Date_Borrowed'] . "</td>";
-        echo "<td>" . $row['Due_Date'] . "</td>";
-        echo "<td>" . $row['Date_Returned'] . "</td>";
-        echo "<td>" . $row['tb_status'] . "</td>";
-        echo "<td><!-- Your action buttons here --></td>";
-        echo "</tr>";
-    }
-
-    // Pagination links
-    $sql_count = "SELECT COUNT(*) AS total FROM tbl_borrowdetails WHERE Borrower_ID = $borrower_id";
-    $result_count = $conn->query($sql_count);
-    $row_count = $result_count->fetch_assoc();
-    $total_pages = ceil($row_count['total'] / $records_per_page);
-
-    echo "<tr><td colspan='8'>";
-    for ($i = 1; $i <= $total_pages; $i++) {
-        echo "<a href='?borrower_id=$borrower_id&page=$i'>$i</a> ";
-    }
-    echo "</td></tr>";
-} else {
-    echo "<tr><td colspan='8'>No results found</td></tr>";
-}
-}
-
-// Close connection
-$conn->close();
-?>
-
-                </tbody>
-            </table>
         </div>
+        <div class='books container'>
+            
+            <form id="dataform" method="POST"> 
+                <label for="Accession_Code">Accession Code:</label>
+                <input type="text" id="Accession_Code" name="Accession_Code[]" placeholder="Enter Accession Code">
+
+                <label for="Book_Title">Book Title:</label>
+                <input type="text" id="Book_Title" name="Book_Title" placeholder="Enter Book Title">
+                <div class="container">
+                    <h3>Search Results</h3>
+                    <div class='bookSearchResult container' id="bookDetailsContainer">
+                        <!-- Display book details will be added dynamically -->
+                    </div>
+                </div>
+            
+                <a id="checkoutBtn" class="btn btn-primary">Checkout</a> 
+        
+            </form>
+        </div>    
+    </div>
         <a href="./index.php" class="nav-link link-body-emphasis"><i class='bx bxs-lock'></i>Return To Login</a>
 
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Define the bookDetails array
+            let bookDetails = [];
+
+            // Get the book cart badge element
+            const bookCartBadge = document.getElementById('bookCartBadge');
+
+            // Hide the "Checkout" button initially
+            const checkoutBtn = document.getElementById('checkoutBtn');
+            checkoutBtn.style.display = 'none';
+
+            // Add event listener to search input fields
+            const accessionCodeInput = document.getElementById('Accession_Code');
+            const bookTitleInput = document.getElementById('Book_Title');
+
+            // Add event listener to both input fields
+            [accessionCodeInput, bookTitleInput].forEach(input => {
+                input.addEventListener('input', function() {
+                    // Get the form data
+                    const formData = new FormData(document.getElementById('dataform'));
+                    console.log('Form data:', formData);
+
+                    // Send an AJAX request
+                    fetch('view.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Response:', data);
+                        // Display book details dynamically
+                        const bookDetailsContainer = document.getElementById('bookDetailsContainer');
+                        bookDetailsContainer.innerHTML = '';
+                        data.forEach(book => {
+                            const bookDiv = document.createElement('div');
+                            bookDiv.classList.add('book');
+                            bookDiv.innerHTML = `
+                                <br>
+                                <h3>Book Details</h3>
+                                <br>
+                                <p><strong>Accession Code:</strong> ${book['Accession_Code']}</p>
+                                <p><strong>Title:</strong> ${book['Book_Title']}</p>
+                                <p><strong>Author:</strong> ${book['Authors_Name']}</p>
+                                <p><strong>Edition:</strong> ${book['tb_edition']}</p>
+                                <p><strong>Availability:</strong> ${book['Quantity']}</p>
+                                <button type="button" class="btn btn-secondary add-book-btn" data-accession="${book['Accession_Code']}">Get Book</button>
+                                <hr>
+                            `;
+                            const quantity = book['Quantity'];
+
+                            // Add event listener to "Add Book" button
+                            const addBookBtn = bookDiv.querySelector('.add-book-btn');
+                            if (quantity == 0) {
+                                addBookBtn.disabled = true; // Disable button if quantity is 0
+                            } else {
+                                addBookBtn.addEventListener('click', function() {
+                                    // Add or remove the book from the bookDetails array
+                                    const accessionCode = this.getAttribute('data-accession');
+                                    const index = bookDetails.indexOf(accessionCode);
+                                    if (index === -1) {
+                                        bookDetails.push(accessionCode);
+                                    } else {
+                                        bookDetails.splice(index, 1);
+                                    }
+
+                                    // Update the book cart badge count
+                                    bookCartBadge.textContent = bookDetails.length;
+                                    console.log('Book details:', bookDetails);
+
+                                    // Show or hide the "Checkout" button based on the bookDetails array length
+                                    checkoutBtn.style.display = bookDetails.length > 0 ? 'block' : 'none';
+                            
+                                });
+
+                            }
+                            bookDetailsContainer.appendChild(bookDiv);
+                        });
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+
+            // Add event listener to "Checkout" button
+            checkoutBtn.addEventListener('click', function() {
+                // Construct the URL with the bookDetails array values
+                const url = 'staff_book_borrow_process.php?bookDetails=' + JSON.stringify(bookDetails);
+                console.log('Checkout URL:', url);
+                // Redirect to the checkout page with the bookDetails in the URL
+                window.location.href = url;
+            });
+        });
+
+
+    </script>
+
+
+
 </body>
 </html>
