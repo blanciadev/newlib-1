@@ -46,8 +46,13 @@ function fetch_query_results($conn, $query, $params, $types = "")
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./admin.css" rel="stylesheet">
     <link rel="icon" href="../images/lib-icon.png">
-
+  
     <style>
+
+    .scrollable-table {
+            max-height: 400px; /* Adjust the height as needed */
+            overflow-y: auto;
+        }
         body {
             font-family: 'Poppins', sans-serif;
         }
@@ -171,92 +176,95 @@ function fetch_query_results($conn, $query, $params, $types = "")
                 INNER JOIN tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
                 INNER JOIN tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID
             WHERE
-                bd.tb_status = 'Pending'
-                AND b.Due_Date < DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+                b.tb_status = 'Pending'
+                AND DATEDIFF(CURDATE(), b.Due_Date) > 30
             GROUP BY
-                bd.Borrower_ID
-            "
+                bd.Borrower_ID; "
             ,
                 "params" => [], // No parameters needed
                 "types" => "" // No types needed
             ]
         ];
-        
-// Fetching and displaying data for All Records
-echo '<div class="row mb-4">';
-echo '<div class="col-12">';
-echo '<h3 class="text-center mb-3">All Records</h3>';
-echo '<table class="table table-bordered">';
-echo '<thead class="table-dark">
-    <tr><th>User ID</th><th>Accession Code</th><th>Book Title</th><th>Quantity</th><th>Date Borrowed</th><th>Due Date</th><th>Status</th><th>Borrower ID</th><th>Borrow ID</th></tr></thead><tbody>';
-
-$result = fetch_query_results($conn, $queries["All Records"]["query"], $queries["All Records"]["params"], $queries["All Records"]["types"]);
-while ($row = $result->fetch_assoc()) {
-    echo '<tr>';
-    echo '<td>' . htmlspecialchars($row['User_ID']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Accession_Code']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Book_Title']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Quantity']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Date_Borrowed']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Due_Date']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['tb_status']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Borrower_ID']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Borrow_ID']) . '</td>';
-    echo '</tr>';
-}
-echo '</tbody></table>';
-echo '</div></div>';
-
-// Fetching and displaying data for Returned Books
-echo '<div class="row mb-4">';
-echo '<div class="col-12">';
-echo '<h3 class="text-center mb-3">Returned Books</h3>';
-echo '<table class="table table-bordered">';
-echo '<thead class="table-dark">
-    <tr><th>User ID</th><th>Accession Code</th><th>Book Title</th><th>Quantity</th><th>Date Borrowed</th><th>Due Date</th><th>Status</th><th>Borrower ID</th><th>Borrow ID</th></tr></thead><tbody>';
-
-$result = fetch_query_results($conn, $queries["Returned Books"]["query"], $queries["Returned Books"]["params"], $queries["Returned Books"]["types"]);
-while ($row = $result->fetch_assoc()) {
-    echo '<tr>';
-    echo '<td>' . htmlspecialchars($row['User_ID']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Accession_Code']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Book_Title']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Quantity']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Date_Borrowed']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Due_Date']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['tb_status']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Borrower_ID']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Borrow_ID']) . '</td>';
-    echo '</tr>';
-}
-echo '</tbody></table>';
-echo '</div></div>';
-
-// Fetching and displaying data for Missing Books
-echo '<div class="row mb-4">';
-echo '<div class="col-12">';
-echo '<h3 class="text-center mb-3">Missing Books</h3>';
-echo '<table class="table table-bordered">';
-echo '<thead class="table-dark">
-    <tr><th>User ID</th><th>Accession Code</th><th>Book Title</th><th>Quantity</th><th>Date Borrowed</th><th>Due Date</th><th>Status</th><th>Borrower ID</th></tr></thead><tbody>';
-
-$result = fetch_query_results($conn, $queries["Missing Books"]["query"], $queries["Missing Books"]["params"], $queries["Missing Books"]["types"]);
-while ($row = $result->fetch_assoc()) {
-    echo '<tr>';
-    echo '<td>' . htmlspecialchars($row['User_ID']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Accession_Code']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Book_Title']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Quantity']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Date_Borrowed']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Due_Date']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['tb_status']) . '</td>';
-    echo '<td>' . htmlspecialchars($row['Borrower_ID']) . '</td>';
-   
-    echo '</tr>';
-}
-echo '</tbody></table>';
-echo '</div></div>';
-
+      
+    
+  
+    // Fetching and displaying data for All Records
+    echo '<div class="row mb-4">';
+    echo '<div class="col-12">';
+    echo '<h3 class="text-center mb-3">All Records</h3>';
+    echo '<div class="table-responsive scrollable-table">';
+    echo '<table class="table table-bordered">';
+    echo '<thead class="table-dark">
+        <tr><th>User ID</th><th>Accession Code</th><th>Book Title</th><th>Quantity</th><th>Date Borrowed</th><th>Due Date</th><th>Status</th><th>Borrower ID</th><th>Borrow ID</th></tr></thead><tbody>';
+    
+    $result = fetch_query_results($conn, $queries["All Records"]["query"], $queries["All Records"]["params"], $queries["All Records"]["types"]);
+    while ($row = $result->fetch_assoc()) {
+        echo '<tr>';
+        echo '<td>' . htmlspecialchars($row['User_ID']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Accession_Code']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Book_Title']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Quantity']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Date_Borrowed']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Due_Date']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['tb_status']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Borrower_ID']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Borrow_ID']) . '</td>';
+        echo '</tr>';
+    }
+    echo '</tbody></table>';
+    echo '</div></div></div>';
+    
+    // Fetching and displaying data for Returned Books
+    echo '<div class="row mb-4">';
+    echo '<div class="col-12">';
+    echo '<h3 class="text-center mb-3">Returned Books</h3>';
+    echo '<div class="table-responsive scrollable-table">';
+    echo '<table class="table table-bordered">';
+    echo '<thead class="table-dark">
+        <tr><th>User ID</th><th>Accession Code</th><th>Book Title</th><th>Quantity</th><th>Date Borrowed</th><th>Due Date</th><th>Status</th><th>Borrower ID</th><th>Borrow ID</th></tr></thead><tbody>';
+    
+    $result = fetch_query_results($conn, $queries["Returned Books"]["query"], $queries["Returned Books"]["params"], $queries["Returned Books"]["types"]);
+    while ($row = $result->fetch_assoc()) {
+        echo '<tr>';
+        echo '<td>' . htmlspecialchars($row['User_ID']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Accession_Code']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Book_Title']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Quantity']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Date_Borrowed']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Due_Date']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['tb_status']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Borrower_ID']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Borrow_ID']) . '</td>';
+        echo '</tr>';
+    }
+    echo '</tbody></table>';
+    echo '</div></div></div>';
+    
+    // Fetching and displaying data for Missing Books
+    echo '<div class="row mb-4">';
+    echo '<div class="col-12">';
+    echo '<h3 class="text-center mb-3">Missing Books</h3>';
+    echo '<div class="table-responsive scrollable-table">';
+    echo '<table class="table table-bordered">';
+    echo '<thead class="table-dark">
+        <tr><th>User ID</th><th>Accession Code</th><th>Book Title</th><th>Quantity</th><th>Date Borrowed</th><th>Due Date</th><th>Status</th><th>Borrower ID</th></tr></thead><tbody>';
+    
+    $result = fetch_query_results($conn, $queries["Missing Books"]["query"], $queries["Missing Books"]["params"], $queries["Missing Books"]["types"]);
+    while ($row = $result->fetch_assoc()) {
+        echo '<tr>';
+        echo '<td>' . htmlspecialchars($row['User_ID']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Accession_Code']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Book_Title']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Quantity']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Date_Borrowed']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Due_Date']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['tb_status']) . '</td>';
+        echo '<td>' . htmlspecialchars($row['Borrower_ID']) . '</td>';
+        echo '</tr>';
+    }
+    echo '</tbody></table>';
+    echo '</div></div></div>';
+    
 $conn->close();
 ?>
     </div>
