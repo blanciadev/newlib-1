@@ -66,17 +66,19 @@ if (isset($_POST['selectedShelf'])) {
             $yearPublished = $row['Year_Published'];
             $quantity = $row['Quantity'];
             $authorName = $row['Authors_Name'];
-          
-            echo "<div>";
-            echo "<p><strong>Title:</strong> $bookTitle</p>";
-            echo "<p><strong>Accession Code:</strong> $accessionCode</p>";
-            echo "<p><strong>Publisher:</strong> $publisherName</p>";
-            echo "<p><strong>Year Published:</strong> $yearPublished</p>";
-            echo "<p><strong>Quantity:</strong> $quantity</p>";
-            echo "<p><strong>Author:</strong> $authorName</p>";
-            echo "</div><hr>";
-
+            
+            echo "<div class='card mb-3 shadow-sm'>";
+            echo "<div class='card-body'>";
+            echo "<h5 class='card-title'>$bookTitle</h5>";
+            echo "<p class='card-text'><strong>Accession Code:</strong> $accessionCode</p>";
+            echo "<p class='card-text'><strong>Publisher:</strong> $publisherName</p>";
+            echo "<p class='card-text'><strong>Year Published:</strong> $yearPublished</p>";
+            echo "<p class='card-text'><strong>Quantity:</strong> $quantity</p>";
+            echo "<p class='card-text'><strong>Author:</strong> $authorName</p>";
+            echo "</div>";
+            echo "</div>";
         }
+        
     } else {
         // If there's an error in executing the query, return an error message
         echo "Error: " . mysqli_error($conn);
