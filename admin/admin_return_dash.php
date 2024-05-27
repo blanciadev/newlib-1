@@ -145,16 +145,19 @@ if ($conn->connect_error) {
                 MIN(b.Due_Date) AS Due_Date,
                 MIN(bd.tb_status) AS tb_status,
                 MIN(bd.Borrower_ID) AS Borrower_ID,
-                MIN(br.First_Name) AS First_Name,
-                MIN(br.Middle_Name) AS Middle_Name,
-                MIN(br.Last_Name) AS Last_Name
+                MIN(br.First_Name) AS Borrower_First_Name,
+                MIN(br.Middle_Name) AS Borrower_Middle_Name,
+                MIN(br.Last_Name) AS Borrower_Last_Name,
+                MIN(tbl_employee.First_Name) AS Employee_First_Name
             FROM
                 tbl_borrowdetails AS bd
                 INNER JOIN tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
                 INNER JOIN tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
                 INNER JOIN tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID
+                INNER JOIN tbl_employee ON b.User_ID = tbl_employee.User_ID
             GROUP BY
                 bd.Borrower_ID;
+            
             ";
     
                 $result = $conn->query($sql);
@@ -163,8 +166,8 @@ if ($conn->connect_error) {
                 // Output data of each row
                 while($row = $result->fetch_assoc()) {
                     echo "<tr>"; 
-                    echo "<td>" . $row["User_ID"] . "</td>"; 
-                    echo "<td>" . $row["First_Name"] ." ". $row["Middle_Name"] ." ". $row["Last_Name"] . "</td>"; 
+                    echo "<td>" . $row["Employee_First_Name"] . "</td>"; 
+                    echo "<td>" . $row["Borrower_First_Name"] ." ". $row["Borrower_Middle_Name"] ." ". $row["Borrower_Last_Name"] . "</td>"; 
                     echo "<td>" . $row["Date_Borrowed"] . "</td>";
                     echo "<td>" . $row["Due_Date"] . "</td>";
                     echo "<td>" . $row["tb_status"] . "</td>";

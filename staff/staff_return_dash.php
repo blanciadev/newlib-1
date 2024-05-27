@@ -122,59 +122,72 @@ if ($conn->connect_error) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                        $conn =  mysqli_connect("localhost","root","root","db_library_2", 3308); 
-                        if ($conn->connect_error) {
-                            die("Connection failed: " . $conn->connect_error);
-                        }
+                <?php
+                $conn =  mysqli_connect("localhost","root","root","db_library_2", 3308); 
+                if ($conn->connect_error) {
+                    die("Connection failed: " . $conn->connect_error);
+                }
 
-                        // SQL query
-                        $sql = "SELECT
-                        MIN(b.User_ID) AS User_ID,
-                        MIN(b.Accession_Code) AS Accession_Code,
-                        MIN(bk.Book_Title) AS Book_Title,
-                        MIN(bd.Quantity) AS Quantity,
-                        MIN(b.Date_Borrowed) AS Date_Borrowed,
-                        MIN(b.Due_Date) AS Due_Date,
-                        MIN(bd.tb_status) AS tb_status,
-                        MIN(bd.Borrower_ID) AS Borrower_ID,
-                        MIN(br.First_Name) AS First_Name,
-                        MIN(br.Middle_Name) AS Middle_Name,
-                        MIN(br.Last_Name) AS Last_Name
-                    FROM
-                        tbl_borrowdetails AS bd
-                        INNER JOIN tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
-                        INNER JOIN tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-                        INNER JOIN tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID
-                    GROUP BY
-                        bd.Borrower_ID;
-                    ";
+                // SQL query
+                $sql = "SELECT
+                MIN(b.User_ID) AS User_ID,
+                MIN(b.Accession_Code) AS Accession_Code,
+                MIN(bk.Book_Title) AS Book_Title,
+                MIN(bd.Quantity) AS Quantity,
+                MIN(b.Date_Borrowed) AS Date_Borrowed,
+                MIN(b.Due_Date) AS Due_Date,
+                MIN(bd.tb_status) AS tb_status,
+                MIN(bd.Borrower_ID) AS Borrower_ID,
+                MIN(br.First_Name) AS Borrower_First_Name,
+                MIN(br.Middle_Name) AS Borrower_Middle_Name,
+                MIN(br.Last_Name) AS Borrower_Last_Name,
+                MIN(tbl_employee.First_Name) AS Employee_First_Name
+            FROM
+                tbl_borrowdetails AS bd
+                INNER JOIN tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+                INNER JOIN tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+                INNER JOIN tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID
+                INNER JOIN tbl_employee ON b.User_ID = tbl_employee.User_ID
+            GROUP BY
+                bd.Borrower_ID;
+            
+            ";
+    
+                $result = $conn->query($sql);
+    
 
-                        $result = $conn->query($sql);
+                // Output data of each row
+                while($row = $result->fetch_assoc()) {
+                    echo "<tr>"; 
+                    echo "<td>" . $row["Employee_First_Name"] . "</td>"; 
+                    echo "<td>" . $row["Borrower_First_Name"] ." ". $row["Borrower_Middle_Name"] ." ". $row["Borrower_Last_Name"] . "</td>"; 
+                    echo "<td>" . $row["Date_Borrowed"] . "</td>";
+                    echo "<td>" . $row["Due_Date"] . "</td>";
+                    echo "<td>" . $row["tb_status"] . "</td>";
 
-                        // Output data of each row
-                        while($row = $result->fetch_assoc()) {
-                            echo "<tr>";
-                            echo "<td>" . $row["Borrower_ID"] . "</td>";
-                            echo "<td>" . $row["First_Name"] ." ". $row["Middle_Name"] ." ". $row["Last_Name"] . "</td>";
-                            echo "<td>" . $row["tb_status"] . "</td>";
-                            echo "<td> </td>";// Contact Number
+                    echo "<td>";
+                    echo "<form class='update-form' method='GET' action='staff_return.php'>";
+                    echo "<input type='hidden' name='borrowId' id='borrowId' value='" . $row["Borrower_ID"] . "'>";
+                    echo "</form>";
+                    // Conditionally render the button based on the status
+                    echo "<input type='hidden' name='borrowerId' value='" . $row["Borrower_ID"] . "'>";
 
-                            echo "<td>";
-                            // Conditionally render the button based on the status
-                            if ($row["tb_status"] === 'Pending' || $row["tb_status"] === 'On Hold') {
-                                echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='updateAndSetSession(" . $row["Borrower_ID"] . ")'>View Books</button>";
-                            } else {
-                                echo "<button type='button' class='btn btn-secondary btn-sm' disabled>All Books Returned</button>";
-                            }
-                            echo "<div class='update-message'></div>";
-                            echo "</td>";
-                            echo "</tr>";
-                        }
-                        echo "</tbody></table>";
-                        // Close connection
-                        $conn->close();
-                    ?>
+                    if ($row["tb_status"] === 'Pending' || $row["tb_status"] === 'On Hold') {
+                        echo "<button type='button' class='btn btn-primary btn-sm update-btn' onclick='updateAndSetSession(" . $row["Borrower_ID"] . ")'>UPDATE</button>";
+
+                    } else {
+                        echo "<button type='button' class='btn btn-secondary btn-sm' disabled>Update</button>";
+                    }
+                
+                    echo "<div class='update-message'></div>";
+                    echo "</td>";
+                    echo "</tr>";
+                }
+                echo "</table>";
+
+                // Close connection
+                $conn->close();
+            ?>
                 </tbody>
             </table>
         </div>
