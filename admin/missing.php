@@ -50,7 +50,7 @@ function fetch_query_results($conn, $query, $params, $types = "")
     <style>
 
     .scrollable-table {
-            max-height: 400px; /* Adjust the height as needed */
+            max-height: 250px; /* Adjust the height as needed */
             overflow-y: auto;
         }
         body {
