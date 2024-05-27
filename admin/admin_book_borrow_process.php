@@ -155,7 +155,7 @@ echo '<script>
 if (isset($_POST['submit'])) {
     // Calculate due date as 3 days later by default
     $dueDate = date('Y-m-d', strtotime('+3 days', strtotime($currentDate)));
-    $code = $_SESSION['bookTransactionCodes'];
+    // $code = $_SESSION['bookTransactionCodes'];
 
     $uid = $_SESSION["User_ID"];
 

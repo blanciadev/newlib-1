@@ -186,7 +186,7 @@ ON
     b.Borrower_ID = br.Borrower_ID AND
     bd.Borrower_ID = br.Borrower_ID
 WHERE
-bd.Borrower_ID = ?"; // Using a placeholder for the borrowId
+bd.Borrower_ID = ?"; 
 
 // Prepare the SQL statement
 $stmt = mysqli_prepare($conn, $sql);

@@ -1,173 +1,273 @@
 <?php
-    session_start();
-    // Check if the User_ID session variable is not set or empty
-    if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
-        // Redirect to index.php
-        header("Location: ../index.php");
-        exit(); // Ensure script execution stops after redirection
+session_start();
+// Check if the User_ID session variable is not set or empty
+if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
+    // Redirect to index.php
+    header("Location: ../index.php");
+    exit(); // Ensure script execution stops after redirection
+}
+
+// Get the year and month from the URL
+$year = isset($_GET['year']) ? intval($_GET['year']) : date('Y');
+$month = isset($_GET['month']) ? intval($_GET['month']) : date('m');
+
+// Function to connect to the database
+function db_connect()
+{
+    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+    if (!$conn) {
+        die("Connection failed: " . mysqli_connect_error());
     }
+    return $conn;
+}
 
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
-
-    // Fetch data from tbl_log
-    $sql = "SELECT DATE_FORMAT(Date_Time, '%Y-%m') AS Month, COUNT(*) AS Visits
-            FROM tbl_log
-            GROUP BY DATE_FORMAT(Date_Time, '%Y-%m')
-            ORDER BY DATE_FORMAT(Date_Time, '%Y-%m') ASC";
-    $result = mysqli_query($conn, $sql);
-
-    // Initialize arrays to hold the labels and data for the chart
-    $labels = [];
-    $data = [];
-
-
-    // Process the fetched data
-    while ($row = mysqli_fetch_assoc($result)) {
-        // Add the month to labels array
-        $labels[] = $row['Month'];
-        
-        // Add the number of visits to data array
-        $data[] = $row['Visits'];
+function fetch_query_results($conn, $query, $params, $types = "")
+{
+    $stmt = $conn->prepare($query);
+    if ($types) {
+        $stmt->bind_param($types, ...$params);
     }
-
-    // Convert labels and data arrays to JSON format
-    $labelsJSON = json_encode($labels);
-    $dataJSON = json_encode($data);
-    
+    $stmt->execute();
+    return $stmt->get_result();
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Missing Books</title>
+    <title>Monthly Report</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="./admin.css" rel="stylesheet">
-    <link rel="icon" href="../images/lib-icon.png ">
+    <link rel="icon" href="../images/lib-icon.png">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .board-container {
+            margin-top: 20px;
+        }
+
+        .print-btn-container {
+            margin-bottom: 20px;
+        }
+
+        .table th,
+        .table td {
+            text-align: center;
+        }
+
+        @media print {
+            .print-btn-container {
+                display: none;
+            }
+        }
+
+        .report {
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: column;
+        }
+    </style>
 </head>
+
 <body>
-    <div class="d-flex flex-column flex-shrink-0 p-3 bg-body-tertiary" ><!--sidenav container-->
-        <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
-            <h2>Villa<span>Read</span>Hub</h2> 
-            <img src="../images/lib-icon.png" style="width: 45px;" alt="lib-icon"/>
-        </a><!--header container-->
-        <div class="user-header  d-flex flex-row flex-wrap align-content-center justify-content-evenly"><!--user container-->
-            <?php
-                $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-                $userID = $_SESSION["User_ID"];
-                $sql = "SELECT User_ID, First_Name, Middle_Name, Last_Name, tb_role, Contact_Number, E_mail, tb_address, image_data 
-                        FROM tbl_employee 
-                        WHERE User_ID = $userID";
-                $result = mysqli_query($conn, $sql);
-                if (!$result) {
-                    echo "Error: " . mysqli_error($conn);
-                } else {
-                    $userData = mysqli_fetch_assoc($result);
-                    // Fetch the First_Name from $userData
-                    $firstName = $userData['First_Name'];
-                    $role = $userData['tb_role'];
-                }
-            ?>
-            <?php if (!empty($userData['image_data'])): ?>
-            <img src="data:image/jpeg;base64,<?php echo base64_encode($userData['image_data']); ?>" alt="User Image" width="50" height="50" class="rounded-circle me-2">
-            <?php else: ?>
-            <img src="default-user-image.png" alt="Default Image" width="50" height="50" class="rounded-circle me-2">
-            <?php endif; ?>
-            <strong><span><?php echo  $firstName . "<br/>" .  $role; ?></span></strong>
+    <div class="report container"><!--board container-->
+
+        <div class="print-btn-container">
+            <button id="printBtn" class="btn btn-primary">Print Report</button>
+            <a href="admin_generate_report.php" id="dashboardBtn" class="btn btn-primary">Go Back</a>
         </div>
-        <hr>
-        <ul class="nav nav-pills flex-column mb-auto"><!--navitem container-->
-            <li class="nav-item "> <a href="./admin_dashboard.php" class="nav-link link-body-emphasis " > <i class='bx bxs-home'></i>Dashboard </a> </li>
-            <li class="nav-item"> <a href="./admin_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
-            <li class="nav-item"> <a href="./admin_transactions.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transactions</a> </li>
-            <li class="nav-item"> <a href="./admin_staff.php" class="nav-link link-body-emphasis"><i class='bx bxs-user'></i>Manage Staff</a> </li>
-            <li class="nav-item"> <a href="./admin_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
-            <li class="nav-item active"> <a href="./admin_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
-            <li class="nav-item"> <a href="./admin_generate_report.php" class="nav-link link-body-emphasis"><i class='bx bxs-report'></i>Generate Report</a> </li>
-            <hr>
-            <li class="nav-item"> <a href="./admin_settings.php" class="nav-link link-body-emphasis"><i class='bx bxs-cog'></i>Settings</a> </li>
-            <li class="nav-item"> <a href="../logout.php" class="nav-link link-body-emphasis"><i class='bx bx-log-out'></i>Log Out</a> </li>
-        </ul>
+        <?php
+        $conn = db_connect();
+
+        $queries = [
+            "All Records" => [
+                "query" => "SELECT 
+                    b.User_ID, 
+                    b.Accession_Code, 
+                    bk.Book_Title, 
+                    bd.Quantity, 
+                    b.Date_Borrowed, 
+                    b.Due_Date, 
+                    bd.tb_status, 
+                    bd.Borrower_ID, 
+                    b.Borrow_ID
+                    FROM
+                    tbl_borrowdetails AS bd
+                    INNER JOIN
+                    tbl_borrow AS b
+                    ON 
+                        bd.Borrower_ID = b.Borrower_ID AND
+                        bd.BorrowDetails_ID = b.Borrow_ID
+                    INNER JOIN
+                    tbl_books AS bk
+                    ON 
+                        b.Accession_Code = bk.Accession_Code
+                    INNER JOIN
+                    tbl_borrower AS br
+                    ON 
+                        b.Borrower_ID = br.Borrower_ID AND
+                        bd.Borrower_ID = br.Borrower_ID",
+                 "params" => [], // No parameters needed
+                 "types" => "" // No types needed
+            ],
+            "Returned Books" => [
+                "query" => "SELECT
+                b.User_ID, 
+                b.Accession_Code, 
+                bk.Book_Title, 
+                bd.Quantity, 
+                b.Date_Borrowed, 
+                b.Due_Date, 
+                bd.tb_status, 
+                bd.Borrower_ID, 
+                b.Borrow_ID
+            FROM
+                tbl_borrowdetails AS bd
+                INNER JOIN
+                tbl_borrow AS b
+                ON 
+                    bd.Borrower_ID = b.Borrower_ID AND
+                    bd.BorrowDetails_ID = b.Borrow_ID
+                INNER JOIN
+                tbl_books AS bk
+                ON 
+                    b.Accession_Code = bk.Accession_Code
+                INNER JOIN
+                tbl_borrower AS br
+                ON 
+                    b.Borrower_ID = br.Borrower_ID AND
+                    bd.Borrower_ID = br.Borrower_ID
+            WHERE
+	bd.tb_status = 'Returned'",
+                "params" => [], // No parameters needed
+                "types" => "" // No types needed
+            ],
+            "Missing Books" => [
+                "query" => "SELECT
+                MIN(b.User_ID) AS User_ID,
+                MIN(b.Accession_Code) AS Accession_Code,
+                MIN(bk.Book_Title) AS Book_Title,
+                MIN(bd.Quantity) AS Quantity,
+                MIN(b.Date_Borrowed) AS Date_Borrowed,
+                MIN(b.Due_Date) AS Due_Date,
+                MIN(bd.tb_status) AS tb_status,
+                MIN(bd.Borrower_ID) AS Borrower_ID,
+                MIN(br.First_Name) AS First_Name,
+                MIN(br.Middle_Name) AS Middle_Name,
+                MIN(br.Last_Name) AS Last_Name
+            FROM
+                tbl_borrowdetails AS bd
+                INNER JOIN tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
+                INNER JOIN tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
+                INNER JOIN tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID
+            WHERE
+                bd.tb_status = 'Pending'
+                AND b.Due_Date < DATE_SUB(CURDATE(), INTERVAL 1 MONTH)
+            GROUP BY
+                bd.Borrower_ID
+            "
+            ,
+                "params" => [], // No parameters needed
+                "types" => "" // No types needed
+            ]
+        ];
+        
+// Fetching and displaying data for All Records
+echo '<div class="row mb-4">';
+echo '<div class="col-12">';
+echo '<h3 class="text-center mb-3">All Records</h3>';
+echo '<table class="table table-bordered">';
+echo '<thead class="table-dark">
+    <tr><th>User ID</th><th>Accession Code</th><th>Book Title</th><th>Quantity</th><th>Date Borrowed</th><th>Due Date</th><th>Status</th><th>Borrower ID</th><th>Borrow ID</th></tr></thead><tbody>';
+
+$result = fetch_query_results($conn, $queries["All Records"]["query"], $queries["All Records"]["params"], $queries["All Records"]["types"]);
+while ($row = $result->fetch_assoc()) {
+    echo '<tr>';
+    echo '<td>' . htmlspecialchars($row['User_ID']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Accession_Code']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Book_Title']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Quantity']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Date_Borrowed']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Due_Date']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['tb_status']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Borrower_ID']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Borrow_ID']) . '</td>';
+    echo '</tr>';
+}
+echo '</tbody></table>';
+echo '</div></div>';
+
+// Fetching and displaying data for Returned Books
+echo '<div class="row mb-4">';
+echo '<div class="col-12">';
+echo '<h3 class="text-center mb-3">Returned Books</h3>';
+echo '<table class="table table-bordered">';
+echo '<thead class="table-dark">
+    <tr><th>User ID</th><th>Accession Code</th><th>Book Title</th><th>Quantity</th><th>Date Borrowed</th><th>Due Date</th><th>Status</th><th>Borrower ID</th><th>Borrow ID</th></tr></thead><tbody>';
+
+$result = fetch_query_results($conn, $queries["Returned Books"]["query"], $queries["Returned Books"]["params"], $queries["Returned Books"]["types"]);
+while ($row = $result->fetch_assoc()) {
+    echo '<tr>';
+    echo '<td>' . htmlspecialchars($row['User_ID']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Accession_Code']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Book_Title']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Quantity']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Date_Borrowed']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Due_Date']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['tb_status']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Borrower_ID']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Borrow_ID']) . '</td>';
+    echo '</tr>';
+}
+echo '</tbody></table>';
+echo '</div></div>';
+
+// Fetching and displaying data for Missing Books
+echo '<div class="row mb-4">';
+echo '<div class="col-12">';
+echo '<h3 class="text-center mb-3">Missing Books</h3>';
+echo '<table class="table table-bordered">';
+echo '<thead class="table-dark">
+    <tr><th>User ID</th><th>Accession Code</th><th>Book Title</th><th>Quantity</th><th>Date Borrowed</th><th>Due Date</th><th>Status</th><th>Borrower ID</th></tr></thead><tbody>';
+
+$result = fetch_query_results($conn, $queries["Missing Books"]["query"], $queries["Missing Books"]["params"], $queries["Missing Books"]["types"]);
+while ($row = $result->fetch_assoc()) {
+    echo '<tr>';
+    echo '<td>' . htmlspecialchars($row['User_ID']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Accession_Code']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Book_Title']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Quantity']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Date_Borrowed']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Due_Date']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['tb_status']) . '</td>';
+    echo '<td>' . htmlspecialchars($row['Borrower_ID']) . '</td>';
+   
+    echo '</tr>';
+}
+echo '</tbody></table>';
+echo '</div></div>';
+
+$conn->close();
+?>
     </div>
-    <div class="board1 container"><!--board container-->
-        <div class="header1">
-            <div class="text">
-                <div class="back-btn">
-                    <a href="./admin_return_dash.php"><i class='bx bx-arrow-back'></i></a>
-                </div>
-                <div class="title">
-                    <h2>Missing Books</h2>
-                </div>
-            </div> 
-        </div>
-         <div class="books container-fluid"> 
-            <table class="table table-hover table-sm">
-                <thead class="bg-light sticky-top">
-                    <tr>
-                        <th></th>
-                    </tr>
-                    <?php
-                        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-                        if ($conn->connect_error) {
-                            die("Connection failed: " . $conn->connect_error);
-                        }
-
-                        // SQL query
-                        $sql = "SELECT
-                            MIN(b.User_ID) AS User_ID,
-                            MIN(b.Accession_Code) AS Accession_Code,
-                            MIN(bk.Book_Title) AS Book_Title,
-                            MIN(bd.Quantity) AS Quantity,
-                            MIN(b.Date_Borrowed) AS Date_Borrowed,
-                            MIN(b.Due_Date) AS Due_Date,
-                            MIN(bd.tb_status) AS tb_status,
-                            MIN(bd.Borrower_ID) AS Borrower_ID,
-                            MIN(br.First_Name) AS First_Name,
-                            MIN(br.Middle_Name) AS Middle_Name,
-                            MIN(br.Last_Name) AS Last_Name
-                        FROM
-                            tbl_borrowdetails AS bd
-                            INNER JOIN tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
-                            INNER JOIN tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-                            INNER JOIN tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID
-                        WHERE
-                            bd.tb_status = 'Pending'
-                        GROUP BY
-                            bd.Borrower_ID";
-
-
-                        $result = $conn->query($sql);
-
-                        // Output data of each row
-                        while ($row = $result->fetch_assoc()) {
-                            $dateBorrowed = new DateTime($row["Date_Borrowed"]);
-                            $currentDate = new DateTime();
-                            $interval = $currentDate->diff($dateBorrowed);
-                            $monthsDifference = $interval->m + ($interval->y * 12);
-
-                            echo '<tr class="' . (($monthsDifference > 1 && $row["tb_status"] !== 'Returned') ? 'table-danger' : '') . '">';
-                            echo '<td>' . htmlspecialchars($row["Borrower_ID"]) . '</td>';
-                            echo '<td>' . htmlspecialchars($row["First_Name"] . " " . $row["Middle_Name"] . " " . $row["Last_Name"]) . '</td>';
-                            echo '<td>' . htmlspecialchars($row["Date_Borrowed"]) . '</td>';
-                            echo '<td>' . htmlspecialchars($row["Due_Date"]) . '</td>';
-                            echo '<td>' . htmlspecialchars($row["tb_status"]) . '</td>';
-                            echo '<td>';
-                            echo '<form class="update-form" method="GET" action="staff_return.php">';
-                            echo '<input type="hidden" name="borrowId" id="borrowId" value="' . htmlspecialchars($row["Borrower_ID"]) . '">';
-                            echo '<input type="hidden" name="borrowerId" value="' . htmlspecialchars($row["Borrower_ID"]) . '">';
-                            echo '</form>';
-                        
-                            echo '<div class="update-message"></div>';
-                            echo '</td>';
-                            echo '</tr>';
-                        }
-                        $conn->close();
-                    ?>
-         </div>
-    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('printBtn').addEventListener('click', function() {
+                window.print();
+            });
+        });
+    </script>
 </body>
+
 </html>
