@@ -307,24 +307,20 @@ echo '<script>console.log("Transaction Code on Submit: ' . $transactionCode . '"
 
     if ($condition == 'proceed') {
         // Update tbl_borrow status
-        $sql2 = "UPDATE tbl_borrow SET tb_status = 'Returned' WHERE Borrow_ID = (
-        SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ?
-    )";
+        $sql2 = "UPDATE tbl_borrow SET tb_status = 'Returned' WHERE Transaction_Code = ? ";
         $stmt2 = $conn->prepare($sql2);
         if (!$stmt2) {
             die("Error in preparing statement 2: " . $conn->error);
         }
-        $stmt2->bind_param("i", $bd_Id);
+        $stmt2->bind_param("s", $transactionCode);
     } else {
         // Update tbl_borrow status
-        $sql2 = "UPDATE tbl_borrow SET tb_status = 'Pending' WHERE Borrow_ID = (
-        SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ?
-    )";
+        $sql2 = "UPDATE tbl_borrow SET tb_status = 'Pending'  WHERE Transaction_Code = ?";
         $stmt2 = $conn->prepare($sql2);
         if (!$stmt2) {
             die("Error in preparing statement 2: " . $conn->error);
         }
-        $stmt2->bind_param("i", $bd_Id);
+        $stmt2->bind_param("s", $transactionCode);
     }
     if ($condition == 'proceed') {
         // Update tbl_returningdetails status
@@ -343,31 +339,31 @@ echo '<script>console.log("Transaction Code on Submit: ' . $transactionCode . '"
         }
         $stmt3->bind_param("s", $transactionCode);
     }
-    if ($condition == 'proceed') {
-        // Update tbl_returned with current date and status
-        $sql4 = "UPDATE tbl_returned SET Date_Returned = ?, tb_status = 'Resolved' WHERE Borrow_ID IN (
-    SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ? LIMIT 1)
-    )";
+        if ($condition == 'proceed') {
+            // Update tbl_returned with current date and status
+            $sql4 = "UPDATE tbl_returned 
+            SET Date_Returned = ?, tb_status = 'Resolved' 
+            WHERE Transaction_Code = ?";
 
-        $stmt4 = $conn->prepare($sql4);
-        if (!$stmt4) {
-            die("Error in preparing statement 4: " . $conn->error);
+            $stmt4 = $conn->prepare($sql4);
+            if (!$stmt4) {
+                die("Error in preparing statement 4: " . $conn->error);
+            }
+
+            $stmt4->bind_param("ss", $currentDate, $transactionCode);
+        } else {
+            // Update tbl_returned with current date and status
+            $sql4 = "UPDATE tbl_returned 
+            SET Date_Returned = ?, tb_status = 'On Hold' 
+            WHERE Transaction_Code = ?";
+
+            $stmt4 = $conn->prepare($sql4);
+            if (!$stmt4) {
+                die("Error in preparing statement 4: " . $conn->error);
+            }
+
+            $stmt4->bind_param("ss", $currentDate, $transactionCode);
         }
-
-        $stmt4->bind_param("si", $currentDate, $bd_Id);
-    } else {
-        // Update tbl_returned with current date and status
-        $sql4 = "UPDATE tbl_returned SET Date_Returned = ?, tb_status = 'On Hold' WHERE Borrow_ID IN (
-    SELECT Borrow_ID FROM tbl_borrow WHERE Borrower_ID = (SELECT Borrower_ID FROM tbl_borrowdetails WHERE BorrowDetails_ID = ? LIMIT 1)
-    )";
-
-        $stmt4 = $conn->prepare($sql4);
-        if (!$stmt4) {
-            die("Error in preparing statement 4: " . $conn->error);
-        }
-
-        $stmt4->bind_param("si", $currentDate, $bd_Id);
-    }
 
 
     // Get Borrower_ID from session

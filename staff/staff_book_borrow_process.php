@@ -1,256 +1,252 @@
 <?php
-    session_start();
 
-    // Check if the User_ID session variable is not set or empty
-    if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
-        // Redirect to index.php
-        header("Location: ../index.php");
-        exit(); // Ensure script execution stops after redirection
-    }
+session_start();
 
-    $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-    // Retrieve the bookDetails array from the URL
-    $bookDetails = isset($_GET['bookDetails']) ? json_decode($_GET['bookDetails']) : [];
-    echo "<script>console.log('Book Details:', " . json_encode($bookDetails) . ");</script>";
+// Check if the User_ID session variable is not set or empty
+if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
+    // Redirect to index.php
+    header("Location: ../index.php");
+    exit(); // Ensure script execution stops after redirection
+}
 
-
-    
-// Define showToast() function
-// Output the HTML code for the toast element
-echo '<div class="toastNotif hide">
-<div class="toast-content">
-    <i class="bx bx-check check"></i>
-    <div class="message">
-        <span class="text text-1">Success</span>
-        <!-- this message can be changed to "Success" and "Error"-->
-        <span class="text text-2"></span>
-        <!-- specify based on the if-else statements -->
-    </div>
-</div>
-<i class="bx bx-x close"></i>
-<div class="progress"></div>
+ // Define the HTML code for the toast element
+ echo '<div class="toastNotif hide">
+ <div class="toast-content">
+     <i class="bx bx-check check"></i>
+     <div class="message">
+         <span class="text text-1"></span>
+         <!-- this message can be changed to "Success" and "Error"-->
+         <span class="text text-2"></span>
+         <!-- specify based on the if-else statements -->
+     </div>
+ </div>
+ <i class="bx bx-x close"></i>
+ <div class="progress"></div>
 </div>';
 
 // Define JavaScript functions to handle the toast
 echo '<script>
-function showToast(messageType, message) {
-    console.log("Toast Called");
-    var toast = document.querySelector(".toastNotif");
-    var progress = document.querySelector(".progress");
-    
-    // Set the message type and text
-    toast.querySelector(".text-1").textContent = messageType;
-    toast.querySelector(".text-2").textContent = message;
-    
-    if (toast && progress) {
-        toast.classList.add("showing");
-        progress.classList.add("showing");
-        setTimeout(() => {
-            toast.classList.remove("showing");
-            progress.classList.remove("showing");
-        }, 5000);
-    } else {
-        console.error("Toast elements not found");
-    }
-}
+ function showToast(type, message) {
+     var toast = document.querySelector(".toastNotif");
+     var progress = document.querySelector(".progress");
+     var text1 = toast.querySelector(".text-1");
+     var text2 = toast.querySelector(".text-2");
+     
+     if (toast && progress && text1 && text2) {
+         // Update the toast content based on the message type
+         if (type === "success") {
+             text1.textContent = "Success";
+             toast.classList.remove("error");
+         } else if (type === "error") {
+             text1.textContent = "Error";
+             toast.classList.add("error");
+         } else {
+             console.error("Invalid message type");
+             return;
+         }
+         
+         // Set the message content
+         text2.textContent = message;
+         
+         // Show the toast and progress
+         toast.classList.add("showing");
+         progress.classList.add("showing");
+         
+         // Hide the toast and progress after 5 seconds
+         setTimeout(() => {
+             toast.classList.remove("showing");
+             progress.classList.remove("showing");
+              window.location.href = "staff_log.php";
+         }, 5000);
+     } else {
+         console.error("Toast elements not found");
+     }
+ }
 
-function closeToast() {
-    var toast = document.querySelector(".toastNotif");
-    var progress = document.querySelector(".progress");
-    toast.classList.remove("showing");
-    progress.classList.remove("showing");
-}
+ function closeToast() {
+     var toast = document.querySelector(".toastNotif");
+     var progress = document.querySelector(".progress");
+     toast.classList.remove("showing");
+     progress.classList.remove("showing");
+ }
+
+  function redirectToPage(url, delay) {
+     setTimeout(() => {
+         window.location.href = url;
+     }, delay);
+ }
+
+
 </script>';
 
 
 
-    // Check if the borrower_id session variable is set
-    if (isset($_SESSION['borrower_id'])) {
-        // Retrieve the borrower_id from the session
-        $borrower_id = $_SESSION['borrower_id'];
-        $User_ID = $_SESSION["User_ID"];
+// Check if the borrower_id session variable is set
+if (isset($_SESSION['borrower_id'])) {
 
-        // Now you can use $borrower_id in your code as needed
-    } else {
-        // Handle the case where the session variable is not set
-        // echo '<script>alert("Borrower ID unavailable"); window.location.href = "staff_borrow_dash.php";</script>';
-      
-        echo '<script>
-        // Call showToast with "success" message type after successful insertion
-        showToast("error", "Invalid Borrower ID");
-        setTimeout(function() {
-            window.location.href = "staff_borrow_dash.php";
-        }, 3000); // Delay in milliseconds
-    </script>';
+    // Retrieve the borrower_id from the session
+    $borrower_id = $_SESSION['borrower_id'];
+    $User_ID = $_SESSION["User_ID"];
 
-      
+    // Now you can use $borrower_id in your code as needed
 
+} else {
+    // Handle the case where the session variable is not set
+    echo '<script>alert("Borrower ID unavailable"); window.location.href = "staff_borrow_dash.php";</script>';
+}
+
+
+
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+
+// Retrieve the bookDetails array from the URL
+$bookDetails = isset($_GET['bookDetails']) ? json_decode($_GET['bookDetails']) : [];
+echo "<script>console.log('Book Details:', " . json_encode($bookDetails) . ");</script>";
+
+// Function to generate unique transaction code
+function generateTransactionCode() {
+    $prefix = 'TXN'; // Prefix for the transaction code
+    $timestamp = microtime(true); // Current timestamp with microseconds
+    $unique_id = uniqid(); // Generate a unique identifier
+    $random = mt_rand(1000, 9999); // Generate a random number
+
+    // Generate a unique transaction code using the prefix, current timestamp, unique identifier, and random number
+    $transaction_code = $prefix . '_' . $timestamp . '_' . $unique_id . '_' . $random;
+
+    return $transaction_code;
+}
+
+// Retrieve the bookDetails array from the URL
+$bookDetails = isset($_GET['bookDetails']) ? json_decode($_GET['bookDetails']) : [];
+echo "<script>console.log('Book Details:', " . json_encode($bookDetails) . ");</script>";
+
+// Check if $bookDetails is not empty before proceeding
+if (!empty($bookDetails)) {
+    // Initialize an array to store book Accession Codes
+    $bookAccessionCodes = [];
+
+    // Loop through each book detail
+    foreach ($bookDetails as $accessionCode) {
+        // Add the book Accession Code to the array
+        $bookAccessionCodes[] = "'" . $accessionCode . "'";
     }
 
-    // Check if $bookDetails is not empty before proceeding
-    if (!empty($bookDetails)) {
-        // Initialize an array to store book Accession Codes
-        $bookAccessionCodes = [];
+    // Convert the array of book Accession Codes to a comma-separated string for the SQL query
+    $bookAccessionCodesStr = implode(",", $bookAccessionCodes);
+    // Save the book Accession Codes string into a session variable
+    $_SESSION['bookAccessionCodesStr'] = $bookAccessionCodesStr;
 
-        // Loop through each book detail
-        foreach ($bookDetails as $accessionCode) {
-            // Add the book Accession Code to the array
-            $bookAccessionCodes[] = "'" . $accessionCode . "'";
-        }
+    echo "<script>console.log('Book CODES:', " . json_encode($_SESSION['bookAccessionCodesStr']) . ");</script>";
 
-        // Convert the array of book Accession Codes to a comma-separated string for the SQL query
-        $bookAccessionCodesStr = implode(",", $bookAccessionCodes);
-        // Save the book Accession Codes string into a session variable
-        $_SESSION['bookAccessionCodesStr'] = $bookAccessionCodesStr;
+    // Check if $bookAccessionCodesStr is not empty before executing the SQL query
+    if (!empty($bookAccessionCodesStr)) {
+        // Retrieve book details from the database
+        $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
+                FROM tbl_books
+                INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
+                WHERE tbl_books.Accession_Code IN ($bookAccessionCodesStr)";
 
-        echo "<script>console.log('Book CODES:', " . json_encode($_SESSION['bookAccessionCodesStr']) . ");</script>";
+        $result = $conn->query($sql);
 
-        // Check if $bookAccessionCodesStr is not empty before executing the SQL query
-        if (!empty($bookAccessionCodesStr)) {
-            // Assuming $conn is your database connection
-            // Make sure $conn is defined and connected to the database
+        $Status = 'Pending';
+        $currentDate = date('Y-m-d');
 
-            // Retrieve book details from the database
-            $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
-                    FROM tbl_books
-                    INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
-                    WHERE tbl_books.Accession_Code IN ($bookAccessionCodesStr)";
-
-            $result = $conn->query($sql);
-
-            // Check if the query returned any rows
-            if ($result && $result->num_rows > 0) {
-            } else {
-                echo "No books found";
-            }
-            // Process the query result as needed
-
-            $Status = 'Pending';
-            $currentDate = date('Y-m-d');
-        } else {
-            // $bookAccessionCodesStr is empty, handle accordingly
-            // echo "No book Accession Codes available";
-            echo '<script>
-            // Call showToast with "success" message type after successful insertion
-            showToast("error", "No book Accession Codes available");
-            </script>';
-        }
     } else {
-        // $bookDetails is empty, handle accordingly
-        // echo "No book details available";
-        echo '<script>
-        // Call showToast with "success" message type after successful insertion
-        showToast("error", "No book details available");
-        </script>';
+        echo "No book Accession Codes available";
+    }
+} else {
+    echo "No book details available";
+}
 
+if (isset($_POST['submit'])) {
+    $dueDate = date('Y-m-d', strtotime('+3 days', strtotime($currentDate)));
+    $uid = $_SESSION["User_ID"];
+    $_SESSION["due"] = $dueDate;
+    
+    if ($_POST['due_date'] == 'custom') {
+        $dueDate = null; // Set $dueDate to null if 'custom' option is selected
+    } else {
+        $dueDate = date('Y-m-d', strtotime($_POST['due_date']));
     }
 
+    if (isset($_SESSION['bookAccessionCodesStr']) && !empty($_SESSION['bookAccessionCodesStr'])) {
+        echo "<script>console.log('Page Submit');</script>";
 
-    if (isset($_POST['submit'])) {
-        // Calculate due date as 3 days later by default
-        $dueDate = date('Y-m-d', strtotime('+3 days', strtotime($currentDate)));
+        $bookAccessionCodes = explode(",", $_SESSION['bookAccessionCodesStr']);
 
-        $uid = $_SESSION["User_ID"];
+        foreach ($bookAccessionCodes as $accessionCode) {
+            echo "<script>console.log('Book Accession Code:', '" . $accessionCode . "');</script>"; // Debugging
 
-        if ($_POST['due_date'] == 'custom') {
-            $dueDate = null; // Set $dueDate to null if 'custom' option is selected
-        } else {
-            // Convert the date format from 'MM/DD/YYYY' to 'YYYY-MM-DD'
-            $dueDate = date('Y-m-d', strtotime($_POST['due_date']));
-        }
- 
-        $User_ID = $_SESSION["User_ID"];
-        $_SESSION["due"] = $dueDate;
-        // Check if $bookAccessionCodesStr is set
-        if (isset($_SESSION['bookAccessionCodesStr']) && !empty($_SESSION['bookAccessionCodesStr'])) {
-             
+            // Generate a unique transaction code for each book
+            $transactionCode = generateTransactionCode();
 
-            // Split the string of Accession Codes into an array
-            $bookAccessionCodes = explode(",", $_SESSION['bookAccessionCodesStr']);
+            $sql_update_quantity = "UPDATE tbl_books SET Quantity = Quantity - 1 WHERE Accession_Code = $accessionCode";
 
-            // Prepare and execute the INSERT statement for tbl_borrow for each book
-            foreach ($bookAccessionCodes as $accessionCode) {
-                
-                // Update the quantity in the database
-                $sql_update_quantity = "UPDATE tbl_books SET Quantity = Quantity - 1 WHERE Accession_Code = $accessionCode";
+            if ($conn->query($sql_update_quantity) === TRUE) {
+                echo "<script>console.log('Quantity updated for Accession Code: $accessionCode');</script>";
 
-                if ($conn->query($sql_update_quantity) === TRUE) {
-                     
-                    // Prepare and execute the INSERT statement for tbl_borrow
-                    $sql_borrow = "INSERT INTO tbl_borrow (User_ID, Borrower_ID, Accession_Code, Date_Borrowed, Due_Date, tb_status) 
-                                VALUES ('$User_ID', '$borrower_id', $accessionCode, '$currentDate', ";
+                $sql_borrow = "INSERT INTO tbl_borrow (User_ID, Borrower_ID, Accession_Code, Date_Borrowed, Due_Date, tb_status, Transaction_Code) 
+                               VALUES ('$User_ID', '$borrower_id', $accessionCode, '$currentDate', ";
 
-                    if ($dueDate === null) {
-                        $sql_borrow .= "NULL"; // Inserting null for custom due date
-                    } else {
-                        $sql_borrow .= "'$dueDate'";
-                    }
+                if ($dueDate === null) {
+                    $sql_borrow .= "NULL";
+                } else {
+                    $sql_borrow .= "'$dueDate'";
+                }
 
-                    $sql_borrow .= ", '$Status')";
+                $sql_borrow .= ", '$Status', '$transactionCode')";
 
-                    if ($conn->query($sql_borrow) === TRUE) {
-                         
-                        // Prepare and execute the INSERT statement for tbl_borrowdetails
-                        $sql_borrowdetails = "INSERT INTO tbl_borrowdetails (Borrower_ID, Accession_Code, Quantity, tb_status) 
-                                            VALUES ('$borrower_id', $accessionCode, '1', '$Status')";
+                if ($conn->query($sql_borrow) === TRUE) {
+                    echo "<script>console.log('Inserted into for Accession Code: $accessionCode with Transaction Code: $transactionCode');</script>";
 
-                        if ($conn->query($sql_borrowdetails) === TRUE) {
-                            // Insertion successful
-                             } else {
-                            echo "Error inserting into : " . $conn->error;
-                        }
+                    $sql_borrowdetails = "INSERT INTO tbl_borrowdetails (Borrower_ID, Accession_Code, Quantity, tb_status, Transaction_Code) 
+                                          VALUES ('$borrower_id', $accessionCode, '1', '$Status', '$transactionCode')";
 
-                        // Prepare and execute the INSERT statement for tbl_borrowdetails
-                        $sql_returndetails = "INSERT INTO tbl_returningdetails (BorrowDetails_ID, tb_status) 
-                                VALUES ('$borrower_id', 'Borrowed')";
+                    if ($conn->query($sql_borrowdetails) === TRUE) {
+                        echo "<script>console.log('Inserted into borrow details for Accession Code: $accessionCode');</script>";
+
+                        $sql_returndetails = "INSERT INTO tbl_returningdetails (BorrowDetails_ID, tb_status, Transaction_Code) 
+                                              VALUES ('$borrower_id', 'Borrowed', '$transactionCode')";
 
                         if ($conn->query($sql_returndetails) === TRUE) {
-                            // Insertion successful
-                              } else {
-                            echo "Error inserting into : " . $conn->error;
+                            echo "<script>console.log('Returning Details done for Accession Code: $accessionCode');</script>";
+
+                            $sql_return = "INSERT INTO tbl_returned (User_ID, Borrower_ID, Date_Returned, tb_status, Transaction_Code) 
+                                           VALUES ('$uid', '$borrower_id', NULL, 'Pending', '$transactionCode')";
+
+                            if ($conn->query($sql_return) === TRUE) {
+                                echo "<script>console.log('Return Details done for Accession Code: $accessionCode');</script>";
+                            } else {
+                                echo "Error inserting into tbl_returned: " . $conn->error;
+                            }
+                        } else {
+                            echo "Error inserting into tbl_returningdetails: " . $conn->error;
                         }
-
-                        // Prepare and execute the INSERT statement for tbl_borrowdetails
-                        $sql_return = "INSERT INTO tbl_returned (User_ID, Borrower_ID, Date_Returned, tb_status) 
-                        VALUES ('$uid', '$borrower_id', NULL, 'Pending')";
-
-                        if ($conn->query($sql_return) === TRUE) {
-                            // Insertion successful
-                             } else {
-                            echo "Error inserting into : " . $conn->error;
-                        }
-
                     } else {
-                        echo "Error inserting into : " . $conn->error;
+                        echo "Error inserting into tbl_borrowdetails: " . $conn->error;
                     }
                 } else {
-                    echo "Error updating quantity: " . $conn->error;
+                    echo "Error inserting into tbl_borrow: " . $conn->error;
                 }
+            } else {
+                echo "Error updating quantity: " . $conn->error;
             }
-
-            echo '<script>
-            // Call showToast with "success" message type after successful insertion
-            showToast("success", "All selected books have been borrowed successfully");
-            
-            // Redirect to the specified page with the borrower ID in the URL after a delay
-            setTimeout(function() {
-                window.location.href = "queries/print_borrow.php";
-            }, 3000); // Delay in milliseconds
-        </script>';
-    
-            // echo '<script>alert("All selected books have been borrowed successfully."); window.location.href = "queries/print_borrow.php";</script>';
-       
-        } else {
-            // echo "No book details available";
-            echo '<script>
-            // Call showToast with "success" message type after successful insertion
-            showToast("error", "No book details available");
-            </script>';
-    
         }
+
+        echo '<script>
+                showToast("success", "Book Borrow Success.");
+                redirectToPage("queries/print_borrow.php", 3000);
+              </script>';
+    } else {
+        echo "No book details available";
     }
-    $conn->close();
+}
+
+
+
+$conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
