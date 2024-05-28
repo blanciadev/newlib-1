@@ -3,16 +3,7 @@
 
     
 
-    // Check if the User_ID session variable is not set or empty
-    if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
-        // Redirect to index.php
-        header("Location: ../index.php");
-        exit(); // Ensure script execution stops after redirection
-    }
-
     
-    
-
 
 
     // Initialize $result variable
@@ -127,7 +118,6 @@
     }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -137,17 +127,44 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <!-- <link href="./staff.css" rel="stylesheet"> -->
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+ 
     <link rel="icon" href="../images/lib-icon.png">
     <style>
+        
         .add-book-btn {
-    display: none;
+            display: none;
+        }
+        .book-card {
+    width: 300px; /* Set the desired width */
+    border: 1px solid #ccc;
+    padding: 16px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f8f9fa; /* Add background color here */
+}
+
+        .card-title {
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+        }
+        .card-text {
+            margin-bottom: 8px;
+        }
+        .book-container {
+            margin-top: 16px;
+        }
+        .hidden-button {
+    display: none !important;
 }
 
     </style>
 </head>
 <body>
-    <div class="board1 container-fluid">
+    <div class="container-fluid">
         <div class="header">
             <div class="text">
                 <div class="title">
@@ -161,40 +178,32 @@
             </div>
         </div>
 
-        <div class="board1 container-fluid"><!--board container-->
-        <div class="header1">
-            <div class="text">
-                <div class="back-btn">
-                    <a href="./index.php"><i class='bx bx-arrow-back'></i></a>
-                </div>
-                <div class="title">
-                    <h2>Search Book</h2>
-                </div>
-              
-            </div>
-        </div>
-        <div class='books container'>
-            
-            <form id="dataform" method="POST"> 
-                <label for="Accession_Code">Accession Code:</label>
-                <input type="text" id="Accession_Code" name="Accession_Code[]" placeholder="Enter Accession Code">
-
-                <label for="Book_Title">Book Title:</label>
-                <input type="text" id="Book_Title" name="Book_Title" placeholder="Enter Book Title">
-                <div class="container">
-                    <h3>Search Results</h3>
-                    <div class='bookSearchResult container' id="bookDetailsContainer">
-                        <!-- Display book details will be added dynamically -->
+        <div class="container-fluid">
+            <div class="header1">
+                <div class="text">
+                    <div class="back-btn">
+                        <a href="./index.php"><i class='bx bx-arrow-back'></i></a>
+                    </div>
+                    <div class="title">
+                        <h2>Search Book</h2>
                     </div>
                 </div>
-            
-                <a id="checkoutBtn" class="btn btn-primary">Checkout</a> 
-        
-            </form>
-        </div>    
-    </div>
-        <a href="./index.php" class="nav-link link-body-emphasis"><i class='bx bxs-lock'></i>Return To Login</a>
+            </div>
+            <div class='books container'>
+                <form id="dataform" method="POST"> 
+                    <label for="Accession_Code">Accession Code:</label>
+                    <input type="text" id="Accession_Code" name="Accession_Code[]" class="form-control mb-3" placeholder="Enter Accession Code">
 
+                    <label for="Book_Title">Book Title:</label>
+                    <input type="text" id="Book_Title" name="Book_Title" class="form-control mb-3" placeholder="Enter Book Title">
+                    <div class="container book-container" id="bookDetailsContainer">
+                        <!-- Display book details will be added dynamically -->
+                    </div>
+                    <a id="checkoutBtn" class="btn btn-primary">Checkout</a> 
+                </form>
+            </div>    
+        </div>
+        <a href="./index.php" class="nav-link link-body-emphasis"><i class='bx bxs-lock'></i>Return To Login</a>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -237,18 +246,19 @@
                         data.forEach(book => {
                             const bookDiv = document.createElement('div');
                             bookDiv.classList.add('book');
+                            // Assuming bookDiv is the target element where book details are displayed
                             bookDiv.innerHTML = `
-                                <br>
-                                <h3>Book Details</h3>
-                                <br>
-                                <p><strong>Accession Code:</strong> ${book['Accession_Code']}</p>
-                                <p><strong>Title:</strong> ${book['Book_Title']}</p>
-                                <p><strong>Author:</strong> ${book['Authors_Name']}</p>
-                                <p><strong>Edition:</strong> ${book['tb_edition']}</p>
-                                <p><strong>Availability:</strong> ${book['Quantity']}</p>
-                                <button type="button" class="btn btn-secondary add-book-btn" data-accession="${book['Accession_Code']}">Get Book</button>
-                                <hr>
+                                <div class="book-card">
+                                    <h3 class="card-title">Book Details</h3>
+                                    <p class="card-text"><strong>Accession Code:</strong> ${book['Accession_Code']}</p>
+                                    <p class="card-text"><strong>Title:</strong> ${book['Book_Title']}</p>
+                                    <p class="card-text"><strong>Author:</strong> ${book['Authors_Name']}</p>
+                                    <p class="card-text"><strong>Edition:</strong> ${book['tb_edition']}</p>
+                                    <p class="card-text"><strong>Availability:</strong> ${book['Quantity']}</p>
+                                    <button type="button" class="btn btn-secondary add-book-btn hidden-button" data-accession="${book['Accession_Code']}">Get Book</button>
+                                </div>
                             `;
+
                             const quantity = book['Quantity'];
 
                             // Add event listener to "Add Book" button
@@ -256,6 +266,7 @@
                             if (quantity == 0) {
                                 addBookBtn.disabled = true; // Disable button if quantity is 0
                             } else {
+                                addBookBtn.style.display = 'block';
                                 addBookBtn.addEventListener('click', function() {
                                     // Add or remove the book from the bookDetails array
                                     const accessionCode = this.getAttribute('data-accession');
@@ -272,9 +283,7 @@
 
                                     // Show or hide the "Checkout" button based on the bookDetails array length
                                     checkoutBtn.style.display = bookDetails.length > 0 ? 'block' : 'none';
-                            
                                 });
-
                             }
                             bookDetailsContainer.appendChild(bookDiv);
                         });
@@ -282,14 +291,7 @@
                     .catch(error => console.error('Error:', error));
                 });
             });
-
-          
         });
-
-
     </script>
-
-
-
 </body>
 </html>
