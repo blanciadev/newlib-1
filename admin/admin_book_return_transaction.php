@@ -11,66 +11,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
 }
 
 
-
-// Database connection
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Check if the borrowId parameter is set in the URL
-if (isset($_GET['borrowIdadmin'])) {
-    // Sanitize the borrowId parameter
-    $borrowId = filter_var($_GET['borrowIdadmin'], FILTER_SANITIZE_STRING);
-
-    // Set the session variable
-    $_SESSION['BorrowDetails_ID'] = $borrowId;
-} else {
-    // Handle the case when borrowId is not provided in the URL
-    // For example, redirect back or show an error message
-    echo "Borrow ID not provided.";
-    exit; // Stop script execution if necessary
-}
-
-
-
-// Initialize $bd_Id to an empty string
-$bd_Id = $_SESSION['BorrowDetails_ID'];
-
-// Prepare the SQL statement with a placeholder for the search input
-$sql = "SELECT DISTINCT
-b.User_ID, 
-b.Accession_Code, 
-bk.Book_Title, 
-bk.Price,
-bd.Quantity, 
-b.Date_Borrowed, 
-b.Due_Date, 
-bd.tb_status, 
-bd.Borrower_ID, 
-bd.BorrowDetails_ID
-FROM
-tbl_borrowdetails AS bd
-INNER JOIN
-tbl_borrow AS b ON bd.Borrower_ID = b.Borrower_ID
-INNER JOIN
-tbl_books AS bk ON b.Accession_Code = bk.Accession_Code
-INNER JOIN
-tbl_borrower AS br ON b.Borrower_ID = br.Borrower_ID AND bd.Borrower_ID = br.Borrower_ID
-WHERE
-bd.BorrowDetails_ID = $bd_Id";
-
-
-
-// Prepare the statement
-$stmt = $conn->prepare($sql);
-
-// Execute the statement
-$stmt->execute();
-
-// Get the result
-$result = $stmt->get_result();
-
 // Define the HTML code for the toast element
 echo '<div class="toastNotif hide">
  <div class="toast-content">
@@ -141,6 +81,103 @@ echo '<script>
 
 </script>';
 
+// Database connection
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
+// Check if the borrowId parameter is set in the URL
+if (isset($_GET['borrowIdadmin'])) {
+    // Sanitize the borrowId parameter
+    $borrowId = filter_var($_GET['borrowIdadmin'], FILTER_SANITIZE_STRING);
+
+    // Set the session variable
+    $_SESSION['BorrowDetails_ID'] = $borrowId;
+} else {
+    // Handle the case when borrowId is not provided in the URL
+    // For example, redirect back or show an error message
+    echo "Borrow ID not provided.";
+    exit; // Stop script execution if necessary
+}
+
+
+
+// Initialize $bd_Id to an empty string
+$bd_Id = $_SESSION['BorrowDetails_ID'];
+
+// Prepare the SQL statement with a placeholder for the search input
+$sql = "SELECT DISTINCT
+b.User_ID, 
+b.Accession_Code, 
+bk.Book_Title, 
+bk.Price, 
+bd.Quantity, 
+b.Date_Borrowed, 
+b.Due_Date, 
+bd.tb_status, 
+bd.Borrower_ID, 
+bd.BorrowDetails_ID, 
+bd.Transaction_Code
+FROM
+tbl_borrowdetails AS bd
+INNER JOIN
+tbl_borrow AS b
+ON 
+    bd.Borrower_ID = b.Borrower_ID AND
+    bd.Transaction_Code = b.Transaction_Code
+INNER JOIN
+tbl_books AS bk
+ON 
+    b.Accession_Code = bk.Accession_Code
+INNER JOIN
+tbl_borrower AS br
+ON 
+    b.Borrower_ID = br.Borrower_ID AND
+    bd.Borrower_ID = br.Borrower_ID
+WHERE
+bd.BorrowDetails_ID = ?";
+
+// Prepare the statement
+$stmt = $conn->prepare($sql);
+
+if ($stmt === false) {
+    die("Prepare failed: " . $conn->error);
+}
+
+// Bind the parameter
+$stmt->bind_param("i", $bd_Id);
+
+// Execute the statement
+$stmt->execute();
+
+// Get the result
+$result = $stmt->get_result();
+
+if ($result === false) {
+    die("Get result failed: " . $stmt->error);
+}
+
+// Fetch the results
+$data = [];
+while ($row = $result->fetch_assoc()) {
+    $data[] = $row;
+    
+    // Store the Transaction_Code in the session
+    $_SESSION['transactionCode'] = $row["Transaction_Code"];
+    break; // Assuming you only need the first row's Transaction_Code
+}
+
+// Close the statement and connection
+$stmt->close();
+$conn->close();
+
+
+
+
+$transactionCode= $_SESSION['transactionCode'];
+echo '<script>console.log("Transaction Code: ' . $transactionCode . '");</script>';
+
 
 
 // Check if the form is submitted
@@ -148,6 +185,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $condition = 'proceed';
     $paymentStatus = "Paid";
+    $transactionCode= $_SESSION['transactionCode'];
+  
+echo '<script>console.log("Transaction Code on Submit: ' . $transactionCode . '");</script>';
+
 
     if (isset($_POST['action'])) {
         $action = $_POST['action'];
@@ -287,20 +328,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     if ($condition == 'proceed') {
         // Update tbl_returningdetails status
-        $sql3 = "UPDATE tbl_returningdetails SET tb_status = 'Returned' WHERE BorrowDetails_ID = ?";
+        $sql3 = "UPDATE tbl_returningdetails SET tb_status = 'Returned' WHERE Transaction_Code = ?";
         $stmt3 = $conn->prepare($sql3);
         if (!$stmt3) {
             die("Error in preparing statement 3: " . $conn->error);
         }
-        $stmt3->bind_param("i", $bd_Id);
+        $stmt3->bind_param("s", $transactionCode);
     } else {
         // Update tbl_returningdetails status
-        $sql3 = "UPDATE tbl_returningdetails SET tb_status = 'On Hold' WHERE BorrowDetails_ID = ?";
+        $sql3 = "UPDATE tbl_returningdetails SET tb_status = 'On Hold' WHERE Transaction_Code = ?";
         $stmt3 = $conn->prepare($sql3);
         if (!$stmt3) {
             die("Error in preparing statement 3: " . $conn->error);
         }
-        $stmt3->bind_param("i", $bd_Id);
+        $stmt3->bind_param("s", $transactionCode);
     }
     if ($condition == 'proceed') {
         // Update tbl_returned with current date and status
@@ -541,35 +582,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 // Prepare the SQL statement with a placeholder for the BorrowDetails_ID
                 $sql = "SELECT DISTINCT
-                        b.User_ID, 
-                        b.Accession_Code, 
-                        bk.Book_Title, 
-                        bk.Price, 
-                        bd.Quantity, 
-                        b.Date_Borrowed, 
-                        b.Due_Date, 
-                        bd.tb_status, 
-                        bd.Borrower_ID, 
-                        b.Borrow_ID, 
-                        bk.tb_edition
-                    FROM
-                        tbl_borrowdetails AS bd
-                        INNER JOIN
-                        tbl_borrow AS b
-                        ON 
-                            bd.Borrower_ID = b.Borrower_ID AND
-                            bd.BorrowDetails_ID = b.Borrow_ID
-                        INNER JOIN
-                        tbl_books AS bk
-                        ON 
-                            b.Accession_Code = bk.Accession_Code
-                        INNER JOIN
-                        tbl_borrower AS br
-                        ON 
-                            b.Borrower_ID = br.Borrower_ID AND
-                            bd.Borrower_ID = br.Borrower_ID
-                    WHERE
-                        bd.BorrowDetails_ID =  ?";
+                b.User_ID, 
+                b.Accession_Code, 
+                bk.Book_Title, 
+                bk.Price, 
+                bd.Quantity, 
+                b.Date_Borrowed, 
+                b.Due_Date, 
+                bd.tb_status, 
+                bd.Borrower_ID, 
+                bd.BorrowDetails_ID, 
+                bd.Transaction_Code, 
+                bk.tb_edition
+            FROM
+                tbl_borrowdetails AS bd
+                INNER JOIN
+                tbl_borrow AS b
+                ON 
+                    bd.Borrower_ID = b.Borrower_ID AND
+                    bd.Transaction_Code = b.Transaction_Code
+                INNER JOIN
+                tbl_books AS bk
+                ON 
+                    b.Accession_Code = bk.Accession_Code
+                INNER JOIN
+                tbl_borrower AS br
+                ON 
+                    b.Borrower_ID = br.Borrower_ID AND
+                    bd.Borrower_ID = br.Borrower_ID
+            WHERE
+                bd.BorrowDetails_ID = ?";
 
                 // Prepare and bind the statement
                 $stmt = $conn->prepare($sql);
@@ -592,6 +634,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     if ($result->num_rows > 0) {
                         // Output data of each row
                         while ($row = $result->fetch_assoc()) {
+                            $_SESSION['transactionCode'] = $row["Transaction_Code"];
                             $_SESSION['Accession_Code'] = $row["Accession_Code"];
                             $_SESSION['Book_Title'] = $row["Book_Title"];
                             $_SESSION['Quantity'] = $row["Quantity"];
@@ -601,6 +644,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $_SESSION['status'] = $row["tb_status"];
                             $_SESSION['qty'] = $row["Quantity"];
                             $_SESSION['price'] = $row["Price"];
+                            $_SESSION['transactionCode'] = $row["Transaction_Code"];
 
                             echo "<div class='container'>";
                             echo "<div class='row'>";

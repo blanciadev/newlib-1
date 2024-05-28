@@ -9,75 +9,6 @@ if (!isset($_SESSION["User_ID"]) || empty($_SESSION["User_ID"])) {
     exit(); // Ensure script execution stops after redirection
 }
 
-$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
-// Retrieve the bookDetails array from the URL
-$bookDetails = isset($_GET['bookDetails']) ? json_decode($_GET['bookDetails']) : [];
-echo "<script>console.log('Book Details:', " . json_encode($bookDetails) . ");</script>";
-
-// Check if the borrower_id session variable is set
-if (isset($_SESSION['borrower_id'])) {
-
-    // Retrieve the borrower_id from the session
-    $borrower_id = $_SESSION['borrower_id'];
-    $User_ID = $_SESSION["User_ID"];
-
-    // Now you can use $borrower_id in your code as needed
-
-} else {
-    // Handle the case where the session variable is not set
-    echo '<script>alert("Borrower ID unavailable"); window.location.href = "staff_borrow_dash.php";</script>';
-}
-
-// Check if $bookDetails is not empty before proceeding
-if (!empty($bookDetails)) {
-    // Initialize an array to store book Accession Codes
-    $bookAccessionCodes = [];
-
-    // Loop through each book detail
-    foreach ($bookDetails as $accessionCode) {
-        // Add the book Accession Code to the array
-        $bookAccessionCodes[] = "'" . $accessionCode . "'";
-        
-    }
-
-    // Convert the array of book Accession Codes to a comma-separated string for the SQL query
-    $bookAccessionCodesStr = implode(",", $bookAccessionCodes);
-    // Save the book Accession Codes string into a session variable
-    $_SESSION['bookAccessionCodesStr'] = $bookAccessionCodesStr;
-
-    echo "<script>console.log('Book CODES:', " . json_encode($_SESSION['bookAccessionCodesStr']) . ");</script>";
-
-    // Check if $bookAccessionCodesStr is not empty before executing the SQL query
-    if (!empty($bookAccessionCodesStr)) {
-        // Assuming $conn is your database connection
-        // Make sure $conn is defined and connected to the database
-
-        // Retrieve book details from the database
-        $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
-                FROM tbl_books
-                INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
-                WHERE tbl_books.Accession_Code IN ($bookAccessionCodesStr)";
-
-        $result = $conn->query($sql);
-
-
-
-        $Status = 'Pending';
-        $currentDate = date('Y-m-d');
-        // Calculate due date as 3 days later
-
-    } else {
-        // $bookAccessionCodesStr is empty, handle accordingly
-        echo "No book Accession Codes available";
-    }
-} else {
-    // $bookDetails is empty, handle accordingly
-    echo "No book details available";
-}
-
-
-
-
  // Define the HTML code for the toast element
  echo '<div class="toastNotif hide">
  <div class="toast-content">
@@ -150,117 +81,29 @@ echo '<script>
 
 
 
+// Check if the borrower_id session variable is set
+if (isset($_SESSION['borrower_id'])) {
 
-
-if (isset($_POST['submit'])) {
-    // Calculate due date as 3 days later by default
-    $dueDate = date('Y-m-d', strtotime('+3 days', strtotime($currentDate)));
-    // $code = $_SESSION['bookTransactionCodes'];
-
-    $uid = $_SESSION["User_ID"];
-
-    if ($_POST['due_date'] == 'custom') {
-        $dueDate = null; // Set $dueDate to null if 'custom' option is selected
-    } else {
-        // Convert the date format from 'MM/DD/YYYY' to 'YYYY-MM-DD'
-        $dueDate = date('Y-m-d', strtotime($_POST['due_date']));
-    }
-
-    $code = generateTransactionCode();
-
+    // Retrieve the borrower_id from the session
+    $borrower_id = $_SESSION['borrower_id'];
     $User_ID = $_SESSION["User_ID"];
-    $_SESSION["due"] = $dueDate;
-    // Check if $bookAccessionCodesStr is set
 
-    if (isset($_SESSION['bookAccessionCodesStr']) && !empty($_SESSION['bookAccessionCodesStr'])) {
-        echo "<script>console.log('Page Submit');</script>";
+    // Now you can use $borrower_id in your code as needed
 
-        // Split the string of Accession Codes into an array
-        $bookAccessionCodes = explode(",", $_SESSION['bookAccessionCodesStr']);
-
-        // Prepare and execute the INSERT statement for tbl_borrow for each book
-        foreach ($bookAccessionCodes as $accessionCode) {
-            echo "<script>console.log('Book Accession Code:', '" . $accessionCode . "');</script>"; // Debugging
-
-            // Update the quantity in the database
-            $sql_update_quantity = "UPDATE tbl_books SET Quantity = Quantity - 1 WHERE Accession_Code = $accessionCode";
-
-            if ($conn->query($sql_update_quantity) === TRUE) {
-             
-
-                echo "<script>console.log('Quantity updated for Accession Code: $accessionCode');</script>";
-
-                // Prepare and execute the INSERT statement for tbl_borrow
-                $sql_borrow = "INSERT INTO tbl_borrow (User_ID, Borrower_ID, Accession_Code, Date_Borrowed, Due_Date, tb_status) 
-                               VALUES ('$User_ID', '$borrower_id', $accessionCode, '$currentDate', ";
-
-                if ($dueDate === null) {
-                    $sql_borrow .= "NULL"; // Inserting null for custom due date
-                } else {
-                    $sql_borrow .= "'$dueDate'";
-                }
-
-                $sql_borrow .= ", '$Status')";
-
-                if ($conn->query($sql_borrow) === TRUE) {
-                    echo "<script>console.log('Inserted into  for Accession Code: $accessionCode');</script>";
-
-                    // Prepare and execute the INSERT statement for tbl_borrowdetails
-                    $sql_borrowdetails = "INSERT INTO tbl_borrowdetails (Borrower_ID, Accession_Code, Quantity, tb_status) 
-                                          VALUES ('$borrower_id', $accessionCode, '1', '$Status')";
-
-                    if ($conn->query($sql_borrowdetails) === TRUE) {
-                        // Insertion successful
-                        echo "<script>console.log('Inserted into  for Accession Code: $accessionCode');</script>";
-                    } else {
-                        echo "Error inserting into : " . $conn->error;
-                    }
-
-                    // Prepare and execute the INSERT statement for tbl_borrowdetails
-                    $sql_returndetails = "INSERT INTO tbl_returningdetails (BorrowDetails_ID, tb_status) 
-                            VALUES ('$borrower_id', 'Borrowed')";
-
-                    if ($conn->query($sql_returndetails) === TRUE) {
-                        // Insertion successful
-                        echo "<script>console.log('Returning Details done');</script>";
-                    } else {
-                        echo "Error inserting into : " . $conn->error;
-                    }
-
-                    // Prepare and execute the INSERT statement for tbl_borrowdetails
-                    $sql_return = "INSERT INTO tbl_returned (User_ID, Borrower_ID, Date_Returned, tb_status) 
-                    VALUES ('$uid', '$borrower_id', NULL, 'Pending' )";
-
-                    if ($conn->query($sql_return) === TRUE) {
-                        // Insertion successful
-                        echo "<script>console.log('Returning Details done');</script>";
-                    } else {
-                        echo "Error inserting into : " . $conn->error;
-                    }
-                } else {
-                    echo "Error inserting into : " . $conn->error;
-                }
-            } else {
-                echo "Error updating quantity: " . $conn->error;
-            }
-        }
-
-        echo '<script>
-        // Call showToast with "success" message type after successful insertion
-        showToast("success", "Book Borrow Success.");
-        // Redirect to this page after 3 seconds
-        redirectToPage("queries/print_borrow.php", 3000);
-    </script>';
-
-
-        // Redirect user or display success message after borrowing all books
-        // echo '<script>alert("All selected books have been borrowed successfully."); window.location.href = "queries/print_borrow.php";</script>';
-    } else {
-        echo "No book details available";
-    }
+} else {
+    // Handle the case where the session variable is not set
+    echo '<script>alert("Borrower ID unavailable"); window.location.href = "staff_borrow_dash.php";</script>';
 }
 
 
+
+$conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308);
+
+// Retrieve the bookDetails array from the URL
+$bookDetails = isset($_GET['bookDetails']) ? json_decode($_GET['bookDetails']) : [];
+echo "<script>console.log('Book Details:', " . json_encode($bookDetails) . ");</script>";
+
+// Function to generate unique transaction code
 function generateTransactionCode() {
     $prefix = 'TXN'; // Prefix for the transaction code
     $timestamp = microtime(true); // Current timestamp with microseconds
@@ -272,6 +115,133 @@ function generateTransactionCode() {
 
     return $transaction_code;
 }
+
+// Retrieve the bookDetails array from the URL
+$bookDetails = isset($_GET['bookDetails']) ? json_decode($_GET['bookDetails']) : [];
+echo "<script>console.log('Book Details:', " . json_encode($bookDetails) . ");</script>";
+
+// Check if $bookDetails is not empty before proceeding
+if (!empty($bookDetails)) {
+    // Initialize an array to store book Accession Codes
+    $bookAccessionCodes = [];
+
+    // Loop through each book detail
+    foreach ($bookDetails as $accessionCode) {
+        // Add the book Accession Code to the array
+        $bookAccessionCodes[] = "'" . $accessionCode . "'";
+    }
+
+    // Convert the array of book Accession Codes to a comma-separated string for the SQL query
+    $bookAccessionCodesStr = implode(",", $bookAccessionCodes);
+    // Save the book Accession Codes string into a session variable
+    $_SESSION['bookAccessionCodesStr'] = $bookAccessionCodesStr;
+
+    echo "<script>console.log('Book CODES:', " . json_encode($_SESSION['bookAccessionCodesStr']) . ");</script>";
+
+    // Check if $bookAccessionCodesStr is not empty before executing the SQL query
+    if (!empty($bookAccessionCodesStr)) {
+        // Retrieve book details from the database
+        $sql = "SELECT tbl_books.*, tbl_authors.Authors_Name 
+                FROM tbl_books
+                INNER JOIN tbl_authors ON tbl_books.Authors_ID = tbl_authors.Authors_ID 
+                WHERE tbl_books.Accession_Code IN ($bookAccessionCodesStr)";
+
+        $result = $conn->query($sql);
+
+        $Status = 'Pending';
+        $currentDate = date('Y-m-d');
+
+    } else {
+        echo "No book Accession Codes available";
+    }
+} else {
+    echo "No book details available";
+}
+
+if (isset($_POST['submit'])) {
+    $dueDate = date('Y-m-d', strtotime('+3 days', strtotime($currentDate)));
+    $uid = $_SESSION["User_ID"];
+    $_SESSION["due"] = $dueDate;
+    
+    if ($_POST['due_date'] == 'custom') {
+        $dueDate = null; // Set $dueDate to null if 'custom' option is selected
+    } else {
+        $dueDate = date('Y-m-d', strtotime($_POST['due_date']));
+    }
+
+    if (isset($_SESSION['bookAccessionCodesStr']) && !empty($_SESSION['bookAccessionCodesStr'])) {
+        echo "<script>console.log('Page Submit');</script>";
+
+        $bookAccessionCodes = explode(",", $_SESSION['bookAccessionCodesStr']);
+
+        foreach ($bookAccessionCodes as $accessionCode) {
+            echo "<script>console.log('Book Accession Code:', '" . $accessionCode . "');</script>"; // Debugging
+
+            // Generate a unique transaction code for each book
+            $transactionCode = generateTransactionCode();
+
+            $sql_update_quantity = "UPDATE tbl_books SET Quantity = Quantity - 1 WHERE Accession_Code = $accessionCode";
+
+            if ($conn->query($sql_update_quantity) === TRUE) {
+                echo "<script>console.log('Quantity updated for Accession Code: $accessionCode');</script>";
+
+                $sql_borrow = "INSERT INTO tbl_borrow (User_ID, Borrower_ID, Accession_Code, Date_Borrowed, Due_Date, tb_status, Transaction_Code) 
+                               VALUES ('$User_ID', '$borrower_id', $accessionCode, '$currentDate', ";
+
+                if ($dueDate === null) {
+                    $sql_borrow .= "NULL";
+                } else {
+                    $sql_borrow .= "'$dueDate'";
+                }
+
+                $sql_borrow .= ", '$Status', '$transactionCode')";
+
+                if ($conn->query($sql_borrow) === TRUE) {
+                    echo "<script>console.log('Inserted into for Accession Code: $accessionCode with Transaction Code: $transactionCode');</script>";
+
+                    $sql_borrowdetails = "INSERT INTO tbl_borrowdetails (Borrower_ID, Accession_Code, Quantity, tb_status, Transaction_Code) 
+                                          VALUES ('$borrower_id', $accessionCode, '1', '$Status', '$transactionCode')";
+
+                    if ($conn->query($sql_borrowdetails) === TRUE) {
+                        echo "<script>console.log('Inserted into borrow details for Accession Code: $accessionCode');</script>";
+
+                        $sql_returndetails = "INSERT INTO tbl_returningdetails (BorrowDetails_ID, tb_status, Transaction_Code) 
+                                              VALUES ('$borrower_id', 'Borrowed', '$transactionCode')";
+
+                        if ($conn->query($sql_returndetails) === TRUE) {
+                            echo "<script>console.log('Returning Details done for Accession Code: $accessionCode');</script>";
+
+                            $sql_return = "INSERT INTO tbl_returned (User_ID, Borrower_ID, Date_Returned, tb_status, Transaction_Code) 
+                                           VALUES ('$uid', '$borrower_id', NULL, 'Pending', '$transactionCode')";
+
+                            if ($conn->query($sql_return) === TRUE) {
+                                echo "<script>console.log('Return Details done for Accession Code: $accessionCode');</script>";
+                            } else {
+                                echo "Error inserting into tbl_returned: " . $conn->error;
+                            }
+                        } else {
+                            echo "Error inserting into tbl_returningdetails: " . $conn->error;
+                        }
+                    } else {
+                        echo "Error inserting into tbl_borrowdetails: " . $conn->error;
+                    }
+                } else {
+                    echo "Error inserting into tbl_borrow: " . $conn->error;
+                }
+            } else {
+                echo "Error updating quantity: " . $conn->error;
+            }
+        }
+
+        echo '<script>
+                showToast("success", "Book Borrow Success.");
+                redirectToPage("queries/print_borrow.php", 3000);
+              </script>';
+    } else {
+        echo "No book details available";
+    }
+}
+
 
 
 $conn->close();
