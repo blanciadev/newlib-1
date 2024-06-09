@@ -104,7 +104,7 @@ $dataJSON = json_encode($data);
             <li class="nav-item active"> <a href="./staff_dashboard.php" class="nav-link link-body-emphasis "> <i class='bx bxs-home'></i>Dashboard </a> </li>
             <li class="nav-item"> <a href="./staff_books.php" class="nav-link link-body-emphasis"><i class='bx bxs-book'></i>Books</a> </li>
             <li class="nav-item"> <a href="./staff_transaction_dash.php" class="nav-link link-body-emphasis"><i class='bx bxs-customize'></i>Transaction</a> </li>
-        
+
             <li class="nav-item"> <a href="./staff_log.php" class="nav-link link-body-emphasis"><i class='bx bxs-user-detail'></i>Log Record</a> </li>
             <li class="nav-item"> <a href="./staff_fines.php" class="nav-link link-body-emphasis"><i class='bx bxs-wallet'></i>Fines</a> </li>
             <hr>
@@ -119,7 +119,7 @@ $dataJSON = json_encode($data);
                     <h2>Dashboard</h2>
                 </div>
                 <p>Welcome! <strong><span><?php echo $userData['First_Name']; ?></span></strong>
-        </p>
+                </p>
             </div>
             <div class="datetime">
                 <p id="currentTime" style="font-size:1rem;font-weight: 700; margin:0%;"></p>
@@ -132,22 +132,22 @@ $dataJSON = json_encode($data);
                 <div class="ovw-con">
                     <div class="totalbooks">
                         <?php
-                            $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308 ); // database connection
+                        $conn = mysqli_connect("localhost", "root", "root", "db_library_2", 3308); // database connection
 
-                            // Query to get the total quantity of all books
-                            $totalQuantityQuery = "SELECT SUM(Quantity) AS total_quantity FROM tbl_books";
-                            $totalQuantityResult = mysqli_query($conn, $totalQuantityQuery);
+                        // Query to get the total quantity of all books
+                        $totalQuantityQuery = "SELECT SUM(Quantity) AS total_quantity FROM tbl_books";
+                        $totalQuantityResult = mysqli_query($conn, $totalQuantityQuery);
 
-                            // Check if the query was successful and fetch the total quantity
-                            if ($totalQuantityResult && mysqli_num_rows($totalQuantityResult) > 0) {
-                                $totalQuantityData = mysqli_fetch_assoc($totalQuantityResult);
-                                $totalQuantity = $totalQuantityData['total_quantity'];
+                        // Check if the query was successful and fetch the total quantity
+                        if ($totalQuantityResult && mysqli_num_rows($totalQuantityResult) > 0) {
+                            $totalQuantityData = mysqli_fetch_assoc($totalQuantityResult);
+                            $totalQuantity = $totalQuantityData['total_quantity'];
 
-                                // Display the total quantity of all books
-                                echo "<h3>" . $totalQuantity . "</h3>";
-                            } else {
-                                echo "No books found";
-                            }
+                            // Display the total quantity of all books
+                            echo "<h3>" . $totalQuantity . "</h3>";
+                        } else {
+                            echo "No books found";
+                        }
                         ?>
                         <div class="d-flex w-100 flex-wrap justify-content-around ">
                             <i class='bx bxs-book' style="font-size: 30pt;"></i>
@@ -357,7 +357,7 @@ $dataJSON = json_encode($data);
                             echo '<div class="ms-2 me-auto">';
                             echo '  <div class="fw"><strong>' . $row['Book_Title'] . '</strong></div>
                                             ' . $row['Authors_Name'] . ' <br/>
-                                            ' . $row['date_inserted'] .'
+                                            ' . $row['date_inserted'] . '
                                         </div>';
                             echo '</li>';
                         }
@@ -388,7 +388,7 @@ $dataJSON = json_encode($data);
             </div>
         </div>
     </div>
-    
+
 
     <div class="toastNotif" class="hide">
         <div class="toast-content">
@@ -408,7 +408,7 @@ $dataJSON = json_encode($data);
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-    
+
     <script>
         //Toast Notification 
         const btn = document.querySelector(".showToast"),
